@@ -22,6 +22,7 @@ class Groups(Base):
     name = Column(String)
     role = relationship('Roles',back_populates='group')
     user = relationship('Users',back_populates='group')
+    status = Column(Integer)
 
 
 
@@ -47,11 +48,69 @@ class Users(Base):
     full_name = Column(String,nullable=True)
     status = Column(Integer,default=0)
     telegram_id = Column(BIGINT,unique=True,nullable=True)
+    phone_number = Column(String,nullable=True)
     
     group_id = Column(Integer,ForeignKey('groups.id'),nullable=True)
     group = relationship('Groups',back_populates='user')
+    brigader = relationship('Brigada',back_populates='user')
+    brigada_id = Column(Integer,ForeignKey('brigada.id'))
 
 
 
+
+
+
+
+
+
+class Fillials(Base):
+    __tablename__ = 'fillials'
+    id = Column(Integer,primary_key=True,index=True)
+    name = Column(String)
+    location = Column(String,nullable=True)
+    request = relationship('Requests',back_populates='fillial')
+
+
+class Category(Base):
+    __tablename__='category'
+    id=Column(Integer,primary_key=True,index=True)
+    name=Column(String)
+    description =Column(String)
+    request = relationship('Requests',back_populates='category')
+
+
+class Brigada(Base):
+    __tablename__ = 'brigada'
+    id = Column(Integer,primary_key=True,index=True)
+    name = Column(String)
+    description = Column(String,nullable=True)
+    request = relationship('Requests',back_populates='brigada')
+    user =relationship('Users',back_populates='brigader')
+    
+
+
+
+
+class Requests(Base):
+    __tablename__='requests'
+    id = Column(Integer,primary_key=True,index=True)
+    title = Column(String)
+    description = Column(String)
+    created_at = Column(DateTime,default=datetime.now(timezonetash))
+    fillial = relationship('Fillials',back_populates='request')
+    fillial_id = Column(Integer,ForeignKey('fillials.id'))
+    category = relationship('Category',back_populates='request')
+    category_id = Column(Integer,ForeignKey('category.id'))
+    file = relationship('Files',back_populates='request')
+    brigada = relationship('Brigada',back_populates='request')
+    brigada_id = Column(Integer,ForeignKey('brigada.id'))
+    
+
+class Files(Base):
+    __tablename__ = 'files'
+    id = Column(Integer,primary_key=True,index=True)
+    url = Column(String)
+    request = relationship('Requests',back_populates='file')
+    request_id = Column(Integer,ForeignKey('requests.id'))
 
 

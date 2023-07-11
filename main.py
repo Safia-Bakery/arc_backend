@@ -15,7 +15,6 @@ from database import engine,SessionLocal
 from fastapi_pagination import paginate,Page,add_pagination
 from microservices import create_refresh_token,verify_password,create_access_token
 models.Base.metadata.create_all(bind=engine)
-
 #--------token generation
 JWT_SECRET_KEY = 'thisistokenforusersecretauth'   # should be kept secret
 JWT_REFRESH_SECRET_KEY =  'thisistokenforusersecretrefresh'
@@ -60,7 +59,7 @@ async def get_current_user(token: str = Depends(reuseable_oauth),db:Session=Depe
                 detail="Token expired",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-    except(jwt.JWTError, ValidationError):
+    except (jwt.JWTError, ValidationError):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
@@ -130,14 +129,14 @@ async def admin_pages(db:Session=Depends(get_db),request_user: schemas.UserFullB
 
 
 @app.post('/user/group')
-async def user_group(form_data:schemas.CreateGroupSch, db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
+async def user_group(group_data:schemas.CreateGroupSch, db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
     if request_user.status !=1:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not super user"
         )
     
-    return crud.create_group(db,form_data)
+    return crud.create_group(db,group_data)
 @app.get('/user/group')
 async def user_group(db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
     if request_user.status !=1:
@@ -159,7 +158,7 @@ async def group_permissions(id:int,db:Session=Depends(get_db),request_user: sche
 
     permission_list = crud.get_permissions(db,id=id)
     permission_list = [ i.page_id for i in permission_list]
-    return {'permissions':permission_list,'roles':role_list}
+    return {'permissions':permission_list,'pages':role_list}
 
 
 
@@ -177,16 +176,91 @@ async def group_permissions(id:int,per_list:list[int],db:Session=Depends(get_db)
         if not bulk_create_per:
             raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="You are not super user"
+            detail="there is an error maybe foreignkey doesnot match"
         )
-        return {'message':'hello'}
+        return {'message':'everthing is good','success':True}
     except:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="You are not super user"
+            detail="foreign key values doesnot match each other"
         )
     
     
+
+@app.get('/users/settings',response_model=Page[schemas.UsersSettingsSch])
+async def get_user_list(db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
+    if request_user.status !=1:
+            raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not super user"
+        )
+    try: 
+        users_lsit = crud.get_user_list(db)
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="You are seeing this error because of server error"
+        )
+    users = paginate(users_lsit)
+    return users
+
+
+
+@app.post('/user/attach/role')
+async def user_role_attach(role:schemas.UserRoleAttachSch,db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
+    if request_user.status !=1:
+            raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not super user"
+        )
+    try:
+        user_update = crud.user_role_attach(db,role)
+        if user_update:
+            return {'success':True,'message':'User attached to some group'}
+        else:
+            raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="cannot find user you selected"
+        )
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="You are seeing this error because of server error"
+        )
+    
+
+@app.post('/brigada/vs/user')
+async def create_brigada(form_data:schemas.UservsRoleCr,db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
+    if request_user.status !=1:
+            raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not super user"
+        )
+    try:
+        crud.create_brigada(db,form_data)
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="foreign key values doesnot match each other"
+        )
+    return  {'success':True,'message':"everything is fine"}
+
+
+
+
+@app.get('/me')
+async def get_me(db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
+    if request_user.status ==1:
+        permissions = '*'
+        role={'name':'superadmin',"description": "super admin of this site"}
+    elif request_user.brigader:
+        role = request_user.brigader
+        permissions = crud.get_roles(db)
+    else:
+        role = None
+        permissions=[]
+    return {'success':True,'username':request_user.username,'full_name':request_user.full_name,'role':role,'id':request_user.id,'permissions':permissions}
+
 
 
 add_pagination(app)
