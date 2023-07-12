@@ -13,7 +13,8 @@ from fastapi.security import OAuth2PasswordBearer,OAuth2PasswordRequestForm
 import crud
 from database import engine,SessionLocal
 from fastapi_pagination import paginate,Page,add_pagination
-from microservices import create_refresh_token,verify_password,create_access_token
+from secondmain import router
+from microservices import create_refresh_token,verify_password,create_access_token,checkpermissions,get_db,get_current_user
 models.Base.metadata.create_all(bind=engine)
 #--------token generation
 JWT_SECRET_KEY = 'thisistokenforusersecretauth'   # should be kept secret
@@ -28,12 +29,8 @@ reuseable_oauth = OAuth2PasswordBearer(
 )
 #database connection
 app = FastAPI()
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+app.include_router(router)
+
 
 
 app.add_middleware(
@@ -46,35 +43,8 @@ app.add_middleware(
 
 
 # ----------get user from token
-async def get_current_user(token: str = Depends(reuseable_oauth),db:Session=Depends(get_db)) -> schemas.User:
-    try:
-        payload = jwt.decode(
-            token, JWT_SECRET_KEY, algorithms=[ALGORITHM]
-        )
-        expire_date = payload.get('exp')
-        sub = payload.get('sub')
-        if datetime.fromtimestamp(expire_date) < datetime.now():
-            raise HTTPException(
-                status_code = status.HTTP_401_UNAUTHORIZED,
-                detail="Token expired",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-    except (jwt.JWTError, ValidationError):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    user: Union[dict[str, Any], None] = crud.get_user(db,   sub)
-    
-    
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Could not find user",
-        )
-    
-    return user
+
+
 
 #------------AUTHENTICATION
 
@@ -99,20 +69,29 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(),db:Session=Depe
         "refresh_token": create_refresh_token(user.username),
     }
 
-@app.post('/register', summary="Create access and refresh tokens for user",response_model=schemas.User)
-async def register(form_data: schemas.UserCreate,db:Session=Depends(get_db)):
-    try:
-        user = crud.create_user(db,form_data)
-    except:
+
+async def register(form_data: schemas.UserCreate,db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
+    permission = checkpermissions(request_user=request_user,db=db,page='users')
+    if permission:
+        try:
+            user = crud.create_user(db,form_data)
+        except:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="User already exist"
+            )
+        
+        return schemas.User(id=user.id,username=user.username,full_name=user.full_name)
+    else:
+        
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="User already exist"
-        )
-    return schemas.User(id=user.id,username=user.username,full_name=user.full_name)
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="you do not have permisson to do this action"
+            )
 
 
 
-@app.get('/all/roles',summary='from this api you can get list of roles')
+@app.get('/all/permissions',summary='from this api you can get list of roles')
 async def admin_pages(db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
 
     if request_user.status!=1:
@@ -128,7 +107,7 @@ async def admin_pages(db:Session=Depends(get_db),request_user: schemas.UserFullB
 
 
 
-@app.post('/user/group')
+@app.post('/user/roles')
 async def user_group(group_data:schemas.CreateGroupSch, db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
     if request_user.status !=1:
         raise HTTPException(
@@ -137,8 +116,25 @@ async def user_group(group_data:schemas.CreateGroupSch, db:Session=Depends(get_d
         )
     
     return crud.create_group(db,group_data)
-@app.get('/user/group')
-async def user_group(db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
+
+@app.put('/user/roles')
+async def user_group_update(group_data:schemas.UpdateGroupSch, db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
+    if request_user.status !=1:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not super user"
+        )
+    updation = crud.update_group(db,group_data)
+    if updation:
+        return {'success':True,'message':'updated'}
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="cannot update becouse role id doesnot match"
+        )
+
+@app.get('/user/role')
+async def user_group_get(db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
     if request_user.status !=1:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -154,11 +150,26 @@ async def group_permissions(id:int,db:Session=Depends(get_db),request_user: sche
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not super user"
         )
-    role_list = crud.get_roles(db)
+    try:
 
-    permission_list = crud.get_permissions(db,id=id)
-    permission_list = [ i.page_id for i in permission_list]
-    return {'permissions':permission_list,'pages':role_list}
+        permission_list = crud.get_permissions(db,id=id)
+        if permission_list:
+            role_name = permission_list[0].group.name
+            role_id = permission_list[0].group.id
+            
+        else:
+            group = crud.get_group_by_id(db,id=id)
+            role_name= group.name
+            role_id = group.id
+        permission_list = [ i.page_id for i in permission_list]
+
+
+        return {'permissions':permission_list,'role_name':role_name,'role_id':role_id}
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="id there is no group like this"
+        )
 
 
 
@@ -248,19 +259,95 @@ async def create_brigada(form_data:schemas.UservsRoleCr,db:Session=Depends(get_d
 
 
 
+@app.get('/brigadas',response_model=Page[schemas.GetBrigadaList])
+async def get_list_brigada(db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
+    permission = checkpermissions(request_user=request_user,db=db,page='users')
+    if permission:
+        
+        users = crud.get_brigada_list(db)
+        return paginate(users)
+       
+
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not super user"
+        )
+    
+
+
 @app.get('/me')
 async def get_me(db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
     if request_user.status ==1:
         permissions = '*'
-        role={'name':'superadmin',"description": "super admin of this site"}
-    elif request_user.brigader:
-        role = request_user.brigader
-        permissions = crud.get_roles(db)
+        role='superadmin'
+    elif request_user.group_id and request_user.status !=2:
+        group_id = request_user.group_id
+        
+        permissions = {}
+        role = request_user.group.name
+        for i in crud.get_roles_pages(db,group_id):
+            permissions[i.page.page_name]=True
     else:
         role = None
-        permissions=[]
+        permissions={}
     return {'success':True,'username':request_user.username,'full_name':request_user.full_name,'role':role,'id':request_user.id,'permissions':permissions}
+
+@app.post('/fillials')
+async def add_fillials(form_data:schemas.AddFillialSch,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    permission = checkpermissions(request_user=request_user,db=db,page='fillials')
+    if permission:
+        return crud.add_fillials(db,data=form_data)
+
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not super user"
+        )
+
+
+
+@app.put('/fillials')
+async def update_fillials(form_data:schemas.UpdateFillialSch,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    permission = checkpermissions(request_user=request_user,db=db,page='fillials')
+    if permission:
+        return crud.update_fillial_cr(db,form_data)
+
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not super user"
+        )
+    
+
+
+@app.get('/fillials',response_model=Page[schemas.GetFillialSch])
+async def get_fillials(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    permission = checkpermissions(request_user=request_user,db=db,page='fillials')
+    if permission:
+        return paginate(crud.get_fillial_list(db))
+
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not super user"
+        )
+    
+
+@app.get('/fillials/{id}',response_model=schemas.GetFillialSch)
+async def get_fillials_id(id:int,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    permission = checkpermissions(request_user=request_user,db=db,page='fillials')
+    if permission:
+        return crud.get_fillial_id(db,id)
+
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not super user"
+        )
+
 
 
 
 add_pagination(app)
+add_pagination(router)

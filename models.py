@@ -47,7 +47,7 @@ class Users(Base):
     time_created = Column(DateTime,default=datetime.now(timezonetash))
     full_name = Column(String,nullable=True)
     status = Column(Integer,default=0)
-    telegram_id = Column(BIGINT,unique=True,nullable=True)
+    email = Column(String,unique=True,nullable=True)
     phone_number = Column(String,nullable=True)
     
     group_id = Column(Integer,ForeignKey('groups.id'),nullable=True)
@@ -67,8 +67,11 @@ class Fillials(Base):
     __tablename__ = 'fillials'
     id = Column(Integer,primary_key=True,index=True)
     name = Column(String)
-    location = Column(String,nullable=True)
+    latitude = Column(Float,nullable=True)
+    longtitude = Column(Float,nullable=True)
+    country = Column(String)
     request = relationship('Requests',back_populates='fillial')
+    status = Column(Integer,default=0)
 
 
 class Category(Base):
@@ -77,6 +80,7 @@ class Category(Base):
     name=Column(String)
     description =Column(String)
     request = relationship('Requests',back_populates='category')
+    status = Column(Integer,default=0)
 
 
 class Brigada(Base):
@@ -86,6 +90,7 @@ class Brigada(Base):
     description = Column(String,nullable=True)
     request = relationship('Requests',back_populates='brigada')
     user =relationship('Users',back_populates='brigader')
+    status = Column(Integer,default=0)
     
 
 
@@ -94,7 +99,7 @@ class Brigada(Base):
 class Requests(Base):
     __tablename__='requests'
     id = Column(Integer,primary_key=True,index=True)
-    title = Column(String)
+    product = Column(String)
     description = Column(String)
     created_at = Column(DateTime,default=datetime.now(timezonetash))
     fillial = relationship('Fillials',back_populates='request')
@@ -103,7 +108,15 @@ class Requests(Base):
     category_id = Column(Integer,ForeignKey('category.id'))
     file = relationship('Files',back_populates='request')
     brigada = relationship('Brigada',back_populates='request')
-    brigada_id = Column(Integer,ForeignKey('brigada.id'))
+    brigada_id = Column(Integer,ForeignKey('brigada.id'),nullable=True)
+    status = Column(Integer,default=0)
+    finished_at = Column(DateTime,nullable=True)
+    usertg_phone = Column(String,nullable=True,default='manager')
+    usertg_id = Column(BIGINT,nullable=True)
+    rating = Column(Integer,nullable=True)
+    department = Column(Integer,nullable=True)
+    urgent = Column(Boolean)
+
     
 
 class Files(Base):
