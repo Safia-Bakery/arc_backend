@@ -236,7 +236,60 @@ async def get_user_lisrt(db:Session=Depends(get_db),request_user:schemas.UserFul
         )
     
 
+@router.get('/users/{id}',response_model=schemas.GetUserIdSch)
+async def get_user_with_id(id:int,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    permission = checkpermissions(request_user=request_user,db=db,page='users')
+    if permission:
+        
+            users = crud.get_user_id(db,id)
+            if users:
+                return users
+            else: 
+                raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="not found"
+        )
 
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not super user"
+        )
+
+@router.post('/tools',response_model=schemas.CreateTool)
+async def get_user_with_id(form_data:schemas.CreateTool,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    permission = checkpermissions(request_user=request_user,db=db,page='tools')
+    if permission:
+        
+        tools = crud.create_tool(db,form_data)
+        return tools
+
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not super user"
+        )
+    
+
+@router.get('/tools/{query}')
+async def get_user_with_id(query:str,db:Session=Depends(get_db)):
+
+        
+    tools = crud.search_tools(db,query)[:5]
+    if tools:
+        return tools
+    else: 
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="not found"
+        )
+
+
+#----------------TELEGRAM BOT --------------------
+
+@router.get('/fillials/list/tg')
+async def get_fillial_list_tg(db:Session=Depends(get_db)):
+    return crud.get_branch_list(db)
     
     
 

@@ -20,6 +20,7 @@ models.Base.metadata.create_all(bind=engine)
 JWT_SECRET_KEY = 'thisistokenforusersecretauth'   # should be kept secret
 JWT_REFRESH_SECRET_KEY =  'thisistokenforusersecretrefresh'
 ALGORITHM = "HS256"
+from fastapi.staticfiles import StaticFiles
 
 origins = ["*"]
 
@@ -30,7 +31,7 @@ reuseable_oauth = OAuth2PasswordBearer(
 #database connection
 app = FastAPI()
 app.include_router(router)
-
+app.mount("/files", StaticFiles(directory="files"), name="files")
 
 
 app.add_middleware(
@@ -69,7 +70,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(),db:Session=Depe
         "refresh_token": create_refresh_token(user.username),
     }
 
-
+@app.post('/register', summary="Create access and refresh tokens for user")
 async def register(form_data: schemas.UserCreate,db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='users')
     if permission:
@@ -240,28 +241,29 @@ async def user_role_attach(role:schemas.UserRoleAttachSch,db:Session=Depends(get
         )
     
 
-@app.post('/brigada/vs/user')
+@app.post('/brigadas')
 async def create_brigada(form_data:schemas.UservsRoleCr,db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
-    if request_user.status !=1:
+    permission = checkpermissions(request_user=request_user,db=db,page='brigada')
+    if permission:
+        try:
+            crud.create_brigada(db,form_data)
+            return  {'success':True,'message':"everything is fine"}
+        except:
             raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
-    try:
-        crud.create_brigada(db,form_data)
-    except:
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="foreign key values doesnot match each other"
+            )
+    else:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="foreign key values doesnot match each other"
-        )
-    return  {'success':True,'message':"everything is fine"}
-
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail="you do not have permission like this"
+            )
 
 
 
 @app.get('/brigadas',response_model=Page[schemas.GetBrigadaList])
 async def get_list_brigada(db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page='users')
+    permission = checkpermissions(request_user=request_user,db=db,page='brigada')
     if permission:
         
         users = crud.get_brigada_list(db)
@@ -274,6 +276,50 @@ async def get_list_brigada(db:Session=Depends(get_db),request_user: schemas.User
             detail="You are not super user"
         )
     
+
+@app.get('/brigadas/{id}',response_model=schemas.GetBrigadaIdSch)
+async def get_brigada_id(id:int,db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
+    permission = checkpermissions(request_user=request_user,db=db,page='brigada')
+    if permission:
+            
+        brigrada = crud.get_brigada_id(db,id)
+        if brigrada:
+            return brigrada
+        else:
+            raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="not found"
+        )
+       
+
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not super user"
+        )
+
+
+@app.put('/brigadas')
+async def update_brigada(form_data:schemas.UpdateBrigadaSch,db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
+    permission = checkpermissions(request_user=request_user,db=db,page='brigada')
+    if permission:
+        try:
+            brigrada = crud.update_brigada_id(db,form_data=form_data)
+            if form_data.users:
+                users = crud.attach_user_brigads(db,form_data.users,form_data.id)
+            return {'success':True,'message':'everthing is ok','brigada':brigrada}
+        except:
+            raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="not found"
+        )
+       
+
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not super user"
+        )
 
 
 @app.get('/me')

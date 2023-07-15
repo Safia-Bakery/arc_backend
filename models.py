@@ -91,9 +91,25 @@ class Brigada(Base):
     request = relationship('Requests',back_populates='brigada')
     user =relationship('Users',back_populates='brigader')
     status = Column(Integer,default=0)
+    expanditure = relationship("Expanditure",back_populates='brigada')
     
 
 
+class Tools(Base):
+    __tablename__ = 'tools'
+    id = Column(Integer,primary_key=True,index=True)
+    name = Column(String)
+    amount = Column(Integer,nullable=True)
+    expanditure = relationship('Expanditure',back_populates='tool')
+
+class Expanditure(Base):
+    __tablename__='expanditure'
+    id = Column(Integer,primary_key=True,index=True)
+    amount = Column(String)
+    brigada = relationship('Brigada',back_populates='expanditure')
+    brigada_id = Column(Integer,ForeignKey('brigada.id'))
+    tool = relationship('Tools',back_populates='expanditure')
+    tool_id = Column(Integer,ForeignKey('tools.id'))
 
 
 class Requests(Base):

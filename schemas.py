@@ -91,19 +91,11 @@ class UserRoleAttachSch(BaseModel):
 
 
 class UservsRoleCr(BaseModel):
-    password : str
-    username:str
-    full_name: Optional[str]=None
-    group_id :int
-    brigada_name : str
-    brigada_description: str
+    name : str
+    description: str
     status : int
 
-    @validator('password')
-    def validate_password_length(cls, password):
-        if len(password) < 6:
-            raise ValueError("Password must be at least 6 characters long")
-        return password
+
     @validator('status')
     def validate_status_length(cls, status):
         if status not in [0,1]:
@@ -176,6 +168,7 @@ class GetCategorySch(BaseModel):
 
 
 class UserGetlist(BaseModel):
+    id:int
     username:str
     full_name: Optional[str]=None
     email: Optional[str]=None
@@ -191,6 +184,17 @@ class GetBrigadaList(BaseModel):
     name:str
     description:Optional[str]=None
     status:int
+    class Config:
+        from_attributes=True
+
+
+
+class GetBrigadaIdSch(BaseModel):
+    id:int
+    name:str
+    description:Optional[str]=None
+    status:int
+    user : list[UserGetlist]
     class Config:
         from_attributes=True
 
@@ -221,3 +225,34 @@ class GetRequestList(BaseModel):
 class RequestAttachBrigada(BaseModel):
     request_id:int
     brigada_id:int
+
+
+class UpdateBrigadaSch(BaseModel):
+    id:int
+    name:Optional[str]
+    description:Optional[str]
+    status:Optional[int]
+    users:Optional[list[int]]=None
+
+
+
+
+
+class GetUserIdSch(BaseModel):
+    id:int
+    username: str
+    time_created :datetime
+    full_name: Optional[str]=None
+    status : int
+    email:Optional[str]=None
+    phone_number:Optional[str]=None
+    group:Optional[UpdateGroupSch]=None
+    brigader:Optional[GetBrigadaList]=None
+    class Config:
+        from_attributes=True
+
+
+class CreateTool(BaseModel):
+    name:str
+    class Config:
+        from_attributes=True

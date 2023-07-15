@@ -94,16 +94,18 @@ def user_role_attach(db:Session,role:schemas.UserRoleAttachSch):
     
 
 def create_brigada(db:Session,data:schemas.UservsRoleCr):
-    brigada_cr = models.Brigada(description=data.brigada_description,name=data.brigada_name,status=data.status)
+    brigada_cr = models.Brigada(description=data.description,name=data.name,status=data.status)
     db.add(brigada_cr)
     db.commit()
     db.refresh(brigada_cr)
-    hashed_password = hash_password(data.password)
-    db_user = models.Users(username=data.username.lower(), password=hashed_password,full_name=data.full_name,group_id=data.group_id,brigada_id=brigada_cr.id)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
     return brigada_cr
+
+
+def get_brigada_id(db:Session,id):
+    brigada = db.query(models.Brigada).filter(models.Brigada.id==id).first()
+    return brigada
+
+
 
 
 def add_fillials(db:Session,data:schemas.AddFillialSch):
@@ -172,6 +174,22 @@ def update_category_cr(db:Session,form_data:schemas.UpdateCategorySch):
     return False
 
 
+def update_brigada_id(db:Session,form_data:schemas.UpdateBrigadaSch):
+    db_update_brigada = db.query(models.Brigada).filter(models.Brigada.id==form_data.id).first()
+    if db_update_brigada:
+        if form_data.name is not None:
+            db_update_brigada.name=form_data.name
+        if form_data.description is not None:
+            db_update_brigada.description=form_data.description
+        if form_data.status is not None:
+            db_update_brigada.status = form_data.status
+        db.commit()
+        db.refresh(db_update_brigada)
+        return db_update_brigada
+    else:
+        return False
+    
+
 
 def get_category_list(db:Session):
     return db.query(models.Category).all()
@@ -193,8 +211,7 @@ def bulk_create_files(db:Session,per_obj):
     db.commit()
     return True
 
-def get_user_list(db:Session):
-    return db.query(models.Users).all()
+
 
 
 def get_brigada_list(db:Session):
@@ -223,3 +240,33 @@ def attach_request_brigada(db:Session,form_data:schemas.RequestAttachBrigada):
 
 def get_fillial_id(db:Session,id):
     return db.query(models.Fillials).filter(models.Fillials.id==id).first()
+
+
+#telegram bot 
+
+
+
+def get_branch_list(db:Session):
+    return db.query(models.Fillials).filter(models.Fillials.status==1).all()
+
+def attach_user_brigads(db:Session,data:list,brig_id:int):
+    brigad_user = db.query(models.Users).filter(models.Users.id.in_(data)).update({models.Users.brigada_id:brig_id})
+    db.commit()
+    return brigad_user
+
+
+def get_user_id(db:Session,id:int):
+    user = db.query(models.Users).filter(models.Users.id==id).first()
+    return user
+
+def create_tool(db:Session,form_data :schemas.CreateTool):
+    tool_db = models.Tools(name=form_data.name)
+    db.add(tool_db)
+    db.commit()
+    db.refresh(tool_db)
+    return tool_db
+
+
+def search_tools(db:Session,query):
+    tools = db.query(models.Tools).filter(models.Tools.name.ilike(f"%{query}%")).all()
+    return tools
