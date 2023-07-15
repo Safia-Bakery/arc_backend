@@ -49,11 +49,12 @@ class Users(Base):
     status = Column(Integer,default=0)
     email = Column(String,unique=True,nullable=True)
     phone_number = Column(String,nullable=True)
-    
     group_id = Column(Integer,ForeignKey('groups.id'),nullable=True)
     group = relationship('Groups',back_populates='user')
     brigader = relationship('Brigada',back_populates='user')
     brigada_id = Column(Integer,ForeignKey('brigada.id'))
+    telegram_id = Column(BIGINT,nullable=True)
+    
 
 
 
@@ -127,8 +128,6 @@ class Requests(Base):
     brigada_id = Column(Integer,ForeignKey('brigada.id'),nullable=True)
     status = Column(Integer,default=0)
     finished_at = Column(DateTime,nullable=True)
-    usertg_phone = Column(String,nullable=True,default='manager')
-    usertg_id = Column(BIGINT,nullable=True)
     rating = Column(Integer,nullable=True)
     department = Column(Integer,nullable=True)
     urgent = Column(Boolean)

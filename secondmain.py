@@ -269,20 +269,8 @@ async def get_user_with_id(form_data:schemas.CreateTool,db:Session=Depends(get_d
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not super user"
         )
-    
 
-@router.get('/tools/{query}')
-async def get_user_with_id(query:str,db:Session=Depends(get_db)):
 
-        
-    tools = crud.search_tools(db,query)[:5]
-    if tools:
-        return tools
-    else: 
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="not found"
-        )
 
 
 #----------------TELEGRAM BOT --------------------
@@ -291,5 +279,19 @@ async def get_user_with_id(query:str,db:Session=Depends(get_db)):
 async def get_fillial_list_tg(db:Session=Depends(get_db)):
     return crud.get_branch_list(db)
     
+@router.get('/tools/{query}')
+async def get_user_with_id(query:str,db:Session=Depends(get_db)):
+    tools = crud.search_tools(db,query)[:5]
+    if tools:
+        return tools
+    else: 
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="not found"
+        )
     
+
+    
+
+
 
