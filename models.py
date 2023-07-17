@@ -52,7 +52,7 @@ class Users(Base):
     group_id = Column(Integer,ForeignKey('groups.id'),nullable=True)
     group = relationship('Groups',back_populates='user')
     brigader = relationship('Brigada',back_populates='user')
-    brigada_id = Column(Integer,ForeignKey('brigada.id'))
+    brigada_id = Column(Integer,ForeignKey('brigada.id'),nullable=True)
     telegram_id = Column(BIGINT,nullable=True)
     
 
