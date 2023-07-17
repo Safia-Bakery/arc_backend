@@ -106,9 +106,9 @@ class UservsRoleCr(BaseModel):
 
 class AddFillialSch(BaseModel):
     name:str
-    longtitude:Optional[int]=None
+    longtitude:Optional[float]=None
     latitude:Optional[float]=None
-    country:Optional[float]=None
+    country:Optional[str]=None
     status : int
     class Config:
         from_attributes=True
