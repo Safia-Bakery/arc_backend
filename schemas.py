@@ -30,9 +30,9 @@ class UserCreate(BaseModel):
     password : str
     username:str
     full_name: Optional[str]=None
-    email:str
+    email:Optional[str]=None
     phone_number:str
-    group_id:int
+    group_id:Optional[int]=None
     status:int
     @validator('password')
     def validate_password_length(cls, password):
