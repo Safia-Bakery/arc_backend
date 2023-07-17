@@ -39,9 +39,10 @@ class UserCreate(BaseModel):
         if len(password) < 6:
             raise ValueError("Password must be at least 6 characters long")
         return password
+    @validator('status')
     def validate_status(cls, status):
         if status not in [0,2]:
-            raise ValueError("send valid  status code ")
+            raise ValueError("send valid  status code please send 0 or 2. 0 for default user 2 for inactive user")
         return status
     
 
