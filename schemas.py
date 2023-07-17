@@ -14,7 +14,7 @@ class UserFullBack(BaseModel):
     group_id:Optional[int]=None
     group:Optional[object]=None
     class Config:
-        from_attributes=True
+        orm_mode=True
 
 
 
@@ -24,7 +24,7 @@ class User(BaseModel):
     success:Optional[bool]=True
     full_name : Optional[str]=None
     class Config:
-        from_attributes=True
+        orm_mode=True
 
 class UserCreate(BaseModel):
     password : str
@@ -51,7 +51,7 @@ class PagesSch(BaseModel):
     id:int
     page_name:str
     class Config:
-        from_attributes=True
+        orm_mode=True
 
 
 
@@ -59,7 +59,7 @@ class CreateGroupSch(BaseModel):
     name:str
     status:int
     class Config:
-        from_attributes=True
+        orm_mode=True
     @validator('status')
     def validate_password_length(cls, status):
         if status not in [0,1]:
@@ -71,7 +71,7 @@ class UpdateGroupSch(BaseModel):
     name:str
     id :int
     class Config:
-        from_attributes=True
+        orm_mode=True
 
 
 class UsersSettingsSch(BaseModel):
@@ -82,7 +82,7 @@ class UsersSettingsSch(BaseModel):
     group_id:Optional[int]=None
     group:Optional[CreateGroupSch]=None
     class Config:
-        from_attributes=True
+        orm_mode=True
 
 
 
@@ -111,7 +111,7 @@ class AddFillialSch(BaseModel):
     country:Optional[str]=None
     status : int
     class Config:
-        from_attributes=True
+        orm_mode=True
     @validator('status')
     def validate_password_length(cls, status):
         if status not in [0,1]:
@@ -127,7 +127,7 @@ class GetFillialSch(BaseModel):
     country:Optional[str]=None
     status : int
     class Config:
-        from_attributes=True
+        orm_mode=True
 
 
 class UpdateFillialSch(BaseModel):
@@ -164,7 +164,7 @@ class GetCategorySch(BaseModel):
     status:int
     id:int
     class Config:
-        from_attributes=True
+        orm_mode=True
 
 
 
@@ -177,7 +177,7 @@ class UserGetlist(BaseModel):
     group:Optional[UpdateGroupSch]=None
     status:int
     class Config:
-        from_attributes=True
+        orm_mode=True
 
 
 class GetBrigadaList(BaseModel):
@@ -186,7 +186,7 @@ class GetBrigadaList(BaseModel):
     description:Optional[str]=None
     status:int
     class Config:
-        from_attributes=True
+        orm_mode=True
 
 
 
@@ -197,12 +197,12 @@ class GetBrigadaIdSch(BaseModel):
     status:int
     user : list[UserGetlist]
     class Config:
-        from_attributes=True
+        orm_mode=True
 
 class FileSch(BaseModel):
     url:str
     class Config:
-        from_attributes=True
+        orm_mode=True
 
 class GetRequestList(BaseModel):
     product:Optional[str]=None
@@ -219,7 +219,7 @@ class GetRequestList(BaseModel):
     id:int
     urgent:bool
     class Config:
-        from_attributes=True
+        orm_mode=True
 
 
 
@@ -250,10 +250,10 @@ class GetUserIdSch(BaseModel):
     group:Optional[UpdateGroupSch]=None
     brigader:Optional[GetBrigadaList]=None
     class Config:
-        from_attributes=True
+        orm_mode=True
 
 
 class CreateTool(BaseModel):
     name:str
     class Config:
-        from_attributes=True
+        orm_mode=True
