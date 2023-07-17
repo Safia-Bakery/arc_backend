@@ -98,7 +98,6 @@ async def get_request(db:Session=Depends(get_db),request_user:schemas.UserFullBa
     if permission:
         try:
             request_list = crud.get_request_list(db)
-            request_list[1].file
             return paginate(request_list)
         except:
             raise HTTPException(
