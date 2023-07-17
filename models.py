@@ -127,6 +127,7 @@ class Requests(Base):
     brigada = relationship('Brigada',back_populates='request')
     brigada_id = Column(Integer,ForeignKey('brigada.id'),nullable=True)
     status = Column(Integer,default=0)
+    started_at = Column(DateTime,nullable=True)
     finished_at = Column(DateTime,nullable=True)
     rating = Column(Integer,nullable=True)
     department = Column(Integer,nullable=True)
