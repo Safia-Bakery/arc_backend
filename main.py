@@ -71,9 +71,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(),db:Session=Depe
     }
 
 @app.post('/register', summary="Create access and refresh tokens for user")
-async def register(form_data: schemas.UserCreate,db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page='users')
-    if permission:
+async def register(form_data: schemas.UserCreate,db:Session=Depends(get_db)):
         try:
             user = crud.create_user(db,form_data)
         except:
@@ -83,12 +81,7 @@ async def register(form_data: schemas.UserCreate,db:Session=Depends(get_db),requ
             )
         
         return schemas.User(id=user.id,username=user.username,full_name=user.full_name)
-    else:
-        
-        raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="you do not have permisson to do this action"
-            )
+    
 
 
 
