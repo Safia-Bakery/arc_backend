@@ -305,6 +305,7 @@ async def user_for_brigada(id:int,db:Session=Depends(get_db),request_user: schem
             status_code=status.HTTP_404_NOT_FOUND,
             detail="not found"
         )
+        
        
 
     else:
