@@ -4,7 +4,7 @@ import models
 import schemas
 import bcrypt
 
-
+from sqlalchemy import or_,and_
 
 def hash_password(password):
     hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
@@ -188,8 +188,12 @@ def update_brigada_id(db:Session,form_data:schemas.UpdateBrigadaSch):
         return db_update_brigada
     else:
         return False
-    
+ 
 
+
+def get_user_for_brig(db:Session,id):
+    db_get_users = db.query(models.Users).filter((or_(models.Users.brigada_id==None,models.Users.brigada_id==id)),and_(models.Users.status==0)).all()
+    return db_get_users
 
 def get_category_list(db:Session):
     return db.query(models.Category).all()
@@ -223,7 +227,8 @@ def get_brigada_list(db:Session):
 def get_request_list(db:Session):
     return db.query(models.Requests).all()
 
-
+def get_request_list_for_brigada(db:Session,id):
+    return db.query(models.Requests).filter(models.Requests.brigada_id==id).all()
 def get_request_id(db:Session,id):
     return db.query(models.Requests).filter(models.Requests.id==id).first()
 
@@ -270,3 +275,20 @@ def create_tool(db:Session,form_data :schemas.CreateTool):
 def search_tools(db:Session,query):
     tools = db.query(models.Tools).filter(models.Tools.name.ilike(f"%{query}%")).all()
     return tools
+
+
+def acceptreject(db:Session,form_data:schemas.AcceptRejectRequest):
+    db_get = db.query(models.Requests).filter(models.Requests.id==form_data.request_id).first()
+    if db_get:
+        if form_data.brigada_id is not None:
+            db_get.brigada_id=form_data.brigada_id
+        if form_data.comment is not None:
+            db_get.comment=form_data.comment
+        db_get.status = form_data.status
+        db.commit()
+        db.refresh(db_get)
+        return db_get
+    else:
+        return False
+    
+

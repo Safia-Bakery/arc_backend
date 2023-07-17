@@ -11,6 +11,7 @@ class UserFullBack(BaseModel):
     full_name : Optional[str]=None
     status:Optional[int]=None
     brigader:Optional[object]=None
+    brigada_id:Optional[object]=None
     group_id:Optional[int]=None
     group:Optional[object]=None
     class Config:
@@ -257,3 +258,17 @@ class CreateTool(BaseModel):
     name:str
     class Config:
         orm_mode=True
+
+
+class AcceptRejectRequest(BaseModel):
+    request_id :int
+    status :int
+    brigada_id:Optional[int]=None
+    comment:Optional[str]=None
+
+
+    @validator('status')
+    def validate_status_length(cls, status):
+        if status not in [4,1]:
+            raise ValueError("send valid  status code ")
+        return status

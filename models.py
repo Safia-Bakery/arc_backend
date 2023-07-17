@@ -131,6 +131,7 @@ class Requests(Base):
     rating = Column(Integer,nullable=True)
     department = Column(Integer,nullable=True)
     urgent = Column(Boolean)
+    comment = Column(String,nullable=True)
 
     
 

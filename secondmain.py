@@ -89,6 +89,8 @@ async def get_category_id(id:int,db:Session=Depends(get_db),request_user:schemas
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not super user"
         )
+    
+
 
     
 
@@ -97,6 +99,9 @@ async def get_request(db:Session=Depends(get_db),request_user:schemas.UserFullBa
     permission = checkpermissions(request_user=request_user,db=db,page='requests')
     if permission:
         try:
+            if request_user.brigada_id:
+                requestdata= crud.get_request_list_for_brigada(db,request_user.brigada_id)
+                return paginate(requestdata)
             request_list = crud.get_request_list(db)
             return paginate(request_list)
         except:
@@ -104,13 +109,14 @@ async def get_request(db:Session=Depends(get_db),request_user:schemas.UserFullBa
             status_code=status.HTTP_409_CONFLICT,
             detail="not fund"
         )
-
-
     else:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not super user"
         )
+    
+
+
     
 
 
@@ -137,11 +143,11 @@ async def get_request_id(id:int,db:Session=Depends(get_db),request_user:schemas.
     
 
 @router.put('/request/attach/brigada')
-async def get_request_id(form_data:schemas.RequestAttachBrigada,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def get_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='requests')
-    if permission:
+    if permission:  
         try:
-            request_list = crud.attach_request_brigada(db,form_data=form_data)
+            request_list = crud.acceptreject(db,form_data=form_data)
             if request_list:
                 return request_list
             else:
