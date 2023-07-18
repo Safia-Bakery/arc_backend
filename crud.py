@@ -356,7 +356,7 @@ def filter_user(db:Session,user_status,full_name,phone_number,username,role_id):
     if username is not None:
         query = query.filter(models.Users.username.ilike(f"%{username}%"))
     if role_id is not None:
-        query = query.filter(models.Users.brigada_id==role_id)
+        query = query.filter(models.Users.group_id==role_id)
     return query.all()
 
 

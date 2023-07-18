@@ -272,7 +272,7 @@ class AcceptRejectRequest(BaseModel):
 
     @validator('status')
     def validate_status_length(cls, status):
-        if status not in [4,1,2,3,5]:
+        if status not in [4,1,2,3]:
             raise ValueError("send valid  status code ")
         return status
 
