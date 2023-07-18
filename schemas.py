@@ -34,7 +34,7 @@ class UserCreate(BaseModel):
     email:Optional[str]=None
     phone_number:str
     group_id:Optional[int]=None
-    status:int
+    status:Optional[int]=None
     @validator('password')
     def validate_password_length(cls, password):
         if len(password) < 6:
@@ -181,6 +181,7 @@ class UserGetlist(BaseModel):
         orm_mode=True
 
 
+
 class GetBrigadaList(BaseModel):
     id:int
     name:str
@@ -216,7 +217,9 @@ class GetRequestList(BaseModel):
     file:list[FileSch]
     category:Optional[GetCategorySch]=None
     fillial:Optional[GetFillialSch]=None
+    started_at :Optional[datetime]=None
     finished_at:Optional[datetime]=None
+    user:Optional[UserGetlist]=None
     id:int
     urgent:bool
     class Config:
@@ -272,3 +275,6 @@ class AcceptRejectRequest(BaseModel):
         if status not in [4,1,2,3,5]:
             raise ValueError("send valid  status code ")
         return status
+
+
+

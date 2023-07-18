@@ -54,6 +54,7 @@ class Users(Base):
     brigader = relationship('Brigada',back_populates='user')
     brigada_id = Column(Integer,ForeignKey('brigada.id'),nullable=True)
     telegram_id = Column(BIGINT,nullable=True)
+    request = relationship('Requests',back_populates='user')
     
 
 
@@ -133,7 +134,8 @@ class Requests(Base):
     department = Column(Integer,nullable=True)
     urgent = Column(Boolean)
     comment = Column(String,nullable=True)
-
+    user = relationship('Users',back_populates='request')
+    user_id = Column(Integer,ForeignKey('users.id'))
     
 
 class Files(Base):

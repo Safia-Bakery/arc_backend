@@ -292,14 +292,14 @@ async def get_brigada_id(id:int,db:Session=Depends(get_db),request_user: schemas
         )
     
 
-@app.get('/users/for/brigada/{id}',response_model=Page[schemas.UserGetlist])
+@app.get('/users/for/brigada/{id}',response_model=list[schemas.UserGetlist])
 async def user_for_brigada(id:int,db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='brigada')
     if permission:
             
         brigrada = crud.get_user_for_brig(db,id)
         if brigrada:
-            return paginate(brigrada)
+            return brigrada
         else:
             raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

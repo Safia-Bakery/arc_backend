@@ -114,7 +114,26 @@ async def get_request(db:Session=Depends(get_db),request_user:schemas.UserFullBa
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not super user"
         )
-    
+@router.get('/request/',response_model=Page[schemas.GetRequestList])
+async def filter_request(fillial_id:Optional[int]=None,urgent:Optional[bool]=None,started_at:Optional[datetime]=None,finished_at:Optional[datetime]=None,request_status:Optional[int]=None,department:Optional[str]=None,user_id:Optional[int]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    permission = checkpermissions(request_user=request_user,db=db,page='requests')
+    if permission:
+        try:
+            if request_user.brigada_id:
+                requestdata= crud.filter_request_brigada(db,fillial_id=fillial_id,request_status=request_status,urgent=urgent,started_at=started_at,finished_at=finished_at,user_id=user_id,brigda_id=request_user.brigada_id)
+                return paginate(requestdata)
+            request_list = crud.filter_requests_all(db,fillial_id=fillial_id,request_status=request_status,urgent=urgent,started_at=started_at,finished_at=finished_at,user_id=user_id)
+            return paginate(request_list)
+        except:
+            raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="not fund"
+        )
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not super user"
+        )
 
 
     
@@ -174,7 +193,7 @@ async def get_category(files:list[UploadFile],urgent:bool,product:str,category_i
     permission = checkpermissions(request_user=request_user,db=db,page='requests')
     if permission:
         try:
-            responserq = crud.add_request(db,urgent=urgent,category_id=category_id,description=description,fillial_id=fillial_id,product=product)
+            responserq = crud.add_request(db,urgent=urgent,category_id=category_id,description=description,fillial_id=fillial_id,product=product,user_id=request_user.id)
             file_obj_list = []
 
             if files:
