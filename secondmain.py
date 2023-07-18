@@ -115,14 +115,14 @@ async def get_request(db:Session=Depends(get_db),request_user:schemas.UserFullBa
             detail="You are not super user"
         )
 @router.get('/request/',response_model=Page[schemas.GetRequestList])
-async def filter_request(fillial_id:Optional[int]=None,urgent:Optional[bool]=None,started_at:Optional[datetime]=None,finished_at:Optional[datetime]=None,request_status:Optional[int]=None,department:Optional[str]=None,user_id:Optional[int]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def filter_request(fillial_id:Optional[int]=None,urgent:Optional[bool]=None,created_from:Optional[datetime]=None,created_to:Optional[datetime]=None,finished_from:Optional[datetime]=None,finished_to:Optional[datetime]=None,request_status:Optional[int]=None,department:Optional[str]=None,user_id:Optional[int]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='requests')
     if permission:
         try:
             if request_user.brigada_id:
-                requestdata= crud.filter_request_brigada(db,fillial_id=fillial_id,request_status=request_status,urgent=urgent,started_at=started_at,finished_at=finished_at,user_id=user_id,brigda_id=request_user.brigada_id)
+                requestdata= crud.filter_request_brigada(db,fillial_id=fillial_id,request_status=request_status,urgent=urgent,created_from=created_from,created_to=created_to,finished_from=finished_from,finished_to=finished_to,user_id=user_id,brigada_id=request_user.brigada_id)
                 return paginate(requestdata)
-            request_list = crud.filter_requests_all(db,fillial_id=fillial_id,request_status=request_status,urgent=urgent,started_at=started_at,finished_at=finished_at,user_id=user_id)
+            request_list = crud.filter_requests_all(db,fillial_id=fillial_id,request_status=request_status,urgent=urgent,created_from=created_from,created_to=created_to,finished_from=finished_from,finished_to=finished_to,user_id=user_id)
             return paginate(request_list)
         except:
             raise HTTPException(

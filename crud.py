@@ -294,17 +294,21 @@ def acceptreject(db:Session,form_data:schemas.AcceptRejectRequest):
 
 
 
-def filter_requests_all(db:Session,fillial_id,urgent,started_at,finished_at,request_status,user_id):
+def filter_requests_all(db:Session,fillial_id,urgent,created_from,created_to,finished_from,finished_to,request_status,user_id):
     query = db.query(models.Requests)
     if fillial_id is not None:
         query = query.filter(models.Requests.fillial_id==fillial_id)
 
     if urgent is not None:
         query = query.filter(models.Requests.urgent==urgent)
-    if started_at is not None:
-        query = query.filter(models.Requests.created_at>started_at)
-    if finished_at is not None:
-        query = query.filter(models.Requests.created_at<finished_at)
+    if created_from is not None:
+        query = query.filter(models.Requests.created_at>created_from)
+    if created_to is not None:
+        query = query.filter(models.Requests.created_at<created_to)
+    if finished_from is not None:
+        query = query.filter(models.Requests.finished_at>finished_from)
+    if finished_to is not None:
+        query = query.filter(models.Requests.finished_at<finished_to)
     if request_status is not None:
         query = query.filter(models.Requests.status==request_status)
     if user_id  is not None:
@@ -312,21 +316,25 @@ def filter_requests_all(db:Session,fillial_id,urgent,started_at,finished_at,requ
     return query.all()
 
 
-def filter_request_brigada(db:Session,fillial_id,urgent,started_at,finished_at,request_status,user_id,brigda_id):
+def filter_request_brigada(db:Session,brigada_id,fillial_id,urgent,created_from,created_to,finished_from,finished_to,request_status,user_id):
     query = db.query(models.Requests)
     if fillial_id is not None:
         query = query.filter(models.Requests.fillial_id==fillial_id)
 
     if urgent is not None:
         query = query.filter(models.Requests.urgent==urgent)
-    if started_at is not None:
-        query = query.filter(models.Requests.created_at>started_at)
-    if finished_at is not None:
-        query = query.filter(models.Requests.created_at<finished_at)
+    if created_from is not None:
+        query = query.filter(models.Requests.created_at>created_from)
+    if created_to is not None:
+        query = query.filter(models.Requests.created_at<created_to)
+    if finished_from is not None:
+        query = query.filter(models.Requests.finished_at>finished_from)
+    if finished_to is not None:
+        query = query.filter(models.Requests.finished_at<finished_to)
     if request_status is not None:
         query = query.filter(models.Requests.status==request_status)
     if user_id  is not None:
         query = query.filter(models.Requests.user_id==user_id)
-    query = query.filter(models.Requests.brigada_id==brigda_id)
+    query = query.filter(models.Requests.brigada_id==brigada_id)
     return query.all()
 
