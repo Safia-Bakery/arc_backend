@@ -133,17 +133,13 @@ async def get_category_id(id:int,db:Session=Depends(get_db),request_user:schemas
 async def filter_request(id:Optional[int]=None,category_id:Optional[int]=None,fillial_id:Optional[int]=None,urgent:Optional[bool]=None,created_from:Optional[datetime]=None,created_to:Optional[datetime]=None,finished_from:Optional[datetime]=None,finished_to:Optional[datetime]=None,request_status:Optional[int]=None,department:Optional[str]=None,user:Optional[str]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='requests')
     if permission:
-        try:
+        
             if request_user.brigada_id:
                 requestdata= crud.filter_request_brigada(db,id=id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,urgent=urgent,created_from=created_from,created_to=created_to,finished_from=finished_from,finished_to=finished_to,user=user,brigada_id=request_user.brigada_id)
                 return paginate(requestdata)
             request_list = crud.filter_requests_all(db,id=id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,urgent=urgent,created_from=created_from,created_to=created_to,finished_from=finished_from,finished_to=finished_to,user=user)
             return paginate(request_list)
-        except:
-            raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="not fund"
-        )
+        
     else:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

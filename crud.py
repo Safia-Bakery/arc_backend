@@ -294,13 +294,14 @@ def acceptreject(db:Session,form_data:schemas.AcceptRejectRequest):
 
 
 
-def filter_requests_all(db:Session,category_id,fillial_id,urgent,created_from,created_to,finished_from,finished_to,request_status,user):
+def filter_requests_all(db:Session,id,category_id,fillial_id,urgent,created_from,created_to,finished_from,finished_to,request_status,user):
     query = db.query(models.Requests)
+    if id is not None:
+        query = query.filter(models.Requests.id==id)
     if fillial_id is not None:
         query = query.filter(models.Requests.fillial_id==fillial_id)
     if category_id is not None:
         query = query.filter(models.Requests.category_id==category_id)
-
     if urgent is not None:
         query = query.filter(models.Requests.urgent==urgent)
     if created_from is not None:
@@ -318,8 +319,10 @@ def filter_requests_all(db:Session,category_id,fillial_id,urgent,created_from,cr
     return query.all()
 
 
-def filter_request_brigada(db:Session,category_id,brigada_id,fillial_id,urgent,created_from,created_to,finished_from,finished_to,request_status,user):
+def filter_request_brigada(db:Session,id,category_id,brigada_id,fillial_id,urgent,created_from,created_to,finished_from,finished_to,request_status,user):
     query = db.query(models.Requests)
+    if id is not None:
+        query = query.filter(models.Requests.id==id)
     if fillial_id is not None:
         query = query.filter(models.Requests.fillial_id==fillial_id)
     if category_id is not None:
