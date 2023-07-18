@@ -130,14 +130,14 @@ async def get_category_id(id:int,db:Session=Depends(get_db),request_user:schemas
 #            detail="You are not super user"
 #        )
 @router.get('/request',response_model=Page[schemas.GetRequestList])
-async def filter_request(fillial_id:Optional[int]=None,urgent:Optional[bool]=None,created_from:Optional[datetime]=None,created_to:Optional[datetime]=None,finished_from:Optional[datetime]=None,finished_to:Optional[datetime]=None,request_status:Optional[int]=None,department:Optional[str]=None,user:Optional[str]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def filter_request(id:Optional[int]=None,category_id:Optional[int]=None,fillial_id:Optional[int]=None,urgent:Optional[bool]=None,created_from:Optional[datetime]=None,created_to:Optional[datetime]=None,finished_from:Optional[datetime]=None,finished_to:Optional[datetime]=None,request_status:Optional[int]=None,department:Optional[str]=None,user:Optional[str]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='requests')
     if permission:
         try:
             if request_user.brigada_id:
-                requestdata= crud.filter_request_brigada(db,fillial_id=fillial_id,request_status=request_status,urgent=urgent,created_from=created_from,created_to=created_to,finished_from=finished_from,finished_to=finished_to,user=user,brigada_id=request_user.brigada_id)
+                requestdata= crud.filter_request_brigada(db,id=id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,urgent=urgent,created_from=created_from,created_to=created_to,finished_from=finished_from,finished_to=finished_to,user=user,brigada_id=request_user.brigada_id)
                 return paginate(requestdata)
-            request_list = crud.filter_requests_all(db,fillial_id=fillial_id,request_status=request_status,urgent=urgent,created_from=created_from,created_to=created_to,finished_from=finished_from,finished_to=finished_to,user=user)
+            request_list = crud.filter_requests_all(db,id=id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,urgent=urgent,created_from=created_from,created_to=created_to,finished_from=finished_from,finished_to=finished_to,user=user)
             return paginate(request_list)
         except:
             raise HTTPException(
@@ -182,6 +182,8 @@ async def get_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
     if permission:  
         try:
             request_list = crud.acceptreject(db,form_data=form_data)
+            if form_data.status == 1:
+                pass
             if request_list:
                 return request_list
             else:
