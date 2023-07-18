@@ -338,3 +338,42 @@ def filter_request_brigada(db:Session,brigada_id,fillial_id,urgent,created_from,
     query = query.filter(models.Requests.brigada_id==brigada_id)
     return query.all()
 
+
+def filter_user(db:Session,user_status,full_name,phone_number,username,role_id):
+    query = db.query(models.Users)
+    if user_status is not None:
+        query = query.filter(models.Users.status==user_status)
+    if full_name is not None:
+        query = query.filter(models.Users.full_name.ilike(f"%{full_name}%"))
+    if phone_number is not None:
+        query = query.filter(models.Users.phone_number.ilike(f"%{phone_number}%"))
+    if username is not None:
+        query = query.filter(models.Users.username.ilike(f"%{username}%"))
+    if role_id is not None:
+        query = query.filter(models.Users.brigada_id==role_id)
+    return query.all()
+
+
+
+def filter_category(db:Session,category_status,name):
+    query = db.query(models.Category)
+    if category_status is not None:
+        query = query.filter(models.Category.status==category_status)
+    if  name is not None:
+        query = query.filter(models.Category.name.ilike(f"%{name}%"))
+    return query.all()
+
+
+def filter_fillials(db:Session,name,country,latitude,longtitude,fillial_status):
+    query = db.query(models.Fillials)
+    if name is not None:
+        query = query.filter(models.Fillials.name.ilike(f"%{name}%"))
+    if country is not None:
+        query = query.filter(models.Fillials.country.ilike(f"%{country}%"))
+    if latitude is not None:
+        query = query.filter(models.Fillials.latitude.ilike(f"%{latitude}%"))
+    if longtitude is not None:
+        query = query.filter(models.Fillials.longtitude.ilike(f"%{longtitude}%"))
+    if fillial_status is not None:
+        query = query.filter(models.Fillials.status ==fillial_status)
+    return query.all()

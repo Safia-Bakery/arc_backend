@@ -71,6 +71,21 @@ async def get_category(db:Session=Depends(get_db),request_user:schemas.UserFullB
         )
     
 
+
+@router.get('/category/',response_model=Page[schemas.GetCategorySch])
+async def filter_category(category_status:Optional[int]=None,name:Optional[str]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    permission = checkpermissions(request_user=request_user,db=db,page='category')
+    if permission:
+        response = crud.filter_category(db,category_status=category_status,name=name)
+        return paginate(response)
+
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not super user"
+        )
+    
+
 @router.get('/category/{id}',response_model=schemas.GetCategorySch)
 async def get_category_id(id:int,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='category')
@@ -136,7 +151,7 @@ async def filter_request(fillial_id:Optional[int]=None,urgent:Optional[bool]=Non
         )
 
 
-    
+
 
 
 @router.get('/request/{id}',response_model=schemas.GetRequestList)
@@ -259,6 +274,22 @@ async def get_user_lisrt(db:Session=Depends(get_db),request_user:schemas.UserFul
             detail="You are not super user"
         )
     
+
+
+@router.get('/users/',response_model=Page[schemas.UserGetlist])
+async def filter_user(full_name:Optional[str]=None,username:Optional[str]=None,role_id:Optional[int]=None,phone_number:Optional[str]=None,user_status:Optional[int]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    permission = checkpermissions(request_user=request_user,db=db,page='users')
+    if permission:
+        
+            users = crud.filter_user(db,user_status=user_status,username=username,phone_number=phone_number,role_id=role_id,full_name=full_name)
+            return paginate(users)
+       
+
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not super user"
+        )
 
 @router.get('/users/{id}',response_model=schemas.GetUserIdSch)
 async def get_user_with_id(id:int,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
