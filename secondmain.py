@@ -57,22 +57,22 @@ async def update_category(form_data:schemas.UpdateCategorySch,db:Session=Depends
         )
     
 
-@router.get('/category',response_model=Page[schemas.GetCategorySch])
-async def get_category(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page='category')
-    if permission:
-        response = crud.get_category_list(db)
-        return paginate(response)
-
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
+#@router.get('/category',response_model=Page[schemas.GetCategorySch])
+#async def get_category(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+#    permission = checkpermissions(request_user=request_user,db=db,page='category')
+#    if permission:
+#        response = crud.get_category_list(db)
+#        return paginate(response)
+#
+#    else:
+#        raise HTTPException(
+#            status_code=status.HTTP_403_FORBIDDEN,
+#            detail="You are not super user"
+#        )
     
 
 
-@router.get('/category/',response_model=Page[schemas.GetCategorySch])
+@router.get('/category',response_model=Page[schemas.GetCategorySch])
 async def filter_category(category_status:Optional[int]=None,name:Optional[str]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='category')
     if permission:
@@ -109,35 +109,35 @@ async def get_category_id(id:int,db:Session=Depends(get_db),request_user:schemas
 
     
 
+#@router.get('/request',response_model=Page[schemas.GetRequestList])
+#async def get_request(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+#    permission = checkpermissions(request_user=request_user,db=db,page='requests')
+#    if permission:
+#        try:
+#            if request_user.brigada_id:
+#                requestdata= crud.get_request_list_for_brigada(db,request_user.brigada_id)
+#                return paginate(requestdata)
+#            request_list = crud.get_request_list(db)
+#            return paginate(request_list)
+#        except:
+#            raise HTTPException(
+#            status_code=status.HTTP_409_CONFLICT,
+#            detail="not fund"
+#        )
+#    else:
+#        raise HTTPException(
+#            status_code=status.HTTP_403_FORBIDDEN,
+#            detail="You are not super user"
+#        )
 @router.get('/request',response_model=Page[schemas.GetRequestList])
-async def get_request(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def filter_request(fillial_id:Optional[int]=None,urgent:Optional[bool]=None,created_from:Optional[datetime]=None,created_to:Optional[datetime]=None,finished_from:Optional[datetime]=None,finished_to:Optional[datetime]=None,request_status:Optional[int]=None,department:Optional[str]=None,user:Optional[str]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='requests')
     if permission:
         try:
             if request_user.brigada_id:
-                requestdata= crud.get_request_list_for_brigada(db,request_user.brigada_id)
+                requestdata= crud.filter_request_brigada(db,fillial_id=fillial_id,request_status=request_status,urgent=urgent,created_from=created_from,created_to=created_to,finished_from=finished_from,finished_to=finished_to,user=user,brigada_id=request_user.brigada_id)
                 return paginate(requestdata)
-            request_list = crud.get_request_list(db)
-            return paginate(request_list)
-        except:
-            raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="not fund"
-        )
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
-@router.get('/request/',response_model=Page[schemas.GetRequestList])
-async def filter_request(fillial_id:Optional[int]=None,urgent:Optional[bool]=None,created_from:Optional[datetime]=None,created_to:Optional[datetime]=None,finished_from:Optional[datetime]=None,finished_to:Optional[datetime]=None,request_status:Optional[int]=None,department:Optional[str]=None,user_id:Optional[int]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page='requests')
-    if permission:
-        try:
-            if request_user.brigada_id:
-                requestdata= crud.filter_request_brigada(db,fillial_id=fillial_id,request_status=request_status,urgent=urgent,created_from=created_from,created_to=created_to,finished_from=finished_from,finished_to=finished_to,user_id=user_id,brigada_id=request_user.brigada_id)
-                return paginate(requestdata)
-            request_list = crud.filter_requests_all(db,fillial_id=fillial_id,request_status=request_status,urgent=urgent,created_from=created_from,created_to=created_to,finished_from=finished_from,finished_to=finished_to,user_id=user_id)
+            request_list = crud.filter_requests_all(db,fillial_id=fillial_id,request_status=request_status,urgent=urgent,created_from=created_from,created_to=created_to,finished_from=finished_from,finished_to=finished_to,user=user)
             return paginate(request_list)
         except:
             raise HTTPException(
@@ -259,24 +259,24 @@ async def get_category_and_fillials(db:Session=Depends(get_db),request_user:sche
         )
     
 
-@router.get('/users',response_model=Page[schemas.UserGetlist])
-async def get_user_lisrt(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page='users')
-    if permission:
-        
-            users = crud.get_user_list(db)
-            return paginate(users)
-       
-
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
+#@router.get('/users',response_model=Page[schemas.UserGetlist])
+#async def get_user_lisrt(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+#    permission = checkpermissions(request_user=request_user,db=db,page='users')
+#    if permission:
+#        
+#            users = crud.get_user_list(db)
+#            return paginate(users)
+#       
+#
+#    else:
+#        raise HTTPException(
+#            status_code=status.HTTP_403_FORBIDDEN,
+#            detail="You are not super user"
+#        )
     
 
 
-@router.get('/users/',response_model=Page[schemas.UserGetlist])
+@router.get('/users',response_model=Page[schemas.UserGetlist])
 async def filter_user(full_name:Optional[str]=None,username:Optional[str]=None,role_id:Optional[int]=None,phone_number:Optional[str]=None,user_status:Optional[int]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='users')
     if permission:

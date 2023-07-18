@@ -294,7 +294,7 @@ def acceptreject(db:Session,form_data:schemas.AcceptRejectRequest):
 
 
 
-def filter_requests_all(db:Session,fillial_id,urgent,created_from,created_to,finished_from,finished_to,request_status,user_id):
+def filter_requests_all(db:Session,fillial_id,urgent,created_from,created_to,finished_from,finished_to,request_status,user):
     query = db.query(models.Requests)
     if fillial_id is not None:
         query = query.filter(models.Requests.fillial_id==fillial_id)
@@ -311,12 +311,12 @@ def filter_requests_all(db:Session,fillial_id,urgent,created_from,created_to,fin
         query = query.filter(models.Requests.finished_at<finished_to)
     if request_status is not None:
         query = query.filter(models.Requests.status==request_status)
-    if user_id  is not None:
-        query = query.filter(models.Requests.user_id==user_id)
+    if user  is not None:
+        query = query.filter(models.Users.full_name.ilike(f"%{user}%"))
     return query.all()
 
 
-def filter_request_brigada(db:Session,brigada_id,fillial_id,urgent,created_from,created_to,finished_from,finished_to,request_status,user_id):
+def filter_request_brigada(db:Session,brigada_id,fillial_id,urgent,created_from,created_to,finished_from,finished_to,request_status,user):
     query = db.query(models.Requests)
     if fillial_id is not None:
         query = query.filter(models.Requests.fillial_id==fillial_id)
@@ -333,8 +333,8 @@ def filter_request_brigada(db:Session,brigada_id,fillial_id,urgent,created_from,
         query = query.filter(models.Requests.finished_at<finished_to)
     if request_status is not None:
         query = query.filter(models.Requests.status==request_status)
-    if user_id  is not None:
-        query = query.filter(models.Requests.user_id==user_id)
+    if user  is not None:
+        query = query.filter(models.Users.full_name.ilike(f"%{user}/%"))
     query = query.filter(models.Requests.brigada_id==brigada_id)
     return query.all()
 
