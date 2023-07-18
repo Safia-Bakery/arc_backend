@@ -384,21 +384,21 @@ async def update_fillials(form_data:schemas.UpdateFillialSch,db:Session=Depends(
     
 
 
-@app.get('/fillials',response_model=Page[schemas.GetFillialSch])
-async def get_fillials(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page='fillials')
-    if permission:
-        return paginate(crud.get_fillial_list(db))
-
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
+#@app.get('/fillials',response_model=Page[schemas.GetFillialSch])
+#async def get_fillials(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+#    permission = checkpermissions(request_user=request_user,db=db,page='fillials')
+#    if permission:
+#        return paginate(crud.get_fillial_list(db))
+#
+#    else:
+#        raise HTTPException(
+#            status_code=status.HTTP_403_FORBIDDEN,
+#            detail="You are not super user"
+#        )
     
 
-
-@app.get('/fillials/',response_model=Page[schemas.GetFillialSch])
+    
+@app.get('/fillials',response_model=Page[schemas.GetFillialSch])
 async def filter_fillials(name:Optional[str]=None,country:Optional[str]=None,latitude:Optional[float]=None,longtitude:Optional[float]=None,fillial_status:Optional[int]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='fillials')
     if permission:
