@@ -383,3 +383,7 @@ def filter_fillials(db:Session,name,country,latitude,longtitude,fillial_status):
     if fillial_status is not None:
         query = query.filter(models.Fillials.status ==fillial_status)
     return query.all()
+
+def get_list_tools(db:Session):
+    query = db.query(models.Tools).all()
+    return query

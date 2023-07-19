@@ -8,7 +8,7 @@ request_status = [
     },
     {
         'id':2,
-        'status_name':'it being done by brigada'
+        'status_name':'taken to fixing'
     },
     {
         'id':3,
@@ -18,8 +18,5 @@ request_status = [
         'id':4,
         'status_name':'rejected'
     },
-    {
-        'id':5,
-        'status_name':'sended to repair'
-    }
+
     ]

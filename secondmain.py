@@ -233,6 +233,9 @@ async def get_category(files:list[UploadFile],urgent:bool,product:str,category_i
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not super user"
         )
+    
+
+
 
 
 
@@ -325,6 +328,18 @@ async def get_user_with_id(form_data:schemas.CreateTool,db:Session=Depends(get_d
 
 
 
+@router.get('/tools',response_model=list[schemas.GetToolList])
+async def get_tool_list(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    try:
+        query_from = crud.get_list_tools(db)
+        return query_from
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="database not found"
+        )
+
+
 
 #----------------TELEGRAM BOT --------------------
 
@@ -342,6 +357,10 @@ async def get_user_with_id(query:str,db:Session=Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="not found"
         )
+    
+@router.get('/get/category/tg')
+async def get_category_list_tg(db:Session=Depends(get_db)):
+    return crud.get_category_list(db)
     
 
     

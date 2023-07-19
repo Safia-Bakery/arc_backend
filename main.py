@@ -89,151 +89,167 @@ async def register(form_data: schemas.UserCreate,db:Session=Depends(get_db)):
 @app.get('/all/permissions',summary='from this api you can get list of roles')
 async def admin_pages(db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
 
-    if request_user.status!=1:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
-    roles_list = crud.get_roles(db)
+    permission = checkpermissions(request_user=request_user,db=db,page='roles')
+    if permission:
+        roles_list = crud.get_roles(db)
     
-    return roles_list
-
+        return roles_list
+    else:
+        raise HTTPException(
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail="you do not have permission like this"
+            )
 
 
 
 
 @app.post('/user/roles')
 async def user_group(group_data:schemas.CreateGroupSch, db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
-    if request_user.status !=1:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
+    permission = checkpermissions(request_user=request_user,db=db,page='roles')
+    if permission:
     
-    return crud.create_group(db,group_data)
+        return crud.create_group(db,group_data)
+    else:
+        raise HTTPException(
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail="you do not have permission like this"
+            )
 
 @app.put('/user/roles')
 async def user_group_update(group_data:schemas.UpdateGroupSch, db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
-    if request_user.status !=1:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
-    updation = crud.update_group(db,group_data)
-    if updation:
-        return {'success':True,'message':'updated'}
+    permission = checkpermissions(request_user=request_user,db=db,page='roles')
+    if permission:
+        updation = crud.update_group(db,group_data)
+        if updation:
+            return {'success':True,'message':'updated'}
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="cannot update becouse role id doesnot match"
+            )
     else:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="cannot update becouse role id doesnot match"
-        )
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail="you do not have permission like this"
+            )
 
 @app.get('/user/role')
 async def user_group_get(db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
-    if request_user.status !=1:
+    permission = checkpermissions(request_user=request_user,db=db,page='roles')
+    if permission:
+        return crud.get_group(db)
+    else:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
-    return crud.get_group(db)
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail="you do not have permission like this"
+            )
+
 
 
 @app.get('/user/group/permissions/{id}')
 async def group_permissions(id:int,db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
-    if request_user.status !=1:
+    permission = checkpermissions(request_user=request_user,db=db,page='roles')
+    if permission:
+        try:
+
+            permission_list = crud.get_permissions(db,id=id)
+            if permission_list:
+                role_name = permission_list[0].group.name
+                role_id = permission_list[0].group.id
+                
+            else:
+                group = crud.get_group_by_id(db,id=id)
+                role_name= group.name
+                role_id = group.id
+            permission_list = [ i.page_id for i in permission_list]
+
+
+            return {'permissions':permission_list,'role_name':role_name,'role_id':role_id}
+        except:
             raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
-    try:
-
-        permission_list = crud.get_permissions(db,id=id)
-        if permission_list:
-            role_name = permission_list[0].group.name
-            role_id = permission_list[0].group.id
-            
-        else:
-            group = crud.get_group_by_id(db,id=id)
-            role_name= group.name
-            role_id = group.id
-        permission_list = [ i.page_id for i in permission_list]
-
-
-        return {'permissions':permission_list,'role_name':role_name,'role_id':role_id}
-    except:
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="id there is no group like this"
+            )
+    else:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="id there is no group like this"
-        )
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail="you do not have permission like this"
+            )
 
 
 
 @app.post('/user/group/permission')
 async def group_permissions(id:int,per_list:list[int],db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
-    if request_user.status !=1:
+    permission = checkpermissions(request_user=request_user,db=db,page='roles')
+    if permission:
+        try:
+            crud.delete_roles(db,id)
+            permisison = [models.Roles(group_id=id,page_id=i) for i in per_list]
+            bulk_create_per = crud.bulk_create_per(db,permisison)
+            if not bulk_create_per:
+                raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="there is an error maybe foreignkey doesnot match"
+            )
+            return {'message':'everthing is good','success':True}
+        except:
             raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="foreign key values doesnot match each other"
         )
-    try:
-        crud.delete_roles(db,id)
-        permisison = [models.Roles(group_id=id,page_id=i) for i in per_list]
-        bulk_create_per = crud.bulk_create_per(db,permisison)
-        if not bulk_create_per:
-            raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="there is an error maybe foreignkey doesnot match"
-        )
-        return {'message':'everthing is good','success':True}
-    except:
+    else:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="foreign key values doesnot match each other"
-        )
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail="you do not have permission like this"
+            )
     
     
 
 @app.get('/users/settings',response_model=Page[schemas.UsersSettingsSch])
 async def get_user_list(db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
-    if request_user.status !=1:
+    permission = checkpermissions(request_user=request_user,db=db,page='users')
+    if permission:
+        try: 
+            users_lsit = crud.get_user_list(db)
+        except:
             raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
-    try: 
-        users_lsit = crud.get_user_list(db)
-    except:
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="You are seeing this error because of server error"
+            )
+        users = paginate(users_lsit)
+        return users
+    else:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="You are seeing this error because of server error"
-        )
-    users = paginate(users_lsit)
-    return users
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail="you do not have permission like this"
+            )
 
 
 
 @app.post('/user/attach/role')
 async def user_role_attach(role:schemas.UserRoleAttachSch,db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
-    if request_user.status !=1:
+    permission = checkpermissions(request_user=request_user,db=db,page='roles')
+    if permission:
+        try:
+            user_update = crud.user_role_attach(db,role)
+            if user_update:
+                return {'success':True,'message':'User attached to some group'}
+            else:
+                raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="cannot find user you selected"
+            )
+        except:
             raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
-    try:
-        user_update = crud.user_role_attach(db,role)
-        if user_update:
-            return {'success':True,'message':'User attached to some group'}
-        else:
-            raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="cannot find user you selected"
-        )
-    except:
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="You are seeing this error because of server error"
+            )
+    else:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="You are seeing this error because of server error"
-        )
-    
+                        status_code=status.HTTP_403_FORBIDDEN,
+                        detail="you do not have permission like this"
+            )
+
 
 @app.post('/brigadas')
 async def create_brigada(form_data:schemas.UservsRoleCr,db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):

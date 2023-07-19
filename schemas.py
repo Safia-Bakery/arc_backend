@@ -262,6 +262,11 @@ class CreateTool(BaseModel):
     class Config:
         orm_mode=True
 
+class GetToolList(BaseModel):
+    name:str
+    id:int
+    class Config:
+        orm_mode=True
 
 class AcceptRejectRequest(BaseModel):
     request_id :int
@@ -275,6 +280,9 @@ class AcceptRejectRequest(BaseModel):
         if status not in [4,1,2,3]:
             raise ValueError("send valid  status code ")
         return status
+    
+
+
 
 
 
