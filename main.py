@@ -339,7 +339,8 @@ async def update_brigada(form_data:schemas.UpdateBrigadaSch,db:Session=Depends(g
         try:
             brigrada = crud.update_brigada_id(db,form_data=form_data)
             if form_data.users:
-                users = crud.attach_user_brigads(db,form_data.users,form_data.id)
+                crud.set_null_user_brigada(db,form_data.id)
+                crud.attach_user_brigads(db,form_data.users,form_data.id)
             return {'success':True,'message':'everthing is ok','brigada':brigrada}
         except:
             raise HTTPException(

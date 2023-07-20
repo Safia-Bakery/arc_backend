@@ -254,6 +254,12 @@ def get_fillial_id(db:Session,id):
 def get_branch_list(db:Session):
     return db.query(models.Fillials).filter(models.Fillials.status==1).all()
 
+
+def set_null_user_brigada(db:Session,brigada_id):
+    brigad_user = db.query(models.Users).filter(models.Users.id==brigada_id).update({models.Users.brigada_id:None})
+    db.commit()
+    return brigad_user
+
 def attach_user_brigads(db:Session,data:list,brig_id:int):
     brigad_user = db.query(models.Users).filter(models.Users.id.in_(data)).update({models.Users.brigada_id:brig_id})
     db.commit()
@@ -393,6 +399,7 @@ def update_user(db:Session,form_data:schemas.UserUpdateAll):
     query = db.query(models.Users).filter(models.Users.id==form_data.user_id).first()
     if query:
         if form_data.brigada_id is not None:
+            set_null_user_brigada(db,form_data.brigada_id)
             query.brigada_id = form_data.brigada_id
         if form_data.email is not None:
             query.email = form_data.email
