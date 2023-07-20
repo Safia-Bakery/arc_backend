@@ -291,6 +291,21 @@ async def filter_user(full_name:Optional[str]=None,username:Optional[str]=None,r
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not super user"
         )
+    
+@router.put('/users',response_model=schemas.UserGetlist)
+async def filter_user(form_data:schemas.UserUpdateAll,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    permission = checkpermissions(request_user=request_user,db=db,page='users')
+    if permission:
+        updateuser = crud.update_user(db,form_data=form_data)
+        return updateuser
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not super user"
+        )
+
+
+
 
 @router.get('/users/{id}',response_model=schemas.GetUserIdSch)
 async def get_user_with_id(id:int,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):

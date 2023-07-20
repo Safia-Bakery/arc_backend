@@ -283,6 +283,24 @@ class AcceptRejectRequest(BaseModel):
     
 
 
+class UserUpdateAll(BaseModel):
+    password:Optional[str]=None
+    username:Optional[str]=None
+    full_name:Optional[str]=None
+    email:Optional[str]=None
+    status:Optional[int]=None
+    phone_number:Optional[int]=None
+    group_id:Optional[int]=None
+    brigada_id:Optional[int]=None
+    telegram_id:Optional[int]=None
+    user_id:int
+    @validator('status')
+    def validate_status_length(cls, status):
+        if status not in [0,2]:
+            raise ValueError("send valid  status code ")
+        return status
+    class Config:
+        orm_mode=True
 
 
 

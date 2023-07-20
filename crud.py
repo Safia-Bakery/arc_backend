@@ -387,3 +387,30 @@ def filter_fillials(db:Session,name,country,latitude,longtitude,fillial_status):
 def get_list_tools(db:Session):
     query = db.query(models.Tools).all()
     return query
+
+
+def update_user(db:Session,form_data:schemas.UserUpdateAll):
+    query = db.query(models.Users).filter(models.Users.id==form_data.user_id).first()
+    if query:
+        if form_data.brigada_id is not None:
+            query.brigada_id = form_data.brigada_id
+        if form_data.email is not None:
+            query.email = form_data.email
+        if form_data.full_name is not None:
+            query.full_name = form_data.full_name
+        if form_data.group_id is not None:
+            query.group_id = form_data.group_id
+        if form_data.username is not None:
+            query.username = form_data.username
+        if form_data.phone_number is not None:
+            query.phone_number=form_data.phone_number
+        if form_data.telegram_id is not None:
+            query.telegram_id = form_data.telegram_id
+        if form_data.password is not None:
+            query.password = hash_password(form_data.password)
+        if form_data.status is not None:
+            query.status = form_data.status
+        db.commit()
+        db.refresh(query)
+        return query
+        
