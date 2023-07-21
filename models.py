@@ -42,18 +42,18 @@ class Users(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True)
-    password = Column(String)
+    username = Column(String, unique=True, index=True,nullable=True)
+    password = Column(String,nullable=True)
     time_created = Column(DateTime,default=datetime.now(timezonetash))
     full_name = Column(String,nullable=True)
     status = Column(Integer,default=0)
     email = Column(String,unique=True,nullable=True)
-    phone_number = Column(String,nullable=True)
+    phone_number = Column(String,nullable=True,unique=True)
     group_id = Column(Integer,ForeignKey('groups.id'),nullable=True)
     group = relationship('Groups',back_populates='user')
     brigader = relationship('Brigada',back_populates='user')
     brigada_id = Column(Integer,ForeignKey('brigada.id'),nullable=True)
-    telegram_id = Column(BIGINT,nullable=True)
+    telegram_id = Column(BIGINT,nullable=True,unique=True)
     request = relationship('Requests',back_populates='user')
     
 

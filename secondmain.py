@@ -6,6 +6,7 @@ from fastapi import Depends, FastAPI, HTTPException,UploadFile,File,Form,Header,
 from pydantic import ValidationError
 import schemas
 import bcrypt
+from typing import Annotated
 import models
 from typing import Optional
 from fastapi.middleware.cors import CORSMiddleware
@@ -296,6 +297,7 @@ async def filter_user(full_name:Optional[str]=None,username:Optional[str]=None,r
 async def filter_user(form_data:schemas.UserUpdateAll,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='users')
     if permission:
+        
         updateuser = crud.update_user(db,form_data=form_data)
         return updateuser
     else:
@@ -376,6 +378,49 @@ async def get_user_with_id(query:str,db:Session=Depends(get_db)):
 @router.get('/get/category/tg')
 async def get_category_list_tg(db:Session=Depends(get_db)):
     return crud.get_category_list(db)
+
+
+@router.post('/tg/create/user')
+async def tg_create_userview(user:schemas.BotRegister,db:Session=Depends(get_db)):
+    try:
+        user = crud.tg_create_user(db,user)
+        return user
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_302_FOUND,
+            detail="Already exist"
+        )
+
+@router.get('/tg/user/exist')
+async def tg_get_user(user:schemas.BotCheckUser,db:Session=Depends(get_db)):
+    userinfo = crud.tg_get_user(db,user)
+    if userinfo:
+        return {'success':True}
+    else: 
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="not found"
+        )
+
+
+@router.post('/tg/request')
+async def tg_post_request(telegram_id:Annotated[int,Form()],description:Annotated[str, Form()],product:Annotated[str, Form()],fillial:Annotated[str, Form()],category:Annotated[str, Form()],type:Annotated[str,Form()],db:Session=Depends(get_db)):
+    categoryquery = crud.getcategoryname(db,category)
+    telegram_idquery = crud.getusertelegramid(db,telegram_id)
+    fillialquery = crud.getfillialname(db,fillial)
+    if categoryquery is None or telegram_idquery is None or fillialquery is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="not found"
+            )
+    
+    response_query = crud.add_request(db,urgent=True,category_id=categoryquery.id,fillial_id=fillialquery.id,description=description,product=product,user_id=telegram_idquery.id)
+
+    return {'Message':'hello'}
+
+
+
+
     
 
     

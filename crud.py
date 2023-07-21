@@ -24,6 +24,17 @@ def create_user(db:Session,user : schemas.UserCreate):
     db.refresh(db_user)
     return db_user
 
+def tg_create_user(db:Session,user:schemas.BotRegister):
+    db_user = models.Users(telegram_id=user.telegram_id,phone_number=user.phone_number,full_name=user.full_name)
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+def tg_get_user(db:Session,user:schemas.BotCheckUser):
+    db_user = db.query(models.Users).filter(models.Users.telegram_id==user.telegram_id,models.Users.phone_number==user.phone_number).first()
+    return db_user
+
 
 
 def get_roles(db:Session):
@@ -322,7 +333,7 @@ def filter_requests_all(db:Session,id,category_id,fillial_id,urgent,created_from
         query = query.filter(models.Requests.status==request_status)
     if user  is not None:
         query = query.filter(models.Users.full_name.ilike(f"%{user}%"))
-    return query.all()
+    return query.order_by(models.Requests.created_at.desc()).all()
 
 
 def filter_request_brigada(db:Session,id,category_id,brigada_id,fillial_id,urgent,created_from,created_to,finished_from,finished_to,request_status,user):
@@ -348,7 +359,7 @@ def filter_request_brigada(db:Session,id,category_id,brigada_id,fillial_id,urgen
     if user  is not None:
         query = query.filter(models.Users.full_name.ilike(f"%{user}/%"))
     query = query.filter(models.Requests.brigada_id==brigada_id)
-    return query.all()
+    return query.order_by(models.Requests.created_at.desc()).all()
 
 
 def filter_user(db:Session,user_status,full_name,phone_number,username,role_id):
@@ -420,4 +431,14 @@ def update_user(db:Session,form_data:schemas.UserUpdateAll):
         db.commit()
         db.refresh(query)
         return query
-        
+    
+def getcategoryname(db:Session,name):
+    query = db.query(models.Category).filter(models.Category.name==name).first()
+    return query
+
+def getfillialname(db:Session,name):
+    query = db.query(models.Fillials).filter(models.Fillials.name==name).first()
+    return query
+def getusertelegramid(db:Session,id):
+    query = db.query(models.Users).filter(models.Users.telegram_id==id).first()
+    return query

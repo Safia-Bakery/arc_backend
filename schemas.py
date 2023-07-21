@@ -1,7 +1,8 @@
 from pydantic import BaseModel,validator
 from fastapi import Form,UploadFile,File
-from typing import Optional
+from typing import Optional,Annotated
 from datetime import datetime
+from fastapi import Form
 
 
 class UserFullBack(BaseModel):
@@ -303,4 +304,17 @@ class UserUpdateAll(BaseModel):
         orm_mode=True
 
 
+class BotRegister(BaseModel):
+    full_name:str
+    phone_number:str
+    telegram_id:int
 
+
+class BotCheckUser(BaseModel):
+    phone_number:str
+    telegram_id:str
+
+
+class TgCreateRequest(BaseModel):
+    phone_number:Annotated[str,Form()]
+    telegram_id:Annotated[int,Form()]
