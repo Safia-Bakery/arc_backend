@@ -172,7 +172,7 @@ class GetCategorySch(BaseModel):
 
 class UserGetlist(BaseModel):
     id:int
-    username:str
+    username:Optional[str]=None
     full_name: Optional[str]=None
     email: Optional[str]=None
     phone_number: Optional[str]=None
