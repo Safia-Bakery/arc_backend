@@ -91,9 +91,10 @@ class Brigada(Base):
     name = Column(String)
     description = Column(String,nullable=True)
     request = relationship('Requests',back_populates='brigada')
-    user =relationship('Users',back_populates='brigader')
+    user =relationship('Users',back_populates='brigader',uselist=True)
     status = Column(Integer,default=0)
     expanditure = relationship("Expanditure",back_populates='brigada')
+    created_at = Column(DateTime,default=datetime.now(timezonetash))
     
 
 

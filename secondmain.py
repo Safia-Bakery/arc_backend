@@ -8,6 +8,7 @@ import schemas
 import bcrypt
 from typing import Annotated
 import models
+from microservices import sendtotelegramchannel
 from typing import Optional
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Union, Any
@@ -22,6 +23,7 @@ from microservices import create_refresh_token,verify_password,create_access_tok
 from fastapi import APIRouter
 
 router = APIRouter()
+bot_token = '6354204561:AAEBZAdnnJvijq8hZYU4wQAaDCVIXY3CpYM'
 
 @router.post('/category')
 async def add_category(form_data:schemas.AddCategorySch,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
@@ -180,7 +182,14 @@ async def get_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
         try:
             request_list = crud.acceptreject(db,form_data=form_data)
             if form_data.status == 1:
-                pass
+                brigada_id = request_list.brigada.id
+                brigader_telid = crud.get_user_brig_id(db,brigada_id).telegram_id
+                
+                try:
+                    sendtotelegramchannel(bot_token=bot_token,chat_id=brigader_telid,message_text=f"{request_list.brigada.name} вам назначена заявка, №{request_list.id} {request_list.fillial.name}")
+                    sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, наш вашу заявку №{request_list.id} назначена команда🚙: {request_list.brigada.name}")
+                except:
+                    pass
             if request_list:
                 return request_list
             else:
@@ -200,6 +209,12 @@ async def get_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not super user"
         )
+
+
+
+
+
+
 
 
 @router.post('/request')
@@ -358,6 +373,10 @@ async def get_tool_list(db:Session=Depends(get_db),request_user:schemas.UserFull
 
 
 
+
+
+
+
 #----------------TELEGRAM BOT --------------------
 
 @router.get('/fillials/list/tg')
@@ -374,7 +393,9 @@ async def get_user_with_id(query:str,db:Session=Depends(get_db)):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="not found"
         )
-    
+
+
+
 @router.get('/get/category/tg')
 async def get_category_list_tg(db:Session=Depends(get_db)):
     return crud.get_category_list(db)
@@ -391,6 +412,7 @@ async def tg_create_userview(user:schemas.BotRegister,db:Session=Depends(get_db)
             detail="Already exist"
         )
 
+
 @router.get('/tg/user/exist')
 async def tg_get_user(user:schemas.BotCheckUser,db:Session=Depends(get_db)):
     userinfo = crud.tg_get_user(db,user)
@@ -404,7 +426,7 @@ async def tg_get_user(user:schemas.BotCheckUser,db:Session=Depends(get_db)):
 
 
 @router.post('/tg/request')
-async def tg_post_request(telegram_id:Annotated[int,Form()],description:Annotated[str, Form()],product:Annotated[str, Form()],fillial:Annotated[str, Form()],category:Annotated[str, Form()],type:Annotated[str,Form()],db:Session=Depends(get_db)):
+async def tg_post_request(files:UploadFile,file_name:Annotated[str,Form()],telegram_id:Annotated[int,Form()],description:Annotated[str, Form()],product:Annotated[str, Form()],fillial:Annotated[str, Form()],category:Annotated[str, Form()],type:Annotated[str,Form()],db:Session=Depends(get_db)):
     categoryquery = crud.getcategoryname(db,category)
     telegram_idquery = crud.getusertelegramid(db,telegram_id)
     fillialquery = crud.getfillialname(db,fillial)
@@ -415,10 +437,68 @@ async def tg_post_request(telegram_id:Annotated[int,Form()],description:Annotate
             )
     
     response_query = crud.add_request(db,urgent=True,category_id=categoryquery.id,fillial_id=fillialquery.id,description=description,product=product,user_id=telegram_idquery.id)
+    file_obj_list = []
+    file_path = f"files/{file_name}"
+    with open(file_path, "wb") as buffer:
+        while True:
+            chunk = await files.read(1024)
+            if not chunk:
+                break
+            buffer.write(chunk)
+        file_obj_list.append(models.Files(request_id=response_query.id,url=file_path))
+        crud.bulk_create_files(db,file_obj_list)
+    return {'Message':'hello','success':True}
 
-    return {'Message':'hello'}
 
 
+
+@router.get('/tg/check/user')
+async def tg_check_user_request(telegram_id:int,db:Session=Depends(get_db)):
+    user = crud.getusertelegramid(db,telegram_id)
+    if user:
+        if user.brigada_id:
+            return {'success':True,'brigada_name':user.brigader.name}
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="not found"
+                )
+    else:
+        raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="not found"
+                )
+    
+
+    
+@router.post('/tg/get/branch')
+async def tg_get_branch_location(branch_name:Annotated[str,Form()],db:Session=Depends(get_db)):
+    branch = crud.getfillialname(db,branch_name)
+    if branch:
+        return branch
+    else:
+        raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="not found"
+                )
+    
+@router.get('/tg/branch/get/request')
+async def tg_get_branch_request(telegram_id:int,db:Session=Depends(get_db)):
+    user = crud.getusertelegramid(db,telegram_id)
+    query = crud.tg_get_request_list(db,brigada_id=user.brigada_id)
+    return list(query)
+
+
+
+@router.get('/tg/get/request',response_model=schemas.GetRequestList)
+async def tg_get_request_id(id:int,db:Session=Depends(get_db)):
+    query = crud.get_request_id(db,id)
+    return query
+
+@router.put('/tg/request')
+async def tg_update_request(form_data:schemas.TgUpdateStatusRequest,db:Session=Depends(get_db)):
+    query = crud.tg_update_requst_st(db,form_data=form_data)
+    return query
 
 
     

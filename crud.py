@@ -3,8 +3,13 @@ from sqlalchemy.orm import Session
 import models
 import schemas
 import bcrypt
-
+import pytz
+from datetime import datetime 
 from sqlalchemy import or_,and_
+timezonetash = pytz.timezone("Asia/Tashkent")
+
+
+
 
 def hash_password(password):
     hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
@@ -263,7 +268,7 @@ def get_fillial_id(db:Session,id):
 
 
 def get_branch_list(db:Session):
-    return db.query(models.Fillials).filter(models.Fillials.status==1).all()
+    return db.query(models.Fillials).filter(models.Fillials.status==1).order_by(models.Fillials.id.asc()).all()
 
 
 def set_null_user_brigada(db:Session,brigada_id):
@@ -302,6 +307,10 @@ def acceptreject(db:Session,form_data:schemas.AcceptRejectRequest):
         if form_data.comment is not None:
             db_get.comment=form_data.comment
         db_get.status = form_data.status
+        if form_data.status == 1:
+            db_get.started_at = datetime.now(timezonetash)
+        if form_data.status == 3:
+            db_get.finished_at = datetime.now(timezonetash)
         db.commit()
         db.refresh(db_get)
         return db_get
@@ -442,3 +451,31 @@ def getfillialname(db:Session,name):
 def getusertelegramid(db:Session,id):
     query = db.query(models.Users).filter(models.Users.telegram_id==id).first()
     return query
+
+def tg_get_request_list(db:Session,brigada_id):
+    query = db.query(models.Requests).filter(and_(models.Requests.brigada_id==brigada_id,models.Requests.status.in_([1,2])))
+    return query
+
+
+def get_user_brig_id(db:Session,brigada_id):
+    query = db.query(models.Users).filter(models.Users.brigada_id==brigada_id).first()
+    return query
+
+def tg_update_requst_st(db:Session,form_data:schemas.TgUpdateStatusRequest):
+    query = db.query(models.Requests).filter(models.Requests.id==form_data.request_id).first()
+    if form_data.status == 3:
+        query.finished_at = datetime.now(timezonetash)
+    query.status = form_data.status
+    
+    db.commit()
+    db.refresh(query)
+    return query
+
+
+def expanditure_create(db:Session,form_data:schemas.ExpanditureSchema,brigada_id:int):
+    expand_cr = models.Expanditure(brigada_id=brigada_id,amount=form_data.amount,tool_id=form_data.tool_id)
+    db.add(expand_cr)
+    db.commit()
+    db.refresh(expand_cr)
+    return expand_cr
+    

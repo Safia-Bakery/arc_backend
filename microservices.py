@@ -3,6 +3,7 @@ import pytz
 from jose import jwt
 from passlib.context import CryptContext
 import bcrypt
+import requests
 import schemas
 from sqlalchemy.orm import Session
 from typing import Union, Any
@@ -108,3 +109,24 @@ async def get_current_user(token: str = Depends(reuseable_oauth),db:Session=Depe
         )
     
     return user
+
+
+
+
+def sendtotelegramchannel(bot_token,chat_id,message_text):
+
+    # Create the request payload
+    payload = {
+        'chat_id': chat_id,
+        'text': message_text,
+        'parse_mode': 'HTML'
+    }
+
+    # Send the request to send the inline keyboard message
+    response = requests.post(f'https://api.telegram.org/bot{bot_token}/sendMessage', json=payload,)
+
+    # Check the response status
+    if response.status_code == 200:
+        return response
+    else:
+        return False

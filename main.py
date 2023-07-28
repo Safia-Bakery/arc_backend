@@ -93,7 +93,7 @@ async def admin_pages(db:Session=Depends(get_db),request_user: schemas.UserFullB
     if permission:
         roles_list = crud.get_roles(db)
     
-        return roles_list
+        return roles_list.id
     else:
         raise HTTPException(
                         status_code=status.HTTP_403_FORBIDDEN,
@@ -354,6 +354,28 @@ async def update_brigada(form_data:schemas.UpdateBrigadaSch,db:Session=Depends(g
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not super user"
         )
+    
+
+@app.post('/expanditure')
+async def create_expanditure(form_data:schemas.ExpanditureSchema,db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
+    permission = checkpermissions(request_user=request_user,db=db,page='brigada')
+    if permission:
+        try:
+            crud.expanditure_create(db,form_data=form_data,brigada_id=request_user.brigada_id)
+        except:
+            raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="not found exceptnion "
+        )
+
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not super user"
+        )
+
+
+
 
 
 @app.get('/me')

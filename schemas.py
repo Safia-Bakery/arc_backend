@@ -318,3 +318,19 @@ class BotCheckUser(BaseModel):
 class TgCreateRequest(BaseModel):
     phone_number:Annotated[str,Form()]
     telegram_id:Annotated[int,Form()]
+
+
+class TgUpdateStatusRequest(BaseModel):
+    status : int
+    request_id : int
+    @validator('status')
+    def validate_status_length(cls, status):
+        if status not in [2,3]:
+            raise ValueError("send valid  status code ")
+        return status
+    
+
+class ExpanditureSchema(BaseModel):
+    amount:int
+    tool_id :int
+    
