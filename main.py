@@ -354,7 +354,7 @@ async def update_brigada(form_data:schemas.UpdateBrigadaSch,db:Session=Depends(g
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not super user"
         )
-    
+
 
 @app.post('/expanditure')
 async def create_expanditure(form_data:schemas.ExpanditureSchema,db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):

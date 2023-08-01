@@ -28,6 +28,8 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+*.id_rsa.pub 
+*.id_rsa 
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
