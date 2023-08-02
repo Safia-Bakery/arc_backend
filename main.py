@@ -92,7 +92,6 @@ async def admin_pages(db:Session=Depends(get_db),request_user: schemas.UserFullB
     permission = checkpermissions(request_user=request_user,db=db,page='roles')
     if permission:
         roles_list = crud.get_roles(db)
-    
         return roles_list
     else:
         raise HTTPException(
