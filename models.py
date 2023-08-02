@@ -125,7 +125,7 @@ class Requests(Base):
     fillial_id = Column(Integer,ForeignKey('fillials.id'))
     category = relationship('Category',back_populates='request')
     category_id = Column(Integer,ForeignKey('category.id'))
-    file = relationship('Filssh -vT git@gitlab.comes',back_populates='request')
+    file = relationship('Files',back_populates='request')
     brigada = relationship('Brigada',back_populates='request')
     brigada_id = Column(Integer,ForeignKey('brigada.id'),nullable=True)
     status = Column(Integer,default=0)
