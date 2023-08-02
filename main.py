@@ -93,7 +93,7 @@ async def admin_pages(db:Session=Depends(get_db),request_user: schemas.UserFullB
     if permission:
         roles_list = crud.get_roles(db)
     
-        return roles_list.id
+        return roles_list
     else:
         raise HTTPException(
                         status_code=status.HTTP_403_FORBIDDEN,
