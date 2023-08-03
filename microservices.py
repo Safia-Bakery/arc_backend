@@ -12,6 +12,11 @@ from fastapi import Depends, FastAPI, HTTPException,UploadFile,File,Form,Header,
 from database import engine,SessionLocal
 from pydantic import ValidationError
 from fastapi.security import OAuth2PasswordBearer
+import xml.etree.ElementTree as ET
+
+
+
+BASE_URL = 'https://safia-co.iiko.it'
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 30 minutes
 REFRESH_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7 # 7 days
 JWT_SECRET_KEY = 'thisistokenforusersecretauth'   # should be kept secret
@@ -71,6 +76,8 @@ def checkpermissions(request_user,page,db):
     else:
         return False
     
+
+
 def get_db():
     db = SessionLocal()
     try:
@@ -130,3 +137,36 @@ def sendtotelegramchannel(bot_token,chat_id,message_text):
         return response
     else:
         return False
+    
+
+
+#authentication with iiko
+def authiiko():
+    data  = requests.get(f"{BASE_URL}/resto/api/auth?login=Sap&pass=7b52009b64fd0a2a49e6d8a939753077792b0554")
+
+    key = data.text
+    return key
+
+
+#get list of departments of iikoo
+def list_departments(key):
+
+    departments = requests.get(f"{BASE_URL}/resto/api/corporation/departments?key={key}")
+
+
+    root = ET.fromstring(departments.content)
+    corporate_item_dtos = root.findall('corporateItemDto')
+
+    names = [[item.find('name').text, item.find('id').text] for item in corporate_item_dtos]
+    return names
+
+
+
+def getgroups(key):
+    groups = requests.get(f"{BASE_URL}/resto/api/v2/entities/products/group/list?key={key}").json()
+    return groups
+
+
+def getproducts(key):
+    products = requests.get(f"{BASE_URL}/resto/api/v2/products?key={key}")
+    return products

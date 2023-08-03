@@ -15,6 +15,7 @@ import crud
 from database import engine,SessionLocal
 from fastapi_pagination import paginate,Page,add_pagination
 from secondmain import router
+from iikoview import urls
 from microservices import create_refresh_token,verify_password,create_access_token,checkpermissions,get_db,get_current_user
 models.Base.metadata.create_all(bind=engine)
 #--------token generation
@@ -32,6 +33,7 @@ reuseable_oauth = OAuth2PasswordBearer(
 #database connection
 app = FastAPI()
 app.include_router(router)
+app.include_router(urls)
 app.mount("/files", StaticFiles(directory="files"), name="files")
 
 

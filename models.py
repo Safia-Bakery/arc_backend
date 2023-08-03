@@ -1,9 +1,10 @@
 from sqlalchemy import Column, Integer, String,ForeignKey,Float,DateTime,Boolean,BIGINT,Table
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
 import pytz 
-
+import uuid
 timezonetash = pytz.timezone("Asia/Tashkent")
 Base = declarative_base()
 
@@ -59,12 +60,6 @@ class Users(Base):
 
 
 
-
-
-
-
-
-
 class Fillials(Base):
     __tablename__ = 'fillials'
     id = Column(Integer,primary_key=True,index=True)
@@ -74,6 +69,7 @@ class Fillials(Base):
     country = Column(String)
     request = relationship('Requests',back_populates='fillial')
     status = Column(Integer,default=0)
+    iiko = Column(String)
 
 
 class Category(Base):
@@ -98,12 +94,6 @@ class Brigada(Base):
     
 
 
-class Tools(Base):
-    __tablename__ = 'tools'
-    id = Column(Integer,primary_key=True,index=True)
-    name = Column(String)
-    amount = Column(Integer,nullable=True)
-    expanditure = relationship('Expanditure',back_populates='tool')
 
 class Expanditure(Base):
     __tablename__='expanditure'
@@ -147,3 +137,79 @@ class Files(Base):
     request_id = Column(Integer,ForeignKey('requests.id'))
 
 
+
+
+class ToolParents(Base):
+    __tablename__='toolparents'
+    id = Column(UUID(as_uuid=True),primary_key=True,default=uuid.uuid4)
+    num = Column(String,nullable=True)
+    code = Column(String,nullable=True)
+    name = Column(String)
+    category = Column(String,nullable=True)
+    description = Column(String,nullable=True)
+    firstchildi = relationship('FirstChild',back_populates='toolparentsi')
+    
+
+
+class FirstChild(Base):
+    __tablename__='firstchild'
+    id = Column(UUID(as_uuid=True),primary_key=True,default=uuid.uuid4)
+    num = Column(String,nullable=True)
+    code = Column(String,nullable=True)
+    name = Column(String)
+    category = Column(String,nullable=True)
+    description = Column(String,nullable=True)
+    toolparentid = Column(UUID(as_uuid=True),ForeignKey('toolparents.id'))
+    toolparentsi = relationship('ToolParents',back_populates='firstchildi')
+    secondchildi = relationship('SecondChild',back_populates='firstchildi')
+
+
+
+class SecondChild(Base):
+    __tablename__='secondchild'
+    id = Column(UUID(as_uuid=True),primary_key=True,default=uuid.uuid4)
+    num = Column(String,nullable=True)
+    code = Column(String,nullable=True)
+    name = Column(String)
+    category = Column(String,nullable=True)
+    description = Column(String,nullable=True)
+    parentid = Column(UUID(as_uuid=True),ForeignKey('firstchild.id'))
+    firstchildi = relationship('FirstChild',back_populates='secondchildi')
+    thirdchildi = relationship('ThirdChild',back_populates='secondchildi')
+
+
+class ThirdChild(Base):
+    __tablename__='thirdchild'
+    id = Column(UUID(as_uuid=True),primary_key=True,default=uuid.uuid4)
+    num = Column(String,nullable=True)
+    code = Column(String,nullable=True)
+    name = Column(String)
+    category = Column(String,nullable=True)
+    description = Column(String,nullable=True)
+    parentid = Column(UUID(as_uuid=True),ForeignKey('secondchild.id'))
+    secondchildi = relationship('SecondChild',back_populates='thirdchildi')
+    fourthchildi = relationship('FourthChild',back_populates='thirdchildi')
+
+class FourthChild(Base):
+    __tablename__='fourthchild'
+    id = Column(UUID(as_uuid=True),primary_key=True,default=uuid.uuid4)
+    num = Column(String,nullable=True)
+    code = Column(String,nullable=True)
+    name = Column(String)
+    category = Column(String,nullable=True)
+    description = Column(String,nullable=True)
+    parentid = Column(UUID(as_uuid=True),ForeignKey('thirdchild.id'))
+    thirdchildi = relationship('ThirdChild',back_populates='fourthchildi')
+
+
+
+class Tools(Base):
+    __tablename__ = 'tools'
+    id = Column(Integer,primary_key=True,index=True)
+    name = Column(String)
+    num = Column(String)
+    code = Column(String)
+    producttype = Column(String,nullable=True)
+    parentid = Column(String)
+    mainunit = Column(String,nullable=True)
+    expanditure = relationship('Expanditure',back_populates='tool')

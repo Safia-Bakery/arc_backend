@@ -479,3 +479,74 @@ def expanditure_create(db:Session,form_data:schemas.ExpanditureSchema,brigada_id
     db.refresh(expand_cr)
     return expand_cr
     
+
+
+
+def check_data_exist(db: Session, name: str):
+    return db.query(models.Fillials).filter(models.Fillials.iiko == name).first()
+
+def insert_fillials(db:Session,items):
+    for item in items:
+        existing_item = check_data_exist(db,name=item[1])
+        if existing_item:
+            continue
+        new_item = models.Fillials(country='Uzbekistan', name=item[0],status=1,iiko=item[1])
+        db.add(new_item)
+        db.commit()
+        db.refresh(new_item)
+    return True
+
+
+def check_group_exist(db:Session,id,modelname,fildname):
+    return db.query(modelname).filter(fildname==id).first()
+
+
+def commitdata(db:Session,item):
+    db.add(item)
+    db.commit()
+    db.refresh(item)
+    return item
+
+
+def synchtools(db:Session,groups):
+    group_list = []
+    for line in groups:
+        if line['id'] in ['09be831f-1201-4b78-9cad-7c94c3363276','8bc08505-c81d-075d-8572-af7b636d049b']:
+            group_list.append(line['id'])
+            if check_group_exist(db,line['id'],models.ToolParents,models.ToolParents.id) is None:
+                item = models.ToolParents(id=line['id'],num=line['num'],code=line['code'],name=line['name'],category=line['category'],description=line['description'])
+                commitdata(item)
+            for second in groups:
+                if second['parent']==line['id']:
+                    group_list.append(second['id'])
+                    if check_group_exist(db,second['id'],models.FirstChild,models.FirstChild.id) is None:
+                        item = models.FirstChild(id=second['id'],num=second['num'],code=second['code'],name=second['name'],category=second['category'],description=second['description'],toolparentid=second['id'])
+                        commitdata(item)
+                    for third in groups:
+                        if third['parent']==second['id']:
+                            group_list.append(third['id'])
+                            if check_group_exist(db,third['id'],models.SecondChild,models.SecondChild.id) is None:
+                                item = models.SecondChild(id=third['id'],num=third['num'],code=third['code'],name=third['name'],category=third['category'],description=third['description'],toolparentid=third['id'])
+                                commitdata(item)
+                            for fourth in groups:
+                                if fourth['parent']==third['id']:
+                                    group_list.append(fourth['id'])
+                                    if check_group_exist(db,fourth['id'],models.ThirdChild,models.ThirdChild.id) is None:
+                                        item = models.ThirdChild(id=fourth['id'],num=fourth['num'],code=fourth['code'],name=fourth['name'],category=fourth['category'],description=fourth['description'],toolparentid=fourth['id'])
+                                        commitdata(item)
+                                    for five in groups:
+                                        if five['parent']==fourth['id']:
+                                            group_list.append(five['id'])
+                                            if check_group_exist(db,fourth['id'],models.FourthChild,models.FourthChild.id) is None:
+                                                item = models.FourthChild(id=five['id'],num=five['num'],code=five['code'],name=five['name'],category=five['category'],description=five['description'],toolparentid=five['id'])
+                                                commitdata(item)
+    return group_list
+
+
+def synchproducts(db:Session,grouplist,products):
+    corporation_items= products.findall('productDto')
+    for i in corporation_items:
+        data = i.find('parentId')
+        id = data.text if data is not None else None
+        if id and id in grouplist:
+            pass
