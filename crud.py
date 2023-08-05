@@ -147,7 +147,7 @@ def filter_user_permission(db:Session,id,page):
 
 
 def update_fillial_cr(db:Session,form_data:schemas.UpdateFillialSch):
-    db_fillial_update = db.query(models.Fillials).filter(models.Fillials.id==form_data.id).first()
+    db_fillial_update = db.query(models.ParentFillials).filter(models.ParentFillials.id==form_data.id).first()
     if db_fillial_update:
         if form_data.longtitude is not None:
             db_fillial_update.longtitude = form_data.longtitude
@@ -161,6 +161,17 @@ def update_fillial_cr(db:Session,form_data:schemas.UpdateFillialSch):
         return db_fillial_update
     return False
 
+
+def update_fillil_origin(db:Session,form_data:schemas.UpdateFillialSch):
+    db_fillial_update = db.query(models.Fillials).filter(models.Fillials.id==form_data.department_id).first()
+    if db_fillial_update:
+        if form_data.origin:
+            db_fillial_update.origin=form_data.origin
+        db.commit()
+        db.refresh(db_fillial_update)
+        return db_fillial_update
+    else:
+        return False
 
 
 
@@ -260,7 +271,7 @@ def attach_request_brigada(db:Session,form_data:schemas.RequestAttachBrigada):
     return False
 
 def get_fillial_id(db:Session,id):
-    return db.query(models.Fillials).filter(models.Fillials.id==id).first()
+    return db.query(models.ParentFillials).filter(models.ParentFillials.id==id).first()
 
 
 #telegram bot 
@@ -268,7 +279,7 @@ def get_fillial_id(db:Session,id):
 
 
 def get_branch_list(db:Session):
-    return db.query(models.Fillials).filter(models.Fillials.status==1).order_by(models.Fillials.id.asc()).all()
+    return db.query(models.ParentFillials).filter(models.ParentFillials.status==1).order_by(models.ParentFillials.id).all()
 
 
 def set_null_user_brigada(db:Session,brigada_id):
@@ -397,17 +408,17 @@ def filter_category(db:Session,category_status,name):
 
 
 def filter_fillials(db:Session,name,country,latitude,longtitude,fillial_status):
-    query = db.query(models.Fillials)
+    query = db.query(models.ParentFillials)
     if name is not None:
-        query = query.filter(models.Fillials.name.ilike(f"%{name}%"))
+        query = query.filter(models.ParentFillials.name.ilike(f"%{name}%"))
     if country is not None:
-        query = query.filter(models.Fillials.country.ilike(f"%{country}%"))
+        query = query.filter(models.ParentFillials.country.ilike(f"%{country}%"))
     if latitude is not None:
-        query = query.filter(models.Fillials.latitude.ilike(f"%{latitude}%"))
+        query = query.filter(models.ParentFillials.latitude.ilike(f"%{latitude}%"))
     if longtitude is not None:
-        query = query.filter(models.Fillials.longtitude.ilike(f"%{longtitude}%"))
+        query = query.filter(models.ParentFillials.longtitude.ilike(f"%{longtitude}%"))
     if fillial_status is not None:
-        query = query.filter(models.Fillials.status ==fillial_status)
+        query = query.filter(models.ParentFillials.status ==fillial_status)
     return query.all()
 
 def get_list_tools(db:Session):
@@ -483,18 +494,35 @@ def expanditure_create(db:Session,form_data:schemas.ExpanditureSchema,brigada_id
 
 
 def check_data_exist(db: Session, name: str):
-    return db.query(models.Fillials).filter(models.Fillials.iiko == name).first()
+    return db.query(models.ParentFillials).filter(models.ParentFillials.id == name).first()
 
 def insert_fillials(db:Session,items):
     for item in items:
         existing_item = check_data_exist(db,name=item[1])
         if existing_item:
             continue
-        new_item = models.Fillials(country='Uzbekistan', name=item[0],status=1,iiko=item[1])
+        new_item = models.ParentFillials(country='Uzbekistan', name=item[0],status=1,id=item[1])
         db.add(new_item)
         db.commit()
         db.refresh(new_item)
     return True
+
+
+def check_otdel_exist(db: Session, id: str):
+    return db.query(models.Fillials).filter(models.Fillials.id == id).first()
+
+
+def insert_otdels(db:Session,items):
+    for item in items:
+        existing_item = check_otdel_exist(db,id=item[1])
+        if existing_item:
+            continue
+        new_item = models.Fillials( name=item[0],status=1,id=item[1],parentfillial_id=item[2])
+        db.add(new_item)
+        db.commit()
+        db.refresh(new_item)
+    return True
+
 
 
 def check_group_exist(db:Session,id,modelname,fildname):
@@ -511,42 +539,86 @@ def commitdata(db:Session,item):
 def synchtools(db:Session,groups):
     group_list = []
     for line in groups:
-        if line['id'] in ['09be831f-1201-4b78-9cad-7c94c3363276','8bc08505-c81d-075d-8572-af7b636d049b']:
+        if line['id'] in ['09be831f-1201-4b78-9cad-7c94c3363276','1b55d7e1-6946-4bbc-bf93-542bfdb2b584']:
             group_list.append(line['id'])
             if check_group_exist(db,line['id'],models.ToolParents,models.ToolParents.id) is None:
                 item = models.ToolParents(id=line['id'],num=line['num'],code=line['code'],name=line['name'],category=line['category'],description=line['description'])
-                commitdata(item)
+                commitdata(db,item)
             for second in groups:
                 if second['parent']==line['id']:
                     group_list.append(second['id'])
                     if check_group_exist(db,second['id'],models.FirstChild,models.FirstChild.id) is None:
-                        item = models.FirstChild(id=second['id'],num=second['num'],code=second['code'],name=second['name'],category=second['category'],description=second['description'],toolparentid=second['id'])
-                        commitdata(item)
+                        item = models.FirstChild(id=second['id'],num=second['num'],code=second['code'],name=second['name'],category=second['category'],description=second['description'],toolparentid=second['parent'])
+                        commitdata(db,item)
                     for third in groups:
                         if third['parent']==second['id']:
                             group_list.append(third['id'])
                             if check_group_exist(db,third['id'],models.SecondChild,models.SecondChild.id) is None:
-                                item = models.SecondChild(id=third['id'],num=third['num'],code=third['code'],name=third['name'],category=third['category'],description=third['description'],toolparentid=third['id'])
-                                commitdata(item)
+                                item = models.SecondChild(id=third['id'],num=third['num'],code=third['code'],name=third['name'],category=third['category'],description=third['description'],parentid=third['parent'])
+                                commitdata(db,item)
                             for fourth in groups:
                                 if fourth['parent']==third['id']:
                                     group_list.append(fourth['id'])
                                     if check_group_exist(db,fourth['id'],models.ThirdChild,models.ThirdChild.id) is None:
-                                        item = models.ThirdChild(id=fourth['id'],num=fourth['num'],code=fourth['code'],name=fourth['name'],category=fourth['category'],description=fourth['description'],toolparentid=fourth['id'])
-                                        commitdata(item)
+                                        item = models.ThirdChild(id=fourth['id'],num=fourth['num'],code=fourth['code'],name=fourth['name'],category=fourth['category'],description=fourth['description'],parentid=fourth['parent'])
+                                        commitdata(db,item)
                                     for five in groups:
                                         if five['parent']==fourth['id']:
                                             group_list.append(five['id'])
-                                            if check_group_exist(db,fourth['id'],models.FourthChild,models.FourthChild.id) is None:
-                                                item = models.FourthChild(id=five['id'],num=five['num'],code=five['code'],name=five['name'],category=five['category'],description=five['description'],toolparentid=five['id'])
-                                                commitdata(item)
+                                            if check_group_exist(db,five['id'],models.FourthChild,models.FourthChild.id) is None:
+                                                item = models.FourthChild(id=five['id'],num=five['num'],code=five['code'],name=five['name'],category=five['category'],description=five['description'],parentid=five['parent'])
+                                                commitdata(db,item)
     return group_list
 
 
 def synchproducts(db:Session,grouplist,products):
     corporation_items= products.findall('productDto')
     for i in corporation_items:
-        data = i.find('parentId')
-        id = data.text if data is not None else None
-        if id and id in grouplist:
-            pass
+        parentId = i.find('parentId')
+        name = i.find('name')
+        num = i.find('num')
+        code = i.find('code')
+        producttype = i.find('productType')
+        mainunit = i.find('mainUnit')
+        id = i.find('id')
+        id = id.text 
+        parentId = parentId.text if parentId is not None else None
+        name = name.text if name is not None else None
+        num = num.text if num is not None else None
+        code = code.text if code is not None else None
+        producttype = producttype.text if producttype is not None else None
+        mainunit = mainunit.text if mainunit is not None else None
+        parentId = parentId if parentId is not None else None
+
+        if parentId in grouplist:
+            toolsmod = models.Tools(iikoid = id, parentid=parentId,name=name,num=num,code=code,producttype=producttype,mainunit=mainunit)
+            commitdata(db,toolsmod)
+    return True
+
+
+def getarchtools(db:Session):
+    return db.query(models.ToolParents).all()
+
+def gettools(db:Session,query):
+    return db.query(models.Tools).filter(or_(models.Tools.name.ilike(f"%{query}%"),models.Tools.parentid.ilike(f"%{query}%"))).all()
+
+
+def addcomment(db:Session,request_id,comment):
+    query = db.query(models.Requests).filter(models.Requests.id==request_id).first()
+    if query:
+        query.comment = comment
+        db.commit()
+        db.refresh(query)
+        return query
+    else:
+        return False
+
+        
+
+def addexpenditure(db:Session,request_id,amount,tool_id):
+    add_data = models.Expanditure(request_id=request_id,tool_id=tool_id,amount=amount)
+    db.add(add_data)
+    db.commit()
+    db.refresh(add_data)
+    return add_data
+    

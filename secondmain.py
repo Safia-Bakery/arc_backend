@@ -7,6 +7,7 @@ from pydantic import ValidationError
 import schemas
 import bcrypt
 from typing import Annotated
+from uuid import UUID
 import models
 from microservices import sendtotelegramchannel
 from typing import Optional
@@ -133,7 +134,7 @@ async def get_category_id(id:int,db:Session=Depends(get_db),request_user:schemas
 #            detail="You are not super user"
 #        )
 @router.get('/request',response_model=Page[schemas.GetRequestList])
-async def filter_request(id:Optional[int]=None,category_id:Optional[int]=None,fillial_id:Optional[int]=None,urgent:Optional[bool]=None,created_from:Optional[datetime]=None,created_to:Optional[datetime]=None,finished_from:Optional[datetime]=None,finished_to:Optional[datetime]=None,request_status:Optional[int]=None,department:Optional[str]=None,user:Optional[str]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def filter_request(id:Optional[int]=None,category_id:Optional[int]=None,fillial_id:Optional[UUID]=None,urgent:Optional[bool]=None,created_from:Optional[datetime]=None,created_to:Optional[datetime]=None,finished_from:Optional[datetime]=None,finished_to:Optional[datetime]=None,request_status:Optional[int]=None,department:Optional[str]=None,user:Optional[str]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='requests')
     if permission:
         
@@ -153,7 +154,7 @@ async def filter_request(id:Optional[int]=None,category_id:Optional[int]=None,fi
 
 
 
-@router.get('/request/{id}',response_model=schemas.GetRequestList)
+@router.get('/request/{id}',response_model=schemas.GetRequestid)
 async def get_request_id(id:int,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='requests')
     if permission:
@@ -218,7 +219,7 @@ async def get_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
 
 
 @router.post('/request')
-async def get_category(files:list[UploadFile],urgent:bool,product:str,category_id:int,fillial_id:int,description:str,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def get_category(files:list[UploadFile],urgent:bool,product:str,category_id:int,fillial_id:UUID,description:str,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='requests')
     if permission:
         try:

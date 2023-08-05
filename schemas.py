@@ -3,7 +3,7 @@ from fastapi import Form,UploadFile,File
 from typing import Optional,Annotated
 from datetime import datetime
 from fastapi import Form
-
+from uuid import UUID
 
 class UserFullBack(BaseModel):
     id: int
@@ -121,22 +121,48 @@ class AddFillialSch(BaseModel):
         return status
     
 
+class GetFillialChild(BaseModel):
+    id:UUID
+    name:str
+    origin:int
+    class Config:
+        orm_mode=True
+
 class GetFillialSch(BaseModel):
-    id : int
+    id : UUID
     name:str
     longtitude:Optional[int]=None
     latitude:Optional[int]=None
     country:Optional[str]=None
     status : int
+    fillial_department:list[GetFillialChild]
     class Config:
         orm_mode=True
 
 
-class UpdateFillialSch(BaseModel):
+
+
+
+class ToolsSearch(BaseModel):
     id:int
+    name:str
+    code:str
+    mainunit:Optional[str]=None
+    producttype:Optional[str]=None
+    class Config:
+        orm_mode=True
+
+
+
+
+class UpdateFillialSch(BaseModel):
+    id:UUID
     longtitude:Optional[float]=None
     latitude:Optional[float]=None
     status:Optional[int]=None
+    department_id:Optional[UUID]=None
+    origin:Optional[int]=None
+
 
 
 class AddCategorySch(BaseModel):
@@ -217,10 +243,38 @@ class GetRequestList(BaseModel):
     brigada:Optional[GetBrigadaList]=None
     file:list[FileSch]
     category:Optional[GetCategorySch]=None
-    fillial:Optional[GetFillialSch]=None
+    fillial:Optional[GetFillialChild]=None
     started_at :Optional[datetime]=None
     finished_at:Optional[datetime]=None
     user:Optional[UserGetlist]=None
+    id:int
+    urgent:bool
+    class Config:
+        orm_mode=True
+
+
+class GetExpanditure(BaseModel):
+    id:int
+    amount:int
+    tool:list[ToolsSearch]
+    class Config:
+        orm_mode=True
+
+class GetRequestid(BaseModel):
+    product:Optional[str]=None
+    description:Optional[str]=None
+    id:int
+    rating:Optional[int]=None
+    created_at:datetime
+    status:int
+    brigada:Optional[GetBrigadaList]=None
+    file:list[FileSch]
+    category:Optional[GetCategorySch]=None
+    fillial:Optional[GetFillialChild]=None
+    started_at :Optional[datetime]=None
+    finished_at:Optional[datetime]=None
+    user:Optional[UserGetlist]=None
+    expanditure:list[GetExpanditure]
     id:int
     urgent:bool
     class Config:
@@ -298,7 +352,7 @@ class UserUpdateAll(BaseModel):
     @validator('status')
     def validate_status_length(cls, status):
         if status not in [0,2]:
-            raise ValueError("send valid  status code ")
+            raise ValueError("send valid  status code")
         return status
     class Config:
         orm_mode=True
@@ -333,4 +387,50 @@ class TgUpdateStatusRequest(BaseModel):
 class ExpanditureSchema(BaseModel):
     amount:int
     tool_id :int
+
+class FourChildsch(BaseModel):
+    id:UUID
+    name:str
+    code:str
+    class Config:
+        orm_mode=True
+
+
+class ThirdChildsch(BaseModel):
+    id:UUID
+    name:str
+    code:str
+    child:list[FourChildsch]
+    class Config:
+        orm_mode=True
+
     
+class Secondchildsch(BaseModel):
+    id:UUID
+    name:str
+    code:str
+    child:list[ThirdChildsch]
+    class Config:
+        orm_mode=True
+
+
+
+class Firstchildsch(BaseModel):
+    id:UUID
+    name:str
+    code:str
+    child:list[Secondchildsch]
+    class Config:
+        orm_mode=True
+
+class ToolParentsch(BaseModel):
+    id:UUID
+    name:str
+    code:str
+    child:list[Firstchildsch]
+    class Config:
+        orm_mode=True
+
+
+
+

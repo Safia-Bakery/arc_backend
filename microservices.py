@@ -169,4 +169,18 @@ def getgroups(key):
 
 def getproducts(key):
     products = requests.get(f"{BASE_URL}/resto/api/v2/products?key={key}")
-    return products
+    root = ET.fromstring(products.content)
+
+    return root
+
+
+def list_stores(key):
+
+    departments = requests.get(f"{BASE_URL}/resto/api/corporation/stores?key={key}")
+
+
+    root = ET.fromstring(departments.content)
+    corporate_item_dtos = root.findall('corporateItemDto')
+
+    names = [[item.find('name').text, item.find('id').text,item.find('parentId').text] for item in corporate_item_dtos]
+    return names

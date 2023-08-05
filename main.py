@@ -6,6 +6,7 @@ from fastapi import Depends, FastAPI, HTTPException,UploadFile,File,Form,Header,
 from pydantic import ValidationError
 import schemas
 import bcrypt
+from uuid import UUID
 from typing import Optional
 import models
 from fastapi.middleware.cors import CORSMiddleware
@@ -396,17 +397,17 @@ async def get_me(db:Session=Depends(get_db),request_user: schemas.UserFullBack =
         permissions={}
     return {'success':True,'username':request_user.username,'full_name':request_user.full_name,'role':role,'id':request_user.id,'permissions':permissions}
 
-@app.post('/fillials')
-async def add_fillials(form_data:schemas.AddFillialSch,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page='fillials')
-    if permission:
-        return crud.add_fillials(db,data=form_data)
-
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
+#@app.post('/fillials')
+#async def add_fillials(form_data:schemas.AddFillialSch,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+#    permission = checkpermissions(request_user=request_user,db=db,page='fillials')
+#    if permission:
+#        return crud.add_fillials(db,data=form_data)
+#
+#    else:
+#        raise HTTPException(
+#            status_code=status.HTTP_403_FORBIDDEN,
+#            detail="You are not super user"
+#        )
 
 
 
@@ -414,7 +415,11 @@ async def add_fillials(form_data:schemas.AddFillialSch,db:Session=Depends(get_db
 async def update_fillials(form_data:schemas.UpdateFillialSch,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='fillials')
     if permission:
-        return crud.update_fillial_cr(db,form_data)
+        fillials = crud.update_fillial_cr(db,form_data)
+        if form_data.department_id:
+            crud.update_fillil_origin(db,form_data=form_data)
+
+        return fillials
 
     else:
         raise HTTPException(
@@ -452,7 +457,7 @@ async def filter_fillials(name:Optional[str]=None,country:Optional[str]=None,lat
     
 
 @app.get('/fillials/{id}',response_model=schemas.GetFillialSch)
-async def get_fillials_id(id:int,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def get_fillials_id(id:UUID,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='fillials')
     if permission:
         return crud.get_fillial_id(db,id)

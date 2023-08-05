@@ -1,3 +1,4 @@
+
 from sqlalchemy import Column, Integer, String,ForeignKey,Float,DateTime,Boolean,BIGINT,Table
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -59,17 +60,29 @@ class Users(Base):
     
 
 
-
-class Fillials(Base):
-    __tablename__ = 'fillials'
-    id = Column(Integer,primary_key=True,index=True)
+class ParentFillials(Base):
+    __tablename__='parentfillials'
+    id = Column(UUID(as_uuid=True),primary_key=True,default=uuid.uuid4)
     name = Column(String)
     latitude = Column(Float,nullable=True)
     longtitude = Column(Float,nullable=True)
     country = Column(String)
-    request = relationship('Requests',back_populates='fillial')
     status = Column(Integer,default=0)
-    iiko = Column(String)
+    fillial_department = relationship('Fillials',back_populates='parentfillial')
+
+
+
+
+
+class Fillials(Base):
+    __tablename__ = 'fillials'
+    id = Column(UUID(as_uuid=True),primary_key=True,default=uuid.uuid4)
+    name = Column(String)
+    request = relationship('Requests',back_populates='fillial')
+    parentfillial = relationship('ParentFillials',back_populates='fillial_department')
+    parentfillial_id = Column(UUID(as_uuid=True),ForeignKey('parentfillials.id'))
+    origin = Column(Integer,default=0)
+    status = Column(Integer,default=0)
 
 
 class Category(Base):
@@ -99,8 +112,8 @@ class Expanditure(Base):
     __tablename__='expanditure'
     id = Column(Integer,primary_key=True,index=True)
     amount = Column(String)
-    brigada = relationship('Brigada',back_populates='expanditure')
-    brigada_id = Column(Integer,ForeignKey('brigada.id'))
+    request = relationship('Requests',back_populates='expanditure')
+    request_id = Column(Integer,ForeignKey('requests.id'))
     tool = relationship('Tools',back_populates='expanditure')
     tool_id = Column(Integer,ForeignKey('tools.id'))
 
@@ -112,7 +125,7 @@ class Requests(Base):
     description = Column(String)
     created_at = Column(DateTime,default=datetime.now(timezonetash))
     fillial = relationship('Fillials',back_populates='request')
-    fillial_id = Column(Integer,ForeignKey('fillials.id'))
+    fillial_id = Column(UUID(as_uuid=True),ForeignKey('fillials.id'))
     category = relationship('Category',back_populates='request')
     category_id = Column(Integer,ForeignKey('category.id'))
     file = relationship('Files',back_populates='request')
@@ -126,6 +139,7 @@ class Requests(Base):
     urgent = Column(Boolean)
     comment = Column(String,nullable=True)
     user = relationship('Users',back_populates='request')
+    expanditure = relationship("Expanditure",back_populates='request')
     user_id = Column(Integer,ForeignKey('users.id'))
     
 
@@ -135,6 +149,7 @@ class Files(Base):
     url = Column(String)
     request = relationship('Requests',back_populates='file')
     request_id = Column(Integer,ForeignKey('requests.id'))
+    status = Column(Integer,default=0)
 
 
 
@@ -147,7 +162,7 @@ class ToolParents(Base):
     name = Column(String)
     category = Column(String,nullable=True)
     description = Column(String,nullable=True)
-    firstchildi = relationship('FirstChild',back_populates='toolparentsi')
+    child = relationship('FirstChild',back_populates='childi')
     
 
 
@@ -160,8 +175,8 @@ class FirstChild(Base):
     category = Column(String,nullable=True)
     description = Column(String,nullable=True)
     toolparentid = Column(UUID(as_uuid=True),ForeignKey('toolparents.id'))
-    toolparentsi = relationship('ToolParents',back_populates='firstchildi')
-    secondchildi = relationship('SecondChild',back_populates='firstchildi')
+    childi = relationship('ToolParents',back_populates='child')
+    child = relationship('SecondChild',back_populates='childi')
 
 
 
@@ -174,8 +189,8 @@ class SecondChild(Base):
     category = Column(String,nullable=True)
     description = Column(String,nullable=True)
     parentid = Column(UUID(as_uuid=True),ForeignKey('firstchild.id'))
-    firstchildi = relationship('FirstChild',back_populates='secondchildi')
-    thirdchildi = relationship('ThirdChild',back_populates='secondchildi')
+    childi = relationship('FirstChild',back_populates='child')
+    child = relationship('ThirdChild',back_populates='childi')
 
 
 class ThirdChild(Base):
@@ -187,8 +202,8 @@ class ThirdChild(Base):
     category = Column(String,nullable=True)
     description = Column(String,nullable=True)
     parentid = Column(UUID(as_uuid=True),ForeignKey('secondchild.id'))
-    secondchildi = relationship('SecondChild',back_populates='thirdchildi')
-    fourthchildi = relationship('FourthChild',back_populates='thirdchildi')
+    childi = relationship('SecondChild',back_populates='child')
+    child = relationship('FourthChild',back_populates='childi')
 
 class FourthChild(Base):
     __tablename__='fourthchild'
@@ -199,16 +214,17 @@ class FourthChild(Base):
     category = Column(String,nullable=True)
     description = Column(String,nullable=True)
     parentid = Column(UUID(as_uuid=True),ForeignKey('thirdchild.id'))
-    thirdchildi = relationship('ThirdChild',back_populates='fourthchildi')
+    childi = relationship('ThirdChild',back_populates='child')
 
 
 
 class Tools(Base):
     __tablename__ = 'tools'
     id = Column(Integer,primary_key=True,index=True)
-    name = Column(String)
-    num = Column(String)
-    code = Column(String)
+    name = Column(String,nullable=True)
+    num = Column(String,nullable=True)
+    code = Column(String,nullable=True)
+    iikoid = Column(String)
     producttype = Column(String,nullable=True)
     parentid = Column(String)
     mainunit = Column(String,nullable=True)
