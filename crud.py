@@ -457,7 +457,7 @@ def getcategoryname(db:Session,name):
     return query
 
 def getfillialname(db:Session,name):
-    query = db.query(models.Fillials).filter(models.Fillials.name==name).first()
+    query = db.query(models.ParentFillials).filter(models.ParentFillials.name==name).first()
     return query
 def getusertelegramid(db:Session,id):
     query = db.query(models.Users).filter(models.Users.telegram_id==id).first()
