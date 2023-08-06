@@ -431,13 +431,14 @@ async def tg_post_request(files:UploadFile,file_name:Annotated[str,Form()],teleg
     categoryquery = crud.getcategoryname(db,category)
     telegram_idquery = crud.getusertelegramid(db,telegram_id)
     fillialquery = crud.getfillialname(db,fillial)
+    childfillial = crud.getchildbranch(db,fillialquery.id)
     if categoryquery is None or telegram_idquery is None or fillialquery is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="not found"
             )
     
-    response_query = crud.add_request(db,urgent=True,category_id=categoryquery.id,fillial_id=fillialquery.id,description=description,product=product,user_id=telegram_idquery.id)
+    response_query = crud.add_request(db,urgent=True,category_id=categoryquery.id,fillial_id=childfillial.id,description=description,product=product,user_id=telegram_idquery.id)
     file_obj_list = []
     file_path = f"files/{file_name}"
     with open(file_path, "wb") as buffer:

@@ -622,3 +622,6 @@ def addexpenditure(db:Session,request_id,amount,tool_id):
     db.refresh(add_data)
     return add_data
     
+def getchildbranch(db:Session,parent_id):
+    query = db.query(models.Fillials).filter(models.Fillials.parentfillial_id==parent_id,models.Fillials.origin==0).first()
+    return query
