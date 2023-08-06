@@ -58,7 +58,7 @@ async def toolgroups(query:str,db:Session=Depends(get_db),request_user:schemas.U
 
 
 @urls.post('/v1/expenditure')
-async def insert_expenditure(amount:Annotated[int,Form()],request_id:Annotated[int,Form()],tool_id:Annotated[UUID,Form()],comment:Annotated[str,Form()]=None,files:list[UploadFile]= None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def insert_expenditure(amount:Annotated[int,Form()],request_id:Annotated[int,Form()],tool_id:Annotated[int,Form()],comment:Annotated[str,Form()]=None,files:list[UploadFile]= None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     crud.addexpenditure(db,request_id=request_id,amount=amount,tool_id=tool_id)
     if comment:
         addcomment = crud.addcomment(db,request_id=request_id,comment=comment)

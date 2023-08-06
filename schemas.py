@@ -230,6 +230,7 @@ class GetBrigadaIdSch(BaseModel):
 
 class FileSch(BaseModel):
     url:str
+    status:int
     class Config:
         orm_mode=True
 
