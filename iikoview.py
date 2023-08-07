@@ -35,6 +35,14 @@ async def insert_departments(db:Session=Depends(get_db),request_user:schemas.Use
     return paginate(branches)
 
 
+
+@urls.put('/deparment/update')
+async def update_otdel(form_data:schemas.DepartmenUdpate,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    query = crud.udpatedepartment(db,form_data=form_data)
+    return query
+
+
+
 @urls.get('/synch/groups')
 async def insert_groups(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     groups = getgroups(key = authiiko())
@@ -76,11 +84,18 @@ async def insert_expenditure(amount:Annotated[int,Form()],request_id:Annotated[i
         crud.bulk_create_files(db,file_obj_list)
     return {'success':True}
 
+@urls.put('/v1/expanditure/iiko')
+async def synch_expanditure_iiko(form_data:schemas.SynchExanditureiiko,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    data = crud.check_expanditure_iiko(db,form_data=form_data)
+    for i in data:
+        if i.id==0:
+            query = crud.synch_expanditure_iiko(db,id=data.id)
+    return query
+
 
 
 
     
-
 
 
 

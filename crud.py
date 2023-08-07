@@ -625,3 +625,24 @@ def addexpenditure(db:Session,request_id,amount,tool_id):
 def getchildbranch(db:Session,parent_id):
     query = db.query(models.Fillials).filter(models.Fillials.parentfillial_id==parent_id,models.Fillials.origin==0).first()
     return query
+
+def udpatedepartment(db:Session,form_data:schemas.DepartmenUdpate):
+    query = db.query(models.Fillials).filter(models.Fillials.id==form_data.id).first()
+    if query:
+        query.status = form_data.status
+    db.commit()
+    db.refresh(query)
+    return query
+
+
+
+def check_expanditure_iiko(db:Session,form_data:schemas.SynchExanditureiiko):
+    query = db.query(models.Expanditure).filter(models.Expanditure.request_id==form_data.request_id).all() 
+    return query
+
+def synch_expanditure_iiko(db:Session,form_data:schemas.SynchExanditureiiko):
+    query = db.query(models.Expanditure).filter(models.Expanditure.id==id).update({models.Expanditure.status:1}) 
+    db.commit()
+    db.refresh(query)
+    return query
+

@@ -434,4 +434,18 @@ class ToolParentsch(BaseModel):
 
 
 
+class DepartmenUdpate(BaseModel):
+    id:UUID
+    status : int
+    @validator('status')
+    def validate_status_length(cls, status):
+        if status not in [0,1]:
+            raise ValueError("send valid  status code ")
+        return status
+    
+
+class SynchExanditureiiko(BaseModel):
+    request_id:int
+    
+
 

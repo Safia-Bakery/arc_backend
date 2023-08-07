@@ -115,6 +115,7 @@ class Expanditure(Base):
     request_id = Column(Integer,ForeignKey('requests.id'))
     tool = relationship('Tools',back_populates='expanditure')
     tool_id = Column(Integer,ForeignKey('tools.id'))
+    status = Column(Integer,default=0)
 
 
 class Requests(Base):
