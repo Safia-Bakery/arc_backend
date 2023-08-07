@@ -361,11 +361,11 @@ async def get_user_with_id(form_data:schemas.CreateTool,db:Session=Depends(get_d
 
 
 
-@router.get('/tools',response_model=list[schemas.GetToolList])
+@router.get('/tools',response_model=Page[schemas.GetToolList])
 async def get_tool_list(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     try:
         query_from = crud.get_list_tools(db)
-        return query_from
+        return paginate(query_from)
     except:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
