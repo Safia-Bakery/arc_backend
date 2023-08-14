@@ -308,6 +308,7 @@ class GetUserIdSch(BaseModel):
     time_created :datetime
     full_name: Optional[str]=None
     status : int
+    telegram_id : Optional[int]=None
     email:Optional[str]=None
     phone_number:Optional[str]=None
     group:Optional[UpdateGroupSch]=None

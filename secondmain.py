@@ -144,7 +144,7 @@ async def filter_request(id:Optional[int]=None,category_id:Optional[int]=None,fi
                 return paginate(requestdata)
             request_list = crud.filter_requests_all(db,id=id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,created_from=created_from,created_to=created_to,finished_from=finished_from,finished_to=finished_to,user=user)
             return paginate(request_list)
-        
+    
     else:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -253,7 +253,7 @@ async def get_category(files:list[UploadFile],product:str,category_id:int,fillia
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not super user"
         )
-    
+
 
 
 
@@ -294,24 +294,23 @@ async def get_category_and_fillials(db:Session=Depends(get_db),request_user:sche
 #            status_code=status.HTTP_403_FORBIDDEN,
 #            detail="You are not super user"
 #        )
-    
 
 
 @router.get('/users',response_model=Page[schemas.UserGetlist])
 async def filter_user(full_name:Optional[str]=None,username:Optional[str]=None,role_id:Optional[int]=None,phone_number:Optional[str]=None,user_status:Optional[int]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='users')
     if permission:
-        
+
             users = crud.filter_user(db,user_status=user_status,username=username,phone_number=phone_number,role_id=role_id,full_name=full_name)
             return paginate(users)
-       
+
 
     else:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not super user"
         )
-    
+
 @router.put('/users',response_model=schemas.UserGetlist)
 async def filter_user(form_data:schemas.UserUpdateAll,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='users')
