@@ -145,8 +145,8 @@ class GetFillialSch(BaseModel):
 
 class ToolsSearch(BaseModel):
     id:int
-    name:str
-    code:str
+    name:Optional[str]=None
+    code:Optional[str]=None
     mainunit:Optional[str]=None
     producttype:Optional[str]=None
     class Config:
@@ -169,6 +169,7 @@ class AddCategorySch(BaseModel):
     name:str
     description:str
     status:int
+    urgent:bool
     @validator('status')
     def validate_status_length(cls, status):
         if status not in [0,1]:
@@ -180,6 +181,7 @@ class UpdateCategorySch(BaseModel):
     name:Optional[str]=None
     description:Optional[str]=None
     status:Optional[int]=None
+    urgent:Optional[bool]=None
     @validator('status')
     def validate_status_length(cls, status):
         if status not in [0,1]:
@@ -191,6 +193,7 @@ class GetCategorySch(BaseModel):
     description:Optional[str]=None
     status:int
     id:int
+    urgent:bool
     class Config:
         orm_mode=True
 
@@ -249,7 +252,6 @@ class GetRequestList(BaseModel):
     finished_at:Optional[datetime]=None
     user:Optional[UserGetlist]=None
     id:int
-    urgent:bool
     class Config:
         orm_mode=True
 
@@ -257,7 +259,9 @@ class GetRequestList(BaseModel):
 class GetExpanditure(BaseModel):
     id:int
     amount:int
-    tool:list[ToolsSearch]
+    tool:Optional[ToolsSearch]=None
+    comment:Optional[str]=None
+
     class Config:
         orm_mode=True
 
@@ -277,7 +281,6 @@ class GetRequestid(BaseModel):
     user:Optional[UserGetlist]=None
     expanditure:list[GetExpanditure]
     id:int
-    urgent:bool
     class Config:
         orm_mode=True
 
@@ -436,16 +439,16 @@ class ToolParentsch(BaseModel):
 
 class DepartmenUdpate(BaseModel):
     id:UUID
-    status : int
-    @validator('status')
-    def validate_status_length(cls, status):
-        if status not in [0,1]:
+    origin : int
+    @validator('origin')
+    def validate_status_length(cls, origin):
+        if origin not in [1,2]:
             raise ValueError("send valid  status code ")
-        return status
+        return origin
     
 
 class SynchExanditureiiko(BaseModel):
     request_id:int
-    
+
 
 

@@ -18,13 +18,14 @@ import crud
 from microservices import get_current_user,get_db
 from database import engine,SessionLocal
 from fastapi_pagination import paginate,Page,add_pagination
-
+from dotenv import load_dotenv
 from microservices import create_refresh_token,verify_password,create_access_token,checkpermissions
 #from main import get_db,get_current_user
 from fastapi import APIRouter
-
+import os 
+load_dotenv()
 router = APIRouter()
-bot_token = '6354204561:AAEBZAdnnJvijq8hZYU4wQAaDCVIXY3CpYM'
+bot_token = os.environ.get('BOT_TOKEN')
 
 @router.post('/category')
 async def add_category(form_data:schemas.AddCategorySch,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
@@ -134,14 +135,14 @@ async def get_category_id(id:int,db:Session=Depends(get_db),request_user:schemas
 #            detail="You are not super user"
 #        )
 @router.get('/request',response_model=Page[schemas.GetRequestList])
-async def filter_request(id:Optional[int]=None,category_id:Optional[int]=None,fillial_id:Optional[UUID]=None,urgent:Optional[bool]=None,created_from:Optional[datetime]=None,created_to:Optional[datetime]=None,finished_from:Optional[datetime]=None,finished_to:Optional[datetime]=None,request_status:Optional[int]=None,department:Optional[str]=None,user:Optional[str]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def filter_request(id:Optional[int]=None,category_id:Optional[int]=None,fillial_id:Optional[UUID]=None,created_from:Optional[datetime]=None,created_to:Optional[datetime]=None,finished_from:Optional[datetime]=None,finished_to:Optional[datetime]=None,request_status:Optional[int]=None,department:Optional[str]=None,user:Optional[str]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='requests')
     if permission:
         
             if request_user.brigada_id:
-                requestdata= crud.filter_request_brigada(db,id=id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,urgent=urgent,created_from=created_from,created_to=created_to,finished_from=finished_from,finished_to=finished_to,user=user,brigada_id=request_user.brigada_id)
+                requestdata= crud.filter_request_brigada(db,id=id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,created_from=created_from,created_to=created_to,finished_from=finished_from,finished_to=finished_to,user=user,brigada_id=request_user.brigada_id)
                 return paginate(requestdata)
-            request_list = crud.filter_requests_all(db,id=id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,urgent=urgent,created_from=created_from,created_to=created_to,finished_from=finished_from,finished_to=finished_to,user=user)
+            request_list = crud.filter_requests_all(db,id=id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,created_from=created_from,created_to=created_to,finished_from=finished_from,finished_to=finished_to,user=user)
             return paginate(request_list)
         
     else:
@@ -180,13 +181,15 @@ async def get_request_id(id:int,db:Session=Depends(get_db),request_user:schemas.
 async def get_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='requests')
     if permission:  
-        try:
+        #try:
             request_list = crud.acceptreject(db,form_data=form_data)
             if form_data.status == 1:
                 brigada_id = request_list.brigada.id
-                brigader_telid = crud.get_user_brig_id(db,brigada_id).telegram_id
+                    
+
                 
                 try:
+                    brigader_telid = crud.get_user_brig_id(db,brigada_id).telegram_id
                     sendtotelegramchannel(bot_token=bot_token,chat_id=brigader_telid,message_text=f"{request_list.brigada.name} вам назначена заявка, №{request_list.id} {request_list.fillial.name}")
                     sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, наш вашу заявку №{request_list.id} назначена команда🚙: {request_list.brigada.name}")
                 except:
@@ -198,11 +201,11 @@ async def get_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
             status_code=status.HTTP_404_NOT_FOUND,
             detail="not fund"
         )
-        except:
-            raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="not fund"
-        )
+        #except:
+        #    raise HTTPException(
+        #    status_code=status.HTTP_409_CONFLICT,
+        #    detail="not fund"
+        #)
 
 
     else:
@@ -219,11 +222,11 @@ async def get_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
 
 
 @router.post('/request')
-async def get_category(files:list[UploadFile],urgent:bool,product:str,category_id:int,fillial_id:UUID,description:str,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def get_category(files:list[UploadFile],product:str,category_id:int,fillial_id:UUID,description:str,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='requests')
     if permission:
         try:
-            responserq = crud.add_request(db,urgent=urgent,category_id=category_id,description=description,fillial_id=fillial_id,product=product,user_id=request_user.id)
+            responserq = crud.add_request(db,category_id=category_id,description=description,fillial_id=fillial_id,product=product,user_id=request_user.id)
             file_obj_list = []
 
             if files:
@@ -438,7 +441,7 @@ async def tg_post_request(files:UploadFile,file_name:Annotated[str,Form()],teleg
             detail="not found"
             )
     
-    response_query = crud.add_request(db,urgent=True,category_id=categoryquery.id,fillial_id=childfillial.id,description=description,product=product,user_id=telegram_idquery.id)
+    response_query = crud.add_request(db,category_id=categoryquery.id,fillial_id=childfillial.id,description=description,product=product,user_id=telegram_idquery.id)
     file_obj_list = []
     file_path = f"files/{file_name}"
     with open(file_path, "wb") as buffer:

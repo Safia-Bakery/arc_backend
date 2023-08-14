@@ -13,16 +13,20 @@ from database import engine,SessionLocal
 from pydantic import ValidationError
 from fastapi.security import OAuth2PasswordBearer
 import xml.etree.ElementTree as ET
+import os 
+from dotenv import load_dotenv
+load_dotenv()
 
+timezonetash = pytz.timezone("Asia/Tashkent")
 
-
-BASE_URL = 'https://safia-co.iiko.it'
+BASE_URL = os.environ.get('BASE_URL')
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 30 minutes
 REFRESH_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7 # 7 days
-JWT_SECRET_KEY = 'thisistokenforusersecretauth'   # should be kept secret
-JWT_REFRESH_SECRET_KEY =  'thisistokenforusersecretrefresh'
-ALGORITHM = "HS256"
-
+JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY')   # should be kept secret
+JWT_REFRESH_SECRET_KEY =  os.environ.get('JWT_REFRESH_SECRET_KEY')
+ALGORITHM = os.environ.get('ALGORITHM')
+LOGIN_IIKO=os.environ.get('LOGIN_IIKO')
+PASSWORD_IIKO=os.environ.get('PASSWORD_IIKO')
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
@@ -142,7 +146,7 @@ def sendtotelegramchannel(bot_token,chat_id,message_text):
 
 #authentication with iiko
 def authiiko():
-    data  = requests.get(f"{BASE_URL}/resto/api/auth?login=Sap&pass=7b52009b64fd0a2a49e6d8a939753077792b0554")
+    data  = requests.get(f"{BASE_URL}/resto/api/auth?login={LOGIN_IIKO}&pass={PASSWORD_IIKO}")
 
     key = data.text
     return key
@@ -167,11 +171,17 @@ def getgroups(key):
     return groups
 
 
-def getproducts(key):
-    products = requests.get(f"{BASE_URL}/resto/api/v2/products?key={key}")
-    root = ET.fromstring(products.content)
+def get_suppliers(key):
+    suppliers = requests.get(f"{BASE_URL}/resto/api/suppliers?key={key}")
+    root = ET.fromstring(suppliers.content)
+    suppliers_list = root.findall('employee')
+    return suppliers_list
 
-    return root
+
+def getproducts(key):
+    products = requests.get(f"{BASE_URL}/resto/api/v2/entities/products/list?key={key}&includeDeleted=false").json()
+
+    return products
 
 
 def list_stores(key):
@@ -184,3 +194,37 @@ def list_stores(key):
 
     names = [[item.find('name').text, item.find('id').text,item.find('parentId').text] for item in corporate_item_dtos]
     return names
+
+
+
+def send_document_iiko(key,data):
+    price = float(data.amount)*float(data.tool.price)
+
+    headers = {
+        "Content-Type": "application/xml",  # Set the content type to XML
+    }
+
+    xml_data = f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    <document>
+    <documentNumber>newarc-{data.id}</documentNumber>
+    <dateIncoming></dateIncoming>
+    <useDefaultDocumentTime>false</useDefaultDocumentTime>
+    <counteragentId>{data.request.fillial.supplier[0].id}</counteragentId>
+    <defaultStoreId>4aafb5af-66c3-4419-af2d-72897f652019</defaultStoreId>
+    <items>
+        <item>
+            <productId>{data.tool.iikoid}</productId>
+            <productArticle>{data.tool.code}</productArticle>
+            <storeId>4aafb5af-66c3-4419-af2d-72897f652019</storeId>
+            <price>{data.tool.price}</price>
+            <amount>{data.amount}</amount>
+            <sum>{price}</sum>
+            <discountSum>0.000000000</discountSum>
+        </item>
+    </items>
+    </document>"""
+    response = requests.post(f"{BASE_URL}/resto/api/documents/import/outgoingInvoice?key={key}",data=xml_data,headers=headers)
+    
+    print(response.content)
+    return True
+    

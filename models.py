@@ -57,6 +57,7 @@ class Users(Base):
     brigada_id = Column(Integer,ForeignKey('brigada.id'),nullable=True)
     telegram_id = Column(BIGINT,nullable=True,unique=True)
     request = relationship('Requests',back_populates='user')
+    expanditure = relationship('Expanditure',back_populates='user')
     
 
 
@@ -83,6 +84,18 @@ class Fillials(Base):
     parentfillial_id = Column(UUID(as_uuid=True),ForeignKey('parentfillials.id'))
     origin = Column(Integer,default=0)
     status = Column(Integer,default=0)
+    supplier = relationship('Suppliers',back_populates='store')
+
+
+class Suppliers(Base):
+    __tablename__='suppliers'
+    id = Column(UUID(as_uuid=True),primary_key=True,default=uuid.uuid4)
+    code = Column(String,nullable=True)
+    name = Column(String)
+    taxpayernum = Column(Integer)
+    store_id = Column(UUID(as_uuid=True),ForeignKey('fillials.id'))
+    store = relationship('Fillials',back_populates='supplier')
+
 
 
 class Category(Base):
@@ -92,6 +105,7 @@ class Category(Base):
     description =Column(String)
     request = relationship('Requests',back_populates='category')
     status = Column(Integer,default=0)
+    urgent = Column(Boolean)
 
 
 class Brigada(Base):
@@ -110,12 +124,16 @@ class Brigada(Base):
 class Expanditure(Base):
     __tablename__='expanditure'
     id = Column(Integer,primary_key=True,index=True)
-    amount = Column(String)
+    amount = Column(Integer)
     request = relationship('Requests',back_populates='expanditure')
     request_id = Column(Integer,ForeignKey('requests.id'))
     tool = relationship('Tools',back_populates='expanditure')
     tool_id = Column(Integer,ForeignKey('tools.id'))
     status = Column(Integer,default=0)
+    comment = Column(String,nullable=True)
+    user_id = Column(Integer,ForeignKey('users.id'))
+    user = relationship('Users',back_populates='expanditure')
+    created_at = Column(DateTime,default=datetime.now(timezonetash))
 
 
 class Requests(Base):
@@ -136,7 +154,6 @@ class Requests(Base):
     finished_at = Column(DateTime,nullable=True)
     rating = Column(Integer,nullable=True)
     department = Column(Integer,nullable=True)
-    urgent = Column(Boolean)
     comment = Column(String,nullable=True)
     user = relationship('Users',back_populates='request')
     expanditure = relationship("Expanditure",back_populates='request')
@@ -226,6 +243,7 @@ class Tools(Base):
     code = Column(String,nullable=True)
     iikoid = Column(String)
     producttype = Column(String,nullable=True)
+    price = Column(Float)
     parentid = Column(String)
     mainunit = Column(String,nullable=True)
     expanditure = relationship('Expanditure',back_populates='tool')

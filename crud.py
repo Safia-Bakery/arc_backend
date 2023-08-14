@@ -180,7 +180,7 @@ def get_fillial_list(db:Session):
 
 
 def add_category_cr(db:Session,form_data:schemas.AddCategorySch):
-    db_add_category = models.Category(name=form_data.name,description=form_data.description,status=form_data.status)
+    db_add_category = models.Category(name=form_data.name,description=form_data.description,status=form_data.status,urgent=form_data.urgent)
     db.add(db_add_category)
     db.commit()
     db.refresh(db_add_category)
@@ -195,6 +195,8 @@ def update_category_cr(db:Session,form_data:schemas.UpdateCategorySch):
             db_update_category.description=form_data.description
         if form_data.status is not None:
             db_update_category.status = form_data.status
+        if form_data.urgent is not None:
+            db_update_category.urgent=form_data.urgent
         db.commit()
         db.refresh(db_update_category)
         return db_update_category
@@ -228,8 +230,8 @@ def get_category_list(db:Session):
 def get_category_id(db:Session,id):
     return db.query(models.Category).filter(models.Category.id==id).first()
 
-def add_request(db:Session,urgent,category_id,fillial_id,description,product,user_id):
-    db_add_request = models.Requests(urgent=urgent,category_id=category_id,description=description,fillial_id = fillial_id,product=product,user_id=user_id)
+def add_request(db:Session,category_id,fillial_id,description,product,user_id):
+    db_add_request = models.Requests(category_id=category_id,description=description,fillial_id = fillial_id,product=product,user_id=user_id)
     db.add(db_add_request)
     db.commit()
     db.refresh(db_add_request)
@@ -297,6 +299,7 @@ def get_user_id(db:Session,id:int):
     user = db.query(models.Users).filter(models.Users.id==id).first()
     return user
 
+
 def create_tool(db:Session,form_data :schemas.CreateTool):
     tool_db = models.Tools(name=form_data.name)
     db.add(tool_db)
@@ -331,7 +334,7 @@ def acceptreject(db:Session,form_data:schemas.AcceptRejectRequest):
 
 
 
-def filter_requests_all(db:Session,id,category_id,fillial_id,urgent,created_from,created_to,finished_from,finished_to,request_status,user):
+def filter_requests_all(db:Session,id,category_id,fillial_id,created_from,created_to,finished_from,finished_to,request_status,user):
     query = db.query(models.Requests)
     if id is not None:
         query = query.filter(models.Requests.id==id)
@@ -339,8 +342,6 @@ def filter_requests_all(db:Session,id,category_id,fillial_id,urgent,created_from
         query = query.filter(models.Requests.fillial_id==fillial_id)
     if category_id is not None:
         query = query.filter(models.Requests.category_id==category_id)
-    if urgent is not None:
-        query = query.filter(models.Requests.urgent==urgent)
     if created_from is not None:
         query = query.filter(models.Requests.created_at>created_from)
     if created_to is not None:
@@ -353,10 +354,11 @@ def filter_requests_all(db:Session,id,category_id,fillial_id,urgent,created_from
         query = query.filter(models.Requests.status==request_status)
     if user  is not None:
         query = query.filter(models.Users.full_name.ilike(f"%{user}%"))
-    return query.order_by(models.Requests.created_at.desc()).all()
+    return query.order_by(models.Requests.id.desc()).all()
 
 
-def filter_request_brigada(db:Session,id,category_id,brigada_id,fillial_id,urgent,created_from,created_to,finished_from,finished_to,request_status,user):
+
+def filter_request_brigada(db:Session,id,category_id,brigada_id,fillial_id,created_from,created_to,finished_from,finished_to,request_status,user):
     query = db.query(models.Requests)
     if id is not None:
         query = query.filter(models.Requests.id==id)
@@ -364,8 +366,6 @@ def filter_request_brigada(db:Session,id,category_id,brigada_id,fillial_id,urgen
         query = query.filter(models.Requests.fillial_id==fillial_id)
     if category_id is not None:
         query = query.filter(models.Requests.category_id==category_id)
-    if urgent is not None:
-        query = query.filter(models.Requests.urgent==urgent)
     if created_from is not None:
         query = query.filter(models.Requests.created_at>created_from)
     if created_to is not None:
@@ -379,7 +379,7 @@ def filter_request_brigada(db:Session,id,category_id,brigada_id,fillial_id,urgen
     if user  is not None:
         query = query.filter(models.Users.full_name.ilike(f"%{user}/%"))
     query = query.filter(models.Requests.brigada_id==brigada_id)
-    return query.order_by(models.Requests.created_at.desc()).all()
+    return query.order_by(models.Requests.id.desc()).all()
 
 
 def filter_user(db:Session,user_status,full_name,phone_number,username,role_id):
@@ -572,28 +572,51 @@ def synchtools(db:Session,groups):
 
 
 def synchproducts(db:Session,grouplist,products):
-    corporation_items= products.findall('productDto')
-    for i in corporation_items:
-        parentId = i.find('parentId')
-        name = i.find('name')
-        num = i.find('num')
-        code = i.find('code')
-        producttype = i.find('productType')
-        mainunit = i.find('mainUnit')
-        id = i.find('id')
-        id = id.text 
-        parentId = parentId.text if parentId is not None else None
-        name = name.text if name is not None else None
-        num = num.text if num is not None else None
-        code = code.text if code is not None else None
-        producttype = producttype.text if producttype is not None else None
-        mainunit = mainunit.text if mainunit is not None else None
-        parentId = parentId if parentId is not None else None
+    for i in products:
+        parentId = i['parent']
+        name = i['name']
+        num = i['num']
+        code = i['code']
+        producttype = i['type']
+        mainunit = i['mainUnit']
+        id = i['id']
+        price = i['defaultSalePrice']
 
         if parentId in grouplist:
-            toolsmod = models.Tools(iikoid = id, parentid=parentId,name=name,num=num,code=code,producttype=producttype,mainunit=mainunit)
+            toolsmod = models.Tools(price=price,iikoid = id, parentid=parentId,name=name,num=num,code=code,producttype=producttype,mainunit=mainunit)
             commitdata(db,toolsmod)
     return True
+
+
+def check_suppier_exist(db:Session,supplier_id):
+    query = db.query(models.Suppliers).filter(models.Suppliers.id==supplier_id).first()
+    return query
+
+
+
+
+
+def synch_suppliers(db:Session,suppliers):
+    for i in suppliers:
+        id = i.find('id').text
+        is_store = i.find('representsStore')
+        store_id = i.find('representedStoreId')
+        
+        if not check_suppier_exist(db,supplier_id=id) and is_store.text=='true':
+            name = i.find('name').text
+            code = i.find('code')
+            code = code.text if code else None
+            taxpayernum = i.find('taxpayerIdNumber').text
+            db_add = models.Suppliers(id=id,code=code,taxpayernum=taxpayernum,store_id=store_id.text,name=name)
+            db.add(db_add)
+            db.commit()
+            db.refresh(db_add)
+
+
+            
+            
+    return True
+
 
 
 def getarchtools(db:Session):
@@ -615,8 +638,8 @@ def addcomment(db:Session,request_id,comment):
 
         
 
-def addexpenditure(db:Session,request_id,amount,tool_id):
-    add_data = models.Expanditure(request_id=request_id,tool_id=tool_id,amount=amount)
+def addexpenditure(db:Session,request_id,amount,tool_id,user_id,comment):
+    add_data = models.Expanditure(request_id=request_id,tool_id=tool_id,amount=amount,user_id=user_id,comment=comment)
     db.add(add_data)
     db.commit()
     db.refresh(add_data)
@@ -629,7 +652,7 @@ def getchildbranch(db:Session,parent_id):
 def udpatedepartment(db:Session,form_data:schemas.DepartmenUdpate):
     query = db.query(models.Fillials).filter(models.Fillials.id==form_data.id).first()
     if query:
-        query.status = form_data.status
+        query.origin = form_data.origin
     db.commit()
     db.refresh(query)
     return query
@@ -640,9 +663,18 @@ def check_expanditure_iiko(db:Session,form_data:schemas.SynchExanditureiiko):
     query = db.query(models.Expanditure).filter(models.Expanditure.request_id==form_data.request_id).all() 
     return query
 
-def synch_expanditure_iiko(db:Session,form_data:schemas.SynchExanditureiiko):
-    query = db.query(models.Expanditure).filter(models.Expanditure.id==id).update({models.Expanditure.status:1}) 
+def synch_expanditure_crud(db:Session,id):
+    query = db.query(models.Expanditure).filter(models.Expanditure.id==id).first()
+    query.status=1
+
     db.commit()
     db.refresh(query)
     return query
+
+def delete_expanditure(db:Session,id):
+    query = db.query(models.Expanditure).filter(models.Expanditure.id==id).delete()
+    db.commit()
+
+    return True
+
 

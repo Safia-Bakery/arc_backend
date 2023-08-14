@@ -18,11 +18,15 @@ from fastapi_pagination import paginate,Page,add_pagination
 from secondmain import router
 from iikoview import urls
 from microservices import create_refresh_token,verify_password,create_access_token,checkpermissions,get_db,get_current_user
+from dotenv import load_dotenv
+import os 
 models.Base.metadata.create_all(bind=engine)
+
+load_dotenv()
 #--------token generation
-JWT_SECRET_KEY = 'thisistokenforusersecretauth'   # should be kept secret
-JWT_REFRESH_SECRET_KEY =  'thisistokenforusersecretrefresh'
-ALGORITHM = "HS256"
+JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY')   # should be kept secret
+JWT_REFRESH_SECRET_KEY =  os.environ.get('JWT_REFRESH_SECRET_KEY')
+ALGORITHM = os.environ.get('ALGORITHM')
 from fastapi.staticfiles import StaticFiles
 
 origins = ["*"]

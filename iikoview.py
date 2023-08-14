@@ -19,7 +19,7 @@ from microservices import get_current_user,get_db,list_departments,authiiko
 from database import engine,SessionLocal
 from fastapi_pagination import paginate,Page,add_pagination
 
-from microservices import create_refresh_token,verify_password,create_access_token,checkpermissions,getgroups,getproducts,list_stores
+from microservices import checkpermissions,getgroups,getproducts,list_stores,get_suppliers,send_document_iiko
 #from main import get_db,get_current_user
 from fastapi import APIRouter
 from uuid import UUID
@@ -31,6 +31,7 @@ urls = APIRouter()
 async def insert_departments(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)): 
     data = crud.insert_fillials(db,items=list_departments(key=authiiko()))
     stores = crud.insert_otdels(db,items=list_stores(key=authiiko()))
+    suppliers = crud.synch_suppliers(db,suppliers=get_suppliers(key=authiiko()))
     branches = crud.get_branch_list(db)
     return paginate(branches)
 
@@ -57,7 +58,7 @@ async def toolgroups(db:Session=Depends(get_db),request_user:schemas.UserFullBac
     return crud.getarchtools(db)
 
 
-@urls.get('/v1/tool',response_model=Page[schemas.ToolsSearch])
+@urls.get('/tools/',response_model=Page[schemas.ToolsSearch])
 async def toolgroups(query:str,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     data = crud.gettools(db,query)
     return paginate(data)
@@ -66,10 +67,15 @@ async def toolgroups(query:str,db:Session=Depends(get_db),request_user:schemas.U
 
 
 @urls.post('/v1/expenditure')
-async def insert_expenditure(amount:Annotated[int,Form()],request_id:Annotated[int,Form()],tool_id:Annotated[int,Form()],comment:Annotated[str,Form()]=None,files:list[UploadFile]= None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    crud.addexpenditure(db,request_id=request_id,amount=amount,tool_id=tool_id)
-    if comment:
-        addcomment = crud.addcomment(db,request_id=request_id,comment=comment)
+async def insert_expenditure(amount:Annotated[int,Form()],request_id:Annotated[int,Form()],tool_id:Annotated[int,Form()],comment:Annotated[str,Form()]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+
+    query_expenditure = crud.addexpenditure(db,request_id=request_id,amount=amount,tool_id=tool_id,user_id=request_user.id,comment=comment)
+    
+    return {'success':True}
+
+
+@urls.post('/v1/upload/file')
+async def upload_file(request_id:Annotated[int,Form()],files:list[UploadFile]= None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     if files:
         file_obj_list = []
         for file in files:
@@ -81,16 +87,32 @@ async def insert_expenditure(amount:Annotated[int,Form()],request_id:Annotated[i
                         break
                     buffer.write(chunk)
             file_obj_list.append(models.Files(request_id=request_id,url=file_path,status=1))
-        crud.bulk_create_files(db,file_obj_list)
-    return {'success':True}
+        data = crud.bulk_create_files(db,file_obj_list)
+    return data
+
 
 @urls.put('/v1/expanditure/iiko')
 async def synch_expanditure_iiko(form_data:schemas.SynchExanditureiiko,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     data = crud.check_expanditure_iiko(db,form_data=form_data)
     for i in data:
-        if i.id==0:
-            query = crud.synch_expanditure_iiko(db,id=data.id)
-    return query
+    
+        if i.status==0:
+            query = crud.synch_expanditure_crud(db,id=i.id)
+            send_document_iiko(key=authiiko(),data=query)
+    return True
+
+
+@urls.delete('/v1/expanditure')
+async def delete_expanditure(id=int,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    data = crud.delete_expanditure(db,id)
+    if data:
+        return {'success':True}
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="not id not found"
+        )
+
 
 
 
