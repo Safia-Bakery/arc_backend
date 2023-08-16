@@ -440,7 +440,7 @@ async def tg_post_request(files:UploadFile,file_name:Annotated[str,Form()],teleg
             detail="not found"
             )
     
-    response_query = crud.add_request(db,category_id=categoryquery.id,fillial_id=childfillial.id,description=description,product=product,user_id=telegram_idquery.id)
+    response_query = crud.add_request(db,category_id=categoryquery.id,fillial_id=childfillial.id,description=description,product=product,user_id=telegram_id)
     file_obj_list = []
     file_path = f"files/{file_name}"
     with open(file_path, "wb") as buffer:
