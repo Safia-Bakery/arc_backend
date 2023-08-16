@@ -486,11 +486,11 @@ async def tg_get_branch_location(branch_name:Annotated[str,Form()],db:Session=De
                 detail="not found"
                 )
     
-@router.get('/tg/branch/get/request')
+@router.get('/tg/branch/get/request',response_model=list[schemas.GetRequestList])
 async def tg_get_branch_request(telegram_id:int,db:Session=Depends(get_db)):
     user = crud.getusertelegramid(db,telegram_id)
     query = crud.tg_get_request_list(db,brigada_id=user.brigada_id)
-    return list(query)
+    return query
 
 
 

@@ -85,7 +85,6 @@ async def upload_file(request_id:Annotated[int,Form()],files:list[UploadFile]= N
 async def synch_expanditure_iiko(form_data:schemas.SynchExanditureiiko,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     data = crud.check_expanditure_iiko(db,form_data=form_data)
     for i in data:
-    
         if i.status==0:
             query = crud.synch_expanditure_crud(db,id=i.id)
             send_document_iiko(key=authiiko(),data=query)
