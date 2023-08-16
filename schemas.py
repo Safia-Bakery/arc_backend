@@ -217,6 +217,7 @@ class GetBrigadaList(BaseModel):
     name:str
     description:Optional[str]=None
     status:int
+    user:list[UserGetlist]
     class Config:
         orm_mode=True
 
@@ -304,7 +305,7 @@ class UpdateBrigadaSch(BaseModel):
 
 class GetUserIdSch(BaseModel):
     id:int
-    username: str
+    username: Optional[str]=None
     time_created :datetime
     full_name: Optional[str]=None
     status : int
@@ -453,3 +454,23 @@ class SynchExanditureiiko(BaseModel):
 
 
 
+
+
+class GetComments(BaseModel):
+    id:int
+    request:GetRequestList
+    user:UserGetlist
+    comment:str
+    class Config:
+        orm_mode=True
+
+
+class AddComments(BaseModel):
+    request_id:int
+    comment:str
+    class Config:
+        orm_mode=True
+
+
+class TGlogin(BaseModel):
+    telegram_id:int

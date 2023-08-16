@@ -15,6 +15,7 @@ class Pages(Base):
 
     id = Column(Integer,primary_key=True,index=True)
     page_name = Column(String)
+
     role = relationship('Roles',back_populates='page')
 
 
@@ -58,7 +59,7 @@ class Users(Base):
     telegram_id = Column(BIGINT,nullable=True,unique=True)
     request = relationship('Requests',back_populates='user')
     expanditure = relationship('Expanditure',back_populates='user')
-    
+    comments = relationship('Comments',back_populates='user')
 
 
 class ParentFillials(Base):
@@ -158,6 +159,18 @@ class Requests(Base):
     user = relationship('Users',back_populates='request')
     expanditure = relationship("Expanditure",back_populates='request')
     user_id = Column(Integer,ForeignKey('users.id'))
+    comments = relationship('Comments',back_populates='request')
+
+
+class Comments(Base):
+    __tablename__='comments'
+    id = Column(Integer,primary_key=True,index=True)
+    request_id = Column(Integer,ForeignKey('requests.id'))
+    request= relationship('Requests',back_populates='comments')
+    user_id = Column(Integer,ForeignKey('users.id'))
+    user = relationship('Users',back_populates='comments')
+    comment = Column(String)
+
     
 
 class Files(Base):

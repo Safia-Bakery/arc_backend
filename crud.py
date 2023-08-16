@@ -678,3 +678,15 @@ def delete_expanditure(db:Session,id):
     return True
 
 
+def add_comment(db:Session,form_data:schemas.AddComments,user_id):
+    query = models.Comments(request_id=form_data.request_id,user_id=user_id,comment=form_data.comment)
+    db.add(query)
+    db.commit()
+    db.refresh(query)
+    return query
+
+def get_comment(db:Session):
+    query = db.query(models.Comments).all()
+    return query
+
+
