@@ -25,7 +25,7 @@ from dotenv import load_dotenv
 import os 
 models.Base.metadata.create_all(bind=engine)
 load_dotenv()
-disable_installed_extensions_check()
+
 #--------token generation
 JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY')   # should be kept secret
 JWT_REFRESH_SECRET_KEY =  os.environ.get('JWT_REFRESH_SECRET_KEY')
