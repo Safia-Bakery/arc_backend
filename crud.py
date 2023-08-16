@@ -464,7 +464,7 @@ def getusertelegramid(db:Session,id):
     return query
 
 def tg_get_request_list(db:Session,brigada_id):
-    query = db.query(models.Requests).filter(and_(models.Requests.brigada_id==brigada_id,models.Requests.status.in_([1,2])))
+    query = db.query(models.Requests).filter(and_(models.Requests.brigada_id==brigada_id,models.Requests.status.in_([1,2]))).all()
     return query
 
 
