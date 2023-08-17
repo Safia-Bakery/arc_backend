@@ -698,5 +698,5 @@ def get_comment(db:Session):
 
 
 def filterbranchchildid(db:Session,parent_id):
-    query = db.query(models.Fillials).filter(models.Fillials.id==1,models.Fillials.parentfillial_id==parent_id).first()
+    query = db.query(models.Fillials).filter(models.Fillials.status==1,models.Fillials.parentfillial_id==parent_id).first()
     return query
