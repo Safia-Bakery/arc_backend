@@ -121,10 +121,16 @@ class AddFillialSch(BaseModel):
         return status
     
 
+class GetParentFill(BaseModel):
+    name:str
+    class Config:
+        orm_mode=True
+
 class GetFillialChild(BaseModel):
     id:UUID
     name:str
     origin:int
+    parentfillial:Optional[GetParentFill]=None
     class Config:
         orm_mode=True
 
@@ -252,6 +258,7 @@ class GetRequestList(BaseModel):
     started_at :Optional[datetime]=None
     finished_at:Optional[datetime]=None
     user:Optional[UserGetlist]=None
+    user_manager:Optional[str]=None
     id:int
     class Config:
         orm_mode=True
@@ -262,7 +269,8 @@ class GetExpanditure(BaseModel):
     amount:int
     tool:Optional[ToolsSearch]=None
     comment:Optional[str]=None
-
+    user:Optional[UserGetlist]=None
+    created_at:datetime
     class Config:
         orm_mode=True
 
@@ -280,6 +288,7 @@ class GetRequestid(BaseModel):
     started_at :Optional[datetime]=None
     finished_at:Optional[datetime]=None
     user:Optional[UserGetlist]=None
+    user_manager:Optional[str]=None
     expanditure:list[GetExpanditure]
     id:int
     class Config:

@@ -281,8 +281,11 @@ def get_fillial_id(db:Session,id):
 
 
 def get_branch_list(db:Session):
-    return db.query(models.ParentFillials).filter(models.ParentFillials.status==1).order_by(models.ParentFillials.id).all()
+    return db.query(models.ParentFillials).join(models.Fillials).filter(models.ParentFillials.status==1,models.Fillials.origin==1).order_by(models.ParentFillials.id).all()
 
+
+def get_branch_list_location(db:Session):
+    return db.query(models.ParentFillials).filter(models.ParentFillials.status==1).order_by(models.ParentFillials.id).all()
 
 def set_null_user_brigada(db:Session,brigada_id):
     brigad_user = db.query(models.Users).filter(models.Users.id==brigada_id).update({models.Users.brigada_id:None})
@@ -313,7 +316,7 @@ def search_tools(db:Session,query):
     return tools
 
 
-def acceptreject(db:Session,form_data:schemas.AcceptRejectRequest):
+def acceptreject(db:Session,form_data:schemas.AcceptRejectRequest,user):
     db_get = db.query(models.Requests).filter(models.Requests.id==form_data.request_id).first()
     if db_get:
         if form_data.brigada_id is not None:
@@ -321,6 +324,7 @@ def acceptreject(db:Session,form_data:schemas.AcceptRejectRequest):
         if form_data.comment is not None:
             db_get.comment=form_data.comment
         db_get.status = form_data.status
+        db_get.user_manager=user
         if form_data.status == 1:
             db_get.started_at = datetime.now(timezonetash)
         if form_data.status == 3:
@@ -407,8 +411,8 @@ def filter_category(db:Session,category_status,name):
     return query.all()
 
 
-def filter_fillials(db:Session,name,country,latitude,longtitude,fillial_status):
-    query = db.query(models.ParentFillials)
+def filter_fillials(db:Session,name,country,latitude,longtitude,fillial_status,origin):
+    query = db.query(models.ParentFillials).join(models.Fillials)
     if name is not None:
         query = query.filter(models.ParentFillials.name.ilike(f"%{name}%"))
     if country is not None:
@@ -419,6 +423,8 @@ def filter_fillials(db:Session,name,country,latitude,longtitude,fillial_status):
         query = query.filter(models.ParentFillials.longtitude.ilike(f"%{longtitude}%"))
     if fillial_status is not None:
         query = query.filter(models.ParentFillials.status ==fillial_status)
+    if origin !=0:
+        query = query.filter(models.Fillials.origin==origin)
     return query.all()
 
 def get_list_tools(db:Session):
@@ -645,8 +651,8 @@ def addexpenditure(db:Session,request_id,amount,tool_id,user_id,comment):
     db.refresh(add_data)
     return add_data
     
-def getchildbranch(db:Session,parent_id):
-    query = db.query(models.Fillials).filter(models.Fillials.parentfillial_id==parent_id,models.Fillials.origin==0).first()
+def getchildbranch(db:Session,fillial):
+    query = db.query(models.Fillials).join(models.ParentFillials).filter(models.ParentFillials.name==fillial,models.Fillials.origin==1).first()
     return query
 
 def udpatedepartment(db:Session,form_data:schemas.DepartmenUdpate):
@@ -690,3 +696,7 @@ def get_comment(db:Session):
     return query
 
 
+
+def filterbranchchildid(db:Session,parent_id):
+    query = db.query(models.Fillials).filter(models.Fillials.id==1,models.Fillials.parentfillial_id==parent_id).first()
+    return query

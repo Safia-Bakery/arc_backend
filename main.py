@@ -467,10 +467,10 @@ async def update_fillials(form_data:schemas.UpdateFillialSch,db:Session=Depends(
 
     
 @app.get('/fillials',response_model=Page[schemas.GetFillialSch])
-async def filter_fillials(name:Optional[str]=None,country:Optional[str]=None,latitude:Optional[float]=None,longtitude:Optional[float]=None,fillial_status:Optional[int]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def filter_fillials(origin:int,name:Optional[str]=None,country:Optional[str]=None,latitude:Optional[float]=None,longtitude:Optional[float]=None,fillial_status:Optional[int]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='fillials')
     if permission:
-        return paginate(crud.filter_fillials(db,name=name,country=country,latitude=latitude,longtitude=longtitude,fillial_status=fillial_status))
+        return paginate(crud.filter_fillials(db,name=name,country=country,latitude=latitude,longtitude=longtitude,fillial_status=fillial_status,origin=origin))
 
     else:
         raise HTTPException(

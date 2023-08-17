@@ -160,6 +160,7 @@ class Requests(Base):
     expanditure = relationship("Expanditure",back_populates='request')
     user_id = Column(Integer,ForeignKey('users.id'))
     comments = relationship('Comments',back_populates='request')
+    user_manager = Column(String,nullable=True)
 
 
 class Comments(Base):

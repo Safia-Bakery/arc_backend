@@ -180,9 +180,9 @@ async def get_request_id(id:int,db:Session=Depends(get_db),request_user:schemas.
 @router.put('/request/attach/brigada')
 async def get_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page='requests')
-    if permission:  
+    if permission:
         #try:
-            request_list = crud.acceptreject(db,form_data=form_data)
+            request_list = crud.acceptreject(db,form_data=form_data,user=request_user.full_name)
             if form_data.status == 1:
                 brigada_id = request_list.brigada.id
                     
@@ -226,7 +226,8 @@ async def get_category(files:list[UploadFile],product:str,category_id:int,fillia
     permission = checkpermissions(request_user=request_user,db=db,page='requests')
     if permission:
         try:
-            responserq = crud.add_request(db,category_id=category_id,description=description,fillial_id=fillial_id,product=product,user_id=request_user.id)
+            filliald_od = crud.filterbranchchildid(db,fillial_id)
+            responserq = crud.add_request(db,category_id=category_id,description=description,fillial_id=filliald_od.id,product=product,user_id=request_user.id)
             file_obj_list = []
 
             if files:
@@ -385,6 +386,12 @@ async def get_tool_list(db:Session=Depends(get_db),request_user:schemas.UserFull
 @router.get('/fillials/list/tg')
 async def get_fillial_list_tg(db:Session=Depends(get_db)):
     return crud.get_branch_list(db)
+
+
+
+@router.get('/fillials/list/tg/location')
+async def get_fillial_list_tg(db:Session=Depends(get_db)):
+    return crud.get_branch_list_location(db)
     
 @router.get('/tools/{query}')
 async def get_user_with_id(query:str,db:Session=Depends(get_db)):
@@ -421,7 +428,7 @@ async def tg_get_user(user:schemas.BotCheckUser,db:Session=Depends(get_db)):
     userinfo = crud.tg_get_user(db,user)
     if userinfo:
         return {'success':True}
-    else: 
+    else:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="not found"
@@ -432,9 +439,8 @@ async def tg_get_user(user:schemas.BotCheckUser,db:Session=Depends(get_db)):
 async def tg_post_request(files:UploadFile,file_name:Annotated[str,Form()],telegram_id:Annotated[int,Form()],description:Annotated[str, Form()],product:Annotated[str, Form()],fillial:Annotated[str, Form()],category:Annotated[str, Form()],type:Annotated[str,Form()],db:Session=Depends(get_db)):
     categoryquery = crud.getcategoryname(db,category)
     telegram_idquery = crud.getusertelegramid(db,telegram_id)
-    fillialquery = crud.getfillialname(db,fillial)
-    childfillial = crud.getchildbranch(db,fillialquery.id)
-    if categoryquery is None or telegram_idquery is None or fillialquery is None:
+    childfillial = crud.getchildbranch(db,fillial)
+    if categoryquery is None or telegram_idquery is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="not found"
