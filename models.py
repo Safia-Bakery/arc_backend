@@ -15,7 +15,7 @@ class Pages(Base):
 
     id = Column(Integer,primary_key=True,index=True)
     page_name = Column(String)
-
+    action_name = Column(String)
     role = relationship('Roles',back_populates='page')
 
 
