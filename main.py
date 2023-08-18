@@ -363,9 +363,12 @@ async def update_brigada(form_data:schemas.UpdateBrigadaSch,db:Session=Depends(g
     if permission:
         try:
             brigrada = crud.update_brigada_id(db,form_data=form_data)
+
             if form_data.users:
                 crud.set_null_user_brigada(db,form_data.id)
                 crud.attach_user_brigads(db,form_data.users,form_data.id)
+            else:
+                crud.set_null_user_brigada(db,form_data.id)
             return {'success':True,'message':'everthing is ok','brigada':brigrada}
         except:
             raise HTTPException(
