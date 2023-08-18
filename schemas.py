@@ -483,3 +483,15 @@ class AddComments(BaseModel):
 
 class TGlogin(BaseModel):
     telegram_id:int
+
+class Pages(BaseModel):
+    id:int
+    action_name:str
+    class Config:
+        orm_mode=True
+
+class ParentPage(BaseModel):
+    page_name:str
+    actions:list[Pages]
+    class Config:
+        orm_mode=True

@@ -9,6 +9,14 @@ import uuid
 timezonetash = pytz.timezone("Asia/Tashkent")
 Base = declarative_base()
 
+class ParentPage(Base):
+    __tablename__='parentpage'
+    id = Column(Integer,primary_key=True,index=True)
+    page_name = Column(String)
+    actions=relationship('Pages',back_populates='parentpage')
+    
+    
+
 
 class Pages(Base):
     __tablename__='pages'
@@ -17,6 +25,9 @@ class Pages(Base):
     page_name = Column(String)
     action_name = Column(String)
     role = relationship('Roles',back_populates='page')
+    parentpage_id = Column(Integer,ForeignKey('parentpage.id'))
+    parentpage = relationship('ParentPage',back_populates='actions')
+
 
 
 class Groups(Base):

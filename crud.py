@@ -43,7 +43,7 @@ def tg_get_user(db:Session,user:schemas.BotCheckUser):
 
 
 def get_roles(db:Session):
-    return db.query(models.Pages).all()
+    return db.query(models.ParentPage).all()
 
 
 def create_group(db:Session,group:schemas.CreateGroupSch):
@@ -142,7 +142,7 @@ def get_roles_pages(db:Session,id):
 
 
 def filter_user_permission(db:Session,id,page):
-    return db.query(models.Roles).join(models.Roles.page).filter(models.Roles.group_id==id,models.Pages.page_name==page).first()
+    return db.query(models.Roles).join(models.Roles.page).filter(models.Roles.group_id==id,models.Pages.id==page).first()
 
 
 
