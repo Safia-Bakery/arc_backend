@@ -225,7 +225,7 @@ def get_user_for_brig(db:Session,id):
     return db_get_users
 
 def get_category_list(db:Session):
-    return db.query(models.Category).all()
+    return db.query(models.Category).filter(models.Category.status==1).all()
 
 def get_category_id(db:Session,id):
     return db.query(models.Category).filter(models.Category.id==id).first()
