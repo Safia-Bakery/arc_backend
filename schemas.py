@@ -176,6 +176,8 @@ class AddCategorySch(BaseModel):
     description:str
     status:int
     urgent:bool
+    sub_id:Optional[int]=None
+    department:int
     @validator('status')
     def validate_status_length(cls, status):
         if status not in [0,1]:
@@ -188,6 +190,8 @@ class UpdateCategorySch(BaseModel):
     description:Optional[str]=None
     status:Optional[int]=None
     urgent:Optional[bool]=None
+    sub_id :Optional[int]=None
+    department:Optional[int]=None
     @validator('status')
     def validate_status_length(cls, status):
         if status not in [0,1]:
@@ -200,6 +204,8 @@ class GetCategorySch(BaseModel):
     status:int
     id:int
     urgent:bool
+    sub_id:Optional[int]=None
+    department:int
     class Config:
         orm_mode=True
 

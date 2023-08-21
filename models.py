@@ -118,6 +118,8 @@ class Category(Base):
     request = relationship('Requests',back_populates='category')
     status = Column(Integer,default=0)
     urgent = Column(Boolean)
+    department=Column(Integer)
+    sub_id = Column(Integer,nullable=True)
 
 
 class Brigada(Base):
@@ -151,7 +153,7 @@ class Expanditure(Base):
 class Requests(Base):
     __tablename__='requests'
     id = Column(Integer,primary_key=True,index=True)
-    product = Column(String)
+    product = Column(String,nullable=True)
     description = Column(String)
     created_at = Column(DateTime,default=datetime.now(timezonetash))
     fillial = relationship('Fillials',back_populates='request')

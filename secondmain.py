@@ -1,6 +1,6 @@
 #----------import packages 
 from jose import JWTError, jwt
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta,date
 from sqlalchemy.orm import Session
 from fastapi import Depends, FastAPI, HTTPException,UploadFile,File,Form,Header,Request,status
 from pydantic import ValidationError
@@ -29,7 +29,7 @@ bot_token = os.environ.get('BOT_TOKEN')
 
 @router.post('/category')
 async def add_category(form_data:schemas.AddCategorySch,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page='category')
+    permission = checkpermissions(request_user=request_user,db=db,page=20)
     if permission:
         return crud.add_category_cr(db,form_data)
 
@@ -44,7 +44,7 @@ async def add_category(form_data:schemas.AddCategorySch,db:Session=Depends(get_d
 
 @router.put('/category')
 async def update_category(form_data:schemas.UpdateCategorySch,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page='category')
+    permission = checkpermissions(request_user=request_user,db=db,page=21)
     if permission:
         response = crud.update_category_cr(db,form_data)
         if response:
@@ -78,10 +78,10 @@ async def update_category(form_data:schemas.UpdateCategorySch,db:Session=Depends
 
 
 @router.get('/category',response_model=Page[schemas.GetCategorySch])
-async def filter_category(category_status:Optional[int]=None,name:Optional[str]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page='category')
+async def filter_category(sub_id:Optional[int]=None,department:Optional[int]=None,category_status:Optional[int]=None,name:Optional[str]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    permission = checkpermissions(request_user=request_user,db=db,page=6)
     if permission:
-        response = crud.filter_category(db,category_status=category_status,name=name)
+        response = crud.filter_category(db,category_status=category_status,name=name,sub_id=sub_id,department=department)
         return paginate(response)
 
     else:
@@ -93,7 +93,7 @@ async def filter_category(category_status:Optional[int]=None,name:Optional[str]=
 
 @router.get('/category/{id}',response_model=schemas.GetCategorySch)
 async def get_category_id(id:int,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page='category')
+    permission = checkpermissions(request_user=request_user,db=db,page=21)
     try:
         if permission:
             response = crud.get_category_id(db,id)
@@ -135,14 +135,14 @@ async def get_category_id(id:int,db:Session=Depends(get_db),request_user:schemas
 #            detail="You are not super user"
 #        )
 @router.get('/request',response_model=Page[schemas.GetRequestList])
-async def filter_request(id:Optional[int]=None,category_id:Optional[int]=None,fillial_id:Optional[UUID]=None,created_from:Optional[datetime]=None,created_to:Optional[datetime]=None,finished_from:Optional[datetime]=None,finished_to:Optional[datetime]=None,request_status:Optional[int]=None,department:Optional[str]=None,user:Optional[str]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page='requests')
+async def filter_request(sub_id:Optional[int]=None,department:Optional[int]=None,id:Optional[int]=None,category_id:Optional[int]=None,fillial_id:Optional[UUID]=None,created_at:Optional[date]=None,request_status:Optional[int]=None,user:Optional[str]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    permission = checkpermissions(request_user=request_user,db=db,page=12)
     if permission:
         
             if request_user.brigada_id:
-                requestdata= crud.filter_request_brigada(db,id=id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,created_from=created_from,created_to=created_to,finished_from=finished_from,finished_to=finished_to,user=user,brigada_id=request_user.brigada_id)
+                requestdata= crud.filter_request_brigada(db,id=id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,created_at=created_at,user=user,brigada_id=request_user.brigada_id)
                 return paginate(requestdata)
-            request_list = crud.filter_requests_all(db,id=id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,created_from=created_from,created_to=created_to,finished_from=finished_from,finished_to=finished_to,user=user)
+            request_list = crud.filter_requests_all(db,sub_id=sub_id,department=department,id=id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,created_at=created_at,user=user)
             return paginate(request_list)
     
     else:
@@ -157,7 +157,7 @@ async def filter_request(id:Optional[int]=None,category_id:Optional[int]=None,fi
 
 @router.get('/request/{id}',response_model=schemas.GetRequestid)
 async def get_request_id(id:int,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page='requests')
+    permission = checkpermissions(request_user=request_user,db=db,page=24)
     if permission:
         try:
             request_list = crud.get_request_id(db,id)
@@ -179,7 +179,7 @@ async def get_request_id(id:int,db:Session=Depends(get_db),request_user:schemas.
 
 @router.put('/request/attach/brigada')
 async def get_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page='requests')
+    permission = checkpermissions(request_user=request_user,db=db,page=27)
     if permission:
         #try:
             request_list = crud.acceptreject(db,form_data=form_data,user=request_user.full_name)
@@ -222,8 +222,8 @@ async def get_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
 
 
 @router.post('/request')
-async def get_category(files:list[UploadFile],product:str,category_id:int,fillial_id:UUID,description:str,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page='requests')
+async def get_category(files:list[UploadFile],category_id:int,fillial_id:UUID,description:str,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user),product:Optional[str]=None):
+    permission = checkpermissions(request_user=request_user,db=db,page=25)
     if permission:
         try:
             filliald_od = crud.filterbranchchildid(db,fillial_id)
@@ -262,7 +262,7 @@ async def get_category(files:list[UploadFile],product:str,category_id:int,fillia
 
 @router.get('/categories/fillials',summary='you can get list of fillials and categories when you are creating request')
 async def get_category_and_fillials(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page='requests')
+    permission = checkpermissions(request_user=request_user,db=db,page=25)
     if permission:
         try:
             categories = crud.get_category_list(db)
@@ -299,7 +299,7 @@ async def get_category_and_fillials(db:Session=Depends(get_db),request_user:sche
 
 @router.get('/users',response_model=Page[schemas.UserGetlist])
 async def filter_user(full_name:Optional[str]=None,username:Optional[str]=None,role_id:Optional[int]=None,phone_number:Optional[str]=None,user_status:Optional[int]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page='users')
+    permission = checkpermissions(request_user=request_user,db=db,page=5)
     if permission:
 
             users = crud.filter_user(db,user_status=user_status,username=username,phone_number=phone_number,role_id=role_id,full_name=full_name)
@@ -314,7 +314,7 @@ async def filter_user(full_name:Optional[str]=None,username:Optional[str]=None,r
 
 @router.put('/users',response_model=schemas.UserGetlist)
 async def filter_user(form_data:schemas.UserUpdateAll,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page='users')
+    permission = checkpermissions(request_user=request_user,db=db,page=19)
     if permission:
         
         updateuser = crud.update_user(db,form_data=form_data)
@@ -330,7 +330,7 @@ async def filter_user(form_data:schemas.UserUpdateAll,db:Session=Depends(get_db)
 
 @router.get('/users/{id}',response_model=schemas.GetUserIdSch)
 async def get_user_with_id(id:int,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page='users')
+    permission = checkpermissions(request_user=request_user,db=db,page=19)
     if permission:
         
             users = crud.get_user_id(db,id)
@@ -350,7 +350,7 @@ async def get_user_with_id(id:int,db:Session=Depends(get_db),request_user:schema
 
 @router.post('/tools',response_model=schemas.CreateTool)
 async def get_user_with_id(form_data:schemas.CreateTool,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page='tools')
+    permission = checkpermissions(request_user=request_user,db=db,page='onlysuperadmin')
     if permission:
         
         tools = crud.create_tool(db,form_data)
@@ -407,8 +407,8 @@ async def get_user_with_id(query:str,db:Session=Depends(get_db)):
 
 
 @router.get('/get/category/tg')
-async def get_category_list_tg(db:Session=Depends(get_db)):
-    return crud.get_category_list(db)
+async def get_category_list_tg(sub_id:Optional[int]=None,db:Session=Depends(get_db)):
+    return crud.get_category_list(db,sub_id=sub_id)
 
 
 @router.post('/tg/create/user')
@@ -436,10 +436,10 @@ async def tg_get_user(user:schemas.BotCheckUser,db:Session=Depends(get_db)):
 
 
 @router.post('/tg/request')
-async def tg_post_request(files:UploadFile,file_name:Annotated[str,Form()],telegram_id:Annotated[int,Form()],description:Annotated[str, Form()],product:Annotated[str, Form()],fillial:Annotated[str, Form()],category:Annotated[str, Form()],type:Annotated[str,Form()],db:Session=Depends(get_db)):
+async def tg_post_request(files:UploadFile,file_name:Annotated[str,Form()],telegram_id:Annotated[int,Form()],description:Annotated[str, Form()],product:Annotated[str, Form()],fillial:Annotated[str, Form()],category:Annotated[str, Form()],type:Annotated[int,Form()],db:Session=Depends(get_db)):
     categoryquery = crud.getcategoryname(db,category)
     telegram_idquery = crud.getusertelegramid(db,telegram_id)
-    childfillial = crud.getchildbranch(db,fillial)
+    childfillial = crud.getchildbranch(db,fillial,type=type)
     if categoryquery is None or telegram_idquery is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

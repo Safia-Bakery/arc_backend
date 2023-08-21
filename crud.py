@@ -5,7 +5,7 @@ import schemas
 import bcrypt
 import pytz
 from datetime import datetime 
-from sqlalchemy import or_,and_
+from sqlalchemy import or_,and_,Date,cast
 timezonetash = pytz.timezone("Asia/Tashkent")
 
 
@@ -133,6 +133,10 @@ def add_fillials(db:Session,data:schemas.AddFillialSch):
 
 
 
+def get_roles_pages_super(db:Session):
+    roles_ls = db.query(models.Pages).all()
+    return roles_ls
+
 
 
 def get_roles_pages(db:Session,id):
@@ -180,7 +184,7 @@ def get_fillial_list(db:Session):
 
 
 def add_category_cr(db:Session,form_data:schemas.AddCategorySch):
-    db_add_category = models.Category(name=form_data.name,description=form_data.description,status=form_data.status,urgent=form_data.urgent)
+    db_add_category = models.Category(name=form_data.name,description=form_data.description,status=form_data.status,urgent=form_data.urgent,sub_id=form_data.sub_id,department=form_data.department)
     db.add(db_add_category)
     db.commit()
     db.refresh(db_add_category)
@@ -197,6 +201,11 @@ def update_category_cr(db:Session,form_data:schemas.UpdateCategorySch):
             db_update_category.status = form_data.status
         if form_data.urgent is not None:
             db_update_category.urgent=form_data.urgent
+        if form_data.department is not None:
+            db_update_category.department=form_data.department
+
+        if form_data.sub_id is not None:
+            db_update_category.sub_id = form_data.sub_id
         db.commit()
         db.refresh(db_update_category)
         return db_update_category
@@ -224,8 +233,12 @@ def get_user_for_brig(db:Session,id):
     db_get_users = db.query(models.Users).filter((or_(models.Users.brigada_id==None,models.Users.brigada_id==id)),and_(models.Users.status==0)).all()
     return db_get_users
 
-def get_category_list(db:Session):
-    return db.query(models.Category).filter(models.Category.status==1).all()
+def get_category_list(db:Session,sub_id):
+    query = db.query(models.Category)
+    if sub_id:
+        query = query.filter(models.Category.sub_id==sub_id)
+    query = query.filter(models.Category.status==1).all()
+    return query
 
 def get_category_id(db:Session,id):
     return db.query(models.Category).filter(models.Category.id==id).first()
@@ -338,31 +351,31 @@ def acceptreject(db:Session,form_data:schemas.AcceptRejectRequest,user):
 
 
 
-def filter_requests_all(db:Session,id,category_id,fillial_id,created_from,created_to,finished_from,finished_to,request_status,user):
-    query = db.query(models.Requests)
+def filter_requests_all(db:Session,id,category_id,fillial_id,created_at,request_status,user,sub_id,department):
+    query = db.query(models.Requests).join(models.Category)
     if id is not None:
         query = query.filter(models.Requests.id==id)
     if fillial_id is not None:
         query = query.filter(models.Requests.fillial_id==fillial_id)
     if category_id is not None:
         query = query.filter(models.Requests.category_id==category_id)
-    if created_from is not None:
-        query = query.filter(models.Requests.created_at>created_from)
-    if created_to is not None:
-        query = query.filter(models.Requests.created_at<created_to)
-    if finished_from is not None:
-        query = query.filter(models.Requests.finished_at>finished_from)
-    if finished_to is not None:
-        query = query.filter(models.Requests.finished_at<finished_to)
+    
+    if created_at is not None:
+        query = query.filter(cast(models.Requests.created_at,Date)==created_at)
     if request_status is not None:
-        query = query.filter(models.Requests.status==request_status)
+        query =  query.filter(models.Requests.status==request_status)
     if user  is not None:
         query = query.filter(models.Users.full_name.ilike(f"%{user}%"))
+    if department is not None:
+        query = query.filter(models.Category.department==department)
+    if sub_id is not None:
+        query = query.filter(models.Category.sub_id==sub_id)
+    
     return query.order_by(models.Requests.id.desc()).all()
 
 
 
-def filter_request_brigada(db:Session,id,category_id,brigada_id,fillial_id,created_from,created_to,finished_from,finished_to,request_status,user):
+def filter_request_brigada(db:Session,id,category_id,brigada_id,fillial_id,created_at,request_status,user):
     query = db.query(models.Requests)
     if id is not None:
         query = query.filter(models.Requests.id==id)
@@ -370,14 +383,8 @@ def filter_request_brigada(db:Session,id,category_id,brigada_id,fillial_id,creat
         query = query.filter(models.Requests.fillial_id==fillial_id)
     if category_id is not None:
         query = query.filter(models.Requests.category_id==category_id)
-    if created_from is not None:
-        query = query.filter(models.Requests.created_at>created_from)
-    if created_to is not None:
-        query = query.filter(models.Requests.created_at<created_to)
-    if finished_from is not None:
-        query = query.filter(models.Requests.finished_at>finished_from)
-    if finished_to is not None:
-        query = query.filter(models.Requests.finished_at<finished_to)
+    if created_at is not None:
+        query = query.filter(models.Requests.created_at==created_at)
     if request_status is not None:
         query = query.filter(models.Requests.status==request_status)
     if user  is not None:
@@ -402,12 +409,16 @@ def filter_user(db:Session,user_status,full_name,phone_number,username,role_id):
 
 
 
-def filter_category(db:Session,category_status,name):
+def filter_category(db:Session,category_status,name,department,sub_id):
     query = db.query(models.Category)
     if category_status is not None:
         query = query.filter(models.Category.status==category_status)
     if  name is not None:
         query = query.filter(models.Category.name.ilike(f"%{name}%"))
+    if sub_id is not None:
+        query = query.filter(models.Category.sub_id==sub_id)
+    if department is not None:
+        query = query.filter(models.Category.department==department)
     return query.all()
 
 
@@ -651,8 +662,14 @@ def addexpenditure(db:Session,request_id,amount,tool_id,user_id,comment):
     db.refresh(add_data)
     return add_data
     
-def getchildbranch(db:Session,fillial):
-    query = db.query(models.Fillials).join(models.ParentFillials).filter(models.ParentFillials.name==fillial,models.Fillials.origin==1).first()
+def getchildbranch(db:Session,fillial,type):
+    query = db.query(models.Fillials).join(models.ParentFillials)
+    if type==1:
+        query = query.filter(models.ParentFillials.name==fillial,models.Fillials.origin==1)
+    elif type==2:
+        query = query.filter(models.Fillials.origin==0)
+    query = query.first()
+
     return query
 
 def udpatedepartment(db:Session,form_data:schemas.DepartmenUdpate):

@@ -409,18 +409,20 @@ async def create_expanditure(form_data:schemas.ExpanditureSchema,db:Session=Depe
 @app.get('/me')
 async def get_me(db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
     if request_user.status ==1:
-        permissions = '*'
+        permissions = []
+        for i in crud.get_roles_pages_super(db):
+            permissions.append(i.id)
         role='superadmin'
     elif request_user.group_id and request_user.status !=2:
         group_id = request_user.group_id
         
-        permissions = {}
+        permissions = []
         role = request_user.group.name
         for i in crud.get_roles_pages(db,group_id):
-            permissions[i.page.page_name]=True
+            permissions.append(i.page_id)
     else:
         role = None
-        permissions={}
+        permissions=[]
     return {'success':True,'username':request_user.username,'full_name':request_user.full_name,'role':role,'id':request_user.id,'permissions':permissions}
 
 #@app.post('/fillials')
