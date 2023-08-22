@@ -2,6 +2,7 @@
 from sqlalchemy import Column, Integer, String,ForeignKey,Float,DateTime,Boolean,BIGINT,Table
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
 import pytz 
@@ -58,7 +59,7 @@ class Users(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True,nullable=True)
     password = Column(String,nullable=True)
-    time_created = Column(DateTime,default=datetime.now(timezonetash))
+    time_created = Column(DateTime(timezone=True),default=func.now())
     full_name = Column(String,nullable=True)
     status = Column(Integer,default=0)
     email = Column(String,unique=True,nullable=True)
@@ -130,7 +131,7 @@ class Brigada(Base):
     request = relationship('Requests',back_populates='brigada')
     user =relationship('Users',back_populates='brigader',uselist=True)
     status = Column(Integer,default=0)
-    created_at = Column(DateTime,default=datetime.now(timezonetash))
+    created_at = Column(DateTime(timezone=True),default=func.now())
     
 
 
@@ -147,7 +148,7 @@ class Expanditure(Base):
     comment = Column(String,nullable=True)
     user_id = Column(Integer,ForeignKey('users.id'))
     user = relationship('Users',back_populates='expanditure')
-    created_at = Column(DateTime,default=datetime.now(timezonetash))
+    created_at = Column(DateTime(timezone=True),default=func.now())
 
 
 class Requests(Base):
@@ -155,7 +156,7 @@ class Requests(Base):
     id = Column(Integer,primary_key=True,index=True)
     product = Column(String,nullable=True)
     description = Column(String)
-    created_at = Column(DateTime,default=datetime.now(timezonetash))
+    created_at = Column(DateTime(timezone=True),default=func.now())
     fillial = relationship('Fillials',back_populates='request')
     fillial_id = Column(UUID(as_uuid=True),ForeignKey('fillials.id'))
     category = relationship('Category',back_populates='request')

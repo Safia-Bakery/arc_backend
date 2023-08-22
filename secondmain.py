@@ -184,11 +184,8 @@ async def get_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
         #try:
             request_list = crud.acceptreject(db,form_data=form_data,user=request_user.full_name)
             if form_data.status == 1:
-                brigada_id = request_list.brigada.id
-                    
-
-                
                 try:
+                    brigada_id = request_list.brigada.id
                     brigader_telid = crud.get_user_brig_id(db,brigada_id).telegram_id
                     sendtotelegramchannel(bot_token=bot_token,chat_id=brigader_telid,message_text=f"{request_list.brigada.name} вам назначена заявка, №{request_list.id} {request_list.fillial.name}")
                     sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, наш вашу заявку №{request_list.id} назначена команда🚙: {request_list.brigada.name}")
@@ -423,6 +420,7 @@ async def tg_create_userview(user:schemas.BotRegister,db:Session=Depends(get_db)
         )
 
 
+
 @router.get('/tg/user/exist')
 async def tg_get_user(user:schemas.BotCheckUser,db:Session=Depends(get_db)):
     userinfo = crud.tg_get_user(db,user)
@@ -457,7 +455,7 @@ async def tg_post_request(files:UploadFile,file_name:Annotated[str,Form()],teleg
             buffer.write(chunk)
         file_obj_list.append(models.Files(request_id=response_query.id,url=file_path))
         crud.bulk_create_files(db,file_obj_list)
-    return {'Message':'hello','success':True}
+    return {'Message':'hello','id':response_query.id}
 
 
 
