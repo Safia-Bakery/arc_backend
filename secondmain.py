@@ -135,7 +135,7 @@ async def get_category_id(id:int,db:Session=Depends(get_db),request_user:schemas
 #            detail="You are not super user"
 #        )
 @router.get('/request',response_model=Page[schemas.GetRequestList])
-async def filter_request(sub_id:Optional[int]=None,department:Optional[int]=None,id:Optional[int]=None,category_id:Optional[int]=None,fillial_id:Optional[UUID]=None,created_at:Optional[date]=None,request_status:Optional[int]=None,user:Optional[str]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def filter_request(department:int,sub_id:Optional[int]=None,id:Optional[int]=None,category_id:Optional[int]=None,fillial_id:Optional[UUID]=None,created_at:Optional[date]=None,request_status:Optional[int]=None,user:Optional[str]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page=12)
     if permission:
         

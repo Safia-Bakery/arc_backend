@@ -667,7 +667,7 @@ def getchildbranch(db:Session,fillial,type):
     if type==1:
         query = query.filter(models.ParentFillials.name==fillial,models.Fillials.origin==1)
     elif type==2:
-        query = query.filter(models.Fillials.origin==0)
+        query = query.filter(models.ParentFillials.name==fillial)
     query = query.first()
 
     return query
