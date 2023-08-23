@@ -188,9 +188,18 @@ async def get_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
                     brigada_id = request_list.brigada.id
                     brigader_telid = crud.get_user_brig_id(db,brigada_id).telegram_id
                     sendtotelegramchannel(bot_token=bot_token,chat_id=brigader_telid,message_text=f"{request_list.brigada.name} вам назначена заявка, №{request_list.id} {request_list.fillial.name}")
-                    sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, наш вашу заявку №{request_list.id} назначена команда🚙: {request_list.brigada.name}")
                 except:
                     pass
+                if request_list.category.name==1:
+                    try:
+                        sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, наш вашу заявку №{request_list.id} назначена команда🚙: {request_list.brigada.name}")
+                    except:
+                        pass
+                else:
+                    try:
+                        sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, наш вашу заявку №{request_list.id} начал.")
+                    except:
+                        pass
             if request_list:
                 return request_list
             else:
