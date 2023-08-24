@@ -190,16 +190,21 @@ async def get_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
                     sendtotelegramchannel(bot_token=bot_token,chat_id=brigader_telid,message_text=f"{request_list.brigada.name} вам назначена заявка, №{request_list.id} {request_list.fillial.name}")
                 except:
                     pass
-                if request_list.category.name==1:
+                if request_list.category.department==1:
                     try:
-                        sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, наш вашу заявку №{request_list.id} назначена команда🚙: {request_list.brigada.name}")
+                        sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, на вашу заявку №{request_list.id} назначена команда🚙: {request_list.brigada.name}")
                     except:
                         pass
                 else:
                     try:
-                        sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, наш вашу заявку №{request_list.id} начал.")
+                        sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки №{request_list.id} по Маркетингу: В процессе.")
                     except:
                         pass
+            if form_data.status ==3:
+                try:
+                    sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки №{request_list.id} по Маркетингу завершена.")
+                except:
+                    pass
             if request_list:
                 return request_list
             else:
