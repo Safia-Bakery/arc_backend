@@ -151,8 +151,7 @@ async def filter_request(department:int,sub_id:Optional[int]=None,id:Optional[in
 
 @router.get('/request/{id}',response_model=schemas.GetRequestid)
 async def get_request_id(id:int,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page=24)
-    if permission:
+
         try:
             request_list = crud.get_request_id(db,id)
 
@@ -164,17 +163,12 @@ async def get_request_id(id:int,db:Session=Depends(get_db),request_user:schemas.
         )
 
 
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
+
     
 
 @router.put('/request/attach/brigada')
 async def get_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page=27)
-    if permission:
+
         #try:
             request_list = crud.acceptreject(db,form_data=form_data,user=request_user.full_name)
             if form_data.status == 1:
@@ -213,12 +207,6 @@ async def get_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
         #)
 
 
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
-
 
 
 
@@ -228,8 +216,6 @@ async def get_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
 
 @router.post('/request')
 async def get_category(files:list[UploadFile],category_id:int,fillial_id:UUID,description:str,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user),product:Optional[str]=None):
-    permission = checkpermissions(request_user=request_user,db=db,page=25)
-    if permission:
         try:
             filliald_od = crud.filterbranchchildid(db,fillial_id)
             responserq = crud.add_request(db,category_id=category_id,description=description,fillial_id=filliald_od.id,product=product,user_id=request_user.id)
@@ -254,11 +240,7 @@ async def get_category(files:list[UploadFile],category_id:int,fillial_id:UUID,de
         )
 
 
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
+
 
 
 
