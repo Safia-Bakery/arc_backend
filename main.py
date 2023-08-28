@@ -32,7 +32,8 @@ JWT_REFRESH_SECRET_KEY =  os.environ.get('JWT_REFRESH_SECRET_KEY')
 ALGORITHM = os.environ.get('ALGORITHM')
 from fastapi.staticfiles import StaticFiles
 
-origins = ["*"]
+
+origins = ["https://service.safiabakery.uz"]
 
 reuseable_oauth = OAuth2PasswordBearer(
     tokenUrl="/login",
