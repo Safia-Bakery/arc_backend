@@ -8,6 +8,7 @@ from fastapi import Depends, FastAPI, HTTPException,UploadFile,File,Form,Header,
 from pydantic import ValidationError
 import schemas
 import bcrypt
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from uuid import UUID
 from typing import Optional
 import models
@@ -44,7 +45,7 @@ app = FastAPI()
 app.include_router(router)
 app.include_router(urls)
 app.mount("/files", StaticFiles(directory="files"), name="files")
-
+app.add_middleware(TrustedHostMiddleware,allowed_hosts=["service.safiabakery.uz"])
 
 app.add_middleware(
     CORSMiddleware,
