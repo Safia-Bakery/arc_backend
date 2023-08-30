@@ -250,7 +250,7 @@ def get_category_id(db:Session,id):
     return db.query(models.Category).filter(models.Category.id==id).first()
 
 def add_request(db:Session,category_id,fillial_id,description,product,user_id):
-    db_add_request = models.Requests(category_id=category_id,description=description,fillial_id = fillial_id,product=product,user_id=user_id,is_bot=0)
+    db_add_request = models.Requests(category_id=category_id,description=description,fillial_id = fillial_id,product=product,user_id=user_id,is_bot=1)
     db.add(db_add_request)
     db.commit()
     db.refresh(db_add_request)
