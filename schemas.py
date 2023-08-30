@@ -11,6 +11,7 @@ class UserFullBack(BaseModel):
     success:Optional[bool]=True
     full_name : Optional[str]=None
     status:Optional[int]=None
+    sphere_status:Optional[int]=None
     brigader:Optional[object]=None
     brigada_id:Optional[object]=None
     group_id:Optional[int]=None
@@ -23,6 +24,7 @@ class UserFullBack(BaseModel):
 class User(BaseModel):
     id: int
     username: str
+    sphere_status:Optional[int]=None
     success:Optional[bool]=True
     full_name : Optional[str]=None
     class Config:
@@ -32,6 +34,7 @@ class UserCreate(BaseModel):
     password : str
     username:str
     full_name: Optional[str]=None
+    sphere_status:Optional[int]=None
     email:Optional[str]=None
     phone_number:str
     group_id:Optional[int]=None
@@ -43,7 +46,7 @@ class UserCreate(BaseModel):
         return password
     @validator('status')
     def validate_status(cls, status):
-        if status not in [0,2]:
+        if status not in [0,2,3]:
             raise ValueError("send valid  status code please send 0 or 2. 0 for default user 2 for inactive user")
         return status
     
@@ -80,6 +83,7 @@ class UsersSettingsSch(BaseModel):
     id:int
     username:str
     full_name:Optional[str]=None
+    sphere_status:Optional[int]=None
     time_created:datetime
     group_id:Optional[int]=None
     group:Optional[CreateGroupSch]=None
@@ -99,9 +103,10 @@ class UservsRoleCr(BaseModel):
     status : int
 
 
+
     @validator('status')
     def validate_status_length(cls, status):
-        if status not in [0,1]:
+        if status not in [0,1,2]:
             raise ValueError("send valid  status code ")
         return status
     
@@ -141,6 +146,7 @@ class GetFillialSch(BaseModel):
     latitude:Optional[int]=None
     country:Optional[str]=None
     status : int
+    is_fabrica:Optional[int]=None
     fillial_department:list[GetFillialChild]
     class Config:
         orm_mode=True
@@ -168,6 +174,7 @@ class UpdateFillialSch(BaseModel):
     status:Optional[int]=None
     department_id:Optional[UUID]=None
     origin:Optional[int]=None
+    is_fabrica:Optional[int]=None
 
 
 
@@ -178,12 +185,14 @@ class AddCategorySch(BaseModel):
     urgent:bool
     sub_id:Optional[int]=None
     department:int
+    sphere_status:Optional[int]=0
     @validator('status')
     def validate_status_length(cls, status):
         if status not in [0,1]:
             raise ValueError("send valid  status code ")
         return status
-    
+
+
 class UpdateCategorySch(BaseModel):
     id:int
     name:Optional[str]=None
@@ -192,6 +201,7 @@ class UpdateCategorySch(BaseModel):
     urgent:Optional[bool]=None
     sub_id :Optional[int]=None
     department:Optional[int]=None
+    sphere_status:Optional[int]=None
     @validator('status')
     def validate_status_length(cls, status):
         if status not in [0,1]:
@@ -206,6 +216,7 @@ class GetCategorySch(BaseModel):
     urgent:bool
     sub_id:Optional[int]=None
     department:int
+    sphere_status:Optional[int]=None
     class Config:
         orm_mode=True
 
@@ -241,6 +252,7 @@ class GetBrigadaIdSch(BaseModel):
     description:Optional[str]=None
     status:int
     user : list[UserGetlist]
+    sphere_status:Optional[int]=None
     class Config:
         orm_mode=True
 
@@ -265,6 +277,7 @@ class GetRequestList(BaseModel):
     finished_at:Optional[datetime]=None
     user:Optional[UserGetlist]=None
     user_manager:Optional[str]=None
+    is_bot:Optional[bool]=None
     id:int
     class Config:
         orm_mode=True
@@ -296,6 +309,7 @@ class GetRequestid(BaseModel):
     user:Optional[UserGetlist]=None
     user_manager:Optional[str]=None
     expanditure:list[GetExpanditure]
+    is_bot:Optional[bool]=None
     id:int
     class Config:
         orm_mode=True
@@ -320,6 +334,7 @@ class UpdateBrigadaSch(BaseModel):
 
 class GetUserIdSch(BaseModel):
     id:int
+    sphere_status:Optional[int]=None
     username: Optional[str]=None
     time_created :datetime
     full_name: Optional[str]=None
@@ -369,6 +384,7 @@ class UserUpdateAll(BaseModel):
     group_id:Optional[int]=None
     brigada_id:Optional[int]=None
     telegram_id:Optional[int]=None
+    sphere_status:Optional[int]=None
     user_id:int
     @validator('status')
     def validate_status_length(cls, status):
@@ -383,6 +399,7 @@ class BotRegister(BaseModel):
     full_name:str
     phone_number:str
     telegram_id:int
+    sphere_status:int
 
 
 class BotCheckUser(BaseModel):

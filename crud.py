@@ -23,14 +23,14 @@ def get_user(db: Session, username: str):
 
 def create_user(db:Session,user : schemas.UserCreate):
     hashed_password = hash_password(user.password)
-    db_user = models.Users(username=user.username.lower(), password=hashed_password,full_name=user.full_name,email=user.email,phone_number=user.phone_number,group_id=user.group_id,status=user.status)
+    db_user = models.Users(sphere_status=user.sphere_status,username=user.username.lower(), password=hashed_password,full_name=user.full_name,email=user.email,phone_number=user.phone_number,group_id=user.group_id,status=user.status)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     return db_user
 
 def tg_create_user(db:Session,user:schemas.BotRegister):
-    db_user = models.Users(telegram_id=user.telegram_id,phone_number=user.phone_number,full_name=user.full_name)
+    db_user = models.Users(telegram_id=user.telegram_id,phone_number=user.phone_number,full_name=user.full_name,sphere_status=user.sphere_status)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -160,6 +160,8 @@ def update_fillial_cr(db:Session,form_data:schemas.UpdateFillialSch):
             db_fillial_update.latitude = form_data.latitude
         if form_data.status is not None:
             db_fillial_update.status = form_data.status
+        if form_data.is_fabrica is not None:
+            db_fillial_update.is_fabrica = form_data.is_fabrica
         db.commit()
         db.refresh(db_fillial_update)
         return db_fillial_update
@@ -184,7 +186,7 @@ def get_fillial_list(db:Session):
 
 
 def add_category_cr(db:Session,form_data:schemas.AddCategorySch):
-    db_add_category = models.Category(name=form_data.name,description=form_data.description,status=form_data.status,urgent=form_data.urgent,sub_id=form_data.sub_id,department=form_data.department)
+    db_add_category = models.Category(name=form_data.name,description=form_data.description,status=form_data.status,urgent=form_data.urgent,sub_id=form_data.sub_id,department=form_data.department,sphere_status=form_data.sphere_status)
     db.add(db_add_category)
     db.commit()
     db.refresh(db_add_category)
@@ -206,6 +208,8 @@ def update_category_cr(db:Session,form_data:schemas.UpdateCategorySch):
 
         if form_data.sub_id is not None:
             db_update_category.sub_id = form_data.sub_id
+        if form_data.sphere_status is not None:
+            db_update_category.sphere_status = form_data.sphere_status
         db.commit()
         db.refresh(db_update_category)
         return db_update_category
@@ -221,6 +225,8 @@ def update_brigada_id(db:Session,form_data:schemas.UpdateBrigadaSch):
             db_update_brigada.description=form_data.description
         if form_data.status is not None:
             db_update_brigada.status = form_data.status
+        if form_data.sphere_status is not None:
+            db_update_brigada.sphere_status=form_data.sphere_status
         db.commit()
         db.refresh(db_update_brigada)
         return db_update_brigada
@@ -233,18 +239,18 @@ def get_user_for_brig(db:Session,id):
     db_get_users = db.query(models.Users).filter((or_(models.Users.brigada_id==None,models.Users.brigada_id==id)),and_(models.Users.status==0)).all()
     return db_get_users
 
-def get_category_list(db:Session,sub_id):
+def get_category_list(db:Session,sub_id,sphere_status):
     query = db.query(models.Category)
     if sub_id:
         query = query.filter(models.Category.sub_id==sub_id)
-    query = query.filter(models.Category.status==1).all()
+    query = query.filter(models.Category.status==1,models.Category.sphere_status==sphere_status).all()
     return query
 
 def get_category_id(db:Session,id):
     return db.query(models.Category).filter(models.Category.id==id).first()
 
 def add_request(db:Session,category_id,fillial_id,description,product,user_id):
-    db_add_request = models.Requests(category_id=category_id,description=description,fillial_id = fillial_id,product=product,user_id=user_id)
+    db_add_request = models.Requests(category_id=category_id,description=description,fillial_id = fillial_id,product=product,user_id=user_id,is_bot=0)
     db.add(db_add_request)
     db.commit()
     db.refresh(db_add_request)
@@ -260,8 +266,8 @@ def bulk_create_files(db:Session,per_obj):
 
 
 
-def get_brigada_list(db:Session):
-    return db.query(models.Brigada).all()
+def get_brigada_list(db:Session,sphere_status):
+    return db.query(models.Brigada).join(models.Users).filter(models.Users.sphere_status==sphere_status).all()
 
 
 
@@ -301,7 +307,7 @@ def get_branch_list_location(db:Session):
     return db.query(models.ParentFillials).filter(models.ParentFillials.status==1).order_by(models.ParentFillials.id).all()
 
 def set_null_user_brigada(db:Session,brigada_id):
-    brigad_user = db.query(models.Users).filter(models.Users.id==brigada_id).update({models.Users.brigada_id:None})
+    brigad_user = db.query(models.Users).filter(models.Users.brigada_id==brigada_id).update({models.Users.brigada_id:None})
     db.commit()
     return brigad_user
 
@@ -309,7 +315,6 @@ def attach_user_brigads(db:Session,data:list,brig_id:int):
     brigad_user = db.query(models.Users).filter(models.Users.id.in_(data)).update({models.Users.brigada_id:brig_id})
     db.commit()
     return brigad_user
-
 
 def get_user_id(db:Session,id:int):
     user = db.query(models.Users).filter(models.Users.id==id).first()
@@ -351,7 +356,7 @@ def acceptreject(db:Session,form_data:schemas.AcceptRejectRequest,user):
 
 
 
-def filter_requests_all(db:Session,id,category_id,fillial_id,created_at,request_status,user,sub_id,department):
+def filter_requests_all(db:Session,id,category_id,fillial_id,created_at,request_status,user,sub_id,department,sphere_status):
     query = db.query(models.Requests).join(models.Category)
     if id is not None:
         query = query.filter(models.Requests.id==id)
@@ -370,13 +375,14 @@ def filter_requests_all(db:Session,id,category_id,fillial_id,created_at,request_
         query = query.filter(models.Category.department==department)
     if sub_id is not None:
         query = query.filter(models.Category.sub_id==sub_id)
-    
+    if sphere_status is not None:
+        query = query.filter(models.Category.sphere_status==sphere_status)
     return query.order_by(models.Requests.id.desc()).all()
 
 
 
-def filter_request_brigada(db:Session,id,category_id,brigada_id,fillial_id,created_at,request_status,user):
-    query = db.query(models.Requests)
+def filter_request_brigada(db:Session,id,category_id,brigada_id,fillial_id,created_at,request_status,user,sphere_status):
+    query = db.query(models.Requests).join(models.Category)
     if id is not None:
         query = query.filter(models.Requests.id==id)
     if fillial_id is not None:
@@ -389,11 +395,13 @@ def filter_request_brigada(db:Session,id,category_id,brigada_id,fillial_id,creat
         query = query.filter(models.Requests.status==request_status)
     if user  is not None:
         query = query.filter(models.Users.full_name.ilike(f"%{user}/%"))
+    if sphere_status is not None:
+        query = query.filter(models.Category.sphere_status==sphere_status)
     query = query.filter(models.Requests.brigada_id==brigada_id)
     return query.order_by(models.Requests.id.desc()).all()
 
 
-def filter_user(db:Session,user_status,full_name,phone_number,username,role_id):
+def filter_user(db:Session,user_status,full_name,phone_number,username,role_id,position):
     query = db.query(models.Users)
     if user_status is not None:
         query = query.filter(models.Users.status==user_status)
@@ -405,11 +413,15 @@ def filter_user(db:Session,user_status,full_name,phone_number,username,role_id):
         query = query.filter(models.Users.username.ilike(f"%{username}%"))
     if role_id is not None:
         query = query.filter(models.Users.group_id==role_id)
+    if position:
+        query = query.filter(models.Users.group_id!=None)
+    if not position:
+        query = query.filter(models.Users.group_id==None)
     return query.all()
 
 
 
-def filter_category(db:Session,category_status,name,department,sub_id):
+def filter_category(db:Session,category_status,name,department,sub_id,sphere_status):
     query = db.query(models.Category)
     if category_status is not None:
         query = query.filter(models.Category.status==category_status)
@@ -419,6 +431,8 @@ def filter_category(db:Session,category_status,name,department,sub_id):
         query = query.filter(models.Category.sub_id==sub_id)
     if department is not None:
         query = query.filter(models.Category.department==department)
+    if sphere_status is not None:
+        query  = query.filter(models.Category.sphere_status == sphere_status)
     return query.all()
 
 
@@ -465,6 +479,8 @@ def update_user(db:Session,form_data:schemas.UserUpdateAll):
             query.password = hash_password(form_data.password)
         if form_data.status is not None:
             query.status = form_data.status
+        if form_data.sphere_status is not None:
+            query.sphere_status = form_data.sphere_status
         db.commit()
         db.refresh(query)
         return query
@@ -556,7 +572,7 @@ def commitdata(db:Session,item):
 def synchtools(db:Session,groups):
     group_list = []
     for line in groups:
-        if line['id'] in ['09be831f-1201-4b78-9cad-7c94c3363276','1b55d7e1-6946-4bbc-bf93-542bfdb2b584']:
+        if line['id'] in ['09be831f-1201-4b78-9cad-7c94c3363276','1b55d7e1-6946-4bbc-bf93-542bfdb2b584',]:
             group_list.append(line['id'])
             if check_group_exist(db,line['id'],models.ToolParents,models.ToolParents.id) is None:
                 item = models.ToolParents(id=line['id'],num=line['num'],code=line['code'],name=line['name'],category=line['category'],description=line['description'])

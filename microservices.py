@@ -203,28 +203,30 @@ def send_document_iiko(key,data):
     headers = {
         "Content-Type": "application/xml",  # Set the content type to XML
     }
-
-    xml_data = f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-    <document>
-    <documentNumber>newarc-{data.id}</documentNumber>
-    <dateIncoming></dateIncoming>
-    <useDefaultDocumentTime>false</useDefaultDocumentTime>
-    <counteragentId>{data.request.fillial.supplier[0].id}</counteragentId>
-    <defaultStoreId>4aafb5af-66c3-4419-af2d-72897f652019</defaultStoreId>
-    <items>
-        <item>
-            <productId>{data.tool.iikoid}</productId>
-            <productArticle>{data.tool.code}</productArticle>
-            <storeId>4aafb5af-66c3-4419-af2d-72897f652019</storeId>
-            <price>{data.tool.price}</price>
-            <amount>{data.amount}</amount>
-            <sum>{price}</sum>
-            <discountSum>0.000000000</discountSum>
-        </item>
-    </items>
-    </document>"""
-    response = requests.post(f"{BASE_URL}/resto/api/documents/import/outgoingInvoice?key={key}",data=xml_data,headers=headers)
+    if data.request.category.sphere_status==1:
+        xml_data = f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <document>
+        <documentNumber>newarc-{data.id}</documentNumber>
+        <dateIncoming></dateIncoming>
+        <useDefaultDocumentTime>false</useDefaultDocumentTime>
+        <counteragentId>{data.request.fillial.supplier[0].id}</counteragentId>
+        <defaultStoreId>4aafb5af-66c3-4419-af2d-72897f652019</defaultStoreId>
+        <items>
+            <item>
+                <productId>{data.tool.iikoid}</productId>
+                <productArticle>{data.tool.code}</productArticle>
+                <storeId>4aafb5af-66c3-4419-af2d-72897f652019</storeId>
+                <price>{data.tool.price}</price>
+                <amount>{data.amount}</amount>
+                <sum>{price}</sum>
+                <discountSum>0.000000000</discountSum>
+            </item>
+        </items>
+        </document>"""
+        response = requests.post(f"{BASE_URL}/resto/api/documents/import/outgoingInvoice?key={key}",data=xml_data,headers=headers)
+        print(response.content)
     
-    print(response.content)
+    if data.request.category.sphere_status==2:
+        pass
     return True
     

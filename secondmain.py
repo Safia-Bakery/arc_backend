@@ -78,10 +78,10 @@ async def update_category(form_data:schemas.UpdateCategorySch,db:Session=Depends
 
 
 @router.get('/category',response_model=Page[schemas.GetCategorySch])
-async def filter_category(sub_id:Optional[int]=None,department:Optional[int]=None,category_status:Optional[int]=None,name:Optional[str]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def filter_category(sphere_status:Optional[int]=None,sub_id:Optional[int]=None,department:Optional[int]=None,category_status:Optional[int]=None,name:Optional[str]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     #permission = checkpermissions(request_user=request_user,db=db,page=6)
     #if permission:
-        response = crud.filter_category(db,category_status=category_status,name=name,sub_id=sub_id,department=department)
+        response = crud.filter_category(db,category_status=category_status,name=name,sub_id=sub_id,department=department,sphere_status=sphere_status)
         return paginate(response)
 
     #else:
@@ -89,7 +89,7 @@ async def filter_category(sub_id:Optional[int]=None,department:Optional[int]=Non
     #        status_code=status.HTTP_403_FORBIDDEN,
     #        detail="You are not super user"
     #    )
-    
+
 
 @router.get('/category/{id}',response_model=schemas.GetCategorySch)
 async def get_category_id(id:int,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
@@ -135,13 +135,13 @@ async def get_category_id(id:int,db:Session=Depends(get_db),request_user:schemas
 #            detail="You are not super user"
 #        )
 @router.get('/request',response_model=Page[schemas.GetRequestList])
-async def filter_request(department:int,sub_id:Optional[int]=None,id:Optional[int]=None,category_id:Optional[int]=None,fillial_id:Optional[UUID]=None,created_at:Optional[date]=None,request_status:Optional[int]=None,user:Optional[str]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def filter_request(department:int,sub_id:Optional[int]=None,id:Optional[int]=None,category_id:Optional[int]=None,fillial_id:Optional[UUID]=None,created_at:Optional[date]=None,request_status:Optional[int]=None,user:Optional[str]=None,sphere_status:Optional[int]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
 
         
         if request_user.brigada_id:
-            requestdata= crud.filter_request_brigada(db,id=id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,created_at=created_at,user=user,brigada_id=request_user.brigada_id)
+            requestdata= crud.filter_request_brigada(db,id=id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,created_at=created_at,user=user,brigada_id=request_user.brigada_id,sphere_status=sphere_status)
             return paginate(requestdata)
-        request_list = crud.filter_requests_all(db,sub_id=sub_id,department=department,id=id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,created_at=created_at,user=user)
+        request_list = crud.filter_requests_all(db,sub_id=sub_id,department=department,id=id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,created_at=created_at,user=user,sphere_status=sphere_status)
         return paginate(request_list)
     
 
@@ -285,11 +285,11 @@ async def get_category_and_fillials(db:Session=Depends(get_db),request_user:sche
 
 
 @router.get('/users',response_model=Page[schemas.UserGetlist])
-async def filter_user(full_name:Optional[str]=None,username:Optional[str]=None,role_id:Optional[int]=None,phone_number:Optional[str]=None,user_status:Optional[int]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def filter_user(full_name:Optional[str]=None,username:Optional[str]=None,role_id:Optional[int]=None,phone_number:Optional[str]=None,user_status:Optional[int]=None,position:Optional[bool]=True,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page=5)
     if permission:
 
-            users = crud.filter_user(db,user_status=user_status,username=username,phone_number=phone_number,role_id=role_id,full_name=full_name)
+            users = crud.filter_user(db,user_status=user_status,username=username,phone_number=phone_number,role_id=role_id,full_name=full_name,position=position)
             return paginate(users)
 
 
@@ -394,8 +394,8 @@ async def get_user_with_id(query:str,db:Session=Depends(get_db)):
 
 
 @router.get('/get/category/tg')
-async def get_category_list_tg(sub_id:Optional[int]=None,db:Session=Depends(get_db)):
-    return crud.get_category_list(db,sub_id=sub_id)
+async def get_category_list_tg(sphere_status:int,sub_id:Optional[int]=None,db:Session=Depends(get_db)):
+    return crud.get_category_list(db,sub_id=sub_id,sphere_status=sphere_status)
 
 
 @router.post('/tg/create/user')

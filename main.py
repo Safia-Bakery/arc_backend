@@ -34,7 +34,7 @@ ALGORITHM = os.environ.get('ALGORITHM')
 from fastapi.staticfiles import StaticFiles
 
 
-origins = ["https://service.safiabakery.uz"]
+origins = ["*"]
 
 reuseable_oauth = OAuth2PasswordBearer(
     tokenUrl="/login",
@@ -45,7 +45,7 @@ app = FastAPI()
 app.include_router(router)
 app.include_router(urls)
 app.mount("/files", StaticFiles(directory="files"), name="files")
-app.add_middleware(TrustedHostMiddleware,allowed_hosts=["*.safiabakery.uz"])
+app.add_middleware(TrustedHostMiddleware,allowed_hosts=["*"])
 
 app.add_middleware(
     CORSMiddleware,
@@ -94,6 +94,7 @@ async def telegram_login(form_data:schemas.TGlogin,db:Session=Depends(get_db)):
         )
     
     return {
+        'sphere_status':user.sphere_status,
         "access_token": create_access_token(user.username),
         "refresh_token": create_refresh_token(user.username),
     }
@@ -299,11 +300,11 @@ async def create_brigada(form_data:schemas.UservsRoleCr,db:Session=Depends(get_d
 
 
 @app.get('/brigadas',response_model=Page[schemas.GetBrigadaList])
-async def get_list_brigada(db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
+async def get_list_brigada(sphere_status:Optional[int]=None,db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page=3)
     if permission:
         
-        users = crud.get_brigada_list(db)
+        users = crud.get_brigada_list(db,sphere_status=sphere_status)
         return paginate(users)
        
 
@@ -363,7 +364,7 @@ async def user_for_brigada(id:int,db:Session=Depends(get_db),request_user: schem
 async def update_brigada(form_data:schemas.UpdateBrigadaSch,db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page=17)
     if permission:
-        try:
+        #try:
             brigrada = crud.update_brigada_id(db,form_data=form_data)
 
             if form_data.users:
@@ -372,11 +373,11 @@ async def update_brigada(form_data:schemas.UpdateBrigadaSch,db:Session=Depends(g
             else:
                 crud.set_null_user_brigada(db,form_data.id)
             return {'success':True,'message':'everthing is ok','brigada':brigrada}
-        except:
-            raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="not found"
-        )
+        #except:
+        #    raise HTTPException(
+        #    status_code=status.HTTP_404_NOT_FOUND,
+        #    detail="not found"
+        #)
        
 
     else:
