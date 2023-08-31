@@ -77,17 +77,17 @@ async def toolgroups(query:str,db:Session=Depends(get_db),request_user:schemas.U
 
 @urls.post('/v1/expenditure')
 async def insert_expenditure(amount:Annotated[int,Form()],request_id:Annotated[int,Form()],tool_id:Annotated[int,Form()],comment:Annotated[str,Form()]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page=28)
-    if permission:
+    #permission = checkpermissions(request_user=request_user,db=db,page=28)
+    #if permission:
 
         query_expenditure = crud.addexpenditure(db,request_id=request_id,amount=amount,tool_id=tool_id,user_id=request_user.id,comment=comment)
         
         return {'success':True}
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
+    #else:
+    #    raise HTTPException(
+    #        status_code=status.HTTP_403_FORBIDDEN,
+    #        detail="You are not super user"
+    #    )
 
 
 @urls.post('/v1/upload/file')
@@ -114,6 +114,7 @@ async def synch_expanditure_iiko(form_data:schemas.SynchExanditureiiko,db:Sessio
         data = crud.check_expanditure_iiko(db,form_data=form_data)
         for i in data:
             if i.status==0:
+
                 query = crud.synch_expanditure_crud(db,id=i.id)
                 send_document_iiko(key=authiiko(),data=query)
         return True
@@ -125,8 +126,8 @@ async def synch_expanditure_iiko(form_data:schemas.SynchExanditureiiko,db:Sessio
 
 @urls.delete('/v1/expanditure')
 async def delete_expanditure(id=int,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page=28)
-    if permission:
+    #permission = checkpermissions(request_user=request_user,db=db,page=28)
+    #if permission:
         data = crud.delete_expanditure(db,id)
         if data:
             return {'success':True}
@@ -135,11 +136,11 @@ async def delete_expanditure(id=int,db:Session=Depends(get_db),request_user:sche
                 status_code=status.HTTP_409_CONFLICT,
                 detail="not id not found"
             )
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
+    #else:
+    #    raise HTTPException(
+    #        status_code=status.HTTP_403_FORBIDDEN,
+    #        detail="You are not super user"
+    #    )
 
 @urls.post('/v1/comments',response_model=schemas.GetComments)
 async def add_comments(form_data:schemas.AddComments,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):

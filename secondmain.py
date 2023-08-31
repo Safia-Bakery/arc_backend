@@ -190,7 +190,7 @@ async def get_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
                         pass
             if form_data.status ==3:
                 try:
-                    sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки №{request_list.id} по Маркетингу завершена.")
+                    sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки №{request_list.id} по Маркетингу: Завершен.")
                 except:
                     pass
             if request_list:
@@ -434,14 +434,18 @@ async def tg_get_user(user:schemas.BotCheckUser,db:Session=Depends(get_db)):
 @router.post('/tg/request')
 async def tg_post_request(files:UploadFile,file_name:Annotated[str,Form()],telegram_id:Annotated[int,Form()],description:Annotated[str, Form()],product:Annotated[str, Form()],fillial:Annotated[str, Form()],category:Annotated[str, Form()],type:Annotated[int,Form()],factory:Annotated[int,Form()],db:Session=Depends(get_db)):
     categoryquery = crud.getcategoryname(db,category)
+    categoryquery.id
     telegram_idquery = crud.getusertelegramid(db,telegram_id)
+    telegram_idquery.id
     childfillial = crud.getchildbranch(db,fillial,type=type,factory=factory)
+    childfillial.id
     if categoryquery is None or telegram_idquery is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="not found"
             )
     
+
     response_query = crud.add_request(db,category_id=categoryquery.id,fillial_id=childfillial.id,description=description,product=product,user_id=telegram_idquery.id)
     file_obj_list = []
     file_path = f"files/{file_name}"

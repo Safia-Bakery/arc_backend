@@ -232,7 +232,7 @@ def update_brigada_id(db:Session,form_data:schemas.UpdateBrigadaSch):
         return db_update_brigada
     else:
         return False
- 
+
 
 
 def get_user_for_brig(db:Session,id):
@@ -689,12 +689,13 @@ def getchildbranch(db:Session,fillial,type,factory):
     query = db.query(models.Fillials).join(models.ParentFillials)
     if factory == 1:
         if type==1:
-            query = query.filter(models.ParentFillials.name==fillial,models.Fillials.origin==1)
+            query = query.filter(models.ParentFillials.name.like(f"%{fillial}%"),models.Fillials.origin==1)
         elif type==2:
-            query = query.filter(models.ParentFillials.name==fillial)
+            query = query.filter(models.ParentFillials.name.like(f"%{fillial}%"))
         query = query.first()
     elif factory==2:
-        query = query.filter(models.Fillials.name==fillial).first()
+        print(fillial)
+        query = query.filter(models.Fillials.name.like(f"%{fillial}%")).first()
     return query
 
 def udpatedepartment(db:Session,form_data:schemas.DepartmenUdpate):
