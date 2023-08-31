@@ -694,7 +694,6 @@ def getchildbranch(db:Session,fillial,type,factory):
             query = query.filter(models.ParentFillials.name.like(f"%{fillial}%"))
         query = query.first()
     elif factory==2:
-        print(fillial)
         query = query.filter(models.Fillials.name.like(f"%{fillial}%")).first()
     return query
 
