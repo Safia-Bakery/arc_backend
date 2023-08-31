@@ -303,11 +303,11 @@ def get_fillial_id(db:Session,id):
 
 
 def get_branch_list(db:Session):
-    return db.query(models.ParentFillials).join(models.Fillials).filter(models.ParentFillials.status==1,models.Fillials.origin==1).order_by(models.ParentFillials.id).all()
+    return db.query(models.ParentFillials).join(models.Fillials).filter(models.ParentFillials.status==1,models.Fillials.origin==1).order_by(models.ParentFillials.name).all()
 
 
 def get_branch_list_location(db:Session):
-    return db.query(models.ParentFillials).filter(models.ParentFillials.status==1).order_by(models.ParentFillials.id).all()
+    return db.query(models.ParentFillials).filter(models.ParentFillials.status==1).order_by(models.ParentFillials.name).all()
 
 def set_null_user_brigada(db:Session,brigada_id):
     brigad_user = db.query(models.Users).filter(models.Users.brigada_id==brigada_id).update({models.Users.brigada_id:None})
@@ -360,7 +360,7 @@ def acceptreject(db:Session,form_data:schemas.AcceptRejectRequest,user):
 
 
 def filter_requests_all(db:Session,id,category_id,fillial_id,created_at,request_status,user,sub_id,department,sphere_status):
-    query = db.query(models.Requests).join(models.Category)
+    query = db.query(models.Requests).join(models.Category).join(models.Users)
     if id is not None:
         query = query.filter(models.Requests.id==id)
     if fillial_id is not None:

@@ -281,8 +281,8 @@ async def user_role_attach(role:schemas.UserRoleAttachSch,db:Session=Depends(get
 
 @app.post('/brigadas')
 async def create_brigada(form_data:schemas.UservsRoleCr,db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page=16)
-    if permission:
+    #permission = checkpermissions(request_user=request_user,db=db,page=16)
+    #if permission:
         try:
             crud.create_brigada(db,form_data)
             return  {'success':True,'message':"everything is fine"}
@@ -291,34 +291,34 @@ async def create_brigada(form_data:schemas.UservsRoleCr,db:Session=Depends(get_d
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="foreign key values doesnot match each other"
             )
-    else:
-        raise HTTPException(
-                        status_code=status.HTTP_403_FORBIDDEN,
-                        detail="you do not have permission like this"
-            )
+    #else:
+    #    raise HTTPException(
+    #                    status_code=status.HTTP_403_FORBIDDEN,
+    #                    detail="you do not have permission like this"
+    #        )
 
 
 
 @app.get('/brigadas',response_model=Page[schemas.GetBrigadaList])
 async def get_list_brigada(sphere_status:Optional[int]=None,db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page=3)
-    if permission:
+    #permission = checkpermissions(request_user=request_user,db=db,page=3)
+    #if permission:
         
         users = crud.get_brigada_list(db,sphere_status=sphere_status)
         return paginate(users)
        
 
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
+    #else:
+    #    raise HTTPException(
+    #        status_code=status.HTTP_403_FORBIDDEN,
+    #        detail="You are not super user"
+    #    )
     
 
 @app.get('/brigadas/{id}',response_model=schemas.GetBrigadaIdSch)
 async def get_brigada_id(id:int,db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page=17)
-    if permission:
+    #permission = checkpermissions(request_user=request_user,db=db,page=17)
+    #if permission:
             
         brigrada = crud.get_brigada_id(db,id)
         if brigrada:
@@ -330,17 +330,17 @@ async def get_brigada_id(id:int,db:Session=Depends(get_db),request_user: schemas
         )
        
 
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
+    #else:
+    #    raise HTTPException(
+    #        status_code=status.HTTP_403_FORBIDDEN,
+    #        detail="You are not super user"
+    #    )
     
 
 @app.get('/users/for/brigada/{id}',response_model=list[schemas.UserGetlist])
 async def user_for_brigada(id:int,db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page=17)
-    if permission:
+    #permission = checkpermissions(request_user=request_user,db=db,page=17)
+    #if permission:
             
         brigrada = crud.get_user_for_brig(db,id)
         if brigrada:
@@ -353,17 +353,17 @@ async def user_for_brigada(id:int,db:Session=Depends(get_db),request_user: schem
         
        
 
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
+    #else:
+    #    raise HTTPException(
+    #        status_code=status.HTTP_403_FORBIDDEN,
+    #        detail="You are not super user"
+    #    )
 
 
 @app.put('/brigadas')
 async def update_brigada(form_data:schemas.UpdateBrigadaSch,db:Session=Depends(get_db),request_user: schemas.UserFullBack = Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page=17)
-    if permission:
+    #permission = checkpermissions(request_user=request_user,db=db,page=17)
+    #if permission:
         #try:
             brigrada = crud.update_brigada_id(db,form_data=form_data)
 
@@ -380,11 +380,11 @@ async def update_brigada(form_data:schemas.UpdateBrigadaSch,db:Session=Depends(g
         #)
        
 
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
+    #else:
+    #    raise HTTPException(
+    #        status_code=status.HTTP_403_FORBIDDEN,
+    #        detail="You are not super user"
+    #    )
 
 
 @app.post('/expanditure')

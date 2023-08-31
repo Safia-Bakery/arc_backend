@@ -290,39 +290,39 @@ async def get_category_and_fillials(db:Session=Depends(get_db),request_user:sche
 
 @router.get('/users',response_model=Page[schemas.UserGetlist])
 async def filter_user(full_name:Optional[str]=None,username:Optional[str]=None,role_id:Optional[int]=None,phone_number:Optional[str]=None,user_status:Optional[int]=None,position:Optional[bool]=True,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page=5)
-    if permission:
+    #permission = checkpermissions(request_user=request_user,db=db,page=5)
+    #if permission:
 
             users = crud.filter_user(db,user_status=user_status,username=username,phone_number=phone_number,role_id=role_id,full_name=full_name,position=position)
             return paginate(users)
 
 
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
+    #else:
+    #    raise HTTPException(
+    #        status_code=status.HTTP_403_FORBIDDEN,
+    #        detail="You are not super user"
+    #    )
 
 @router.put('/users',response_model=schemas.UserGetlist)
 async def filter_user(form_data:schemas.UserUpdateAll,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page=19)
-    if permission:
+    #permission = checkpermissions(request_user=request_user,db=db,page=19)
+    #if permission:
         
         updateuser = crud.update_user(db,form_data=form_data)
         return updateuser
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
+    #else:
+    #    raise HTTPException(
+    #        status_code=status.HTTP_403_FORBIDDEN,
+    #        detail="You are not super user"
+    #    )
 
 
 
 
 @router.get('/users/{id}',response_model=schemas.GetUserIdSch)
 async def get_user_with_id(id:int,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page=19)
-    if permission:
+    #permission = checkpermissions(request_user=request_user,db=db,page=19)
+    #if permission:
         
             users = crud.get_user_id(db,id)
             if users:
@@ -333,11 +333,11 @@ async def get_user_with_id(id:int,db:Session=Depends(get_db),request_user:schema
             detail="not found"
         )
 
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
+    #else:
+    #    raise HTTPException(
+    #        status_code=status.HTTP_403_FORBIDDEN,
+    #        detail="You are not super user"
+    #    )
 
 @router.post('/tools',response_model=schemas.CreateTool)
 async def get_user_with_id(form_data:schemas.CreateTool,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
