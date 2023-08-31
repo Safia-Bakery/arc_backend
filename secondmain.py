@@ -434,8 +434,11 @@ async def tg_get_user(user:schemas.BotCheckUser,db:Session=Depends(get_db)):
 @router.post('/tg/request')
 async def tg_post_request(files:UploadFile,file_name:Annotated[str,Form()],telegram_id:Annotated[int,Form()],description:Annotated[str, Form()],product:Annotated[str, Form()],fillial:Annotated[str, Form()],category:Annotated[str, Form()],type:Annotated[int,Form()],factory:Annotated[int,Form()],db:Session=Depends(get_db)):
     categoryquery = crud.getcategoryname(db,category)
+    print(categoryquery.id)
     telegram_idquery = crud.getusertelegramid(db,telegram_id)
+    print(telegram_idquery.id)
     childfillial = crud.getchildbranch(db,fillial,type=type,factory=factory)
+    childfillial.id
     if categoryquery is None or telegram_idquery is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
