@@ -110,7 +110,7 @@ def user_role_attach(db:Session,role:schemas.UserRoleAttachSch):
     
 
 def create_brigada(db:Session,data:schemas.UservsRoleCr):
-    brigada_cr = models.Brigada(description=data.description,name=data.name,status=data.status)
+    brigada_cr = models.Brigada(description=data.description,name=data.name,status=data.status,sphere_status=data.sphere_status)
     db.add(brigada_cr)
     db.commit()
     db.refresh(brigada_cr)
@@ -267,7 +267,10 @@ def bulk_create_files(db:Session,per_obj):
 
 
 def get_brigada_list(db:Session,sphere_status):
-    return db.query(models.Brigada).join(models.Users).filter(models.Users.sphere_status==sphere_status).all()
+    query = db.query(models.Brigada)
+    if sphere_status:
+        query = query.filter(models.Brigada.sphere_status==sphere_status)
+    return query.all()
 
 
 
@@ -678,14 +681,16 @@ def addexpenditure(db:Session,request_id,amount,tool_id,user_id,comment):
     db.refresh(add_data)
     return add_data
     
-def getchildbranch(db:Session,fillial,type):
+def getchildbranch(db:Session,fillial,type,factory):
     query = db.query(models.Fillials).join(models.ParentFillials)
-    if type==1:
-        query = query.filter(models.ParentFillials.name==fillial,models.Fillials.origin==1)
-    elif type==2:
-        query = query.filter(models.ParentFillials.name==fillial)
-    query = query.first()
-
+    if factory == 1:
+        if type==1:
+            query = query.filter(models.ParentFillials.name==fillial,models.Fillials.origin==1)
+        elif type==2:
+            query = query.filter(models.ParentFillials.name==fillial)
+        query = query.first()
+    elif factory==2:
+        query = query.filter(models.Fillials.name==fillial).first()
     return query
 
 def udpatedepartment(db:Session,form_data:schemas.DepartmenUdpate):
@@ -732,4 +737,9 @@ def get_comment(db:Session):
 
 def filterbranchchildid(db:Session,parent_id):
     query = db.query(models.Fillials).filter(models.Fillials.status==1,models.Fillials.parentfillial_id==parent_id).first()
+    return query
+
+
+def getfillialchildfabrica(db:Session):
+    query = db.query(models.Fillials).join(models.ParentFillials).filter(models.ParentFillials.is_fabrica==1).all()
     return query

@@ -215,10 +215,14 @@ async def get_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
 
 
 @router.post('/request')
-async def get_category(files:list[UploadFile],category_id:int,fillial_id:UUID,description:str,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user),product:Optional[str]=None):
+async def get_category(files:list[UploadFile],category_id:int,fillial_id:UUID,description:str,factory:Optional[bool]=False,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user),product:Optional[str]=None):
         try:
-            filliald_od = crud.filterbranchchildid(db,fillial_id)
-            responserq = crud.add_request(db,category_id=category_id,description=description,fillial_id=filliald_od.id,product=product,user_id=request_user.id)
+            if not factory:
+                filliald_od = crud.filterbranchchildid(db,fillial_id)
+                sklad_id = filliald_od.id
+            if factory:
+                sklad_id = fillial_id
+            responserq = crud.add_request(db,category_id=category_id,description=description,fillial_id=sklad_id,product=product,user_id=request_user.id)
             file_obj_list = []
 
             if files:
@@ -365,7 +369,9 @@ async def get_tool_list(db:Session=Depends(get_db),request_user:schemas.UserFull
 
 
 
-
+@router.get('/get/fillial/fabrica',response_model=Page[schemas.GetFillialChild])
+async def get_fillials_fabrica(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    return paginate(crud.getfillialchildfabrica(db))
 
 
 #----------------TELEGRAM BOT --------------------
@@ -374,7 +380,9 @@ async def get_tool_list(db:Session=Depends(get_db),request_user:schemas.UserFull
 async def get_fillial_list_tg(db:Session=Depends(get_db)):
     return crud.get_branch_list(db)
 
-
+@router.get('/get/fillial/fabrica/tg')
+async def get_fillials_fabrica_tg(db:Session=Depends(get_db)):
+    return crud.getfillialchildfabrica(db)
 
 @router.get('/fillials/list/tg/location')
 async def get_fillial_list_tg(db:Session=Depends(get_db)):
@@ -424,10 +432,10 @@ async def tg_get_user(user:schemas.BotCheckUser,db:Session=Depends(get_db)):
 
 
 @router.post('/tg/request')
-async def tg_post_request(files:UploadFile,file_name:Annotated[str,Form()],telegram_id:Annotated[int,Form()],description:Annotated[str, Form()],product:Annotated[str, Form()],fillial:Annotated[str, Form()],category:Annotated[str, Form()],type:Annotated[int,Form()],db:Session=Depends(get_db)):
+async def tg_post_request(files:UploadFile,file_name:Annotated[str,Form()],telegram_id:Annotated[int,Form()],description:Annotated[str, Form()],product:Annotated[str, Form()],fillial:Annotated[str, Form()],category:Annotated[str, Form()],type:Annotated[int,Form()],factory:Annotated[int,Form()],db:Session=Depends(get_db)):
     categoryquery = crud.getcategoryname(db,category)
     telegram_idquery = crud.getusertelegramid(db,telegram_id)
-    childfillial = crud.getchildbranch(db,fillial,type=type)
+    childfillial = crud.getchildbranch(db,fillial,type=type,factory=factory)
     if categoryquery is None or telegram_idquery is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

@@ -134,8 +134,9 @@ class Brigada(Base):
     description = Column(String,nullable=True)
     request = relationship('Requests',back_populates='brigada')
     user =relationship('Users',back_populates='brigader',uselist=True)
-    status = Column(Integer,default=0 )
+    status = Column(Integer,default=0)
     created_at = Column(DateTime(timezone=True),default=func.now())
+    sphere_status = Column(Integer,default=1)
     
     
 

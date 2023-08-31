@@ -101,6 +101,7 @@ class UservsRoleCr(BaseModel):
     name : str
     description: str
     status : int
+    sphere_status:int
 
 
 
@@ -241,6 +242,7 @@ class GetBrigadaList(BaseModel):
     description:Optional[str]=None
     status:int
     user:list[UserGetlist]
+    sphere_status:int
     class Config:
         orm_mode=True
 
@@ -327,6 +329,7 @@ class UpdateBrigadaSch(BaseModel):
     description:Optional[str]
     status:Optional[int]
     users:Optional[list[int]]=None
+    sphere_status:Optional[int]=None
 
 
 
