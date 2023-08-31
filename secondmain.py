@@ -139,7 +139,7 @@ async def filter_request(department:int,sub_id:Optional[int]=None,id:Optional[in
 
         
         if request_user.brigada_id:
-            requestdata= crud.filter_request_brigada(db,id=id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,created_at=created_at,user=user,brigada_id=request_user.brigada_id,sphere_status=sphere_status)
+            requestdata= crud.filter_request_brigada(db,id=id,sub_id=sub_id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,created_at=created_at,user=user,brigada_id=request_user.brigada_id,sphere_status=sphere_status,department=department)
             return paginate(requestdata)
         request_list = crud.filter_requests_all(db,sub_id=sub_id,department=department,id=id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,created_at=created_at,user=user,sphere_status=sphere_status)
         return paginate(request_list)

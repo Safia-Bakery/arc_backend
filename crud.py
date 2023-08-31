@@ -384,14 +384,18 @@ def filter_requests_all(db:Session,id,category_id,fillial_id,created_at,request_
 
 
 
-def filter_request_brigada(db:Session,id,category_id,brigada_id,fillial_id,created_at,request_status,user,sphere_status):
+def filter_request_brigada(db:Session,id,category_id,brigada_id,fillial_id,created_at,request_status,user,sphere_status,department,sub_id):
     query = db.query(models.Requests).join(models.Category)
     if id is not None:
         query = query.filter(models.Requests.id==id)
+    if sub_id is not None:
+        query = query.filter(models.Category.sub_id==sub_id)
     if fillial_id is not None:
         query = query.filter(models.Requests.fillial_id==fillial_id)
     if category_id is not None:
         query = query.filter(models.Requests.category_id==category_id)
+    if department is not None:
+        query = query.filter(models.Category.department==department)
     if created_at is not None:
         query = query.filter(models.Requests.created_at==created_at)
     if request_status is not None:
