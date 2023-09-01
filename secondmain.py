@@ -167,7 +167,7 @@ async def get_request_id(id:int,db:Session=Depends(get_db),request_user:schemas.
     
 
 @router.put('/request/attach/brigada')
-async def get_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def put_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
 
         #try:
             request_list = crud.acceptreject(db,form_data=form_data,user=request_user.full_name)
@@ -189,10 +189,17 @@ async def get_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
                     except:
                         pass
             if form_data.status ==3:
-                try:
-                    sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки №{request_list.id} по Маркетингу: Завершен.")
-                except:
-                    pass
+                if request_list.category.department==3:
+                     
+                    try:
+                        sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки №{request_list.id} по Маркетингу: Завершен.")
+                    except:
+                        pass
+                else:
+                    try:
+                        sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки №{request_list.id} по APC: Завершен.")
+                    except:
+                        pass
             if request_list:
                 return request_list
             else:
