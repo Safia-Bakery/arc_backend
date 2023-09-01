@@ -102,13 +102,13 @@ async def telegram_login(form_data:schemas.TGlogin,db:Session=Depends(get_db)):
 
 @app.post('/register', summary="Create access and refresh tokens for user")
 async def register(form_data: schemas.UserCreate,db:Session=Depends(get_db)):
-        #try:
-        user = crud.create_user(db,form_data)
-        #except:
-        #    raise HTTPException(
-        #        status_code=status.HTTP_409_CONFLICT,
-        #        detail="User already exist"
-        #    )
+        try:
+            user = crud.create_user(db,form_data)
+        except:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="User already exist"
+            )
         
         return schemas.User(id=user.id,username=user.username,full_name=user.full_name)
     
