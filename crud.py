@@ -241,8 +241,8 @@ def get_user_for_brig(db:Session,id):
 
 def get_category_list(db:Session,sub_id,sphere_status):
     query = db.query(models.Category)
-    if sub_id:
-        query = query.filter(models.Category.sub_id==sub_id)
+    
+    query = query.filter(models.Category.sub_id==sub_id)
     query = query.filter(models.Category.status==1,models.Category.sphere_status==sphere_status).all()
     return query
 
