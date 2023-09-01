@@ -222,7 +222,7 @@ async def get_category(files:list[UploadFile],category_id:int,fillial_id:UUID,de
                 sklad_id = filliald_od.id
             if factory:
                 sklad_id = fillial_id
-            responserq = crud.add_request(db,category_id=category_id,description=description,fillial_id=sklad_id,product=product,user_id=request_user.id)
+            responserq = crud.add_request(db,category_id=category_id,description=description,fillial_id=sklad_id,product=product,user_id=request_user.id,is_bot=0)
             file_obj_list = []
 
             if files:
@@ -446,7 +446,7 @@ async def tg_post_request(files:UploadFile,file_name:Annotated[str,Form()],teleg
             )
 
 
-    response_query = crud.add_request(db,category_id=categoryquery.id,fillial_id=childfillial.id,description=description,product=product,user_id=telegram_idquery.id)
+    response_query = crud.add_request(db,category_id=categoryquery.id,fillial_id=childfillial.id,description=description,product=product,user_id=telegram_idquery.id,is_bot=1)
     file_obj_list = []
     file_path = f"files/{file_name}"
     with open(file_path, "wb") as buffer:

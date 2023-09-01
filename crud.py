@@ -249,8 +249,8 @@ def get_category_list(db:Session,sub_id,sphere_status):
 def get_category_id(db:Session,id):
     return db.query(models.Category).filter(models.Category.id==id).first()
 
-def add_request(db:Session,category_id,fillial_id,description,product,user_id):
-    db_add_request = models.Requests(category_id=category_id,description=description,fillial_id = fillial_id,product=product,user_id=user_id,is_bot=1)
+def add_request(db:Session,category_id,fillial_id,description,product,user_id,is_bot):
+    db_add_request = models.Requests(category_id=category_id,description=description,fillial_id = fillial_id,product=product,user_id=user_id,is_bot=is_bot)
     db.add(db_add_request)
     db.commit()
     db.refresh(db_add_request)
