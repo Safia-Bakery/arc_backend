@@ -63,7 +63,7 @@ class Users(Base):
     full_name = Column(String,nullable=True)
     status = Column(Integer,default=0)
     sphere_status= Column(Integer,default=0)
-    email = Column(String,unique=True,nullable=True)
+    email = Column(String,nullable=True)
     phone_number = Column(String,nullable=True)
     group_id = Column(Integer,ForeignKey('groups.id'),nullable=True)
     group = relationship('Groups',back_populates='user')
