@@ -493,7 +493,7 @@ def update_user(db:Session,form_data:schemas.UserUpdateAll):
         return query
     
 def getcategoryname(db:Session,name):
-    query = db.query(models.Category).filter(models.Category.name==name).first()
+    query = db.query(models.Category).filter(models.Category.name.ilike(f"%{name}%")).first()
     return query
 
 def getfillialname(db:Session,name):

@@ -9,7 +9,7 @@ import bcrypt
 from typing import Annotated
 from uuid import UUID
 import models
-from microservices import sendtotelegramchannel
+from microservices import sendtotelegramchannel,sendtotelegram
 from typing import Optional
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Union, Any
@@ -22,7 +22,7 @@ from dotenv import load_dotenv
 from microservices import create_refresh_token,verify_password,create_access_token,checkpermissions
 #from main import get_db,get_current_user
 from fastapi import APIRouter
-import os 
+import os
 load_dotenv()
 router = APIRouter()
 bot_token = os.environ.get('BOT_TOKEN')
@@ -38,7 +38,7 @@ async def add_category(form_data:schemas.AddCategorySch,db:Session=Depends(get_d
     #        status_code=status.HTTP_403_FORBIDDEN,
     #        detail="You are not super user"
     #    )
-    
+
 
 
 
@@ -231,7 +231,11 @@ async def get_category(files:list[UploadFile],category_id:int,fillial_id:UUID,de
                 sklad_id = fillial_id
             responserq = crud.add_request(db,category_id=category_id,description=description,fillial_id=sklad_id,product=product,user_id=request_user.id,is_bot=0)
             file_obj_list = []
-
+            text  = f"📑Заявка № {responserq.id}\n\n📍Филиал: {responserq.fillial.parentfillial.name}\n"\
+                                    f"🔰Категория проблемы: {responserq.category.name}\n\n"\
+                                    f"🕘Дата поступления заявки: {responserq.started_at}\n"\
+                                    f"💬Комментарии: {responserq.description}"
+            sendtotelegram(bot_token='6354204561:AAEBZAdnnJvijq8hZYU4wQAaDCVIXY3CpYM',chat_id='-978227595',message_text=text)
             if files:
                 for file in files:
                     file_path = f"files/{file.filename}"
