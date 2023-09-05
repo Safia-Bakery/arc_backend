@@ -235,7 +235,7 @@ async def get_category(files:list[UploadFile],category_id:int,fillial_id:UUID,de
                                     f"🔰Категория проблемы: {responserq.category.name}\n\n"\
                                     f"🕘Дата поступления заявки: {responserq.started_at}\n"\
                                     f"💬Комментарии: {responserq.description}"
-            sendtotelegram(bot_token='6354204561:AAEBZAdnnJvijq8hZYU4wQAaDCVIXY3CpYM',chat_id='-978227595',message_text=text)
+            #sendtotelegram(bot_token='6354204561:AAEBZAdnnJvijq8hZYU4wQAaDCVIXY3CpYM',chat_id='-978227595',message_text=text)
             if files:
                 for file in files:
                     file_path = f"files/{file.filename}"
