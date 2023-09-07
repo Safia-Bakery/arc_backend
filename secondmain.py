@@ -223,7 +223,7 @@ async def put_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
 
 @router.post('/request')
 async def get_category(files:list[UploadFile],category_id:int,fillial_id:UUID,description:str,factory:Optional[bool]=False,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user),product:Optional[str]=None):
-        try:
+        #try:
             if not factory:
                 filliald_od = crud.filterbranchchildid(db,fillial_id)
                 sklad_id = filliald_od.id
@@ -231,11 +231,17 @@ async def get_category(files:list[UploadFile],category_id:int,fillial_id:UUID,de
                 sklad_id = fillial_id
             responserq = crud.add_request(db,category_id=category_id,description=description,fillial_id=sklad_id,product=product,user_id=request_user.id,is_bot=0)
             file_obj_list = []
+            #parsed_datetime = datetime.strptime(responserq.created_at,"%Y-%m-%dT%H:%M:%S.%f")
+            formatted_datetime_str = responserq.created_at.strftime("%Y-%m-%d %H:%M")
             text  = f"📑Заявка № {responserq.id}\n\n📍Филиал: {responserq.fillial.parentfillial.name}\n"\
-                                    f"🔰Категория проблемы: {responserq.category.name}\n\n"\
-                                    f"🕘Дата поступления заявки: {responserq.started_at}\n"\
+                                    f"🕘Дата поступления заявки: {formatted_datetime_str}\n\n"\
+                                    f"🔰Категория проблемы: {responserq.category.name}\n"\
+                                    f"⚙️ Название оборудования: {responserq.product}\n"\
                                     f"💬Комментарии: {responserq.description}"
-            #sendtotelegram(bot_token='6354204561:AAEBZAdnnJvijq8hZYU4wQAaDCVIXY3CpYM',chat_id='-978227595',message_text=text)
+            if responserq.category.sphere_status==1 and responserq.category.department==1:
+                sendtotelegram(bot_token=bot_token,chat_id='-978227595',message_text=text)
+            if responserq.category.sphere_status==1 and responserq.category.department==2:
+                sendtotelegram(bot_token=bot_token,chat_id='-963512504',message_text=text)
             if files:
                 for file in files:
                     file_path = f"files/{file.filename}"
@@ -248,11 +254,11 @@ async def get_category(files:list[UploadFile],category_id:int,fillial_id:UUID,de
                     file_obj_list.append(models.Files(request_id=responserq.id,url=file_path))
             crud.bulk_create_files(db,file_obj_list)
             return {'success':True,'message':'everything is saved'}
-        except:
-            raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="not id not found"
-        )
+        #except:
+        #    raise HTTPException(
+        #    status_code=status.HTTP_409_CONFLICT,
+        #    detail="not id not found"
+        #)
 
 
 

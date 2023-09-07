@@ -227,7 +227,7 @@ def send_document_iiko(key,data):
     if data.request.category.sphere_status==2:
         pass
     response = requests.post(f"{BASE_URL}/resto/api/documents/import/outgoingInvoice?key={key}",data=xml_data,headers=headers)
-    
+    print(response.content)
     
     return True
     
