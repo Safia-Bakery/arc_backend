@@ -198,7 +198,10 @@ def list_stores(key):
 
 
 def send_document_iiko(key,data):
-    price = float(data.amount)*float(data.tool.price)
+    if data.tool.price:
+        price = float(data.amount)*float(data.tool.price)
+    else:
+        price=0
 
     
     if data.request.category.sphere_status==1:
