@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 
 import models
 import schemas
+from typing import Optional
 import bcrypt
 import pytz
 from datetime import datetime 
@@ -739,9 +740,13 @@ def get_comment(db:Session):
 
 
 
-def filterbranchchildid(db:Session,parent_id):
-    query = db.query(models.Fillials).filter(models.Fillials.status==1,models.Fillials.parentfillial_id==parent_id).first()
-    return query
+def filterbranchchildid(db:Session,parent_id,origin:Optional[int]=None):
+    query = db.query(models.Fillials).filter(models.Fillials.status==1,models.Fillials.parentfillial_id==parent_id)
+    if origin:
+        query  = query.filter(models.Fillials.origin==origin)
+    
+
+    return query.first()
 
 
 def getfillialchildfabrica(db:Session):
