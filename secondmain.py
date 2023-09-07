@@ -238,10 +238,11 @@ async def get_category(files:list[UploadFile],category_id:int,fillial_id:UUID,de
                                     f"🔰Категория проблемы: {responserq.category.name}\n"\
                                     f"⚙️ Название оборудования: {responserq.product}\n"\
                                     f"💬Комментарии: {responserq.description}"
-            if responserq.category.sphere_status==1 and responserq.category.department==1:
-                sendtotelegram(bot_token=bot_token,chat_id='-978227595',message_text=text)
-            if responserq.category.sphere_status==1 and responserq.category.department==2:
-                sendtotelegram(bot_token=bot_token,chat_id='-963512504',message_text=text)
+            
+            #if responserq.category.sphere_status==1 and responserq.category.department==1:
+            #    sendtotelegram(bot_token=bot_token,chat_id='-978227595',message_text=text)
+            #if responserq.category.sphere_status==1 and responserq.category.department==2:
+            #    sendtotelegram(bot_token=bot_token,chat_id='-963512504',message_text=text)
             if files:
                 for file in files:
                     file_path = f"files/{file.filename}"
