@@ -27,6 +27,8 @@ load_dotenv()
 router = APIRouter()
 bot_token = os.environ.get('BOT_TOKEN')
 
+BASE_URL = 'https://backend.service.safiabakery.uz/'
+
 @router.post('/category')
 async def add_category(form_data:schemas.AddCategorySch,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     #permission = checkpermissions(request_user=request_user,db=db,page=20)
@@ -246,10 +248,7 @@ async def get_category(files:list[UploadFile],category_id:int,fillial_id:UUID,de
                                     f"⚙️ Название оборудования: {responserq.product}\n"\
                                     f"💬Комментарии: {responserq.description}"
             
-            #if responserq.category.sphere_status==1 and responserq.category.department==1:
-            #    sendtotelegram(bot_token=bot_token,chat_id='-978227595',message_text=text)
-            #if responserq.category.sphere_status==1 and responserq.category.department==2:
-            #    sendtotelegram(bot_token=bot_token,chat_id='-963512504',message_text=text)
+            
             if files:
                 for file in files:
                     file_path = f"files/{file.filename}"
@@ -261,6 +260,15 @@ async def get_category(files:list[UploadFile],category_id:int,fillial_id:UUID,de
                             buffer.write(chunk)
                     file_obj_list.append(models.Files(request_id=responserq.id,url=file_path))
             crud.bulk_create_files(db,file_obj_list)
+            keyboard = [
+            ]
+            if responserq.file:
+                for i in responserq.file:
+                    keyboard.append({'text':'Посмотреть фото/видео',"url":f"{BASE_URL}{i.url}"})
+            if responserq.category.sphere_status==1 and responserq.category.department==1:
+                sendtotelegram(bot_token=bot_token,chat_id='-978227595',message_text=text,keyboard=keyboard)
+            if responserq.category.sphere_status==1 and responserq.category.department==2:
+                sendtotelegram(bot_token=bot_token,chat_id='-963512504',message_text=text,keyboard=keyboard)
             return {'success':True,'message':'everything is saved'}
         #except:
         #    raise HTTPException(

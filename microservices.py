@@ -237,11 +237,12 @@ def send_document_iiko(key,data):
     
 
 
-def sendtotelegram(bot_token,chat_id,message_text):
+def sendtotelegram(bot_token,chat_id,message_text,keyboard):
     keyboard = {
         'inline_keyboard': [
             [{'text': 'Yes', 'callback_data': '-1'}],
-            [{'text': 'No', 'callback_data': '-2'}]
+            [{'text': 'No', 'callback_data': '-2'}],
+            keyboard
         ]
     }
 
