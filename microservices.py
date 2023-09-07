@@ -199,10 +199,12 @@ def list_stores(key):
 
 def send_document_iiko(key,data):
     if data.tool.price:
-        price = float(data.amount)*float(data.tool.price)
-    else:
-        price=0
+        total_price = float(data.amount)*float(data.tool.price)
+        price = data.tool.price
 
+    else:
+        total_price=0
+        price = 0
     
     if data.request.category.sphere_status==1:
         headers = {
@@ -220,9 +222,9 @@ def send_document_iiko(key,data):
                     <productId>{data.tool.iikoid}</productId>
                     <productArticle>{data.tool.code}</productArticle>
                     <storeId>4aafb5af-66c3-4419-af2d-72897f652019</storeId>
-                    <price>{data.tool.price}</price>
+                    <price>{price}</price>
                     <amount>{data.amount}</amount>
-                    <sum>{price}</sum>
+                    <sum>{total_price}</sum>
                     <discountSum>0.000000000</discountSum>
                 </item>
             </items>
