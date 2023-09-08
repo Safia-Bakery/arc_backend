@@ -267,7 +267,7 @@ async def get_category(files:list[UploadFile],category_id:int,fillial_id:UUID,de
                     keyboard.append({'text':'Посмотреть фото/видео',"url":f"{BASE_URL}{i.url}"})
             if responserq.category.sphere_status==1 and responserq.category.department==1:
                 sendtotelegram(bot_token=bot_token,chat_id='-1001920671327',message_text=text,keyboard=keyboard)
-            if responserq.category.sphere_status==1 and responserq.category.department==2:
+            if responserq.category.sphere_status==2 and responserq.category.department==1:
                 sendtotelegram(bot_token=bot_token,chat_id='-1001831677963',message_text=text,keyboard=keyboard)
             return {'success':True,'message':'everything is saved'}
         #except:
