@@ -177,8 +177,7 @@ async def get_comments(db:Session=Depends(get_db),request_user:schemas.UserFullB
 @urls.get('/v1/statistics')
 async def get_statistics(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     query = statisquery.calculate_bycat(db=db)
-    for i in query:
-        print(i)
-    return {'success':True}
+    
+    return query
 
 
