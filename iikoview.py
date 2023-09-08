@@ -4,6 +4,7 @@ from fastapi import Depends, FastAPI, HTTPException,UploadFile,File,Form,Header,
 import schemas
 from typing import Annotated
 import models
+import statisquery
 from microservices import sendtotelegramchannel
 import crud
 from microservices import get_current_user,get_db,list_departments,authiiko
@@ -109,8 +110,8 @@ async def upload_file(request_id:Annotated[int,Form()],files:list[UploadFile]= N
 
 @urls.put('/v1/expanditure/iiko')
 async def synch_expanditure_iiko(form_data:schemas.SynchExanditureiiko,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page=26)
-    if permission:
+    #permission = checkpermissions(request_user=request_user,db=db,page=26)
+    #if permission:
         data = crud.check_expanditure_iiko(db,form_data=form_data)
         for i in data:
             if i.status==0:
@@ -118,11 +119,11 @@ async def synch_expanditure_iiko(form_data:schemas.SynchExanditureiiko,db:Sessio
                 query = crud.synch_expanditure_crud(db,id=i.id)
                 send_document_iiko(key=authiiko(),data=query)
         return True
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
+    #else:
+    #    raise HTTPException(
+    #        status_code=status.HTTP_403_FORBIDDEN,
+    #        detail="You are not super user"
+    #    )
 
 @urls.delete('/v1/expanditure')
 async def delete_expanditure(id=int,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
@@ -165,4 +166,19 @@ async def get_comments(db:Session=Depends(get_db),request_user:schemas.UserFullB
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not super user"
         )
+    
+
+
+#---------------------statistics-----------------------------------
+
+
+
+
+@urls.get('/v1/statistics')
+async def get_statistics(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    query = statisquery.calculate_bycat(db=db)
+    for i in query:
+        print(i)
+    return {'success':True}
+
 

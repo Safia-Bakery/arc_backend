@@ -45,7 +45,7 @@ app = FastAPI()
 app.include_router(router)
 app.include_router(urls)
 app.mount("/files", StaticFiles(directory="files"), name="files")
-app.add_middleware(TrustedHostMiddleware,allowed_hosts=["*"])
+#app.add_middleware(TrustedHostMiddleware,allowed_hosts=["*"])
 
 app.add_middleware(
     CORSMiddleware,
