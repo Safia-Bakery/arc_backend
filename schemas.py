@@ -521,3 +521,5 @@ class ParentPage(BaseModel):
     actions:list[Pages]
     class Config:
         orm_mode=True
+
+

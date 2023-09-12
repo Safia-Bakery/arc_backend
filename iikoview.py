@@ -4,6 +4,8 @@ from fastapi import Depends, FastAPI, HTTPException,UploadFile,File,Form,Header,
 import schemas
 from typing import Annotated
 import models
+from typing import Optional
+from datetime import datetime,date
 import statisquery
 from microservices import sendtotelegramchannel
 import crud
@@ -174,10 +176,42 @@ async def get_comments(db:Session=Depends(get_db),request_user:schemas.UserFullB
 
 
 
-@urls.get('/v1/statistics')
-async def get_statistics(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    query = statisquery.calculate_bycat(db=db)
+@urls.get('/v1/stats/category')
+async def get_statistics(timer:int,department:Optional[int]=None,sphere_status:Optional[int]=None,started_at:Optional[date]=None,finished_at:Optional[date]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    query = statisquery.calculate_bycat(db=db,department=department,sphere_status=sphere_status,started_at=started_at,finished_at=finished_at,timer=timer)
+    category_percent= statisquery.calculate_percentage(db=db,sphere_status=sphere_status,department=department)
+    data = [{'category':i[0],'amount':i[1],'time':i[2]} for i in query]
+    return {'success':True,'piechart':category_percent,'table':data}
+
+
+@urls.get('/v1/stats/department')
+async def getstatis(sphere_status:int,department:int,db:Session=Depends(get_db),started_at:Optional[date]=None,finished_at:Optional[date]=None,request_user:schemas.UserFullBack=Depends(get_current_user)):
+    query = statisquery.countfillialrequest(db=db,sphere_status=sphere_status,department=department,started_at=started_at,finished_at=finished_at)
+    data  = [{'name':i[1],'amount':i[2]} for i in query]
+    return data
+
+
+
+@urls.get('/v1/stats/brigada')
+async def getstatsbrigada(sphere_status:int,department:int,started_at:Optional[date]=None,finished_at:Optional[date]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    query  = statisquery.countbbrigadarequest(db=db,sphere_status=sphere_status,department=department,started_at=started_at,finished_at=finished_at)
+    data = [{'name':i[0],'amount':i[1],'time':i[2]} for i in query]
+    return data
+
+
+
+@urls.get('/v1/stats/brigada/category')
+async def getbrigadavscategoryst(timer:int,started_at:Optional[date]=None,finished_at:Optional[date]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    query = statisquery.countbrigadavscategory(db=db,timer=timer,started_at=started_at,finished_at=finished_at)
+    is_in = {}
+    for i in query:
+        if i[0] not in is_in.keys():
+            is_in[i[0]]=[list(i)]
+        else:
+            is_in[i[0]].append(list(i))
     
-    return query
+    #data = [{'brigada':i[0],'category':i[1],'amount':i[2],'time':i[3]} for i in query]
+    return is_in
+
 
 

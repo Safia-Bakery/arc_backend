@@ -744,7 +744,7 @@ def filterbranchchildid(db:Session,parent_id,origin:Optional[int]=None):
     query = db.query(models.Fillials).filter(models.Fillials.status==1,models.Fillials.parentfillial_id==parent_id)
     if origin:
         query  = query.filter(models.Fillials.origin==origin)
-    
+
 
     return query.first()
 

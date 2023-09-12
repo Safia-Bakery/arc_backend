@@ -202,6 +202,8 @@ async def put_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
                         sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки №{request_list.id} по APC: Завершен.")
                     except:
                         pass
+            if form_data.status==4:
+                sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Ваша заявка {request_list.id} была отменена.")
             if request_list:
                 return request_list
             else:
