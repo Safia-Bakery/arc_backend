@@ -343,8 +343,8 @@ def acceptreject(db:Session,form_data:schemas.AcceptRejectRequest,user):
     if db_get:
         if form_data.brigada_id is not None:
             db_get.brigada_id=form_data.brigada_id
-        if form_data.comment is not None:
-            db_get.comment=form_data.comment
+        if form_data.deny_reason is not None:
+            db_get.deny_reason=form_data.deny_reason
         db_get.status = form_data.status
         db_get.user_manager=user
         if form_data.status == 1:

@@ -179,7 +179,7 @@ async def get_comments(db:Session=Depends(get_db),request_user:schemas.UserFullB
 @urls.get('/v1/stats/category')
 async def get_statistics(timer:int,department:Optional[int]=None,sphere_status:Optional[int]=None,started_at:Optional[date]=None,finished_at:Optional[date]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     query = statisquery.calculate_bycat(db=db,department=department,sphere_status=sphere_status,started_at=started_at,finished_at=finished_at,timer=timer)
-    category_percent= statisquery.calculate_percentage(db=db,sphere_status=sphere_status,department=department)
+    category_percent= statisquery.calculate_percentage(db=db,sphere_status=sphere_status,department=department,started_at=started_at,finished_at=finished_at)
     data = [{'category':i[0],'amount':i[1],'time':i[2]} for i in query]
     return {'success':True,'piechart':category_percent,'table':data}
 

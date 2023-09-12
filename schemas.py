@@ -264,9 +264,11 @@ class FileSch(BaseModel):
     class Config:
         orm_mode=True
 
+
+
+
 class GetRequestList(BaseModel):
     product:Optional[str]=None
-    description:Optional[str]=None
     id:int
     rating:Optional[int]=None
     created_at:datetime
@@ -285,6 +287,16 @@ class GetRequestList(BaseModel):
         orm_mode=True
 
 
+
+class GetComments(BaseModel):
+    id:int
+    request:GetRequestList
+    user:UserGetlist
+    comment:str
+    class Config:
+        orm_mode=True
+
+
 class GetExpanditure(BaseModel):
     id:int
     amount:int
@@ -298,6 +310,7 @@ class GetExpanditure(BaseModel):
 class GetRequestid(BaseModel):
     product:Optional[str]=None
     description:Optional[str]=None
+    deny_reason:Optional[str]=None
     id:int
     rating:Optional[int]=None
     created_at:datetime
@@ -311,6 +324,7 @@ class GetRequestid(BaseModel):
     user:Optional[UserGetlist]=None
     user_manager:Optional[str]=None
     expanditure:list[GetExpanditure]
+    comments:list[GetComments]
     is_bot:Optional[bool]=None
     id:int
     class Config:
@@ -365,8 +379,9 @@ class GetToolList(BaseModel):
 class AcceptRejectRequest(BaseModel):
     request_id :int
     status :int
+    
     brigada_id:Optional[int]=None
-    comment:Optional[str]=None
+    deny_reason:Optional[str]=None
 
 
     @validator('status')
@@ -491,13 +506,7 @@ class SynchExanditureiiko(BaseModel):
 
 
 
-class GetComments(BaseModel):
-    id:int
-    request:GetRequestList
-    user:UserGetlist
-    comment:str
-    class Config:
-        orm_mode=True
+
 
 
 class AddComments(BaseModel):
