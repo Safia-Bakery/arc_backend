@@ -504,3 +504,5 @@ async def get_fillials_id(id:UUID,db:Session=Depends(get_db),request_user:schema
 
 add_pagination(app)
 add_pagination(router)
+add_pagination(urls)
+

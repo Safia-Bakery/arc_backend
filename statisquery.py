@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 
 import models
+from uuid import UUID
 import schemas
 from typing import Optional
 import bcrypt
@@ -62,3 +63,31 @@ def countbrigadavscategory(timer,started_at,finished_at,db:Session):
                      func.cast(func.avg(func.extract('epoch', models.Requests.finished_at -models.Requests.started_at)) / timer, Integer).label('avg_1')).join(models.Category).join(
                          models.Brigada).filter(models.Requests.status==3,models.Requests.created_at.between(started_at,finished_at)).group_by(models.Brigada.name,models.Category.name).all()
     return total
+
+
+def howmuchleftcrud(db:Session,lst,store_id):  
+    for i in lst:
+        total = db.query(models.Tools).filter(models.Tools.iikoid==i['product']).first()
+        if total:
+            total.total_price = float(i['sum'])
+            total.amount_left=float(i['amount'])
+            total.last_update = datetime.now(timezonetash)
+
+            if total.sklad_id:
+                if UUID(i['store']) not in total.sklad_id:
+                    total.sklad_id = total.sklad_id.append(UUID(i['store']))
+            else:
+                total.sklad_id = [store_id]
+            db.commit()
+            db.refresh(total)
+                #total.otdel_sphere.
+        else:
+            pass
+    return True
+
+
+
+def howmuchleftgetlist(db:Session,id):
+    query = db.query(models.Tools).filter(models.Tools.sklad_id.contains([id])).all()
+    return query
+            

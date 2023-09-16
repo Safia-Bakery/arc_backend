@@ -17,6 +17,7 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
+
 timezonetash = pytz.timezone("Asia/Tashkent")
 
 BASE_URL = os.environ.get('BASE_URL')
@@ -262,3 +263,10 @@ def sendtotelegram(bot_token,chat_id,message_text,keyboard):
         return response
     else:
         return False
+    
+
+def howmuchleft(key,store_id):
+    now_time = datetime.now(timezonetash).strftime("%Y-%m-%dT%H:%M:%S")
+    departments = requests.get(f"{BASE_URL}/resto/api/v2/reports/balance/stores?key={key}&store={store_id}&timestamp={now_time}")
+
+    return departments.json()

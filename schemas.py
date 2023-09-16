@@ -531,4 +531,11 @@ class ParentPage(BaseModel):
     class Config:
         orm_mode=True
 
+class ToolsLeft(BaseModel):
+    name:str
+    amount_left:Optional[float]=None
+    last_update:Optional[datetime]=None
+    total_price:Optional[float]=None
+    class Config:
+        orm_mode=True
 

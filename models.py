@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, String,ForeignKey,Float,DateTime,Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID,ARRAY
 from datetime import datetime
 import pytz 
 import uuid
@@ -268,6 +268,10 @@ class FourthChild(Base):
     childi = relationship('ThirdChild',back_populates='child')
 
 
+"""
+if otdel_sphere == 1 roznitsa arc sklad, 
+if otdel_sphere == 2 fabrica arc sklad
+"""
 
 class Tools(Base):
     __tablename__ = 'tools'
@@ -275,9 +279,13 @@ class Tools(Base):
     name = Column(String,nullable=True)
     num = Column(String,nullable=True)
     code = Column(String,nullable=True)
-    iikoid = Column(String)
+    iikoid = Column(String,unique=True)
     producttype = Column(String,nullable=True)
     price = Column(Float)
     parentid = Column(String)
     mainunit = Column(String,nullable=True)
     expanditure = relationship('Expanditure',back_populates='tool')
+    total_price = Column(Float,nullable=True)
+    amount_left = Column(Float,nullable=True)
+    sklad_id = Column(ARRAY(UUID),default=[])
+    last_update = Column(DateTime(timezone=True))

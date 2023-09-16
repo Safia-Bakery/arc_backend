@@ -571,10 +571,13 @@ def check_group_exist(db:Session,id,modelname,fildname):
 
 
 def commitdata(db:Session,item):
-    db.add(item)
-    db.commit()
-    db.refresh(item)
-    return item
+    try:
+        db.add(item)
+        db.commit()
+        db.refresh(item)
+        return item
+    except:
+        return False
 
 
 def synchtools(db:Session,groups):
