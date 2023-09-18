@@ -224,8 +224,8 @@ async def getbrigadavscategoryst(timer:int,started_at:Optional[date]=None,finish
 
 @urls.get('/v1/synch/left')
 async def synchhowmuchleft(store_id:UUID,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    #key= authiiko()
-    query_iiko =  howmuchleft(key='8a21aea0-09d3-5f6e-7f2f-6d11fea3e3b5',store_id=store_id)
+    key= authiiko()
+    query_iiko =  howmuchleft(key=key,store_id=store_id)
     statisquery.howmuchleftcrud(db=db,store_id=store_id,lst=query_iiko)
     return {'success':True}
 
@@ -250,7 +250,7 @@ async def getlistofdisinctexpand(db:Session=Depends(get_db),request_user:schemas
     data = [{'amount':i[0],'name':i[1],'id':i[2]} for i in query]
     return {'tests':data}
 
-@urls.get('/v1/expanditure/distinct',response_model=Page[schemas.Expanditurelist])
+@urls.get('/v1/expanditure',response_model=Page[schemas.Expanditurelist])
 async def getexpanditurefull(id:int,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     query = statisquery.getexpanditureid(db=db,id=id)
     return paginate(query)
