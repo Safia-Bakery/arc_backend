@@ -5,6 +5,7 @@ from uuid import UUID
 import schemas
 from typing import Optional
 import bcrypt
+from sqlalchemy.exc import SQLAlchemyError
 import pytz
 from sqlalchemy import distinct
 from datetime import datetime ,date
@@ -81,8 +82,11 @@ def howmuchleftcrud(db:Session,lst,store_id):
                     print('\n\nafter ed to editing \n\n')
             else:
                 total.sklad_id = [UUID(i['store'])]
-            db.commit()
-            db.refresh(total)
+            try:
+                db.commit()
+                db.refresh(total)
+            except SQLAlchemyError as e:
+                print(f"Error committing changes: {e}")
                 #total.otdel_sphere.
         else:
             pass
