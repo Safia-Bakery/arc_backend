@@ -199,7 +199,7 @@ async def put_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
                         pass
                 else:
                     try:
-                        sendtotelegramaddcomment(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки №{request_list.id} по APC: Завершен.")
+                        sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки №{request_list.id} по APC: Завершен.")
                     except:
                         pass
             if form_data.status==4:
