@@ -287,5 +287,5 @@ class Tools(Base):
     expanditure = relationship('Expanditure',back_populates='tool')
     total_price = Column(Float,nullable=True)
     amount_left = Column(Float,nullable=True)
-    sklad_id = Column(ARRAY(UUID),default=[])
+    sklad_id = Column(ARRAY(UUID(as_uuid=True)),default=[])
     last_update = Column(DateTime(timezone=True))
