@@ -76,11 +76,9 @@ def howmuchleftcrud(db:Session,lst,store_id):
 
             if total.sklad_id:
                 if UUID(i['store']) not in total.sklad_id:
-                    print('\n\ncomen to editing \n\n')
                     total.sklad_id = total.sklad_id.append(UUID(i['store']))
-                    print('\n\nafter editing to editing \n\n')
             else:
-                total.sklad_id = [store_id]
+                total.sklad_id = total.sklad_id.append(UUID(i['store']))
             db.commit()
             db.refresh(total)
                 #total.otdel_sphere.
