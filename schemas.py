@@ -539,3 +539,12 @@ class ToolsLeft(BaseModel):
     class Config:
         orm_mode=True
 
+
+class Expanditurelist(BaseModel):
+    id:int
+    created_at:Optional[datetime]=None
+    request_id:int
+    amount:int
+    class Config:
+        orm_mode=True
+

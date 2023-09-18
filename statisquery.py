@@ -6,8 +6,9 @@ import schemas
 from typing import Optional
 import bcrypt
 import pytz
+from sqlalchemy import distinct
 from datetime import datetime ,date
-from sqlalchemy import or_,and_,Date,cast,func,Integer
+from sqlalchemy import or_,and_,Date,cast,func,Integer,Numeric
 timezonetash = pytz.timezone("Asia/Tashkent")
 
 
@@ -90,4 +91,12 @@ def howmuchleftcrud(db:Session,lst,store_id):
 def howmuchleftgetlist(db:Session,id):
     query = db.query(models.Tools).filter(models.Tools.sklad_id.contains([id])).all()
     return query
-            
+
+
+def getlistofdistinctexp(db:Session):
+    query = db.query(func.sum(cast(models.Expanditure.amount,Integer)),models.Tools.name,models.Expanditure.tool_id).join(models.Tools).group_by(models.Tools.name,models.Expanditure.tool_id).all()
+    return query
+
+def getexpanditureid(db:Session,id):
+    query = db.query(models.Expanditure).filter(models.Expanditure.tool_id==id).all()
+    return query
