@@ -282,6 +282,7 @@ class GetRequestList(BaseModel):
     user:Optional[UserGetlist]=None
     user_manager:Optional[str]=None
     is_bot:Optional[bool]=None
+    arrival_date:Optional[datetime]=None
     id:int
     class Config:
         orm_mode=True
@@ -326,6 +327,8 @@ class GetRequestid(BaseModel):
     expanditure:list[GetExpanditure]
     comments:list[GetComments]
     is_bot:Optional[bool]=None
+    size:Optional[str]=None
+    arrival_date:Optional[datetime]=None
     id:int
     class Config:
         orm_mode=True

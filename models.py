@@ -10,6 +10,15 @@ import uuid
 timezonetash = pytz.timezone("Asia/Tashkent")
 Base = declarative_base()
 
+
+"""
+if there is sub id in category the category is attached to marketing department 
+if there is not sub id it is responsible for arc, fabrica arc and other departments
+if sub 
+"""
+
+
+
 class ParentPage(Base):
     __tablename__='parentpage'
     id = Column(Integer,primary_key=True,index=True)
@@ -181,6 +190,8 @@ class Requests(Base):
     comments = relationship('Comments',back_populates='request')
     user_manager = Column(String,nullable=True)
     is_bot = Column(Integer,default=1)
+    size = Column(String,nullable=True)
+    arrival_date = Column(DateTime,nullable=True)
 
 
 class Comments(Base):
@@ -192,7 +203,7 @@ class Comments(Base):
     user = relationship('Users',back_populates='comments')
     comment = Column(String)
 
-    
+
 
 class Files(Base):
     __tablename__ = 'files'
