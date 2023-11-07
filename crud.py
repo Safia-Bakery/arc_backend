@@ -583,7 +583,7 @@ def commitdata(db:Session,item):
 def synchtools(db:Session,groups):
     group_list = []
     for line in groups:
-        if line['id'] in ['09be831f-1201-4b78-9cad-7c94c3363276','1b55d7e1-6946-4bbc-bf93-542bfdb2b584','203a26b5-a458-4c45-b85d-ad961b5345f2','6fe3e935-cbdc-41a8-9848-f44f2332be54']:
+        if line['id'] in ['09be831f-1201-4b78-9cad-7c94c3363276','1b55d7e1-6946-4bbc-bf93-542bfdb2b584','203a26b5-a458-4c45-b85d-ad961b5345f2']:
             group_list.append(line['id'])
             if check_group_exist(db,line['id'],models.ToolParents,models.ToolParents.id) is None:
                 item = models.ToolParents(id=line['id'],num=line['num'],code=line['code'],name=line['name'],category=line['category'],description=line['description'])
