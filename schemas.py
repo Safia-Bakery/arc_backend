@@ -342,9 +342,9 @@ class RequestAttachBrigada(BaseModel):
 
 class UpdateBrigadaSch(BaseModel):
     id:int
-    name:Optional[str]
-    description:Optional[str]
-    status:Optional[int]
+    name:Optional[str]=None
+    description:Optional[str]=None
+    status:Optional[int]=None
     users:Optional[list[int]]=None
     sphere_status:Optional[int]=None
 

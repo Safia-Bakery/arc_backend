@@ -45,7 +45,6 @@ app = FastAPI()
 app.include_router(router)
 app.include_router(urls)
 app.mount("/files", StaticFiles(directory="files"), name="files")
-#app.add_middleware(TrustedHostMiddleware,allowed_hosts=["*"])
 
 app.add_middleware(
     CORSMiddleware,
@@ -63,7 +62,7 @@ app.add_middleware(
 #------------AUTHENTICATION
 
 @app.post('/login', summary="Create access and refresh tokens for user")
-async def login(form_data: OAuth2PasswordRequestForm = Depends(),db:Session=Depends(get_db)):
+async def login(form_data: OAuth2PasswordRequestForm = Depends(OAuth2PasswordRequestForm),db:Session=Depends(get_db)):
     user = crud.get_user(db,form_data.username)
     if user is None:
         raise HTTPException(
@@ -330,11 +329,7 @@ async def get_brigada_id(id:int,db:Session=Depends(get_db),request_user: schemas
         )
        
 
-    #else:
-    #    raise HTTPException(
-    #        status_code=status.HTTP_403_FORBIDDEN,
-    #        detail="You are not super user"
-    #    )
+
     
 
 @app.get('/users/for/brigada/{id}',response_model=list[schemas.UserGetlist])
@@ -353,11 +348,7 @@ async def user_for_brigada(id:int,db:Session=Depends(get_db),request_user: schem
         
        
 
-    #else:
-    #    raise HTTPException(
-    #        status_code=status.HTTP_403_FORBIDDEN,
-    #        detail="You are not super user"
-    #    )
+
 
 
 @app.put('/brigadas')
@@ -373,18 +364,7 @@ async def update_brigada(form_data:schemas.UpdateBrigadaSch,db:Session=Depends(g
             else:
                 crud.set_null_user_brigada(db,form_data.id)
             return {'success':True,'message':'everthing is ok','brigada':brigrada}
-        #except:
-        #    raise HTTPException(
-        #    status_code=status.HTTP_404_NOT_FOUND,
-        #    detail="not found"
-        #)
-       
 
-    #else:
-    #    raise HTTPException(
-    #        status_code=status.HTTP_403_FORBIDDEN,
-    #        detail="You are not super user"
-    #    )
 
 
 @app.post('/expanditure')
@@ -428,18 +408,6 @@ async def get_me(db:Session=Depends(get_db),request_user: schemas.UserFullBack =
         permissions=[]
     return {'success':True,'username':request_user.username,'full_name':request_user.full_name,'role':role,'id':request_user.id,'permissions':permissions}
 
-#@app.post('/fillials')
-#async def add_fillials(form_data:schemas.AddFillialSch,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-#    permission = checkpermissions(request_user=request_user,db=db,page='fillials')
-#    if permission:
-#        return crud.add_fillials(db,data=form_data)
-#
-#    else:
-#        raise HTTPException(
-#            status_code=status.HTTP_403_FORBIDDEN,
-#            detail="You are not super user"
-#        )
-
 
 
 @app.put('/fillials')
@@ -460,17 +428,7 @@ async def update_fillials(form_data:schemas.UpdateFillialSch,db:Session=Depends(
     
 
 
-#@app.get('/fillials',response_model=Page[schemas.GetFillialSch])
-#async def get_fillials(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-#    permission = checkpermissions(request_user=request_user,db=db,page='fillials')
-#    if permission:
-#        return paginate(crud.get_fillial_list(db))
-#
-#    else:
-#        raise HTTPException(
-#            status_code=status.HTTP_403_FORBIDDEN,
-#            detail="You are not super user"
-#        )
+
     
 
     

@@ -129,7 +129,7 @@ async def synch_expanditure_iiko(form_data:schemas.SynchExanditureiiko,db:Sessio
     #    )
 
 @urls.delete('/v1/expanditure')
-async def delete_expanditure(id=int,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def delete_expanditure(id:int,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     #permission = checkpermissions(request_user=request_user,db=db,page=28)
     #if permission:
         data = crud.delete_expanditure(db,id)

@@ -31,23 +31,13 @@ BASE_URL = 'https://backend.service.safiabakery.uz/'
 
 @router.post('/category')
 async def add_category(form_data:schemas.AddCategorySch,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    #permission = checkpermissions(request_user=request_user,db=db,page=20)
-    #if permission:
         return crud.add_category_cr(db,form_data)
-
-    #else:
-    #    raise HTTPException(
-    #        status_code=status.HTTP_403_FORBIDDEN,
-    #        detail="You are not super user"
-    #    )
-
 
 
 
 @router.put('/category')
 async def update_category(form_data:schemas.UpdateCategorySch,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    #permission = checkpermissions(request_user=request_user,db=db,page=21)
-    #if permission:
+
         response = crud.update_category_cr(db,form_data)
         if response:
             return response
@@ -57,40 +47,15 @@ async def update_category(form_data:schemas.UpdateCategorySch,db:Session=Depends
             detail="Not found"
         )
 
-    #else:
-    #    raise HTTPException(
-    #        status_code=status.HTTP_403_FORBIDDEN,
-    #        detail="You are not super user"
-    #    )
-    
 
-#@router.get('/category',response_model=Page[schemas.GetCategorySch])
-#async def get_category(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-#    permission = checkpermissions(request_user=request_user,db=db,page='category')
-#    if permission:
-#        response = crud.get_category_list(db)
-#        return paginate(response)
-#
-#    else:
-#        raise HTTPException(
-#            status_code=status.HTTP_403_FORBIDDEN,
-#            detail="You are not super user"
-#        )
     
 
 
 @router.get('/category',response_model=Page[schemas.GetCategorySch])
 async def filter_category(sphere_status:Optional[int]=None,sub_id:Optional[int]=None,department:Optional[int]=None,category_status:Optional[int]=None,name:Optional[str]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    #permission = checkpermissions(request_user=request_user,db=db,page=6)
-    #if permission:
+
         response = crud.filter_category(db,category_status=category_status,name=name,sub_id=sub_id,department=department,sphere_status=sphere_status)
         return paginate(response)
-
-    #else:
-    #    raise HTTPException(
-    #        status_code=status.HTTP_403_FORBIDDEN,
-    #        detail="You are not super user"
-    #    )
 
 
 @router.get('/category/{id}',response_model=schemas.GetCategorySch)
@@ -106,36 +71,11 @@ async def get_category_id(id:int,db:Session=Depends(get_db),request_user:schemas
             detail="info with this id not found "
         )
 
-    #else:
-    #    raise HTTPException(
-    #        status_code=status.HTTP_403_FORBIDDEN,
-    #        detail="You are not super user"
-    #    )
-    
-
 
     
 
-#@router.get('/request',response_model=Page[schemas.GetRequestList])
-#async def get_request(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-#    permission = checkpermissions(request_user=request_user,db=db,page='requests')
-#    if permission:
-#        try:
-#            if request_user.brigada_id:
-#                requestdata= crud.get_request_list_for_brigada(db,request_user.brigada_id)
-#                return paginate(requestdata)
-#            request_list = crud.get_request_list(db)
-#            return paginate(request_list)
-#        except:
-#            raise HTTPException(
-#            status_code=status.HTTP_409_CONFLICT,
-#            detail="not fund"
-#        )
-#    else:
-#        raise HTTPException(
-#            status_code=status.HTTP_403_FORBIDDEN,
-#            detail="You are not super user"
-#        )
+
+
 @router.get('/request',response_model=Page[schemas.GetRequestList])
 async def filter_request(department:int,sub_id:Optional[int]=None,id:Optional[int]=None,category_id:Optional[int]=None,fillial_id:Optional[UUID]=None,created_at:Optional[date]=None,request_status:Optional[int]=None,user:Optional[str]=None,sphere_status:Optional[int]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
 
@@ -156,7 +96,6 @@ async def get_request_id(id:int,db:Session=Depends(get_db),request_user:schemas.
 
         try:
             request_list = crud.get_request_id(db,id)
-
             return request_list
         except:
             raise HTTPException(
@@ -318,20 +257,7 @@ async def get_category_and_fillials(db:Session=Depends(get_db),request_user:sche
         )
     
 
-#@router.get('/users',response_model=Page[schemas.UserGetlist])
-#async def get_user_lisrt(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-#    permission = checkpermissions(request_user=request_user,db=db,page='users')
-#    if permission:
-#        
-#            users = crud.get_user_list(db)
-#            return paginate(users)
-#       
-#
-#    else:
-#        raise HTTPException(
-#            status_code=status.HTTP_403_FORBIDDEN,
-#            detail="You are not super user"
-#        )
+
 
 
 @router.get('/users',response_model=Page[schemas.UserGetlist])
@@ -343,12 +269,6 @@ async def filter_user(full_name:Optional[str]=None,username:Optional[str]=None,r
             return paginate(users)
 
 
-    #else:
-    #    raise HTTPException(
-    #        status_code=status.HTTP_403_FORBIDDEN,
-    #        detail="You are not super user"
-    #    )
-
 @router.put('/users',response_model=schemas.UserGetlist)
 async def filter_user(form_data:schemas.UserUpdateAll,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     #permission = checkpermissions(request_user=request_user,db=db,page=19)
@@ -356,11 +276,6 @@ async def filter_user(form_data:schemas.UserUpdateAll,db:Session=Depends(get_db)
         
         updateuser = crud.update_user(db,form_data=form_data)
         return updateuser
-    #else:
-    #    raise HTTPException(
-    #        status_code=status.HTTP_403_FORBIDDEN,
-    #        detail="You are not super user"
-    #    )
 
 
 
