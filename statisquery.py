@@ -94,9 +94,14 @@ def howmuchleftgetlist(db:Session,id):
     return query
 
 
-def getlistofdistinctexp(db:Session):
-    query = db.query(func.sum(cast(models.Expanditure.amount,Integer)),models.Tools.name,models.Expanditure.tool_id).join(models.Tools).group_by(models.Tools.name,models.Expanditure.tool_id).all()
-    return query
+def getlistofdistinctexp(db:Session,started_at,finished_at):
+    
+    query = db.query(func.sum(cast(models.Expanditure.amount,Integer)),models.Tools.name,models.Expanditure.tool_id).join(models.Tools)
+    if started_at is not None:
+        query = query.filter(models.Expanditure.created_at>=started_at)
+    if finished_at is not None:
+        query = query.filter(models.Expanditure.created_at<=finished_at)
+    return query.group_by(models.Tools.name,models.Expanditure.tool_id).all()
 
 def getexpanditureid(db:Session,id):
     query = db.query(models.Expanditure).filter(models.Expanditure.tool_id==id).all()

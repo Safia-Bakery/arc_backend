@@ -245,8 +245,8 @@ async def gethowmuchleft(store_id:UUID=None,db:Session=Depends(get_db),request_u
         return paginate(query)
 
 @urls.get('/v1/expanditure/distinct')
-async def getlistofdisinctexpand(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
-    query = statisquery.getlistofdistinctexp(db=db)
+async def getlistofdisinctexpand(started_at:Optional[date]=None,finished_at:Optional[date]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    query = statisquery.getlistofdistinctexp(db=db,started_at=started_at,finished_at=finished_at)
     data = [{'amount':i[0],'name':i[1],'id':i[2]} for i in query]
     return {'tests':data}
 
