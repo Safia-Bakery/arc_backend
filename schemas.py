@@ -1,7 +1,7 @@
 from pydantic import BaseModel,validator
 from fastapi import Form,UploadFile,File
 from typing import Optional,Annotated
-from datetime import datetime
+from datetime import datetime,time
 from fastapi import Form
 from uuid import UUID
 
@@ -329,6 +329,7 @@ class GetRequestid(BaseModel):
     is_bot:Optional[bool]=None
     size:Optional[str]=None
     arrival_date:Optional[datetime]=None
+    bread_size:Optional[str]=None
     id:int
     class Config:
         orm_mode=True
@@ -551,3 +552,11 @@ class Expanditurelist(BaseModel):
     class Config:
         orm_mode=True
 
+
+
+class WorkTimeUpdate(BaseModel):
+    #id:int
+    from_time:Optional[time]=None
+    to_time:Optional[time]=None
+    class Config:
+        orm_mode=True

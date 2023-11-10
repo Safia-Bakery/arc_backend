@@ -176,7 +176,7 @@ async def put_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
 
 
 @router.post('/request')
-async def get_category(files:list[UploadFile],category_id:int,fillial_id:UUID,description:str,factory:Optional[bool]=False,size:Optional[str]=None,arrival_date:Optional[datetime]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user),product:Optional[str]=None):
+async def get_category(files:list[UploadFile],category_id:int,fillial_id:UUID,description:str,factory:Optional[bool]=False,size:Optional[str]=None,bread_size:Optional[str]=None,arrival_date:Optional[datetime]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user),product:Optional[str]=None):
         #try:
             category_query = crud.get_category_id(db=db,id=category_id)
 
@@ -190,7 +190,7 @@ async def get_category(files:list[UploadFile],category_id:int,fillial_id:UUID,de
             if factory:
                 sklad_id = fillial_id
             
-            responserq = crud.add_request(db,category_id=category_id,description=description,fillial_id=sklad_id,product=product,user_id=request_user.id,is_bot=0,size=size,arrival_date=arrival_date)
+            responserq = crud.add_request(db,category_id=category_id,description=description,fillial_id=sklad_id,product=product,user_id=request_user.id,is_bot=0,size=size,arrival_date=arrival_date,bread_size=bread_size)
             file_obj_list = []
             #parsed_datetime = datetime.strptime(responserq.created_at,"%Y-%m-%dT%H:%M:%S.%f")
             formatted_datetime_str = responserq.created_at.strftime("%Y-%m-%d %H:%M")

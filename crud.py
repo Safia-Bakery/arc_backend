@@ -250,8 +250,8 @@ def get_category_list(db:Session,sub_id,sphere_status):
 def get_category_id(db:Session,id):
     return db.query(models.Category).filter(models.Category.id==id).first()
 
-def add_request(db:Session,category_id,fillial_id,description,product,user_id,is_bot,arrival_date,size):
-    db_add_request = models.Requests(category_id=category_id,description=description,fillial_id = fillial_id,product=product,user_id=user_id,is_bot=is_bot,size=size,arrival_date=arrival_date)
+def add_request(db:Session,category_id,fillial_id,description,product,user_id,is_bot,arrival_date,size,bread_size):
+    db_add_request = models.Requests(category_id=category_id,description=description,fillial_id = fillial_id,product=product,user_id=user_id,is_bot=is_bot,size=size,arrival_date=arrival_date,bread_size=bread_size)
     db.add(db_add_request)
     db.commit()
     db.refresh(db_add_request)
@@ -754,4 +754,19 @@ def filterbranchchildid(db:Session,parent_id,origin:Optional[int]=None):
 
 def getfillialchildfabrica(db:Session):
     query = db.query(models.Fillials).join(models.ParentFillials).filter(models.ParentFillials.is_fabrica==1).all()
+    return query
+
+def workingtimeupdate(db:Session,form_data:schemas.WorkTimeUpdate):
+    query = db.query(models.Working).filter(models.Working.id==1).first()
+    if query:
+        if form_data.from_time is not None:
+            query.from_time = form_data.from_time
+        if form_data.to_time is not None:
+            query.to_time = form_data.to_time
+        db.commit()
+    return True
+
+
+def working_time(db:Session):
+    query  = db.query(models.Working).first()
     return query

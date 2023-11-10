@@ -256,6 +256,18 @@ async def getexpanditurefull(id:int,db:Session=Depends(get_db),request_user:sche
     return paginate(query)
 
 
+@urls.put('/working',response_model=schemas.WorkTimeUpdate)
+async def update_working_time(form_data:schemas.WorkTimeUpdate,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    query = crud.workingtimeupdate(db=db,form_data=form_data)
+    return query
+
+
+@urls.get('/working',response_model=schemas.WorkTimeUpdate)
+async def get_working_time(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    query = crud.working_time(db=db)
+    return query
+
+
 
 
 

@@ -1,5 +1,5 @@
 
-from sqlalchemy import Column, Integer, String,ForeignKey,Float,DateTime,Boolean,BIGINT,Table
+from sqlalchemy import Column, Integer, String,ForeignKey,Float,DateTime,Boolean,BIGINT,Table,Time
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -175,7 +175,7 @@ class Requests(Base):
     fillial = relationship('Fillials',back_populates='request')
     fillial_id = Column(UUID(as_uuid=True),ForeignKey('fillials.id'))
     category = relationship('Category',back_populates='request')
-    category_id = Column(Integer,ForeignKey('category.id'))
+    category_id = Column(Integer,ForeignKey('category.id'),nullable=True)
     file = relationship('Files',back_populates='request')
     brigada = relationship('Brigada',back_populates='request')
     brigada_id = Column(Integer,ForeignKey('brigada.id'),nullable=True)
@@ -192,6 +192,7 @@ class Requests(Base):
     is_bot = Column(Integer,default=1)
     size = Column(String,nullable=True)
     arrival_date = Column(DateTime,nullable=True)
+    bread_size = Column(String,nullable=True)
 
 
 class Comments(Base):
@@ -300,3 +301,13 @@ class Tools(Base):
     amount_left = Column(Float,nullable=True)
     sklad_id = Column(ARRAY(UUID(as_uuid=True)),default=[])
     last_update = Column(DateTime(timezone=True))
+
+
+
+
+
+class Working(Base):
+    __tablename__='working'
+    id = Column(Integer,primary_key=True,index=True)
+    from_time = Column(Time)
+    to_time = Column(Time)
