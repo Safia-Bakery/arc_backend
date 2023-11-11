@@ -283,6 +283,7 @@ class GetRequestList(BaseModel):
     user_manager:Optional[str]=None
     is_bot:Optional[bool]=None
     arrival_date:Optional[datetime]=None
+    bread_size:Optional[str]=None
     id:int
     class Config:
         orm_mode=True

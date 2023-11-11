@@ -360,7 +360,7 @@ def acceptreject(db:Session,form_data:schemas.AcceptRejectRequest,user):
 
 
 
-def filter_requests_all(db:Session,id,category_id,fillial_id,created_at,request_status,user,sub_id,department,sphere_status):
+def filter_requests_all(db:Session,id,category_id,fillial_id,created_at,request_status,user,sub_id,department,sphere_status,arrival_date):
     query = db.query(models.Requests).join(models.Category).join(models.Users)
     if id is not None:
         query = query.filter(models.Requests.id==id)
@@ -381,11 +381,13 @@ def filter_requests_all(db:Session,id,category_id,fillial_id,created_at,request_
         query = query.filter(models.Category.sub_id==sub_id)
     if sphere_status is not None:
         query = query.filter(models.Category.sphere_status==sphere_status)
+    if arrival_date is not None:
+        query = query.filter(cast(models.Requests.arrival_date,Date)==arrival_date)
     return query.order_by(models.Requests.id.desc()).all()
 
 
 
-def filter_request_brigada(db:Session,id,category_id,brigada_id,fillial_id,created_at,request_status,user,sphere_status,department,sub_id):
+def filter_request_brigada(db:Session,id,category_id,brigada_id,fillial_id,created_at,request_status,user,sphere_status,department,sub_id,arrival_date):
     query = db.query(models.Requests).join(models.Category)
     if id is not None:
         query = query.filter(models.Requests.id==id)
@@ -405,6 +407,8 @@ def filter_request_brigada(db:Session,id,category_id,brigada_id,fillial_id,creat
         query = query.filter(models.Users.full_name.ilike(f"%{user}/%"))
     if sphere_status is not None:
         query = query.filter(models.Category.sphere_status==sphere_status)
+    if arrival_date is not None:
+        query = query.filter(cast(models.Requests.arrival_date,Date)==arrival_date)
     query = query.filter(models.Requests.brigada_id==brigada_id)
     return query.order_by(models.Requests.id.desc()).all()
 
@@ -764,7 +768,8 @@ def workingtimeupdate(db:Session,form_data:schemas.WorkTimeUpdate):
         if form_data.to_time is not None:
             query.to_time = form_data.to_time
         db.commit()
-    return True
+        db.refresh(query)
+    return query
 
 
 def working_time(db:Session):

@@ -77,13 +77,13 @@ async def get_category_id(id:int,db:Session=Depends(get_db),request_user:schemas
 
 
 @router.get('/request',response_model=Page[schemas.GetRequestList])
-async def filter_request(department:int,sub_id:Optional[int]=None,id:Optional[int]=None,category_id:Optional[int]=None,fillial_id:Optional[UUID]=None,created_at:Optional[date]=None,request_status:Optional[int]=None,user:Optional[str]=None,sphere_status:Optional[int]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def filter_request(department:int,sub_id:Optional[int]=None,id:Optional[int]=None,category_id:Optional[int]=None,fillial_id:Optional[UUID]=None,created_at:Optional[date]=None,request_status:Optional[int]=None,user:Optional[str]=None,sphere_status:Optional[int]=None,arrival_date:Optional[date]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
 
         
         if request_user.brigada_id:
-            requestdata= crud.filter_request_brigada(db,id=id,sub_id=sub_id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,created_at=created_at,user=user,brigada_id=request_user.brigada_id,sphere_status=sphere_status,department=department)
+            requestdata= crud.filter_request_brigada(db,id=id,sub_id=sub_id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,created_at=created_at,user=user,brigada_id=request_user.brigada_id,sphere_status=sphere_status,department=department,arrival_date=arrival_date)
             return paginate(requestdata)
-        request_list = crud.filter_requests_all(db,sub_id=sub_id,department=department,id=id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,created_at=created_at,user=user,sphere_status=sphere_status)
+        request_list = crud.filter_requests_all(db,sub_id=sub_id,department=department,id=id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,created_at=created_at,user=user,sphere_status=sphere_status,arrival_date=arrival_date)
         return paginate(request_list)
     
 
@@ -176,7 +176,7 @@ async def put_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
 
 
 @router.post('/request')
-async def get_category(files:list[UploadFile],category_id:int,fillial_id:UUID,description:str,factory:Optional[bool]=False,size:Optional[str]=None,bread_size:Optional[str]=None,arrival_date:Optional[datetime]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user),product:Optional[str]=None):
+async def get_category(category_id:int,fillial_id:UUID,description:str,files:list[UploadFile]=None,factory:Optional[bool]=False,size:Optional[str]=None,bread_size:Optional[str]=None,arrival_date:Optional[datetime]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user),product:Optional[str]=None):
         #try:
             category_query = crud.get_category_id(db=db,id=category_id)
 
