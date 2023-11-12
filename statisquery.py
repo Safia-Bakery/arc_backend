@@ -9,9 +9,16 @@ from sqlalchemy.exc import SQLAlchemyError
 import pytz
 from sqlalchemy import distinct
 from datetime import datetime ,date
+from microservices import sendtotelegramchannel
 from sqlalchemy import or_,and_,Date,cast,func,Integer,Numeric
+backend_url = 'backend.service.safiabakery.uz'
+import time
+import requests
+from dotenv import load_dotenv
 timezonetash = pytz.timezone("Asia/Tashkent")
-
+load_dotenv()
+import os
+bot_token = os.environ.get('BOT_TOKEN')
 
 
 def calculate_bycat(timer,db:Session,sphere_status:Optional[int]=None,department:Optional[int]=None,started_at:Optional[date]=None,finished_at:Optional[date]=None):
@@ -102,3 +109,26 @@ def getlistofdistinctexp(db:Session,started_at,finished_at):
 def getexpanditureid(db:Session,id):
     query = db.query(models.Expanditure).filter(models.Expanditure.tool_id==id).all()
     return query
+
+
+def get_files(db:Session):
+    query = db.query(models.Files).all()
+    for i in query:
+        time.sleep(2)
+        file = requests.get(backend_url+f"/{i.url}")
+        try:
+            with open(i.url,'wb') as f:
+                f.write(file.content)
+        except:
+            pass
+    return True
+
+def send_to_user_message(db:Session,message):
+    query = db.query(models.Users).filter(models.Users.telegram_id.isnot(None)).all()
+    try:
+        for i in query:
+            sendtotelegramchannel(bot_token=bot_token,chat_id=i.telegram_id,message_text=message)
+            time.sleep(4)
+    except:
+        pass
+    return True

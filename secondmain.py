@@ -2,8 +2,9 @@
 from jose import JWTError, jwt
 from datetime import datetime, timedelta,date
 from sqlalchemy.orm import Session
-from fastapi import Depends, FastAPI, HTTPException,UploadFile,File,Form,Header,Request,status
+from fastapi import Depends, FastAPI, HTTPException,UploadFile,File,Form,Header,Request,status,BackgroundTasks
 from pydantic import ValidationError
+import statisquery
 import schemas
 import bcrypt
 from typing import Annotated
@@ -334,6 +335,18 @@ async def get_tool_list(db:Session=Depends(get_db),request_user:schemas.UserFull
 async def get_fillials_fabrica(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
     return paginate(crud.getfillialchildfabrica(db))
 
+
+@router.get('/get/files')
+async def get_files_another_service(background_task:BackgroundTasks,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    background_task.add_task(statisquery.get_files(db))
+
+    return {'success':True}
+
+
+@router.post('/send/message')
+async def send_message_to_users(message:str,background_task:BackgroundTasks,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+    background_task.add_task(statisquery.send_to_user_message(db=db,message=message))
+    return {'success':True}
 
 #----------------TELEGRAM BOT --------------------
 
