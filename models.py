@@ -154,7 +154,7 @@ class Brigada(Base):
 class Expanditure(Base):
     __tablename__='expanditure'
     id = Column(Integer,primary_key=True,index=True)
-    amount = Column(Integer)
+    amount = Column(Integer,nullable=True)
     request = relationship('Requests',back_populates='expanditure')
     request_id = Column(Integer,ForeignKey('requests.id'))
     tool = relationship('Tools',back_populates='expanditure')
