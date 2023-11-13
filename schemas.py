@@ -284,6 +284,7 @@ class GetRequestList(BaseModel):
     is_bot:Optional[bool]=None
     arrival_date:Optional[datetime]=None
     bread_size:Optional[str]=None
+    size:Optional[str]=None
     id:int
     class Config:
         orm_mode=True
