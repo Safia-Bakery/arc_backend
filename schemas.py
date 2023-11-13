@@ -143,8 +143,8 @@ class GetFillialChild(BaseModel):
 class GetFillialSch(BaseModel):
     id : UUID
     name:str
-    longtitude:Optional[int]=None
-    latitude:Optional[int]=None
+    longtitude:Optional[float]=None
+    latitude:Optional[float]=None
     country:Optional[str]=None
     status : int
     is_fabrica:Optional[int]=None
