@@ -11,7 +11,7 @@ from sqlalchemy import distinct
 from datetime import datetime ,date
 from microservices import sendtotelegramchannel
 from sqlalchemy import or_,and_,Date,cast,func,Integer,Numeric
-backend_url = 'backend.service.safiabakery.uz'
+backend_url = 'https://backend.service.safiabakery.uz'
 import time
 import requests
 from dotenv import load_dotenv
