@@ -114,7 +114,7 @@ def getexpanditureid(db:Session,id):
 def get_files(db:Session):
     query = db.query(models.Files).all()
     for i in query:
-        time.sleep(2)
+        #time.sleep(2)
         file = requests.get(backend_url+f"/{i.url}")
         try:
             with open(i.url,'wb') as f:
@@ -128,7 +128,7 @@ def send_to_user_message(db:Session,message):
     try:
         for i in query:
             sendtotelegramchannel(bot_token=bot_token,chat_id=i.telegram_id,message_text=message)
-            time.sleep(4)
+            #time.sleep(4)
     except:
         pass
     return True
