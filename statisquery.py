@@ -112,7 +112,7 @@ def getexpanditureid(db:Session,id):
 
 
 def get_files(db:Session):
-    query = db.query(models.Files).join(models.Requests).order_by(models.Requests.created_at.desc()).slice(70,100).all()
+    query = db.query(models.Files).join(models.Requests).order_by(models.Requests.created_at.desc()).slice(100,150).all()
     for i in query:
         #time.sleep(2)
         file = requests.get(backend_url+f"/{i.url}")
