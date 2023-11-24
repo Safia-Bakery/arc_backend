@@ -180,8 +180,8 @@ class Requests(Base):
     brigada = relationship('Brigada',back_populates='request')
     brigada_id = Column(Integer,ForeignKey('brigada.id'),nullable=True)
     status = Column(Integer,default=0)
-    started_at = Column(DateTime,nullable=True)
-    finished_at = Column(DateTime,nullable=True)
+    started_at = Column(DateTime(timezone=True),nullable=True)
+    finished_at = Column(DateTime(timezone=True),nullable=True)
     rating = Column(Integer,nullable=True)
     deny_reason = Column(String,nullable=True)
     user = relationship('Users',back_populates='request')
@@ -191,7 +191,7 @@ class Requests(Base):
     user_manager = Column(String,nullable=True)
     is_bot = Column(Integer,default=1)
     size = Column(String,nullable=True)
-    arrival_date = Column(DateTime,nullable=True)
+    arrival_date = Column(DateTime(timezone=True),nullable=True)
     bread_size = Column(String,nullable=True)
 
 
