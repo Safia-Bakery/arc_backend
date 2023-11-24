@@ -5,6 +5,7 @@ import schemas
 from typing import Optional
 import bcrypt
 import pytz
+from sqlalchemy.sql import func
 from datetime import datetime 
 from sqlalchemy import or_,and_,Date,cast
 timezonetash = pytz.timezone("Asia/Tashkent")
@@ -348,9 +349,9 @@ def acceptreject(db:Session,form_data:schemas.AcceptRejectRequest,user):
         db_get.status = form_data.status
         db_get.user_manager=user
         if form_data.status == 1:
-            db_get.started_at = datetime.now(timezonetash)
+            db_get.started_at = func.now()
         if form_data.status == 3:
-            db_get.finished_at = datetime.now(timezonetash)
+            db_get.finished_at = func.now()
         db.commit()
         db.refresh(db_get)
         return db_get
