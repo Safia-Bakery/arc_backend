@@ -154,7 +154,7 @@ async def put_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
                     except:
                         pass
             if form_data.status==4:
-                sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Ваша заявка {request_list.id} была отменена.")
+                sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Ваша заявка {request_list.id} была отменена по причине: {request_list.deny_reason}")
             if request_list:
                 return request_list
             else:
