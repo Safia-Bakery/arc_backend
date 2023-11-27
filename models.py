@@ -1,5 +1,5 @@
 
-from sqlalchemy import Column, Integer, String,ForeignKey,Float,DateTime,Boolean,BIGINT,Table,Time
+from sqlalchemy import Column, Integer, String,ForeignKey,Float,DateTime,Boolean,BIGINT,Table,Time,JSON
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -173,7 +173,7 @@ class Requests(Base):
     description = Column(String)
     created_at = Column(DateTime(timezone=True),default=func.now())
     fillial = relationship('Fillials',back_populates='request')
-    fillial_id = Column(UUID(as_uuid=True),ForeignKey('fillials.id'))
+    fillial_id = Column(UUID(as_uuid=True),ForeignKey('fillials.id'),nullable=True)
     category = relationship('Category',back_populates='request')
     category_id = Column(Integer,ForeignKey('category.id'),nullable=True)
     file = relationship('Files',back_populates='request')
@@ -193,6 +193,7 @@ class Requests(Base):
     size = Column(String,nullable=True)
     arrival_date = Column(DateTime(timezone=True),nullable=True)
     bread_size = Column(String,nullable=True)
+    location = Column(JSON,nullable=True)
 
 
 class Comments(Base):
