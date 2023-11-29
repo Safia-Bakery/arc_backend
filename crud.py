@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-
+from users.schema import schema
 import models
 import schemas
 from typing import Optional
@@ -23,7 +23,7 @@ def get_user(db: Session, username: str):
 
 
 
-def create_user(db:Session,user : schemas.UserCreate):
+def create_user(db:Session,user : schema.UserCreate):
     hashed_password = hash_password(user.password)
     db_user = models.Users(sphere_status=user.sphere_status,username=user.username.lower(), password=hashed_password,full_name=user.full_name,email=user.email,phone_number=user.phone_number,group_id=user.group_id,status=user.status)
     db.add(db_user)
@@ -48,7 +48,7 @@ def get_roles(db:Session):
     return db.query(models.ParentPage).all()
 
 
-def create_group(db:Session,group:schemas.CreateGroupSch):
+def create_group(db:Session,group:schema.CreateGroupSch):
     group_user = models.Groups(name=group.name,status=group.status)
     db.add(group_user)
     db.commit()
@@ -251,8 +251,9 @@ def get_category_list(db:Session,sub_id,sphere_status):
 def get_category_id(db:Session,id):
     return db.query(models.Category).filter(models.Category.id==id).first()
 
-def add_request(db:Session,category_id,fillial_id,description,product,user_id,is_bot,arrival_date,size,bread_size):
-    db_add_request = models.Requests(category_id=category_id,description=description,fillial_id = fillial_id,product=product,user_id=user_id,is_bot=is_bot,size=size,arrival_date=arrival_date,bread_size=bread_size)
+def add_request(db:Session,category_id,fillial_id,description,product,user_id,is_bot,arrival_date,size,bread_size,location):
+    db_add_request = models.Requests(category_id=category_id,description=description,fillial_id = fillial_id,product=product,user_id=user_id,is_bot=is_bot,size=size,arrival_date=arrival_date,bread_size=bread_size,location=location,
+                                     update_time={'0':str(datetime.now(tz=timezonetash))})
     db.add(db_add_request)
     db.commit()
     db.refresh(db_add_request)
@@ -350,8 +351,13 @@ def acceptreject(db:Session,form_data:schemas.AcceptRejectRequest,user):
         db_get.user_manager=user
         if form_data.status == 1:
             db_get.started_at = func.now()
-        if form_data.status == 3:
+        if form_data.status == 3 or form_data.status==4:
             db_get.finished_at = func.now()
+        updated_data = db_get.update_time or {}
+        updated_data[str(form_data.status)] = str(datetime.now(tz=timezonetash))
+        db_get.update_time= updated_data
+        
+        db.query(models.Requests).filter(models.Requests.id==form_data.request_id).update({'update_time':updated_data})
         db.commit()
         db.refresh(db_get)
         return db_get

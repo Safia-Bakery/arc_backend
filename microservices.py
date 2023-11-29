@@ -5,6 +5,7 @@ from passlib.context import CryptContext
 import bcrypt
 import requests
 import schemas
+from users.schema import schema
 from sqlalchemy.orm import Session
 from typing import Union, Any
 import crud
@@ -92,7 +93,7 @@ def get_db():
 
 
 
-async def get_current_user(token: str = Depends(reuseable_oauth),db:Session=Depends(get_db)) -> schemas.User:
+async def get_current_user(token: str = Depends(reuseable_oauth),db:Session=Depends(get_db)) -> schema.User:
     try:
         payload = jwt.decode(
             token, JWT_SECRET_KEY, algorithms=[ALGORITHM]

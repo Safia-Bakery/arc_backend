@@ -13,7 +13,7 @@ import crud
 from microservices import get_current_user,get_db,list_departments,authiiko
 from database import engine,SessionLocal
 from fastapi_pagination import paginate,Page
-
+from users.schema import schema
 from microservices import checkpermissions,getgroups,getproducts,list_stores,get_suppliers,send_document_iiko,howmuchleft
 #from main import get_db,get_current_user
 from fastapi import APIRouter
@@ -22,7 +22,7 @@ urls = APIRouter()
 
 
 @urls.get('/synch/department',response_model=Page[schemas.GetFillialSch])
-async def insert_departments(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)): 
+async def insert_departments(db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)): 
     permission = checkpermissions(request_user=request_user,db=db,page=9)
     if permission:
         data = crud.insert_fillials(db,items=list_departments(key=authiiko()))
@@ -38,7 +38,7 @@ async def insert_departments(db:Session=Depends(get_db),request_user:schemas.Use
 
 
 @urls.put('/deparment/update')
-async def update_otdel(form_data:schemas.DepartmenUdpate,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def update_otdel(form_data:schemas.DepartmenUdpate,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page=23)
     if permission:
         query = crud.udpatedepartment(db,form_data=form_data)
@@ -52,7 +52,7 @@ async def update_otdel(form_data:schemas.DepartmenUdpate,db:Session=Depends(get_
 
 
 @urls.get('/synch/groups')
-async def insert_groups(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def insert_groups(db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page=30)
     if permission:
         groups = getgroups(key = authiiko())
@@ -68,19 +68,19 @@ async def insert_groups(db:Session=Depends(get_db),request_user:schemas.UserFull
 
 
 @urls.get('/tool/iarch',response_model=list[schemas.ToolParentsch])
-async def toolgroups(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def toolgroups(db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     return crud.getarchtools(db)
 
 
 @urls.get('/tools/',response_model=Page[schemas.ToolsSearch])
-async def toolgroups(query:str,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def toolgroups(query:str,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     data = crud.gettools(db,query)
     return paginate(data)
 
 
 
 @urls.post('/v1/expenditure')
-async def insert_expenditure(amount:Annotated[int,Form()],request_id:Annotated[int,Form()],tool_id:Annotated[int,Form()],comment:Annotated[str,Form()]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def insert_expenditure(amount:Annotated[int,Form()],request_id:Annotated[int,Form()],tool_id:Annotated[int,Form()],comment:Annotated[str,Form()]=None,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     #permission = checkpermissions(request_user=request_user,db=db,page=28)
     #if permission:
 
@@ -95,7 +95,7 @@ async def insert_expenditure(amount:Annotated[int,Form()],request_id:Annotated[i
 
 
 @urls.post('/v1/upload/file')
-async def upload_file(request_id:Annotated[int,Form()],files:list[UploadFile]= None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def upload_file(request_id:Annotated[int,Form()],files:list[UploadFile]= None,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     if files:
         file_obj_list = []
         for file in files:
@@ -112,7 +112,7 @@ async def upload_file(request_id:Annotated[int,Form()],files:list[UploadFile]= N
 
 
 @urls.put('/v1/expanditure/iiko')
-async def synch_expanditure_iiko(form_data:schemas.SynchExanditureiiko,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def synch_expanditure_iiko(form_data:schemas.SynchExanditureiiko,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     #permission = checkpermissions(request_user=request_user,db=db,page=26)
     #if permission:
         data = crud.check_expanditure_iiko(db,form_data=form_data)
@@ -129,7 +129,7 @@ async def synch_expanditure_iiko(form_data:schemas.SynchExanditureiiko,db:Sessio
     #    )
 
 @urls.delete('/v1/expanditure')
-async def delete_expanditure(id:int,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def delete_expanditure(id:int,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     #permission = checkpermissions(request_user=request_user,db=db,page=28)
     #if permission:
         data = crud.delete_expanditure(db,id)
@@ -147,7 +147,7 @@ async def delete_expanditure(id:int,db:Session=Depends(get_db),request_user:sche
     #    )
 
 @urls.post('/v1/comments',response_model=schemas.GetComments)
-async def add_comments(form_data:schemas.AddComments,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def add_comments(form_data:schemas.AddComments,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page=1)
     if permission:
         data = crud.add_comment(db=db,form_data=form_data,user_id = request_user.id)
@@ -159,7 +159,7 @@ async def add_comments(form_data:schemas.AddComments,db:Session=Depends(get_db),
         )
 
 @urls.get('/v1/comments',response_model=Page[schemas.GetComments])
-async def get_comments(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def get_comments(db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     permission = checkpermissions(request_user=request_user,db=db,page=13)
     if permission:
         data = crud.get_comment(db=db)
@@ -178,7 +178,7 @@ async def get_comments(db:Session=Depends(get_db),request_user:schemas.UserFullB
 
 
 @urls.get('/v1/stats/category')
-async def get_statistics(timer:int,department:Optional[int]=None,sphere_status:Optional[int]=None,started_at:Optional[date]=None,finished_at:Optional[date]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def get_statistics(timer:int,department:Optional[int]=None,sphere_status:Optional[int]=None,started_at:Optional[date]=None,finished_at:Optional[date]=None,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     query = statisquery.calculate_bycat(db=db,department=department,sphere_status=sphere_status,started_at=started_at,finished_at=finished_at,timer=timer)
     category_percent= statisquery.calculate_percentage(db=db,sphere_status=sphere_status,department=department,started_at=started_at,finished_at=finished_at)
     data = [{'category':i[0],'amount':i[1],'time':i[2]} for i in query]
@@ -187,7 +187,7 @@ async def get_statistics(timer:int,department:Optional[int]=None,sphere_status:O
 
 
 @urls.get('/v1/stats/department')
-async def getstatis(sphere_status:int,department:int,db:Session=Depends(get_db),started_at:Optional[date]=None,finished_at:Optional[date]=None,request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def getstatis(sphere_status:int,department:int,db:Session=Depends(get_db),started_at:Optional[date]=None,finished_at:Optional[date]=None,request_user:schema.UserFullBack=Depends(get_current_user)):
     query = statisquery.countfillialrequest(db=db,sphere_status=sphere_status,department=department,started_at=started_at,finished_at=finished_at)
     data  = [{'name':i[1],'amount':i[2]} for i in query]
     return data
@@ -195,7 +195,7 @@ async def getstatis(sphere_status:int,department:int,db:Session=Depends(get_db),
 
 
 @urls.get('/v1/stats/brigada')
-async def getstatsbrigada(sphere_status:int,department:int,started_at:Optional[date]=None,finished_at:Optional[date]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def getstatsbrigada(sphere_status:int,department:int,started_at:Optional[date]=None,finished_at:Optional[date]=None,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     query  = statisquery.countbbrigadarequest(db=db,sphere_status=sphere_status,department=department,started_at=started_at,finished_at=finished_at)
     data = [{'name':i[0],'amount':i[1],'time':i[2]} for i in query]
     return data
@@ -203,7 +203,7 @@ async def getstatsbrigada(sphere_status:int,department:int,started_at:Optional[d
 
 
 @urls.get('/v1/stats/brigada/category')
-async def getbrigadavscategoryst(timer:int,started_at:Optional[date]=None,finished_at:Optional[date]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def getbrigadavscategoryst(timer:int,started_at:Optional[date]=None,finished_at:Optional[date]=None,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     query = statisquery.countbrigadavscategory(db=db,timer=timer,started_at=started_at,finished_at=finished_at)
     is_in = {}
     for i in query:
@@ -223,14 +223,14 @@ async def getbrigadavscategoryst(timer:int,started_at:Optional[date]=None,finish
 
 
 @urls.get('/v1/synch/left')
-async def synchhowmuchleft(store_id:UUID,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def synchhowmuchleft(store_id:UUID,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     key= authiiko()
     query_iiko =  howmuchleft(key=key,store_id=store_id)
     statisquery.howmuchleftcrud(db=db,store_id=store_id,lst=query_iiko)
     return {'success':True}
 
 @urls.get('/v1/tools/left/stores')
-async def gethowmuchleft(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def gethowmuchleft(db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
         store_dict = [
             {'name':'АРС Фабрика Склад','id':'f09c2c8d-00bb-4fa4-81b5-4f4e31995b86'},
             {'name':'АРС Розница Склад','id':'4aafb5af-66c3-4419-af2d-72897f652019'}
@@ -239,31 +239,31 @@ async def gethowmuchleft(db:Session=Depends(get_db),request_user:schemas.UserFul
 
 
 @urls.get('/v1/tools/left',response_model=Page[schemas.ToolsLeft])
-async def gethowmuchleft(store_id:UUID=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def gethowmuchleft(store_id:UUID=None,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
 
         query = statisquery.howmuchleftgetlist(db=db,id=store_id)
         return paginate(query)
 
 @urls.get('/v1/expanditure/distinct')
-async def getlistofdisinctexpand(started_at:Optional[date]=None,finished_at:Optional[date]=None,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def getlistofdisinctexpand(started_at:Optional[date]=None,finished_at:Optional[date]=None,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     query = statisquery.getlistofdistinctexp(db=db,started_at=started_at,finished_at=finished_at)
     data = [{'amount':i[0],'name':i[1],'id':i[2]} for i in query]
     return {'tests':data}
 
 @urls.get('/v1/expanditure',response_model=Page[schemas.Expanditurelist])
-async def getexpanditurefull(id:int,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def getexpanditurefull(id:int,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     query = statisquery.getexpanditureid(db=db,id=id)
     return paginate(query)
 
 
 @urls.put('/working')
-async def update_working_time(form_data:schemas.WorkTimeUpdate,db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def update_working_time(form_data:schemas.WorkTimeUpdate,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     query = crud.workingtimeupdate(db=db,form_data=form_data)
     return query
 
 
 @urls.get('/working')
-async def get_working_time(db:Session=Depends(get_db),request_user:schemas.UserFullBack=Depends(get_current_user)):
+async def get_working_time(db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     query = crud.working_time(db=db)
     return query
 

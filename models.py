@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, String,ForeignKey,Float,DateTime,Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from sqlalchemy.dialects.postgresql import UUID,ARRAY
+from sqlalchemy.dialects.postgresql import UUID,ARRAY,JSONB
 from datetime import datetime
 import pytz 
 import uuid
@@ -194,6 +194,7 @@ class Requests(Base):
     arrival_date = Column(DateTime(timezone=True),nullable=True)
     bread_size = Column(String,nullable=True)
     location = Column(JSON,nullable=True)
+    update_time = Column(JSONB,nullable=True)
 
 
 class Comments(Base):
