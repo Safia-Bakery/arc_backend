@@ -129,11 +129,18 @@ async def put_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
                         sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, на вашу заявку #{request_list.id}s по Запросу машины🚛: В процессе.")
                     except:
                         pass
-                else:
+                if request_list.category.department==3:
                     try:
                         sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по Маркетингу: В процессе.")
                     except:
                         pass
+            if form_data.status == 2:
+                if request_list.category.department==5:
+                    try:
+                        sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, мы отправили транспорт по вашему запросу #{request_list.id}s Ожидайте его прибытия.")
+                    except:
+                        pass  
+                     
             if form_data.status ==3:
                 if request_list.category.department==3:
                      

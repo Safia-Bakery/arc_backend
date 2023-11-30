@@ -106,6 +106,8 @@ def getlistofdistinctexp(db:Session,started_at,finished_at):
     query = db.query(func.sum(cast(models.Expanditure.amount,Integer)),models.Tools.name,models.Expanditure.tool_id).join(models.Tools)
     return query.group_by(models.Tools.name,models.Expanditure.tool_id).filter(models.Expanditure.created_at.between(started_at,finished_at)).all()
 
+
+
 def getexpanditureid(db:Session,id):
     query = db.query(models.Expanditure).filter(models.Expanditure.tool_id==id).all()
     return query
