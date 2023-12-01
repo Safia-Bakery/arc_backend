@@ -21,6 +21,7 @@ from microservices import create_refresh_token,verify_password,create_access_tok
 from fastapi import APIRouter
 from users.schema import schema
 import os
+from orders.crud import query
 load_dotenv()
 router = APIRouter()
 bot_token = os.environ.get('BOT_TOKEN')
@@ -357,5 +358,15 @@ async def send_message_to_users(message:str,background_task:BackgroundTasks,db:S
 
 
 
+@router.get('/v1/stats/marketing/pie')
+async def marketing_pie_stats(timer:int,created_at:date,finished_at:date,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
+    order = query.marketing_table(db=db,created_at=created_at,finished_at=finished_at,timer=timer)
+    return order
+
+
+@router.get('/v1/stats/marketing/table')
+async def marketing_pie_stats(created_at:date,finished_at:date,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
+    order = query.marketing_pie(db=db,created_at=created_at,finished_at=finished_at)
+    return order
 
 
