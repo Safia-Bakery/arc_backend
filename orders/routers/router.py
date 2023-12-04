@@ -366,6 +366,13 @@ async def marketing_pie_stats(timer:int,created_at:date,finished_at:date,db:Sess
     return order
 
 
+@router.get('/v1/stats/marketing/cat')
+async def marketing_cat_stats(created_at:date,finished_at:date,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
+    table = query.category_percent(db=db,created_at=created_at,finished_at=finished_at)
+    pie = query.category_pie(db=db,created_at=created_at,finished_at=finished_at)
+    return {'tables':table,'pie':pie}
+
+
 
 
 
