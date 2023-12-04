@@ -53,7 +53,7 @@ def category_percent(db:Session,created_at,finished_at):
 
 
 def category_pie(db:Session,created_at,finished_at):
-    total = db.query(models.Category.name,func.count(models.Requests.id),func.cast(func.avg(func.extract('epoch', models.Requests.finished_at -models.Requests.started_at)) /60, Integer)).join(models.Requests).filter(models.Requests.status==3,models.Category.department==3,models.Requests.created_at(created_at,finished_at)).group_by(models.Category.name).all()
+    total = db.query(models.Category.name,func.count(models.Requests.id),func.cast(func.avg(func.extract('epoch', models.Requests.finished_at -models.Requests.started_at)) /60, Integer)).join(models.Requests).filter(models.Requests.status==3,models.Category.department==3,models.Requests.created_at.between(created_at,finished_at)).group_by(models.Category.name).all()
     dict_data = {}
     for i in total:
         dict_data[i[0]] = [i[1],i[2]]
