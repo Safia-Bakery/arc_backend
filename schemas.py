@@ -5,24 +5,11 @@ from datetime import datetime,time
 from fastapi import Form
 from uuid import UUID
 
-
-
-    
-
-
-
-
-
-
 class UpdateGroupSch(BaseModel):
     name:str
     id :int
     class Config:
         orm_mode=True
-
-
-
-
 
 class UserRoleAttachSch(BaseModel):
     user_id: int
@@ -34,9 +21,6 @@ class UservsRoleCr(BaseModel):
     description: str
     status : int
     sphere_status:int
-
-
-
     @validator('status')
     def validate_status_length(cls, status):
         if status not in [0,1,2]:
@@ -140,7 +124,7 @@ class UpdateCategorySch(BaseModel):
         if status not in [0,1]:
             raise ValueError("send valid  status code ")
         return status
-    
+
 class GetCategorySch(BaseModel):
     name:str
     description:Optional[str]=None
@@ -150,6 +134,7 @@ class GetCategorySch(BaseModel):
     sub_id:Optional[int]=None
     department:int
     sphere_status:Optional[int]=None
+    file:Optional[str]=None
     class Config:
         orm_mode=True
 
@@ -325,6 +310,7 @@ class AcceptRejectRequest(BaseModel):
     brigada_id:Optional[int]=None
     deny_reason:Optional[str]=None
 
+    finishing_time:Optional[datetime]=None
 
     @validator('status')
     def validate_status_length(cls, status):

@@ -18,10 +18,12 @@ from fastapi_pagination import paginate,Page,add_pagination
 from dotenv import load_dotenv
 from microservices import create_refresh_token,verify_password,create_access_token,checkpermissions
 #from main import get_db,get_current_user
-from fastapi import APIRouter
+from fastapi import APIRouter,Form
 from users.schema import schema
 import os
 from orders.crud import query
+from orders.utils import util
+from orders.schema import schema_router
 load_dotenv()
 router = APIRouter()
 bot_token = os.environ.get('BOT_TOKEN')
@@ -31,26 +33,39 @@ BASE_URL = 'https://backend.service.safiabakery.uz/'
 
 
 @router.post('/category')
-async def add_category(form_data:schemas.AddCategorySch,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
-        return crud.add_category_cr(db,form_data)
-
-
+async def add_category(name:Annotated[str,Form()],department:Annotated[int,Form()],description:Annotated[str,Form()]=None,status:Annotated[int,Form()]=1,urgent:Annotated[bool,Form()]=True,sphere_status:Annotated[int,Form()]=None,file:UploadFile=None,sub_id:Annotated[int,Form()]=None,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
+    if file is not None:
+        #for file in image:
+        folder_name = f"files/{util.generate_random_filename()+file.filename}"
+        with open(folder_name, "wb") as buffer:
+            while True:
+                chunk = await file.read(1024)
+                if not chunk:
+                    break
+                buffer.write(chunk)
+        file = folder_name
+    return crud.add_category_cr(db=db,name=name,description=description,status=status,urgent=urgent,department=department,sphere_status=sphere_status,sub_id=sub_id,file=file)
 
 @router.put('/category')
-async def update_category(form_data:schemas.UpdateCategorySch,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
-
-        response = crud.update_category_cr(db,form_data)
-        if response:
-            return response
-        else:
-            raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Not found"
-        )
-
-
-    
-
+async def update_category(id:Annotated[int,Form()],name:Annotated[str,Form()]=None,description:Annotated[str,Form()]=None,status:Annotated[int,Form()]=None,urgent:Annotated[bool,Form()]=None,department:Annotated[int,Form()]=None,sphere_status:Annotated[int,Form()]=None,file:UploadFile=None,sub_id:Annotated[int,Form()]=None,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
+    if file is not None:
+        #for file in image:
+        folder_name = f"files/{util.generate_random_filename()+file.filename}"
+        with open(folder_name, "wb") as buffer:
+            while True:
+                chunk = await file.read(1024)
+                if not chunk:
+                    break
+                buffer.write(chunk)
+        file = folder_name
+    response = crud.update_category_cr(db=db,id=id,file=file,name=name,description=description,status=status,urgent=urgent,department=department,sphere_status=sphere_status,sub_id=sub_id)
+    if response:
+        return response
+    else:
+        raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Not found"
+    )
 
 @router.get('/category',response_model=Page[schemas.GetCategorySch])
 async def filter_category(sphere_status:Optional[int]=None,sub_id:Optional[int]=None,department:Optional[int]=None,category_status:Optional[int]=None,name:Optional[str]=None,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
@@ -61,9 +76,7 @@ async def filter_category(sphere_status:Optional[int]=None,sub_id:Optional[int]=
 
 @router.get('/category/{id}',response_model=schemas.GetCategorySch)
 async def get_category_id(id:int,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
-    #permission = checkpermissions(request_user=request_user,db=db,page=21)
     try:
-        #if permission:
             response = crud.get_category_id(db,id)
             return response
     except:
@@ -72,25 +85,14 @@ async def get_category_id(id:int,db:Session=Depends(get_db),request_user:schema.
             detail="info with this id not found "
         )
 
-
-    
-
-
-
 @router.get('/request',response_model=Page[schemas.GetRequestList])
 async def filter_request(department:Optional[int]=None,sub_id:Optional[int]=None,id:Optional[int]=None,category_id:Optional[int]=None,fillial_id:Optional[UUID]=None,created_at:Optional[date]=None,request_status:Optional[int]=None,user:Optional[str]=None,sphere_status:Optional[int]=None,arrival_date:Optional[date]=None,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
-
-        
         if request_user.brigada_id:
             requestdata= crud.filter_request_brigada(db,id=id,sub_id=sub_id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,created_at=created_at,user=user,brigada_id=request_user.brigada_id,sphere_status=sphere_status,department=department,arrival_date=arrival_date)
             return paginate(requestdata)
         request_list = crud.filter_requests_all(db,sub_id=sub_id,department=department,id=id,category_id=category_id,fillial_id=fillial_id,request_status=request_status,created_at=created_at,user=user,sphere_status=sphere_status,arrival_date=arrival_date)
         return paginate(request_list)
     
-
-
-
-
 
 @router.get('/request/{id}',response_model=schemas.GetRequestid)
 async def get_request_id(id:int,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
@@ -105,13 +107,8 @@ async def get_request_id(id:int,db:Session=Depends(get_db),request_user:schema.U
         )
 
 
-
-    
-
 @router.put('/request/attach/brigada')
 async def put_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
-
-        #try:
             request_list = crud.acceptreject(db,form_data=form_data,user=request_user.full_name)
             if form_data.status == 1:
                 try:
@@ -169,19 +166,6 @@ async def put_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
             status_code=status.HTTP_404_NOT_FOUND,
             detail="not fund"
         )
-        #except:
-        #    raise HTTPException(
-        #    status_code=status.HTTP_409_CONFLICT,
-        #    detail="not fund"
-        #)
-
-
-
-
-
-
-
-
 
 @router.post('/request')
 async def get_category(category_id:int,fillial_id:UUID,description:str,files:list[UploadFile]=None,factory:Optional[bool]=False,location:Optional[Dict[str,str]]=None,size:Optional[str]=None,bread_size:Optional[str]=None,arrival_date:Optional[datetime]=None,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user),product:Optional[str]=None):
@@ -230,18 +214,6 @@ async def get_category(category_id:int,fillial_id:UUID,description:str,files:lis
             if responserq.category.sphere_status==2 and responserq.category.department==1:
                 sendtotelegram(bot_token=bot_token,chat_id='-1001831677963',message_text=text,keyboard=keyboard)
             return {'success':True,'message':'everything is saved'}
-        #except:
-        #    raise HTTPException(
-        #    status_code=status.HTTP_409_CONFLICT,
-        #    detail="not id not found"
-        #)
-
-
-
-
-
-
-
 
 
 @router.get('/categories/fillials',summary='you can get list of fillials and categories when you are creating request')
@@ -270,28 +242,17 @@ async def get_category_and_fillials(db:Session=Depends(get_db),request_user:sche
 
 @router.get('/users',response_model=Page[schemas.UserGetlist])
 async def filter_user(full_name:Optional[str]=None,username:Optional[str]=None,role_id:Optional[int]=None,phone_number:Optional[str]=None,user_status:Optional[int]=None,position:Optional[bool]=True,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
-    #permission = checkpermissions(request_user=request_user,db=db,page=5)
-    #if permission:
             users = crud.filter_user(db,user_status=user_status,username=username,phone_number=phone_number,role_id=role_id,full_name=full_name,position=position)
             return paginate(users)
 
 
 @router.put('/users',response_model=schemas.UserGetlist)
 async def filter_user(form_data:schemas.UserUpdateAll,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
-    #permission = checkpermissions(request_user=request_user,db=db,page=19)
-    #if permission:
-        
         updateuser = crud.update_user(db,form_data=form_data)
         return updateuser
 
-
-
-
 @router.get('/users/{id}',response_model=schemas.GetUserIdSch)
 async def get_user_with_id(id:int,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
-    #permission = checkpermissions(request_user=request_user,db=db,page=19)
-    #if permission:
-        
             users = crud.get_user_id(db,id)
             if users:
                 return users
@@ -300,12 +261,6 @@ async def get_user_with_id(id:int,db:Session=Depends(get_db),request_user:schema
             status_code=status.HTTP_404_NOT_FOUND,
             detail="not found"
         )
-
-    #else:
-    #    raise HTTPException(
-    #        status_code=status.HTTP_403_FORBIDDEN,
-    #        detail="You are not super user"
-    #    )
 
 @router.post('/tools',response_model=schemas.CreateTool)
 async def get_user_with_id(form_data:schemas.CreateTool,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
@@ -334,9 +289,6 @@ async def get_tool_list(db:Session=Depends(get_db),request_user:schema.UserFullB
             detail="database not found"
         )
 
-
-
-
 @router.get('/get/fillial/fabrica',response_model=Page[schemas.GetFillialChild])
 async def get_fillials_fabrica(db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     return paginate(crud.getfillialchildfabrica(db))
@@ -354,10 +306,6 @@ async def send_message_to_users(message:str,background_task:BackgroundTasks,db:S
     background_task.add_task(statisquery.send_to_user_message(db=db,message=message))
     return {'success':True}
 
-#----------------TELEGRAM BOT --------------------
-
-
-
 @router.get('/v1/stats/marketing/pie')
 async def marketing_pie_stats(timer:int,created_at:date,finished_at:date,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     table = query.marketing_table(db=db,created_at=created_at,finished_at=finished_at,timer=timer)
@@ -365,14 +313,13 @@ async def marketing_pie_stats(timer:int,created_at:date,finished_at:date,db:Sess
     order = {'pie':pie,'table':table}
     return order
 
-
 @router.get('/v1/stats/marketing/cat')
 async def marketing_cat_stats(created_at:date,finished_at:date,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     table = query.category_percent(db=db,created_at=created_at,finished_at=finished_at)
     pie = query.category_pie(db=db,created_at=created_at,finished_at=finished_at)
     return {'tables':table,'pie':pie}
 
-
-
-
-
+@router.put('/v1/request/redirect',response_model=schemas.GetRequestid)
+async def redirect_request(form_data:schema_router.RedirectRequest,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
+    db_query = query.redirect_request(db=db,form_data=form_data)
+    return db_query

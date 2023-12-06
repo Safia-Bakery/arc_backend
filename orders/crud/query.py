@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from users.schema import schema
+from orders.schema import schema_router
 import models
 import schemas
 from typing import Optional
@@ -8,6 +9,7 @@ import pytz
 from sqlalchemy.sql import func
 from datetime import datetime 
 from sqlalchemy import or_,and_,Date,cast,Integer
+timezonetash = pytz.timezone("Asia/Tashkent")
 
 
 def marketing_table(db:Session,timer,created_at,finished_at):
@@ -58,3 +60,22 @@ def category_pie(db:Session,created_at,finished_at):
     for i in total:
         dict_data[i[0]] = [i[1],i[2]]
     return dict_data
+
+
+
+def redirect_request(db:Session,form_data:schema_router.RedirectRequest):
+    query = db.query(models.Requests).filter(models.Requests.id==form_data.id).first()
+    if query:
+        query.old_cat_id = query.category_id
+        query.category_id = form_data.category_id
+        query.is_redirected = True
+        db.commit()
+        db.refresh(query)
+        #update time 
+        updated_data =query.update_time or {}
+        updated_data['redirect_time'] = str(datetime.now(tz=timezonetash))
+        query.update_time= updated_data
+        db.query(models.Requests).filter(models.Requests.id==form_data.id).update({'update_time':updated_data})
+        db.commit()
+        return query
+    return query

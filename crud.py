@@ -187,31 +187,33 @@ def get_fillial_list(db:Session):
     return db.query(models.Fillials).all()
 
 
-def add_category_cr(db:Session,form_data:schemas.AddCategorySch):
-    db_add_category = models.Category(name=form_data.name,description=form_data.description,status=form_data.status,urgent=form_data.urgent,sub_id=form_data.sub_id,department=form_data.department,sphere_status=form_data.sphere_status)
+def add_category_cr(db:Session,name,description,status,urgent,sub_id,department,sphere_status,file):
+    db_add_category = models.Category(name=name,description=description,status=status,urgent=urgent,sub_id=sub_id,department=department,sphere_status=sphere_status,file=file)
     db.add(db_add_category)
     db.commit()
     db.refresh(db_add_category)
     return db_add_category
 
-def update_category_cr(db:Session,form_data:schemas.UpdateCategorySch):
-    db_update_category = db.query(models.Category).filter(models.Category.id==form_data.id).first()
+def update_category_cr(db:Session,id,name,description,status,urgent,department,sub_id,sphere_status,file):
+    db_update_category = db.query(models.Category).filter(models.Category.id==id).first()
     if db_update_category:
-        if form_data.name is not None:
-            db_update_category.name = form_data.name
-        if form_data.description is not None:
-            db_update_category.description=form_data.description
-        if form_data.status is not None:
-            db_update_category.status = form_data.status
-        if form_data.urgent is not None:
-            db_update_category.urgent=form_data.urgent
-        if form_data.department is not None:
-            db_update_category.department=form_data.department
+        if name is not None:
+            db_update_category.name = name
+        if description is not None:
+            db_update_category.description=description
+        if status is not None:
+            db_update_category.status = status
+        if urgent is not None:
+            db_update_category.urgent=urgent
+        if department is not None:
+            db_update_category.department=department
 
-        if form_data.sub_id is not None:
-            db_update_category.sub_id = form_data.sub_id
-        if form_data.sphere_status is not None:
-            db_update_category.sphere_status = form_data.sphere_status
+        if sub_id is not None:
+            db_update_category.sub_id = sub_id
+        if sphere_status is not None:
+            db_update_category.sphere_status = sphere_status
+        if file is not None:
+            db_update_category.file = file
         db.commit()
         db.refresh(db_update_category)
         return db_update_category
@@ -349,6 +351,8 @@ def acceptreject(db:Session,form_data:schemas.AcceptRejectRequest,user):
             db_get.deny_reason=form_data.deny_reason
         db_get.status = form_data.status
         db_get.user_manager=user
+        if form_data.finishing_time is not None:
+            db_get.finishing_time= form_data.finishing_time
         if form_data.status == 1:
             db_get.started_at = func.now()
         if form_data.status == 3 or form_data.status==4:
@@ -356,10 +360,9 @@ def acceptreject(db:Session,form_data:schemas.AcceptRejectRequest,user):
         updated_data = db_get.update_time or {}
         updated_data[str(form_data.status)] = str(datetime.now(tz=timezonetash))
         db_get.update_time= updated_data
-        
         db.query(models.Requests).filter(models.Requests.id==form_data.request_id).update({'update_time':updated_data})
         db.commit()
-        db.refresh(db_get)
+        db.refresh(db_get) 
         return db_get
     else:
         return False
@@ -594,7 +597,7 @@ def commitdata(db:Session,item):
 def synchtools(db:Session,groups):
     group_list = []
     for line in groups:
-        if line['id'] in ['09be831f-1201-4b78-9cad-7c94c3363276','1b55d7e1-6946-4bbc-bf93-542bfdb2b584','203a26b5-a458-4c45-b85d-ad961b5345f2']:
+        if line['id'] in ['09be831f-1201-4b78-9cad-7c94c3363276','1b55d7e1-6946-4bbc-bf93-542bfdb2b584','203a26b5-a458-4c45-b85d-ad961b5345f2','6fe3e935-cbdc-41a8-9848-f44f2332be54']:
             group_list.append(line['id'])
             if check_group_exist(db,line['id'],models.ToolParents,models.ToolParents.id) is None:
                 item = models.ToolParents(id=line['id'],num=line['num'],code=line['code'],name=line['name'],category=line['category'],description=line['description'])
@@ -636,7 +639,6 @@ def synchproducts(db:Session,grouplist,products):
         mainunit = i['mainUnit']
         id = i['id']
         price = i['defaultSalePrice']
-
         if parentId in grouplist:
             toolsmod = models.Tools(price=price,iikoid = id, parentid=parentId,name=name,num=num,code=code,producttype=producttype,mainunit=mainunit)
             commitdata(db,toolsmod)
@@ -646,10 +648,6 @@ def synchproducts(db:Session,grouplist,products):
 def check_suppier_exist(db:Session,supplier_id):
     query = db.query(models.Suppliers).filter(models.Suppliers.id==supplier_id).first()
     return query
-
-
-
-
 
 def synch_suppliers(db:Session,suppliers):
     for i in suppliers:
@@ -782,3 +780,4 @@ def workingtimeupdate(db:Session,form_data:schemas.WorkTimeUpdate):
 def working_time(db:Session):
     query  = db.query(models.Working).first()
     return query
+

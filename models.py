@@ -134,6 +134,7 @@ class Category(Base):
     sphere_status= Column(Integer,nullable=True)
     department=Column(Integer)
     sub_id = Column(Integer,nullable=True)
+    file = Column(String,nullable=True)
 
 
 class Brigada(Base):
@@ -195,6 +196,10 @@ class Requests(Base):
     bread_size = Column(String,nullable=True)
     location = Column(JSON,nullable=True)
     update_time = Column(JSONB,nullable=True)
+    finishing_time = Column(DateTime,nullable=True)
+    is_redirected = Column(Boolean,default=False)
+    old_cat_id = Column(Integer,nullable=True)
+
 
 
 class Comments(Base):
@@ -303,9 +308,6 @@ class Tools(Base):
     amount_left = Column(Float,nullable=True)
     sklad_id = Column(ARRAY(UUID(as_uuid=True)),default=[])
     last_update = Column(DateTime(timezone=True))
-
-
-
 
 
 class Working(Base):
