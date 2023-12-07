@@ -254,6 +254,9 @@ class GetRequestid(BaseModel):
     id:int
     location:Optional[Dict[str,str]]=None
     update_time:Optional[Dict[str,str]]=None
+    finishing_time :Optional[datetime]=None
+    is_redirected :Optional[bool]=None
+    old_cat_id :Optional[int]=None
     class Config:
         orm_mode=True
 

@@ -62,10 +62,8 @@ async def update_category(id:Annotated[int,Form()],name:Annotated[str,Form()]=No
     if response:
         return response
     else:
-        raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="Not found"
-    )
+        
+        return {'message':'not found'}
 
 @router.get('/category',response_model=Page[schemas.GetCategorySch])
 async def filter_category(sphere_status:Optional[int]=None,sub_id:Optional[int]=None,department:Optional[int]=None,category_status:Optional[int]=None,name:Optional[str]=None,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
