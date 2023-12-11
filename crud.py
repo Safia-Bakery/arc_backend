@@ -368,7 +368,8 @@ def acceptreject(db:Session,form_data:schemas.AcceptRejectRequest,user):
         return False
     
 
-
+#dssd
+#hello
 
 def filter_requests_all(db:Session,id,category_id,fillial_id,created_at,request_status,user,sub_id,department,sphere_status,arrival_date):
     query = db.query(models.Requests).join(models.Category).join(models.Users)
@@ -394,7 +395,6 @@ def filter_requests_all(db:Session,id,category_id,fillial_id,created_at,request_
     if arrival_date is not None:
         query = query.filter(cast(models.Requests.arrival_date,Date)==arrival_date)
     return query.order_by(models.Requests.id.desc()).all()
-
 
 
 def filter_request_brigada(db:Session,id,category_id,brigada_id,fillial_id,created_at,request_status,user,sphere_status,department,sub_id,arrival_date):
@@ -576,6 +576,7 @@ def insert_otdels(db:Session,items):
         db.add(new_item)
         db.commit()
         db.refresh(new_item)
+
     return True
 
 
