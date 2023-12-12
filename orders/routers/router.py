@@ -158,13 +158,13 @@ async def put_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
                     except:
                         pass
                 if request_list.category.department==1:
-                    #try:
+                    try:
                         inlinewebapp(bot_token=bot_token,
                                      chat_id=request_list.user.telegram_id,
                                      message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по APC: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
                                      url=url)
-                    #except:
-                    #    pass
+                    except:
+                        pass
                 if request_list.category.department==6:
                     try:
                         inlinewebapp(bot_token=bot_token,
