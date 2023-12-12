@@ -157,7 +157,7 @@ async def put_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
                                      url=url)
                     except:
                         pass
-                if request_list.category.deparment==1:
+                if request_list.category.department==1:
                     try:
                         inlinewebapp(bot_token=bot_token,
                                      chat_id=request_list.user.telegram_id,
@@ -165,7 +165,7 @@ async def put_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
                                      url=url)
                     except:
                         pass
-                if request_list.category.deparment==6:
+                if request_list.category.department==6:
                     try:
                         inlinewebapp(bot_token=bot_token,
                                      chat_id=request_list.user.telegram_id,
