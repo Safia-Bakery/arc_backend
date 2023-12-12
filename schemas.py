@@ -441,6 +441,7 @@ class SynchExanditureiiko(BaseModel):
 class AddComments(BaseModel):
     request_id:int
     comment:str
+    rating:int
     class Config:
         orm_mode=True
 
