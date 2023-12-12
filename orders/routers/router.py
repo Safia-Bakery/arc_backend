@@ -140,12 +140,12 @@ async def put_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
                      
             if form_data.status ==3:
                 if request_list.category.department==3:
-                     
+                    url=f"{FRONT_URL}tg/order-rating/{request_list.user.id}?user_id={request_list.user.id}&department={request_list.category.department}&sub_id={request_list.category.sub_id}"
                     try:
                         inlinewebapp(bot_token=bot_token,
                                      chat_id=request_list.user.telegram_id,
                                      message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по Маркетингу: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
-                                     url=f"{FRONT_URL}?id={request_list.user.id}&user_id={request_list.user.full_name}")
+                                     url=url)
                     except:
                         pass
                 if request_list.category.department==5:
@@ -154,7 +154,7 @@ async def put_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
                         inlinewebapp(bot_token=bot_token,
                                      chat_id=request_list.user.telegram_id,
                                      message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по Запросу машины🚛: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
-                                     url=f"{FRONT_URL}?id={request_list.user.id}&user_id={request_list.user.full_name}")
+                                     url=url)
                     except:
                         pass
                 if request_list.category.deparment==1:
@@ -162,7 +162,7 @@ async def put_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
                         inlinewebapp(bot_token=bot_token,
                                      chat_id=request_list.user.telegram_id,
                                      message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по APC: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
-                                     url=f"{FRONT_URL}?id={request_list.user.id}&user_id={request_list.user.full_name}")
+                                     url=url)
                     except:
                         pass
                 if request_list.category.deparment==6:
@@ -170,7 +170,7 @@ async def put_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
                         inlinewebapp(bot_token=bot_token,
                                      chat_id=request_list.user.telegram_id,
                                      message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
-                                     url=f"{FRONT_URL}?id={request_list.user.id}&user_id={request_list.user.full_name}")
+                                     url=url)
                     except:
                         pass
 

@@ -79,3 +79,6 @@ def redirect_request(db:Session,form_data:schema_router.RedirectRequest):
         db.commit()
         return query
     return query
+
+def department_counter(db:Session):
+    query = db.query(models.Category.department)
