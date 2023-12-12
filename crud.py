@@ -368,11 +368,8 @@ def acceptreject(db:Session,form_data:schemas.AcceptRejectRequest,user):
         return False
     
 
-<<<<<<< HEAD
-=======
 #dssd
 #hello
->>>>>>> a6d2c87db355f0100a2ab6e8521aa39480484842
 
 def filter_requests_all(db:Session,id,category_id,fillial_id,created_at,request_status,user,sub_id,department,sphere_status,arrival_date):
     query = db.query(models.Requests).join(models.Category).join(models.Users)
