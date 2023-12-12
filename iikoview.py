@@ -147,29 +147,15 @@ async def delete_expanditure(id:int,db:Session=Depends(get_db),request_user:sche
     #    )
 
 @urls.post('/v1/comments',response_model=schemas.GetComments)
-async def add_comments(form_data:schemas.AddComments,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page=1)
-    if permission:
-        data = crud.add_comment(db=db,form_data=form_data,user_id = request_user.id)
-        return data
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
+async def add_comments(form_data:schemas.AddComments,db:Session=Depends(get_db)):
+    data = crud.add_comment(db=db,form_data=form_data)
+    return data
+   
 
 @urls.get('/v1/comments',response_model=Page[schemas.GetComments])
-async def get_comments(db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
-    permission = checkpermissions(request_user=request_user,db=db,page=13)
-    if permission:
-        data = crud.get_comment(db=db)
+async def get_comments(request_id:Optional[int]=None,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
+        data = crud.get_comment(db=db,request_id=request_id)
         return paginate(data)
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not super user"
-        )
-
 
 
 #---------------------statistics-----------------------------------

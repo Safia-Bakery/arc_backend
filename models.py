@@ -209,7 +209,7 @@ class Comments(Base):
     user_id = Column(Integer,ForeignKey('users.id'))
     user = relationship('Users',back_populates='comments')
     rating = Column(Integer,nullable=True)
-    comment = Column(String)
+    comment = Column(String,nullable=True)
 
 
 

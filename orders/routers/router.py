@@ -9,7 +9,7 @@ import bcrypt
 from typing import Annotated,Dict
 from uuid import UUID
 import models
-from microservices import sendtotelegramchannel,sendtotelegram,sendtotelegramaddcomment
+from microservices import sendtotelegramchannel,sendtotelegram,sendtotelegramaddcomment,inlinewebapp
 from typing import Optional
 import crud
 from microservices import get_current_user,get_db
@@ -28,7 +28,8 @@ load_dotenv()
 router = APIRouter()
 bot_token = os.environ.get('BOT_TOKEN')
 
-BASE_URL = 'https://backend.service.safiabakery.uz/'
+BASE_URL = 'https://api.service.safiabakery.uz/'
+FRONT_URL = 'https://admin.service.safiabakery.uz/'
 
 
 
@@ -141,20 +142,38 @@ async def put_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
                 if request_list.category.department==3:
                      
                     try:
-                        sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по Маркетингу: Завершен.")
+                        inlinewebapp(bot_token=bot_token,
+                                     chat_id=request_list.user.telegram_id,
+                                     message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по Маркетингу: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
+                                     url=f"{FRONT_URL}?id={request_list.user.id}&user_id={request_list.user.full_name}")
                     except:
                         pass
                 if request_list.category.department==5:
                      
                     try:
-                        sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по Запросу машины🚛: Завершен.")
+                        inlinewebapp(bot_token=bot_token,
+                                     chat_id=request_list.user.telegram_id,
+                                     message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по Запросу машины🚛: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
+                                     url=f"{FRONT_URL}?id={request_list.user.id}&user_id={request_list.user.full_name}")
                     except:
                         pass
-                else:
+                if request_list.category.deparment==1:
                     try:
-                        sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по APC: Завершен.")
+                        inlinewebapp(bot_token=bot_token,
+                                     chat_id=request_list.user.telegram_id,
+                                     message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по APC: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
+                                     url=f"{FRONT_URL}?id={request_list.user.id}&user_id={request_list.user.full_name}")
                     except:
                         pass
+                if request_list.category.deparment==6:
+                    try:
+                        inlinewebapp(bot_token=bot_token,
+                                     chat_id=request_list.user.telegram_id,
+                                     message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
+                                     url=f"{FRONT_URL}?id={request_list.user.id}&user_id={request_list.user.full_name}")
+                    except:
+                        pass
+
             if form_data.status==4:
                 sendtotelegramchannel(bot_token=bot_token,chat_id=request_list.user.telegram_id,message_text=f"Ваша заявка #{request_list.id}s была отменена по причине: {request_list.deny_reason}")
             if request_list:

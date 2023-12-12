@@ -442,6 +442,7 @@ class AddComments(BaseModel):
     request_id:int
     comment:str
     rating:int
+    user_id:int
     class Config:
         orm_mode=True
 
