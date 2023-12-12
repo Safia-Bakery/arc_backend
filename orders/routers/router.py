@@ -139,8 +139,8 @@ async def put_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
                         pass  
                      
             if form_data.status ==3:
+                url=f"{FRONT_URL}tg/order-rating/{request_list.user.id}?user_id={request_list.user.id}&department={request_list.category.department}&sub_id={request_list.category.sub_id}"
                 if request_list.category.department==3:
-                    url=f"{FRONT_URL}tg/order-rating/{request_list.user.id}?user_id={request_list.user.id}&department={request_list.category.department}&sub_id={request_list.category.sub_id}"
                     try:
                         inlinewebapp(bot_token=bot_token,
                                      chat_id=request_list.user.telegram_id,
