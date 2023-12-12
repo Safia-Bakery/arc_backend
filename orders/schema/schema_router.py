@@ -9,3 +9,5 @@ from fastapi import Form
 class RedirectRequest(BaseModel):
     id:int
     category_id:int
+
+
