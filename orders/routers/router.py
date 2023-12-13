@@ -340,3 +340,9 @@ async def marketing_cat_stats(created_at:date,finished_at:date,db:Session=Depend
 async def redirect_request(form_data:schema_router.RedirectRequest,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     db_query = query.redirect_request(db=db,form_data=form_data)
     return db_query
+
+
+@router.get('/v1/department/count')
+async def counter_department(db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
+    db_query = query.department_counter(db=db)
+    return {'counter':db_query,'comment':'first data inside list is department id ||| second data is sphere_status ||| third data is number of new requests'}

@@ -81,4 +81,10 @@ def redirect_request(db:Session,form_data:schema_router.RedirectRequest):
     return query
 
 def department_counter(db:Session):
-    query = db.query(models.Category.department)
+    query = db.query(models.Category.department,
+                     models.Category.sphere_status,
+                     func.count(models.Requests.id).label('request_count')).filter(models.Requests.status==0).join(models.Requests,models.Category.id==models.Requests.category_id).group_by(models.Category.department,models.Category.sphere_status).all()
+    arrays = []
+    for i in query:
+        arrays.append(list(i))
+    return arrays
