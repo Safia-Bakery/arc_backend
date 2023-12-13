@@ -214,7 +214,8 @@ class GetComments(BaseModel):
     id:int
     request:GetRequestList
     user:UserGetlist
-    comment:str
+    comment:Optional[str]=None
+    rating:Optional[int]=None
     class Config:
         orm_mode=True
 
