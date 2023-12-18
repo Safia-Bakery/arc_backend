@@ -1,5 +1,5 @@
 #----------import packages 
-from datetime import datetime, timedelta,date
+from datetime import datetime, timedelta,date,time
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException,UploadFile,status,BackgroundTasks
 from pydantic import ValidationError
@@ -34,7 +34,7 @@ FRONT_URL = 'https://admin.service.safiabakery.uz/'
 
 
 @router.post('/category')
-async def add_category(name:Annotated[str,Form()],department:Annotated[int,Form()],description:Annotated[str,Form()]=None,status:Annotated[int,Form()]=1,urgent:Annotated[bool,Form()]=True,sphere_status:Annotated[int,Form()]=None,file:UploadFile=None,sub_id:Annotated[int,Form()]=None,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
+async def add_category(name:Annotated[str,Form()],department:Annotated[int,Form()],finish_time:Annotated[time,Form()]=None,description:Annotated[str,Form()]=None,status:Annotated[int,Form()]=1,urgent:Annotated[bool,Form()]=True,sphere_status:Annotated[int,Form()]=None,file:UploadFile=None,sub_id:Annotated[int,Form()]=None,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     if file is not None:
         #for file in image:
         folder_name = f"files/{util.generate_random_filename()+file.filename}"
@@ -45,7 +45,7 @@ async def add_category(name:Annotated[str,Form()],department:Annotated[int,Form(
                     break
                 buffer.write(chunk)
         file = folder_name
-    return crud.add_category_cr(db=db,name=name,description=description,status=status,urgent=urgent,department=department,sphere_status=sphere_status,sub_id=sub_id,file=file)
+    return crud.add_category_cr(db=db,finish_time=finish_time,name=name,description=description,status=status,urgent=urgent,department=department,sphere_status=sphere_status,sub_id=sub_id,file=file)
 
 @router.put('/category')
 async def update_category(id:Annotated[int,Form()],name:Annotated[str,Form()]=None,description:Annotated[str,Form()]=None,status:Annotated[int,Form()]=None,urgent:Annotated[bool,Form()]=None,department:Annotated[int,Form()]=None,sphere_status:Annotated[int,Form()]=None,file:UploadFile=None,sub_id:Annotated[int,Form()]=None,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
@@ -97,13 +97,14 @@ async def filter_request(department:Optional[int]=None,sub_id:Optional[int]=None
 async def get_request_id(id:int,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
 
         try:
-            request_list = crud.get_request_id(db,id)
+            request_list = crud.get_request_id(db,id) 
             return request_list
         except:
             raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="not fund"
         )
+
 
 
 @router.put('/request/attach/brigada')
@@ -182,11 +183,10 @@ async def put_request_id(form_data:schemas.AcceptRejectRequest,db:Session=Depend
             else:
                 raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="not fund"
-        )
+            detail="not fund")
 
 @router.post('/request')
-async def get_category(category_id:int,fillial_id:UUID,description:str,files:list[UploadFile]=None,factory:Optional[bool]=False,location:Optional[Dict[str,str]]=None,size:Optional[str]=None,bread_size:Optional[str]=None,arrival_date:Optional[datetime]=None,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user),product:Optional[str]=None):
+async def get_category(category_id:int,fillial_id:UUID,description:str,files:list[UploadFile]=None,cat_prod:list[int]=None,factory:Optional[bool]=False,location:Optional[Dict[str,str]]=None,size:Optional[str]=None,bread_size:Optional[str]=None,arrival_date:Optional[datetime]=None,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user),product:Optional[str]=None):
         #try:
             category_query = crud.get_category_id(db=db,id=category_id)
 
@@ -201,6 +201,10 @@ async def get_category(category_id:int,fillial_id:UUID,description:str,files:lis
                 sklad_id = fillial_id
             
             responserq = crud.add_request(db,category_id=category_id,description=description,fillial_id=sklad_id,product=product,user_id=request_user.id,is_bot=0,size=size,arrival_date=arrival_date,bread_size=bread_size,location=location)
+            if cat_prod is not None:
+                for i in cat_prod:
+                    query.add_product_request(db=db,request_id=responserq.id,product_id=i)
+            
             file_obj_list = []
             #parsed_datetime = datetime.strptime(responserq.created_at,"%Y-%m-%dT%H:%M:%S.%f")
             formatted_datetime_str = responserq.created_at.strftime("%Y-%m-%d %H:%M")
@@ -231,6 +235,7 @@ async def get_category(category_id:int,fillial_id:UUID,description:str,files:lis
                 sendtotelegram(bot_token=bot_token,chat_id='-1001920671327',message_text=text,keyboard=keyboard)
             if responserq.category.sphere_status==2 and responserq.category.department==1:
                 sendtotelegram(bot_token=bot_token,chat_id='-1001831677963',message_text=text,keyboard=keyboard)
+            
             return {'success':True,'message':'everything is saved'}
 
 
@@ -347,3 +352,23 @@ async def redirect_request(form_data:schema_router.RedirectRequest,db:Session=De
 async def counter_department(db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
     db_query = query.department_counter(db=db)
     return {'counter':db_query,'comment':'first data inside list is department id ||| second data is sphere_status ||| third data is number of new requests'}
+
+
+@router.post('/v1/cat/product',response_model=schema_router.UpdateGetCatProduct)
+async def create_cat_product(form_data:schema_router.CatproductAdd,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
+    db_query = query.createcat_product(form_data=form_data,db=db)
+    return db_query
+
+
+@router.put('/v1/cat/product',response_model=schema_router.UpdateGetCatProduct)
+async def update_cat_product(form_data:schema_router.UpdateGetCatProduct,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
+    db_query = query.createcat_product(form_data=form_data,db=db)
+    return db_query
+
+
+@router.get('/v1/cat/product',response_model=list[schema_router.UpdateGetCatProduct])
+async def query_cat_product(id:Optional[int]=None,category_id:Optional[int]=None,name:Optional[str]=None,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
+    db_query = query.querycat_product(db=db,id=id,name=name,category_id=category_id)
+    return db_query
+
+

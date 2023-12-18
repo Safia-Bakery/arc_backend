@@ -11,3 +11,18 @@ class RedirectRequest(BaseModel):
     category_id:int
 
 
+class CatproductAdd(BaseModel):
+    category_id:int
+    name:str
+    status:Optional[int]=1
+
+class UpdateGetCatProduct(BaseModel):
+    id:int
+    category_id:Optional[int]=None
+    name:Optional[str]=None
+    status:Optional[str]=None
+    class Config:
+        orm_mode=True
+
+
+

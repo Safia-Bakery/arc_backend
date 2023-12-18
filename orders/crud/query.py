@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from users.schema import schema
 from orders.schema import schema_router
+
 import models
 import schemas
 from typing import Optional
@@ -88,3 +89,42 @@ def department_counter(db:Session):
     for i in query:
         arrays.append(list(i))
     return arrays
+
+
+def createcat_product(db:Session,form_data:schema_router.CatproductAdd):
+    query = models.Products(name=form_data.name,category_id =form_data.category_id,status = form_data.status)
+    db.add(query)
+    db.commit()
+    db.refresh(query)
+    return query
+
+
+def updatecat_product(db:Session,form_data:schema_router.UpdateGetCatProduct):
+    query = db.query(models.Products).filter(models.Products.id==form_data.id).first()
+    if query:
+        if form_data.name is not None:
+            query.name = form_data.name
+        if form_data.category_id is not None:
+            query.category_id = form_data.category_id
+        if form_data.status is not None:
+            query.status = form_data.status
+        db.commit()
+        db.refresh(query)
+    return query
+
+def querycat_product(db:Session,id,name,category_id):
+    query = db.query(models.Products)
+    if id is not None:
+        query = query.filter(models.Products.id==id)
+    if name is not None:
+        query = query.filter(models.Products.name.ilike(f"%{name}%"))
+    if category_id is not  None:
+        query = query.filter(models.Products.category_id == category_id)
+    return query.all()
+
+def add_product_request(db:Session,request_id,product_id):
+    query = models.OrderProducts(request_id=request_id,product_id=product_id)
+    db.add(query)
+    db.commit()
+    return True
+    

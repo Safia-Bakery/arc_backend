@@ -187,14 +187,14 @@ def get_fillial_list(db:Session):
     return db.query(models.Fillials).all()
 
 
-def add_category_cr(db:Session,name,description,status,urgent,sub_id,department,sphere_status,file):
-    db_add_category = models.Category(name=name,description=description,status=status,urgent=urgent,sub_id=sub_id,department=department,sphere_status=sphere_status,file=file)
+def add_category_cr(db:Session,name,description,status,urgent,sub_id,department,sphere_status,file,finish_time):
+    db_add_category = models.Category(name=name,description=description,status=status,urgent=urgent,sub_id=sub_id,department=department,sphere_status=sphere_status,file=file,finish_time=finish_time)
     db.add(db_add_category)
     db.commit()
     db.refresh(db_add_category)
     return db_add_category
 
-def update_category_cr(db:Session,id,name,description,status,urgent,department,sub_id,sphere_status,file):
+def update_category_cr(db:Session,id,name,description,status,urgent,department,sub_id,sphere_status,file,finish_time):
     db_update_category = db.query(models.Category).filter(models.Category.id==id).first()
     if db_update_category:
         if name is not None:
@@ -214,6 +214,8 @@ def update_category_cr(db:Session,id,name,description,status,urgent,department,s
             db_update_category.sphere_status = sphere_status
         if file is not None:
             db_update_category.file = file
+        if finish_time is not None:
+            db_update_category.finish_time = finish_time
         db.commit()
         db.refresh(db_update_category)
         return db_update_category

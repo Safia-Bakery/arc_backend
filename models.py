@@ -1,20 +1,21 @@
 
-from sqlalchemy import Column, Integer, String,ForeignKey,Float,DateTime,Boolean,BIGINT,Table,Time,JSON
+from sqlalchemy import Column, Integer, String,ForeignKey,Float,DateTime,Boolean,BIGINT,Table,Time,JSON,VARCHAR
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy.dialects.postgresql import UUID,ARRAY,JSONB
 from datetime import datetime
-import pytz 
+import pytz
 import uuid
 timezonetash = pytz.timezone("Asia/Tashkent")
 Base = declarative_base()
 
 
+
 """
 if there is sub id in category the category is attached to marketing department 
 if there is not sub id it is responsible for arc, fabrica arc and other departments
-if sub 
+if sub
 """
 
 
@@ -135,6 +136,18 @@ class Category(Base):
     department=Column(Integer)
     sub_id = Column(Integer,nullable=True)
     file = Column(String,nullable=True)
+    finish_time = Column(Time,nullable=True)
+    cat_prod = relationship('Products',back_populates='prod_cat')
+
+
+class Products(Base):
+    __tablename__ = "products"
+    id= Column(Integer,primary_key=True,index=True)
+    name = Column(VARCHAR(100))
+    category_id = Column(Integer,ForeignKey('category.id'))
+    status = Column(Integer,default=1)
+    prod_cat = relationship('Category',back_populates='cat_prod')
+    product_orpr = relationship('OrderProducts',back_populates='orpr_product')
 
 
 class Brigada(Base):
@@ -198,7 +211,17 @@ class Requests(Base):
     finishing_time = Column(DateTime,nullable=True)
     is_redirected = Column(Boolean,default=False)
     old_cat_id = Column(Integer,nullable=True)
+    request_orpr = relationship('OrderProducts',back_populates='orpr_request')
 
+
+
+class OrderProducts(Base):
+    __tablename__ = "orderproducts"
+    id = Column(Integer,primary_key=True,index=True)
+    request_id = Column(Integer,ForeignKey('requests.id'))
+    product_id = Column(Integer,ForeignKey('products.id'))
+    orpr_product = relationship('Products',back_populates='product_orpr')
+    orpr_request = relationship('Requests',back_populates='request_orpr')
 
 
 class Comments(Base):
@@ -211,7 +234,7 @@ class Comments(Base):
     rating = Column(Integer,nullable=True)
     comment = Column(String,nullable=True)
 
-
+ 
 
 class Files(Base):
     __tablename__ = 'files'
@@ -315,3 +338,5 @@ class Working(Base):
     id = Column(Integer,primary_key=True,index=True)
     from_time = Column(Time)
     to_time = Column(Time)
+
+
