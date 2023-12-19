@@ -91,23 +91,26 @@ def department_counter(db:Session):
     return arrays
 
 
-def createcat_product(db:Session,form_data:schema_router.CatproductAdd):
-    query = models.Products(name=form_data.name,category_id =form_data.category_id,status = form_data.status)
+def createcat_product(db:Session,name,category_id,status,image):
+    query = models.Products(name=name,category_id =category_id,status = status,image=image)
     db.add(query)
     db.commit()
     db.refresh(query)
     return query
 
 
-def updatecat_product(db:Session,form_data:schema_router.UpdateGetCatProduct):
-    query = db.query(models.Products).filter(models.Products.id==form_data.id).first()
+def updatecat_product(db:Session,id,name,category_id,status,image):
+    query = db.query(models.Products).filter(models.Products.id==id).first()
     if query:
-        if form_data.name is not None:
-            query.name = form_data.name
-        if form_data.category_id is not None:
-            query.category_id = form_data.category_id
-        if form_data.status is not None:
-            query.status = form_data.status
+        if name is not None:
+            query.name = name
+        if category_id is not None:
+            query.category_id = category_id
+        if status is not None:
+            query.status = status
+        if image is not None:
+            query.image = image
+        
         db.commit()
         db.refresh(query)
     return query

@@ -146,6 +146,7 @@ class Products(Base):
     name = Column(VARCHAR(100))
     category_id = Column(Integer,ForeignKey('category.id'))
     status = Column(Integer,default=1)
+    image = Column(String,nullable=True)
     prod_cat = relationship('Category',back_populates='cat_prod')
     product_orpr = relationship('OrderProducts',back_populates='orpr_product')
 

@@ -355,14 +355,34 @@ async def counter_department(db:Session=Depends(get_db),request_user:schema.User
 
 
 @router.post('/v1/cat/product',response_model=schema_router.UpdateGetCatProduct)
-async def create_cat_product(form_data:schema_router.CatproductAdd,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
-    db_query = query.createcat_product(form_data=form_data,db=db)
+async def create_cat_product(category_id:Annotated[int,Form()],name:Annotated[str,Form()],status:Annotated[int,Form()]=1,image:Annotated[UploadFile,Form()]=None,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
+    if image:
+        file_path = f"files/{util.generate_random_filename()}{image.filename}"
+        with open(file_path, "wb") as buffer:
+            while True:
+                chunk = await image.read(1024)
+                if not chunk:
+                    break
+                buffer.write(chunk)
+    else:
+        file_path=None
+    db_query = query.createcat_product(category_id=category_id,name=name,image=file_path,status=status,db=db)
     return db_query
 
 
 @router.put('/v1/cat/product',response_model=schema_router.UpdateGetCatProduct)
-async def update_cat_product(form_data:schema_router.UpdateGetCatProduct,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
-    db_query = query.createcat_product(form_data=form_data,db=db)
+async def update_cat_product(id:Annotated[int,Form()],status:Annotated[int,Form()]=None,category_id:Annotated[int,Form()]=None,name:Annotated[str,Form()]=None,image:Annotated[UploadFile,Form()]=None,db:Session=Depends(get_db),request_user:schema.UserFullBack=Depends(get_current_user)):
+    if image:
+        file_path = f"files/{util.generate_random_filename()}{image.filename}"
+        with open(file_path, "wb") as buffer:
+            while True:
+                chunk = await image.read(1024)
+                if not chunk:
+                    break
+                buffer.write(chunk)
+    else:
+        file_path=None
+    db_query = query.createcat_product(id=id,name=name,category_id=category_id,status=status,image=file_path,db=db)
     return db_query
 
 
