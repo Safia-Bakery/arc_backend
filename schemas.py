@@ -4,6 +4,7 @@ from typing import Optional, Annotated, Dict
 from datetime import datetime, time
 from fastapi import Form
 from uuid import UUID
+from orders.schema import schema_router
 
 
 class UpdateGroupSch(BaseModel):
@@ -215,6 +216,7 @@ class GetRequestList(BaseModel):
     arrival_date: Optional[datetime] = None
     bread_size: Optional[str] = None
     size: Optional[str] = None
+    request_orpr:Optional[list[schema_router.OrderProductsGet]] = None
     id: int
     location: Optional[Dict[str, str]] = None
     update_time: Optional[Dict[str, str]] = None
@@ -274,6 +276,7 @@ class GetRequestid(BaseModel):
     finishing_time: Optional[datetime] = None
     is_redirected: Optional[bool] = None
     old_cat_id: Optional[int] = None
+    request_orpr:Optional[list[schema_router.OrderProductsGet]] = None
 
     class Config:
         orm_mode = True

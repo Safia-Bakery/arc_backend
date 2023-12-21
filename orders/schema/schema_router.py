@@ -26,3 +26,12 @@ class UpdateGetCatProduct(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class OrderProductsGet(BaseModel):
+    id: int
+    amount: int
+    orpr_product:Optional[UpdateGetCatProduct]=None
+    class Config:
+        orm_mode = True
+    

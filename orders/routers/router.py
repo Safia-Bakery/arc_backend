@@ -2,11 +2,11 @@
 from datetime import datetime, timedelta, date, time
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, UploadFile, status, BackgroundTasks
-from pydantic import ValidationError
+from pydantic import ValidationError,Json
 import statisquery
 import schemas
 import bcrypt
-from typing import Annotated, Dict
+from typing import Annotated, Dict,Union,Any
 from uuid import UUID
 import models
 from microservices import (
@@ -342,9 +342,9 @@ async def get_category(
     fillial_id: UUID,
     description: str,
     files: list[UploadFile] = None,
-    cat_prod: Optional[Dict[str, str]] = None,
+    cat_prod: Json=Form(None),
     factory: Optional[bool] = False,
-    location: Optional[Dict[str, str]] = None,
+    location: Json=Form(None),
     size: Optional[str] = None,
     bread_size: Optional[str] = None,
     arrival_date: Optional[datetime] = None,
@@ -379,7 +379,7 @@ async def get_category(
         location=location,
     )
     if cat_prod is not None:
-        for product_id, amount in cat_prod.items():
+        for product_id, amount in dict(cat_prod).items():
             query.add_product_request(
                 db=db, request_id=responserq.id, product_id=product_id, amount=amount
             )
