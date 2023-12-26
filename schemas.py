@@ -202,6 +202,7 @@ class GetRequestList(BaseModel):
     product: Optional[str] = None
     id: int
     rating: Optional[int] = None
+    description: Optional[str] = None
     created_at: datetime
     status: int
     brigada: Optional[GetBrigadaList] = None

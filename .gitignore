@@ -10,7 +10,8 @@ __pycache__/
 .Python
 alembic.ini 
 alembic/
-build/
+build/sudo apt install python3.10-distutils
+
 files/
 develop-eggs/
 dist/

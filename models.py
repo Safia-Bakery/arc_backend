@@ -30,14 +30,14 @@ if there is not sub id it is responsible for arc, fabrica arc and other departme
 if sub
 """
 
-
+#this parentpage show the main pages of the system
 class ParentPage(Base):
     __tablename__ = "parentpage"
     id = Column(Integer, primary_key=True, index=True)
     page_name = Column(String)
     actions = relationship("Pages", back_populates="parentpage")
 
-
+#this shows the permission of the pages crud or something else
 class Pages(Base):
     __tablename__ = "pages"
 
@@ -49,6 +49,7 @@ class Pages(Base):
     parentpage = relationship("ParentPage", back_populates="actions")
 
 
+#groups a group of permissions that are attached to users
 class Groups(Base):
     __tablename__ = "groups"
     id = Column(Integer, primary_key=True, index=True)
@@ -57,7 +58,7 @@ class Groups(Base):
     user = relationship("Users", back_populates="group")
     status = Column(Integer)
 
-
+#roles are list of permission of group
 class Roles(Base):
     __tablename__ = "roles"
 
@@ -89,7 +90,7 @@ class Users(Base):
     expanditure = relationship("Expanditure", back_populates="user")
     comments = relationship("Comments", back_populates="user")
 
-
+#there are 2 types of fillials there is parent fillial that show which fillial is 
 class ParentFillials(Base):
     __tablename__ = "parentfillials"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -101,7 +102,7 @@ class ParentFillials(Base):
     fillial_department = relationship("Fillials", back_populates="parentfillial")
     is_fabrica = Column(Integer, nullable=True)
 
-
+#fillial is departments of fillial bar, arc, etc
 class Fillials(Base):
     __tablename__ = "fillials"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -113,7 +114,7 @@ class Fillials(Base):
     status = Column(Integer, default=0)
     supplier = relationship("Suppliers", back_populates="store")
 
-
+#suppliers are fillial suppliers that delivers product to fillial
 class Suppliers(Base):
     __tablename__ = "suppliers"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
