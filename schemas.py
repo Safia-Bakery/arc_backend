@@ -278,6 +278,7 @@ class GetRequestid(BaseModel):
     is_redirected: Optional[bool] = None
     old_cat_id: Optional[int] = None
     request_orpr:Optional[list[schema_router.OrderProductsGet]] = None
+    cars:Optional[schema_router.CarsGet] = None
 
     class Config:
         orm_mode = True
@@ -338,6 +339,7 @@ class AcceptRejectRequest(BaseModel):
     deny_reason: Optional[str] = None
 
     finishing_time: Optional[datetime] = None
+    car_id: Optional[int] = None
 
     @validator("status")
     def validate_status_length(cls, status):

@@ -227,3 +227,36 @@ def add_product_request(db: Session, request_id, product_id, amount):
     db.add(query)
     db.commit()
     return True
+
+
+def cars_add(db: Session, name, status, number):
+    query = models.Cars(name=name, status=status, number=number)
+    db.add(query)
+    db.commit()
+    db.refresh(query)
+    return query
+
+def cars_update(db: Session, id, name, status, number):
+    query = db.query(models.Cars).filter(models.Cars.id == id).first()
+    if query:
+        if name is not None:
+            query.name = name
+        if status is not None:
+            query.status = status
+        if number is not None:
+            query.number = number
+        db.commit()
+        db.refresh(query)
+    return query
+
+def cars_query(db: Session, id, name, status, number):
+    query = db.query(models.Cars)
+    if id is not None:
+        query = query.filter(models.Cars.id == id)
+    if name is not None:
+        query = query.filter(models.Cars.name.ilike(f"%{name}%"))
+    if status is not None:
+        query = query.filter(models.Cars.status == status)
+    if number is not None:
+        query = query.filter(models.Cars.number.ilike(f"%{number}%"))
+    return query.all()

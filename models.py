@@ -213,6 +213,8 @@ class Requests(Base):
     is_redirected = Column(Boolean, default=False)
     old_cat_id = Column(Integer, nullable=True)
     request_orpr = relationship("OrderProducts", back_populates="orpr_request")
+    cars_id = Column(Integer, ForeignKey("cars.id"), nullable=True)
+    cars = relationship("Cars", back_populates="request")
 
 
 class OrderProducts(Base):
@@ -336,3 +338,13 @@ class Working(Base):
     id = Column(Integer, primary_key=True, index=True)
     from_time = Column(Time)
     to_time = Column(Time)
+
+
+class Cars(Base):
+    __tablename__ = "cars"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    number = Column(String,nullable=True)
+    status = Column(Integer, default=1)
+    created_at = Column(DateTime(timezone=True), default=func.now())
+    request = relationship("Requests", back_populates="cars")

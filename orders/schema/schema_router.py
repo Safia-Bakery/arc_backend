@@ -34,4 +34,26 @@ class OrderProductsGet(BaseModel):
     orpr_product:Optional[UpdateGetCatProduct]=None
     class Config:
         orm_mode = True
+
+
+class CarsCreate(BaseModel):
+    name: str
+    status: Optional[int] = 1
+    number :Optional[str] = None
+
+class CarsUpdate(BaseModel):
+    id: int
+    name: Optional[str] = None
+    status: Optional[int] = None
+    number :Optional[str] = None
+
+class CarsGet(BaseModel):
+    id: int
+    name: str
+    status: int
+    number :Optional[str] = None
+
+    class Config:
+        orm_mode = True
+
     

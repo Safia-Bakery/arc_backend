@@ -276,8 +276,7 @@ async def put_request_id(
                 sendtotelegramchannel(
                     bot_token=bot_token,
                     chat_id=request_list.user.telegram_id,
-                    message_text=f"Уважаемый {request_list.user.full_name}, мы отправили транспорт по вашему запросу #{request_list.id}s Ожидайте его прибытия.",
-                )
+                    message_text=f"Уважаемый {request_list.user.full_name}, мы отправили транспорт по вашему запросу #{request_list.id}s Ожидайте его прибытия. \nModel: {request_list.cars.name} \nNumber: {request_list.cars.number}")
             except:
                 pass
 
@@ -688,7 +687,34 @@ async def query_cat_product(
     category_id: Optional[int] = None,
     name: Optional[str] = None,
     db: Session = Depends(get_db),
-    request_user: schema.UserFullBack = Depends(get_current_user),
-):
+    request_user: schema.UserFullBack = Depends(get_current_user),):
     db_query = query.querycat_product(db=db, id=id, name=name, category_id=category_id)
+    return db_query
+
+
+@router.post("/v1/cars", response_model=schema_router.CarsGet)
+async def create_cars(
+    form_data: schema_router.CarsCreate,
+    db: Session = Depends(get_db),
+    request_user: schema.UserFullBack = Depends(get_current_user)):
+    db_query = query.cars_add(db=db, name=form_data.name, status=form_data.status, number=form_data.number)
+    return db_query
+
+@router.put("/v1/cars", response_model=schema_router.CarsGet)
+async def update_cars(
+    form_data: schema_router.CarsUpdate,
+    db: Session = Depends(get_db),
+    request_user: schema.UserFullBack = Depends(get_current_user)):
+    db_query = query.cars_update(db=db, id=form_data.id, name=form_data.name, status=form_data.status, number=form_data.number)
+    return db_query
+
+@router.get("/v1/cars", response_model=list[schema_router.CarsGet])
+async def query_cars(
+    id: Optional[int] = None,
+    name: Optional[str] = None,
+    status: Optional[int] = None,
+    number: Optional[str] = None,
+    db: Session = Depends(get_db),
+    request_user: schema.UserFullBack = Depends(get_current_user)):
+    db_query = query.cars_query(db=db, id=id, name=name, status=status,number=number)
     return db_query
