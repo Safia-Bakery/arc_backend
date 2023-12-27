@@ -276,7 +276,7 @@ async def put_request_id(
                 sendtotelegramchannel(
                     bot_token=bot_token,
                     chat_id=request_list.user.telegram_id,
-                    message_text=f"Уважаемый {request_list.user.full_name}, мы отправили транспорт по вашему запросу #{request_list.id}s Ожидайте его прибытия. \nModel: {request_list.cars.name} \nNumber: {request_list.cars.number}")
+                    message_text=f"Уважаемый {request_list.user.full_name}, мы отправили транспорт по вашему запросу #{request_list.id}s Ожидайте его прибытия. \n🚛Грузовик: {request_list.cars.name} {request_list.cars.number}")
             except:
                 pass
 
