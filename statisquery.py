@@ -277,3 +277,24 @@ def send_to_user_message(db: Session, message):
     except:
         pass
     return True
+
+def tools_update(db: Session,form_data:schemas.ToolsUpdate):
+    query = db.query(models.Tools).filter(models.Tools.id==form_data.id).first()
+    if query:
+        if form_data.price is not None:
+            query.price = form_data.price
+        if form_data.amount_left is not None:
+            query.amount_left = form_data.amount_left
+        if form_data.total_price:
+            query.total_price = form_data.total_price
+        if form_data.department is not None:
+            query.department = form_data.department
+        if form_data.min_amount is not None:
+            query.min_amount = form_data.min_amount
+        if form_data.max_amount is not None:
+            query.max_amount = form_data.max_amount
+        if form_data.image is not None:
+            query.image = form_data.image
+        db.commit()
+        db.refresh(query)
+    return query

@@ -190,7 +190,7 @@ def get_suppliers(key):
 
 def getproducts(key):
     products = requests.get(
-        f"{BASE_URL}/resto/api/v2/entities/products/list?key={key}&includeDeleted=false"
+        f"{BASE_URL}/resto/api/v2/entities/products/list?key={key}&includeDeleted=true"
     ).json()
 
     return products
@@ -207,6 +207,12 @@ def list_stores(key):
         for item in corporate_item_dtos
     ]
     return names
+
+
+def get_prices(key):
+    current_date = datetime.now(timezonetash).strftime("%Y-%m-%d")
+    prices = requests.get(f"{BASE_URL}/resto/api/v2/reports/balance/stores?timestamp={current_date}&department=c39aa435-8cdf-4441-8723-f532797fbeb9&key={key}")
+    return prices.json()
 
 
 def send_document_iiko(key, data):
@@ -344,3 +350,38 @@ def howmuchleft(key, store_id):
     )
 
     return departments.json()
+
+
+def find_hierarchy(data, parent_id):
+    def dfs(current_id):
+        result = []
+        for item in data:
+            if item["parent"] == current_id:
+                child_id = item["id"]
+                result.append({
+                    "id": child_id,
+                    "name": item["name"],
+                    "num":item['num'],
+                    'code':item['code'],
+                    "parent":item["parent"],
+                    "category":item["category"],
+                    "description":item["description"]
+                })
+                result.extend(dfs(child_id))  # Recursive call for children
+        return result
+
+    # Find the parent item
+    parent_item = next((item for item in data if item["id"] == parent_id), None)
+
+    if parent_item:
+        return [{
+            "id": parent_id,
+            "name": parent_item["name"],
+            "num":parent_item['num'],
+            'code':parent_item['code'],
+            "parent":parent_item["parent"],
+            "category":parent_item["category"],
+            "description":parent_item["description"]
+        }] + dfs(parent_id)
+    else:
+        return []

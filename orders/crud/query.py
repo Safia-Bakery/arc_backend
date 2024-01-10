@@ -260,3 +260,25 @@ def cars_query(db: Session, id, name, status, number):
     if number is not None:
         query = query.filter(models.Cars.number.ilike(f"%{number}%"))
     return query.all()
+
+
+def add_expenditure(db: Session, request_id, amount, comment, tool_id,status):
+    query = models.Expanditure(request_id=request_id, amount=amount, comment=comment, tool_id=tool_id,status=status)
+    db.add(query)
+    db.commit()
+    db.refresh(query)
+    return query
+
+
+def update_expenditure(db:Session,form_data:schema_router.UpdateExpenditure):
+    query = db.query(models.Expanditure).filter(models.Expanditure.id == form_data.id).first()
+    if query:
+        if form_data.amount is not None:
+            query.amount = form_data.amount
+        if form_data.comment is not None:
+            query.comment = form_data.comment
+        if form_data.status is not None:
+            query.status = form_data.status
+        db.commit()
+        db.refresh(query)
+    return query

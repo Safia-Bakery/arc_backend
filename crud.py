@@ -4,6 +4,7 @@ import models
 import schemas
 from typing import Optional
 import bcrypt
+from microservices import find_hierarchy
 import pytz
 from sqlalchemy.sql import func
 from datetime import datetime
@@ -797,129 +798,86 @@ def insert_otdels(db: Session, items):
 def check_group_exist(db: Session, id, modelname, fildname):
     return db.query(modelname).filter(fildname == id).first()
 
-
+from sqlalchemy.exc import SQLAlchemyError
 def commitdata(db: Session, item):
     try:
         db.add(item)
         db.commit()
         db.refresh(item)
         return item
-    except:
+    except SQLAlchemyError as e:
+        db.rollback()
         return False
 
 
-def synchtools(db: Session, groups):
-    group_list = []
-    for line in groups:
-        if line["id"] in [
-            "09be831f-1201-4b78-9cad-7c94c3363276",
-            "1b55d7e1-6946-4bbc-bf93-542bfdb2b584",
-            "203a26b5-a458-4c45-b85d-ad961b5345f2",
-            "6fe3e935-cbdc-41a8-9848-f44f2332be54",
-        ]:
-            group_list.append(line["id"])
-            if (
-                check_group_exist(
-                    db, line["id"], models.ToolParents, models.ToolParents.id
-                )
-                is None
-            ):
-                item = models.ToolParents(
-                    id=line["id"],
-                    num=line["num"],
-                    code=line["code"],
-                    name=line["name"],
-                    category=line["category"],
-                    description=line["description"],
-                )
-                commitdata(db, item)
-            for second in groups:
-                if second["parent"] == line["id"]:
-                    group_list.append(second["id"])
-                    if (
-                        check_group_exist(
-                            db, second["id"], models.FirstChild, models.FirstChild.id
-                        )
-                        is None
-                    ):
-                        item = models.FirstChild(
-                            id=second["id"],
-                            num=second["num"],
-                            code=second["code"],
-                            name=second["name"],
-                            category=second["category"],
-                            description=second["description"],
-                            toolparentid=second["parent"],
-                        )
-                        commitdata(db, item)
-                    for third in groups:
-                        if third["parent"] == second["id"]:
-                            group_list.append(third["id"])
-                            if (
-                                check_group_exist(
-                                    db,
-                                    third["id"],
-                                    models.SecondChild,
-                                    models.SecondChild.id,
-                                )
-                                is None
-                            ):
-                                item = models.SecondChild(
-                                    id=third["id"],
-                                    num=third["num"],
-                                    code=third["code"],
-                                    name=third["name"],
-                                    category=third["category"],
-                                    description=third["description"],
-                                    parentid=third["parent"],
-                                )
-                                commitdata(db, item)
-                            for fourth in groups:
-                                if fourth["parent"] == third["id"]:
-                                    group_list.append(fourth["id"])
-                                    if (
-                                        check_group_exist(
-                                            db,
-                                            fourth["id"],
-                                            models.ThirdChild,
-                                            models.ThirdChild.id,
-                                        )
-                                        is None
-                                    ):
-                                        item = models.ThirdChild(
-                                            id=fourth["id"],
-                                            num=fourth["num"],
-                                            code=fourth["code"],
-                                            name=fourth["name"],
-                                            category=fourth["category"],
-                                            description=fourth["description"],
-                                            parentid=fourth["parent"],
-                                        )
-                                        commitdata(db, item)
-                                    for five in groups:
-                                        if five["parent"] == fourth["id"]:
-                                            group_list.append(five["id"])
-                                            if (
-                                                check_group_exist(
-                                                    db,
-                                                    five["id"],
-                                                    models.FourthChild,
-                                                    models.FourthChild.id,
-                                                )
-                                                is None
-                                            ):
-                                                item = models.FourthChild(
-                                                    id=five["id"],
-                                                    num=five["num"],
-                                                    code=five["code"],
-                                                    name=five["name"],
-                                                    category=five["category"],
-                                                    description=five["description"],
-                                                    parentid=five["parent"],
-                                                )
-                                                commitdata(db, item)
+def synchgroups(db: Session, groups):
+    # here first is arc second is inventory
+    group_list = [[],[]]
+    arc_data = find_hierarchy(groups,'1b55d7e1-6946-4bbc-bf93-542bfdb2b584')
+    inv_data = find_hierarchy(groups,'09be831f-1201-4b78-9cad-7c94c3363276')
+    inv_zenit_data = find_hierarchy(groups,'0bf90521-ccb3-4301-b7bc-08ad74ee188d')
+    for line in arc_data:
+        group_list[0].append(line["id"])
+        item = models.ToolParents(
+            id=line["id"],
+            num=line["num"],
+            code=line["code"],
+            name=line["name"],
+            category=line["category"],
+            description=line["description"],
+            parent_id=line["parent"],
+        )
+        commitdata(db, item)
+
+
+
+    for line in inv_data:
+        group_list[1].append(line["id"])
+        item = models.ToolParents(
+            id=line["id"],
+            num=line["num"],
+            code=line["code"],
+            name=line["name"],
+            category=line["category"],
+            description=line["description"],
+            parent_id=line["parent"],
+        )
+        commitdata(db, item)
+
+
+    for line in inv_zenit_data:
+        group_list[1].append(line["id"])
+        item = models.ToolParents(
+            id=line["id"],
+            num=line["num"],
+            code=line["code"],
+            name=line["name"],
+            category=line["category"],
+            description=line["description"],
+            parent_id=line["parent"],
+        )
+        commitdata(db, item)
     return group_list
 
+def get_or_update(db:Session,price,name,num,id,code,producttype,mainunit,department,parent_id):
+    query = db.query(models.Tools).filter(models.Tools.iikoid==id).first()
+    if query:
+        return query
+    else:
+        toolsmod = models.Tools(
+            price=price,
+            iikoid=id,
+            name=name,
+            num=num,
+            code=code,
+            producttype=producttype,
+            mainunit=mainunit,
+            department=department,
+            parentid=parent_id
+
+        )
+        commitdata(db, toolsmod)
+    return query
 
 def synchproducts(db: Session, grouplist, products):
     for i in products:
@@ -931,27 +889,28 @@ def synchproducts(db: Session, grouplist, products):
         mainunit = i["mainUnit"]
         id = i["id"]
         price = i["defaultSalePrice"]
-        if parentId in grouplist:
-            toolsmod = models.Tools(
-                price=price,
-                iikoid=id,
-                parentid=parentId,
-                name=name,
-                num=num,
-                code=code,
-                producttype=producttype,
-                mainunit=mainunit,
-            )
-            commitdata(db, toolsmod)
+        if parentId in grouplist[0]:
+            get_or_update(db,price,name,num,id,code,producttype,mainunit,1,parentId)
+        if parentId in grouplist[1]:
+            get_or_update(db,price,name,num,id,code,producttype,mainunit,2,parentId)
     return True
 
+def update_products_price(db:Session,prices):
+    for i in prices:
+        id = i["product"]
+        query = db.query(models.Tools).filter(models.Tools.iikoid==id).first()
+        if query:
+            query.total_price = i['sum']
+            query.amount_left = i['amount']
+            db.commit()
+            db.refresh(query)
+    return True
 
 def check_suppier_exist(db: Session, supplier_id):
     query = (
         db.query(models.Suppliers).filter(models.Suppliers.id == supplier_id).first()
     )
     return query
-
 
 def synch_suppliers(db: Session, suppliers):
     for i in suppliers:
@@ -982,17 +941,15 @@ def getarchtools(db: Session):
     return db.query(models.ToolParents).all()
 
 
-def gettools(db: Session, query):
-    return (
-        db.query(models.Tools)
-        .filter(
-            or_(
-                models.Tools.name.ilike(f"%{query}%"),
-                models.Tools.parentid.ilike(f"%{query}%"),
-            )
-        )
-        .all()
-    )
+def gettools(db: Session, name,id,department):
+    query = db.query(models.Tools)
+    if name is not None:
+        query = query.filter(models.Tools.name.ilike(f"%{name}%"))
+    if department is not None:
+        query = query.filter(models.Tools.department == department)
+    if id is not None:
+        query = query.filter(models.Tools.parentid == id)
+    return query.all()
 
 
 def addcomment(db: Session, request_id, comment):

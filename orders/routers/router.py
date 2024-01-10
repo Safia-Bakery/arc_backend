@@ -322,6 +322,32 @@ async def put_request_id(
                 )
             except:
                 pass
+        if request_list.category.department == 2:
+            new_neq = []
+            for i in request_list.expanditure:
+                if i.status==0:
+                    new_neq.append(i)
+            if new_neq:
+                crud.add_request(db=db,
+                                 category_id=request_list.category_id,
+                                 fillial_id=request_list.fillial_id,
+                                 description=request_list.description,
+                                 product=request_list.product,
+                                 user_id=request_list.user_id,
+                                 is_bot=0,
+                                 size=request_list.size,
+                                 bread_size=request_list.bread_size,
+                                 location=request_list.location,
+                                 )
+                for i in new_neq:
+                    query.add_expenditure(db=db,
+                                         request_id=request_list.id,
+                                         tool_id=i.tool_id,
+                                         amount=i.amount,
+                                         comment=i.comment,
+                                         status=0
+                                         )
+                    
 
     if form_data.status == 4:
         sendtotelegramchannel(
@@ -337,19 +363,20 @@ async def put_request_id(
 
 @router.post("/request")
 async def get_category(
-    category_id: int,
-    fillial_id: UUID,
-    description: str,
+    fillial_id: Annotated[UUID, Form()],
+    description: Annotated[str, Form()],
+    category_id: Annotated[int,Form()],
     files: list[UploadFile] = None,
     cat_prod: Json=Form(None),
-    factory: Optional[bool] = False,
+    factory: Annotated[bool,Form()] = False,
     location: Json=Form(None),
-    size: Optional[str] = None,
-    bread_size: Optional[str] = None,
-    arrival_date: Optional[datetime] = None,
+    size: Annotated[str,Form] = None,
+    bread_size: Annotated[str,Form()]= None,
+    arrival_date: Annotated[datetime,Form()] = None,
+    product: Json=Form(None),
+    expenditure:Json=Form(None),
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
-    product: Optional[str] = None,
 ):
     # try:
     category_query = crud.get_category_id(db=db, id=category_id)
@@ -393,7 +420,9 @@ async def get_category(
         f"⚙️ Название оборудования: {responserq.product}\n"
         f"💬Комментарии: {responserq.description}"
     )
-
+    if expenditure:
+        for tool_id,amount in expenditure.items():
+            query.add_expenditure(db=db, request_id=responserq.id, tool_id=tool_id, amount=amount,comment='this is for intventar',status=0)
     if files:
         for file in files:
             file_path = f"files/{file.filename}"
@@ -513,27 +542,26 @@ async def get_user_with_id(
     if permission:
         tools = crud.create_tool(db, form_data)
         return tools
-
     else:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="You are not super user"
         )
 
 
-@router.get("/tools", response_model=Page[schemas.GetToolList])
-async def get_tool_list(
-    db: Session = Depends(get_db),
-    request_user: schema.UserFullBack = Depends(get_current_user),
-):
-    try:
-        query_from = crud.get_list_tools(db)
-        return paginate(query_from)
-    except:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="database not found",
-        )
-
+#@router.get("/tools/", response_model=Page[schemas.GetToolList])
+#async def get_tool_list(
+#    db: Session = Depends(get_db),
+#    request_user: schema.UserFullBack = Depends(get_current_user),
+#):
+#    try:
+#        query_from = crud.get_list_tools(db)
+#        return paginate(query_from)
+#    except:
+#        raise HTTPException(
+#            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#            detail="database not found",
+#        )
+#
 
 @router.get("/get/fillial/fabrica", response_model=Page[schemas.GetFillialChild])
 async def get_fillials_fabrica(
@@ -676,11 +704,11 @@ async def update_cat_product(
         status=status,
         image=file_path,
         db=db,
-        description=description,
+        description=description
     )
     return db_query
 
-
+#get category products list 
 @router.get("/v1/cat/product", response_model=list[schema_router.UpdateGetCatProduct])
 async def query_cat_product(
     id: Optional[int] = None,
@@ -700,6 +728,7 @@ async def create_cars(
     db_query = query.cars_add(db=db, name=form_data.name, status=form_data.status, number=form_data.number)
     return db_query
 
+
 @router.put("/v1/cars", response_model=schema_router.CarsGet)
 async def update_cars(
     form_data: schema_router.CarsUpdate,
@@ -707,6 +736,7 @@ async def update_cars(
     request_user: schema.UserFullBack = Depends(get_current_user)):
     db_query = query.cars_update(db=db, id=form_data.id, name=form_data.name, status=form_data.status, number=form_data.number)
     return db_query
+
 
 @router.get("/v1/cars", response_model=list[schema_router.CarsGet])
 async def query_cars(
@@ -717,4 +747,12 @@ async def query_cars(
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user)):
     db_query = query.cars_query(db=db, id=id, name=name, status=status,number=number)
+    return db_query
+
+@router.put("/v1/expenditure", response_model=schema_router.UpdateExpenditure)
+async def update_expenditure(
+    form_data: schema_router.UpdateExpenditure,
+    db: Session = Depends(get_db),
+    request_user: schema.UserFullBack = Depends(get_current_user)):
+    db_query = query.update_expenditure(db=db, form_data=form_data)
     return db_query

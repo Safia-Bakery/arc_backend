@@ -92,6 +92,15 @@ class ToolsSearch(BaseModel):
     class Config:
         orm_mode = True
 
+class ToolsUpdate(BaseModel):
+    id:int
+    price: Optional[float] = None
+    amount_left: Optional[float] = None
+    total_price: Optional[float] = None
+    department: Optional[int] = None
+    min_amount: Optional[float] = None
+    max_amount: Optional[float] = None
+    image: Optional[str] = None
 
 class UpdateFillialSch(BaseModel):
     id: UUID
@@ -525,3 +534,4 @@ class WorkTimeUpdate(BaseModel):
 
     class Config:
         orm_mode = True
+

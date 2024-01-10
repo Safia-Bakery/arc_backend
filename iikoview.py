@@ -32,6 +32,8 @@ from microservices import (
     get_suppliers,
     send_document_iiko,
     howmuchleft,
+    find_hierarchy,
+    get_prices
 )
 
 # from main import get_db,get_current_user
@@ -81,10 +83,14 @@ async def insert_groups(
 ):
     permission = checkpermissions(request_user=request_user, db=db, page=30)
     if permission:
-        groups = getgroups(key=authiiko())
-        products = getproducts(key=authiiko())
-        group_list = crud.synchtools(db, groups)
+        key = authiiko()
+        groups = getgroups(key=key)
+        products = getproducts(key=key)
+        
+        group_list = crud.synchgroups(db, groups)
         product_list = crud.synchproducts(db, grouplist=group_list, products=products)
+        prices = get_prices(key=key)
+        crud.update_products_price(db=db,prices=prices)
         return {"success": True}
     else:
         raise HTTPException(
@@ -92,22 +98,36 @@ async def insert_groups(
         )
 
 
-@urls.get("/tool/iarch", response_model=list[schemas.ToolParentsch])
-async def toolgroups(
-    db: Session = Depends(get_db),
-    request_user: schema.UserFullBack = Depends(get_current_user),
-):
-    return crud.getarchtools(db)
+
+# @urls.get("/tool/iarch", response_model=list[schemas.ToolParentsch])
+# async def toolgroups(
+#     db: Session = Depends(get_db),
+#     request_user: schema.UserFullBack = Depends(get_current_user),
+# ):
+#     return crud.getarchtools(db)
+    
 
 
 @urls.get("/tools/", response_model=Page[schemas.ToolsSearch])
 async def toolgroups(
-    query: str,
+    name: Optional[str] = None,
+    id: Optional[int] = None,
+    department: Optional[int] = None,
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
-    data = crud.gettools(db, query)
+    data = crud.gettools(db, name=name, id=id, department=department)
     return paginate(data)
+
+
+@urls.put("/tools/", response_model=schemas.ToolsSearch)
+async def tools_update(
+    form_data: schemas.ToolsUpdate,
+    db: Session = Depends(get_db),
+    request_user: schema.UserFullBack = Depends(get_current_user),
+):
+    data = statisquery.tools_update(db=db,form_data=form_data)
+    return data
 
 
 @urls.post("/v1/expenditure")

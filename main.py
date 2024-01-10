@@ -4,6 +4,7 @@ from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 import warnings
+import pytz
 from fastapi import (
     Depends,
     FastAPI,
@@ -36,8 +37,12 @@ from iikoview import urls
 from users.routers.router import user_router
 from users.schema import schema
 from orders.routers.router import router
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.date import DateTrigger
+from apscheduler.triggers.interval import IntervalTrigger
 
-
+  # Set the desired time for the function to run (here, 12:00 PM)
 from microservices import (
     create_refresh_token,
     verify_password,
@@ -45,6 +50,11 @@ from microservices import (
     checkpermissions,
     get_db,
     get_current_user,
+    authiiko,
+    getgroups,
+    getproducts,
+    get_prices,
+
 )
 from dotenv import load_dotenv
 import os
@@ -69,7 +79,7 @@ app.include_router(router)
 app.include_router(urls)
 app.include_router(user_router)
 app.mount("/files", StaticFiles(directory="files"), name="files")
-
+timezonetash = pytz.timezone("Asia/Tashkent")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -78,6 +88,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+def scheduled_function(db: Session):
+    key = authiiko()
+    groups = getgroups(key=key)
+    products = getproducts(key=key)
+    
+    group_list = crud.synchgroups(db, groups)
+    product_list = crud.synchproducts(db, grouplist=group_list, products=products)
+    prices = get_prices(key=key)
+    crud.update_products_price(db=db,prices=prices)
+
+@app.on_event("startup")
+def startup_event():
+    scheduler = BackgroundScheduler()
+    trigger  = CronTrigger(hour=1, minute=00, second=00,timezone=timezonetash)  # Set the desired time for the function to run (here, 12:00 PM)
+    scheduler.add_job(scheduled_function, trigger=trigger, args=[next(get_db())])
+    scheduler.start()
 
 @app.post("/user/group/permission")
 async def group_permissions(

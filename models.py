@@ -40,7 +40,6 @@ class ParentPage(Base):
 #this shows the permission of the pages crud or something else
 class Pages(Base):
     __tablename__ = "pages"
-
     id = Column(Integer, primary_key=True, index=True)
     page_name = Column(String)
     action_name = Column(String)
@@ -71,7 +70,6 @@ class Roles(Base):
 
 class Users(Base):
     __tablename__ = "users"
-
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True, nullable=True)
     password = Column(String, nullable=True)
@@ -253,60 +251,14 @@ class ToolParents(Base):
     num = Column(String, nullable=True)
     code = Column(String, nullable=True)
     name = Column(String)
+    parent_id = Column(UUID(as_uuid=True), nullable=True)
     category = Column(String, nullable=True)
     description = Column(String, nullable=True)
-    child = relationship("FirstChild", back_populates="childi")
 
 
-class FirstChild(Base):
-    __tablename__ = "firstchild"
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    num = Column(String, nullable=True)
-    code = Column(String, nullable=True)
-    name = Column(String)
-    category = Column(String, nullable=True)
-    description = Column(String, nullable=True)
-    toolparentid = Column(UUID(as_uuid=True), ForeignKey("toolparents.id"))
-    childi = relationship("ToolParents", back_populates="child")
-    child = relationship("SecondChild", back_populates="childi")
 
 
-class SecondChild(Base):
-    __tablename__ = "secondchild"
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    num = Column(String, nullable=True)
-    code = Column(String, nullable=True)
-    name = Column(String)
-    category = Column(String, nullable=True)
-    description = Column(String, nullable=True)
-    parentid = Column(UUID(as_uuid=True), ForeignKey("firstchild.id"))
-    childi = relationship("FirstChild", back_populates="child")
-    child = relationship("ThirdChild", back_populates="childi")
 
-
-class ThirdChild(Base):
-    __tablename__ = "thirdchild"
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    num = Column(String, nullable=True)
-    code = Column(String, nullable=True)
-    name = Column(String)
-    category = Column(String, nullable=True)
-    description = Column(String, nullable=True)
-    parentid = Column(UUID(as_uuid=True), ForeignKey("secondchild.id"))
-    childi = relationship("SecondChild", back_populates="child")
-    child = relationship("FourthChild", back_populates="childi")
-
-
-class FourthChild(Base):
-    __tablename__ = "fourthchild"
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    num = Column(String, nullable=True)
-    code = Column(String, nullable=True)
-    name = Column(String)
-    category = Column(String, nullable=True)
-    description = Column(String, nullable=True)
-    parentid = Column(UUID(as_uuid=True), ForeignKey("thirdchild.id"))
-    childi = relationship("ThirdChild", back_populates="child")
 
 
 """
@@ -331,6 +283,10 @@ class Tools(Base):
     amount_left = Column(Float, nullable=True)
     sklad_id = Column(ARRAY(UUID(as_uuid=True)), default=[])
     last_update = Column(DateTime(timezone=True))
+    department = Column(Integer, nullable=True)
+    min_amount = Column(Float, nullable=True)
+    max_amount = Column(Float, nullable=True)
+    image = Column(String, nullable=True)
 
 
 class Working(Base):

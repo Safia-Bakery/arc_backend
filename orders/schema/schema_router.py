@@ -56,4 +56,12 @@ class CarsGet(BaseModel):
     class Config:
         orm_mode = True
 
+class UpdateExpenditure(BaseModel):
+    id: int
+    status: Optional[int] = None
+    amount: Optional[int] = None
+    comment:Optional[str] = None
+    class Config:
+        orm_mode = True
+
     
