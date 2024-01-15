@@ -79,7 +79,7 @@ async def update_otdel(
 @urls.get("/synch/groups")
 async def insert_groups(
     db: Session = Depends(get_db),
-    request_user: schema.UserFullBack = Depends(get_current_user),
+    request_user: schema.UserFullBack = Depends(get_current_user)
 ):
     permission = checkpermissions(request_user=request_user, db=db, page=30)
     if permission:
@@ -89,8 +89,10 @@ async def insert_groups(
         
         group_list = crud.synchgroups(db, groups)
         product_list = crud.synchproducts(db, grouplist=group_list, products=products)
-        prices = get_prices(key=key)
-        crud.update_products_price(db=db,prices=prices)
+        prices_inv = get_prices(key=key,department_id='c39aa435-8cdf-4441-8723-f532797fbeb9')
+        crud.update_products_price(db=db,prices=prices_inv)
+        prices_arc = get_prices(key=key,department_id='fe7dce09-c2d4-46b9-bab1-86be331ed641')
+        crud.update_products_price(db=db,prices=prices_arc)
         return {"success": True}
     else:
         raise HTTPException(
@@ -99,12 +101,14 @@ async def insert_groups(
 
 
 
-# @urls.get("/tool/iarch", response_model=list[schemas.ToolParentsch])
-# async def toolgroups(
-#     db: Session = Depends(get_db),
-#     request_user: schema.UserFullBack = Depends(get_current_user),
-# ):
-#     return crud.getarchtools(db)
+@urls.get("/tool/iarch")
+async def toolgroups(
+    parent_id: Optional[UUID] = None,
+    db: Session = Depends(get_db),
+    request_user: schema.UserFullBack = Depends(get_current_user),
+):
+    data = {'folders':crud.getarchtools(db,parent_id),'tools':statisquery.tools_query_iarch(db,parent_id)}
+    return data
     
 
 
@@ -113,11 +117,12 @@ async def toolgroups(
     name: Optional[str] = None,
     id: Optional[int] = None,
     department: Optional[int] = None,
+    few_amounts: Optional[bool] = None,
     db: Session = Depends(get_db),
-    request_user: schema.UserFullBack = Depends(get_current_user),
-):
-    data = crud.gettools(db, name=name, id=id, department=department)
+    request_user: schema.UserFullBack = Depends(get_current_user)):
+    data = crud.gettools(db, name=name, id=id, department=department,few_amounts=few_amounts)
     return paginate(data)
+
 
 
 @urls.put("/tools/", response_model=schemas.ToolsSearch)
@@ -389,7 +394,7 @@ async def getlistofdisinctexpand(
     query = statisquery.getlistofdistinctexp(
         db=db, started_at=started_at, finished_at=finished_at
     )
-    data = [{"amount": i[0], "name": i[1], "id": i[2]} for i in query]
+    data = [{"amount": i[0], "name": i[1], "id": i[2],'price':i[3]} for i in query]
     return {"tests": data}
 
 
@@ -420,3 +425,38 @@ async def get_working_time(
 ):
     query = crud.working_time(db=db)
     return query
+
+
+@urls.post("/toolsorder",tags=['ToolOrder'])
+async def generate_tools(
+    db: Session = Depends(get_db),
+    request_user: schema.UserFullBack = Depends(get_current_user)):
+    query = statisquery.order_tool_create(db=db,user_id=request_user.id)
+    return {"success":True}
+
+
+
+@urls.get("/toolsorder",response_model=Page[schemas.ToolsOrderget],tags=['ToolOrder'])
+async def get_tools(
+    status:Optional[int]=None,
+    db: Session = Depends(get_db),
+    request_user: schema.UserFullBack = Depends(get_current_user),):
+    query = statisquery.tools_order_query(db=db,status=status)
+    return paginate(query)
+
+@urls.get("/tools/order/needed",response_model=Page[schemas.NeedToolsGet],tags=['ToolOrder'])
+async def get_needed_tools(
+    toolorder_id:int,
+    db: Session = Depends(get_db),
+    request_user: schema.UserFullBack = Depends(get_current_user),):
+    query = statisquery.needed_tools(db=db,toolorder_id=toolorder_id)
+    return paginate(query)
+
+@urls.put("/toolorder",response_model=schemas.NeedToolsGet,tags=['ToolOrder'])
+async def update_toolsorder(
+    form_data:schemas.ToolOrderUpdate,
+    db: Session = Depends(get_db),
+    request_user: schema.UserFullBack = Depends(get_current_user),):
+    query = statisquery.tools_order_update(db=db,form_data=form_data)
+    return query
+

@@ -209,9 +209,9 @@ def list_stores(key):
     return names
 
 
-def get_prices(key):
+def get_prices(key,department_id):
     current_date = datetime.now(timezonetash).strftime("%Y-%m-%d")
-    prices = requests.get(f"{BASE_URL}/resto/api/v2/reports/balance/stores?timestamp={current_date}&department=c39aa435-8cdf-4441-8723-f532797fbeb9&key={key}")
+    prices = requests.get(f"{BASE_URL}/resto/api/v2/reports/balance/stores?timestamp={current_date}&department={department_id}&key={key}")
     return prices.json()
 
 

@@ -87,6 +87,7 @@ class Users(Base):
     request = relationship("Requests", back_populates="user")
     expanditure = relationship("Expanditure", back_populates="user")
     comments = relationship("Comments", back_populates="user")
+    toolor = relationship("ToolsOrder", back_populates="user")
 
 #there are 2 types of fillials there is parent fillial that show which fillial is 
 class ParentFillials(Base):
@@ -287,6 +288,7 @@ class Tools(Base):
     min_amount = Column(Float, nullable=True)
     max_amount = Column(Float, nullable=True)
     image = Column(String, nullable=True)
+    tool_need = relationship("NeededTools", back_populates="need_tool")
 
 
 class Working(Base):
@@ -304,3 +306,59 @@ class Cars(Base):
     status = Column(Integer, default=1)
     created_at = Column(DateTime(timezone=True), default=func.now())
     request = relationship("Requests", back_populates="cars")
+
+
+
+
+class ToolsOrder(Base):
+    __tablename__ = "toolsorder"
+    id = Column(Integer, primary_key=True, index=True)
+    status = Column(Integer, default=0)
+    user_id = Column(BIGINT, ForeignKey("users.id"))
+    user = relationship("Users", back_populates="toolor")
+    created_at = Column(DateTime(timezone=True), default=func.now())
+    order_need = relationship("NeededTools", back_populates="need_order")
+
+class NeededTools(Base):
+    __tablename__ = "neededtools"
+    id = Column(Integer, primary_key=True, index=True)
+    status = Column(Integer, default=0)
+    tool_id = Column(Integer, ForeignKey("tools.id"))
+    need_tool = relationship("Tools", back_populates="tool_need")
+    ordered_amount = Column(Float, nullable=True)
+    amount_last = Column(Float, nullable=True)
+    toolorder_id = Column(Integer, ForeignKey("toolsorder.id"))
+    need_order = relationship("ToolsOrder", back_populates="order_need")
+    created_at = Column(DateTime(timezone=True), default=func.now())
+    updated_at = Column(DateTime(timezone=True), nullable=True)
+
+
+
+class HrUser(Base):
+    __tablename__ = "hruser"
+    id = Column(Integer, primary_key=True, index=True)
+    telegram_id = Column(BIGINT, unique=True)
+    status = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), default=func.now())
+    lang = Column(Integer,nullable= True)
+    sphere = Column(Integer, nullable=True) 
+    request = relationship("HrRequest", back_populates="user")
+
+class HrRequest(Base):
+    __tablename__ = "hrrequest"
+    id = Column(Integer, primary_key=True, index=True)
+    comments = Column(String, nullable=True)
+    status = Column(Integer, default=0)
+    sphere = Column(Integer, nullable=True)
+    user_id = Column(Integer, ForeignKey("hruser.id"))
+    user = relationship("HrUser", back_populates="request")
+    created_at = Column(DateTime(timezone=True), default=func.now())
+
+
+class HrQuestions(Base):
+    __tablename__ = "hrquestions"
+    id = Column(Integer, primary_key=True, index=True)
+    question = Column(String, nullable=True)
+    answer = Column(String, nullable=True)
+    status = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), default=func.now())

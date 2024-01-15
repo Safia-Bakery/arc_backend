@@ -88,7 +88,13 @@ class ToolsSearch(BaseModel):
     code: Optional[str] = None
     mainunit: Optional[str] = None
     producttype: Optional[str] = None
-
+    iikoid:Optional[UUID]=None
+    price:Optional[float]=None
+    parentid:Optional[UUID]=None
+    total_price:Optional[float]=None
+    amount_left:Optional[float]=None
+    min_amount:Optional[float]=None
+    max_amount:Optional[float]=None
     class Config:
         orm_mode = True
 
@@ -207,6 +213,19 @@ class FileSch(BaseModel):
         orm_mode = True
 
 
+class GetExpanditure(BaseModel):
+    id: int
+    amount: int
+    tool: Optional[ToolsSearch] = None
+    comment: Optional[str] = None
+    user: Optional[UserGetlist] = None
+    created_at: datetime
+    status:Optional[int] = None
+
+    class Config:
+        orm_mode = True
+
+
 class GetRequestList(BaseModel):
     product: Optional[str] = None
     id: int
@@ -226,6 +245,7 @@ class GetRequestList(BaseModel):
     arrival_date: Optional[datetime] = None
     bread_size: Optional[str] = None
     size: Optional[str] = None
+    expanditure: list[GetExpanditure]
     request_orpr:Optional[list[schema_router.OrderProductsGet]] = None
     id: int
     location: Optional[Dict[str, str]] = None
@@ -246,16 +266,7 @@ class GetComments(BaseModel):
         orm_mode = True
 
 
-class GetExpanditure(BaseModel):
-    id: int
-    amount: int
-    tool: Optional[ToolsSearch] = None
-    comment: Optional[str] = None
-    user: Optional[UserGetlist] = None
-    created_at: datetime
 
-    class Config:
-        orm_mode = True
 
 
 class GetRequestid(BaseModel):
@@ -455,9 +466,8 @@ class Firstchildsch(BaseModel):
 class ToolParentsch(BaseModel):
     id: UUID
     name: str
-    code: str
-    child: list[Firstchildsch]
-
+    code: Optional[str]=None
+    num:Optional[str]=None
     class Config:
         orm_mode = True
 
@@ -535,3 +545,32 @@ class WorkTimeUpdate(BaseModel):
     class Config:
         orm_mode = True
 
+
+
+class ToolsOrderget(BaseModel):
+    id:int
+    status:int
+    user:Optional[UserGetlist]=None
+    created_at:datetime
+    class Config:
+        orm_mode = True
+
+
+class NeedToolsGet(BaseModel):
+    id:int
+    status:int
+    need_tool:Optional[ToolsSearch]=None
+    ordered_amount:Optional[float]=None
+    amount_last:Optional[float]=None
+    toolorder_id:int
+    created_at:Optional[datetime]=None
+    updated_at:Optional[datetime]=None
+    class Config:
+        orm_mode = True
+
+
+class ToolOrderUpdate(BaseModel):
+    id:int
+    status:int
+    class Config:
+        orm_mode = True

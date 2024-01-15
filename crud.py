@@ -902,6 +902,7 @@ def update_products_price(db:Session,prices):
         if query:
             query.total_price = i['sum']
             query.amount_left = i['amount']
+            query.price = i['sum']/i['amount']
             db.commit()
             db.refresh(query)
     return True
@@ -937,18 +938,21 @@ def synch_suppliers(db: Session, suppliers):
     return True
 
 
-def getarchtools(db: Session):
-    return db.query(models.ToolParents).all()
+def getarchtools(db: Session,parent_id):
+    query = db.query(models.ToolParents).filter(models.ToolParents.parent_id==parent_id)
+    return query.all()
 
 
-def gettools(db: Session, name,id,department):
+def gettools(db: Session, name,id,department,few_amounts):
     query = db.query(models.Tools)
     if name is not None:
         query = query.filter(models.Tools.name.ilike(f"%{name}%"))
     if department is not None:
         query = query.filter(models.Tools.department == department)
     if id is not None:
-        query = query.filter(models.Tools.parentid == id)
+        query = query.filter(models.Tools.id == id)
+    if few_amounts is not None:
+        query = query.filter(models.Tools.amount_left<models.Tools.min_amount)
     return query.all()
 
 

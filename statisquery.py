@@ -234,9 +234,10 @@ def getlistofdistinctexp(db: Session, started_at, finished_at):
         func.sum(cast(models.Expanditure.amount, Integer)),
         models.Tools.name,
         models.Expanditure.tool_id,
+        models.Tools.price,
     ).join(models.Tools)
     return (
-        query.group_by(models.Tools.name, models.Expanditure.tool_id)
+        query.group_by(models.Tools.name, models.Expanditure.tool_id,models.Tools.price)
         .filter(models.Expanditure.created_at.between(started_at, finished_at))
         .all()
     )
@@ -295,6 +296,55 @@ def tools_update(db: Session,form_data:schemas.ToolsUpdate):
             query.max_amount = form_data.max_amount
         if form_data.image is not None:
             query.image = form_data.image
+        db.commit()
+        db.refresh(query)
+    return query
+
+
+def tools_query_iarch(db: Session, parent_id):
+    query = db.query(models.Tools)
+    if parent_id is not None:
+        query = query.filter(models.Tools.parentid == str(parent_id)).all()
+    else:
+        return []
+    return query
+
+def few_tools_query(db: Session):
+    query = db.query(models.Tools)
+    query = query.filter(models.Tools.amount_left<models.Tools.min_amount).all()
+    return query
+
+def order_tool_create(db:Session,user_id):
+    tools = few_tools_query(db=db)
+    if not tools:
+        return False
+    query = models.ToolsOrder(user_id=user_id)
+    db.add(query)
+    db.commit()
+    db.refresh(query)
+    for i in tools:
+        ordering_amount = i.max_amount - i.amount_left
+        tool_query = models.NeededTools(tool_id=i.id,toolorder_id=query.id,ordered_amount = ordering_amount,amount_last=i.amount_left)
+        db.add(tool_query)
+        db.commit()
+    return True
+
+
+def tools_order_query(db: Session, status):
+    query = db.query(models.ToolsOrder)
+    if status is not None:
+        query = query.filter(models.ToolsOrder.status == status)
+    return query.order_by(models.ToolsOrder.created_at.desc()).all()
+
+def needed_tools(db:Session,toolorder_id):
+    query = db.query(models.NeededTools).filter(models.NeededTools.toolorder_id==toolorder_id).all()
+    return query
+
+def tools_order_update(db:Session,form_data:schemas.ToolOrderUpdate):
+    query = db.query(models.ToolsOrder).filter(models.ToolsOrder.id==form_data.id).first()
+    if query:
+        if form_data.status is not None:
+            query.status = form_data.status
         db.commit()
         db.refresh(query)
     return query

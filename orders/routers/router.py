@@ -36,8 +36,12 @@ from orders.crud import query
 from orders.utils import util
 from orders.schema import schema_router
 
+
+
 load_dotenv()
 router = APIRouter()
+
+
 bot_token = os.environ.get("BOT_TOKEN")
 
 BASE_URL = "https://api.service.safiabakery.uz/"
@@ -328,7 +332,7 @@ async def put_request_id(
                 if i.status==0:
                     new_neq.append(i)
             if new_neq:
-                crud.add_request(db=db,
+                new_request = crud.add_request(db=db,
                                  category_id=request_list.category_id,
                                  fillial_id=request_list.fillial_id,
                                  description=request_list.description,
@@ -338,10 +342,11 @@ async def put_request_id(
                                  size=request_list.size,
                                  bread_size=request_list.bread_size,
                                  location=request_list.location,
+                                 arrival_date=request_list.arrival_date,
                                  )
                 for i in new_neq:
                     query.add_expenditure(db=db,
-                                         request_id=request_list.id,
+                                         request_id=new_request.id,
                                          tool_id=i.tool_id,
                                          amount=i.amount,
                                          comment=i.comment,
@@ -373,7 +378,7 @@ async def get_category(
     size: Annotated[str,Form] = None,
     bread_size: Annotated[str,Form()]= None,
     arrival_date: Annotated[datetime,Form()] = None,
-    product: Json=Form(None),
+    product: Annotated[str,Form()]=None,
     expenditure:Json=Form(None),
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
@@ -385,6 +390,7 @@ async def get_category(
         origin = None
     else:
         origin = 1
+    
     if not factory:
         filliald_od = crud.filterbranchchildid(db, fillial_id, origin=origin)
         sklad_id = filliald_od.id
@@ -422,7 +428,7 @@ async def get_category(
     )
     if expenditure:
         for tool_id,amount in expenditure.items():
-            query.add_expenditure(db=db, request_id=responserq.id, tool_id=tool_id, amount=amount,comment='this is for intventar',status=0)
+            query.add_expenditure(db=db, request_id=responserq.id, tool_id=tool_id, amount=amount[0],comment=amount[1],status=0)
     if files:
         for file in files:
             file_path = f"files/{file.filename}"

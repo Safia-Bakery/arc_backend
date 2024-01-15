@@ -34,6 +34,7 @@ from fastapi_pagination import paginate, Page, add_pagination
 
 # from secondmain import router
 from iikoview import urls
+from hrcomments.routers.router import hrrouter
 from users.routers.router import user_router
 from users.schema import schema
 from orders.routers.router import router
@@ -77,6 +78,7 @@ reuseable_oauth = OAuth2PasswordBearer(tokenUrl="/login", scheme_name="JWT")
 app = FastAPI()
 app.include_router(router)
 app.include_router(urls)
+app.include_router(hrrouter)
 app.include_router(user_router)
 app.mount("/files", StaticFiles(directory="files"), name="files")
 timezonetash = pytz.timezone("Asia/Tashkent")
@@ -95,13 +97,16 @@ def scheduled_function(db: Session):
     
     group_list = crud.synchgroups(db, groups)
     product_list = crud.synchproducts(db, grouplist=group_list, products=products)
-    prices = get_prices(key=key)
-    crud.update_products_price(db=db,prices=prices)
+    prices_inv = get_prices(key=key,department_id='c39aa435-8cdf-4441-8723-f532797fbeb9')
+    crud.update_products_price(db=db,prices=prices_inv)
+    prices_arc = get_prices(key=key,department_id='fe7dce09-c2d4-46b9-bab1-86be331ed641')
+    crud.update_products_price(db=db,prices=prices_arc)
+
 
 @app.on_event("startup")
 def startup_event():
     scheduler = BackgroundScheduler()
-    trigger  = CronTrigger(hour=1, minute=00, second=00,timezone=timezonetash)  # Set the desired time for the function to run (here, 12:00 PM)
+    trigger  = CronTrigger(hour=12, minute=6, second=00,timezone=timezonetash)  # Set the desired time for the function to run (here, 12:00 PM)
     scheduler.add_job(scheduled_function, trigger=trigger, args=[next(get_db())])
     scheduler.start()
 
@@ -382,3 +387,4 @@ async def get_fillials_id(
 add_pagination(app)
 add_pagination(router)
 add_pagination(urls)
+
