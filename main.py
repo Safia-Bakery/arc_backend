@@ -93,20 +93,24 @@ app.add_middleware(
 def scheduled_function(db: Session):
     key = authiiko()
     groups = getgroups(key=key)
+    group_list = crud.synchgroups(db, groups)
+    del groups
     products = getproducts(key=key)
     
-    group_list = crud.synchgroups(db, groups)
     product_list = crud.synchproducts(db, grouplist=group_list, products=products)
+    del products
     prices_inv = get_prices(key=key,department_id='c39aa435-8cdf-4441-8723-f532797fbeb9')
     crud.update_products_price(db=db,prices=prices_inv)
+    del prices_inv
     prices_arc = get_prices(key=key,department_id='fe7dce09-c2d4-46b9-bab1-86be331ed641')
     crud.update_products_price(db=db,prices=prices_arc)
+    del prices_arc
 
 
 @app.on_event("startup")
 def startup_event():
     scheduler = BackgroundScheduler()
-    trigger  = CronTrigger(hour=10, minute=2, second=00,timezone=timezonetash)  # Set the desired time for the function to run (here, 12:00 PM)
+    trigger  = CronTrigger(hour=10, minute=20, second=00,timezone=timezonetash)  # Set the desired time for the function to run (here, 12:00 PM)
     scheduler.add_job(scheduled_function, trigger=trigger, args=[next(get_db())])
     scheduler.start()
 
