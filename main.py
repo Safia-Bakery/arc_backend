@@ -327,18 +327,16 @@ async def update_fillials(
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
-    permission = checkpermissions(request_user=request_user, db=db, page=23)
-    if permission:
-        fillials = crud.update_fillial_cr(db, form_data)
-        if form_data.department_id:
-            crud.update_fillil_origin(db, form_data=form_data)
-
-        return fillials
-
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="You are not super user"
-        )
+    # permission = checkpermissions(request_user=request_user, db=db, page=23)
+    # if permission:
+    fillials = crud.update_fillial_cr(db, form_data)
+    if form_data.department_id:
+        crud.update_fillil_origin(db, form_data=form_data)
+    return fillials
+    # else:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN, detail="You are not super user"
+    #     )
 
 
 @app.get("/fillials", response_model=Page[schemas.GetFillialSch])
@@ -352,24 +350,22 @@ async def filter_fillials(
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
-    permission = checkpermissions(request_user=request_user, db=db, page=29)
-    if permission:
-        return paginate(
-            crud.filter_fillials(
-                db,
-                name=name,
-                country=country,
-                latitude=latitude,
-                longtitude=longtitude,
-                fillial_status=fillial_status,
-                origin=origin,
-            )
+    return paginate(
+        crud.filter_fillials(
+            db,
+            name=name,
+            country=country,
+            latitude=latitude,
+            longtitude=longtitude,
+            fillial_status=fillial_status,
+            origin=origin,
         )
+    )
 
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="You are not super user"
-        )
+    #else:
+    #    raise HTTPException(
+    #        status_code=status.HTTP_403_FORBIDDEN, detail="You are not super user"
+    #    )
 
 
 @app.get("/fillials/{id}", response_model=schemas.GetFillialSch)
@@ -378,14 +374,13 @@ async def get_fillials_id(
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
-    permission = checkpermissions(request_user=request_user, db=db, page=23)
-    if permission:
-        return crud.get_fillial_id(db, id)
+    
+    return crud.get_fillial_id(db, id)
 
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="You are not super user"
-        )
+    # else:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN, detail="You are not super user"
+    #     )
 
 
 add_pagination(app)
