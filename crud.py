@@ -862,6 +862,10 @@ def synchgroups(db: Session, groups):
 def get_or_update(db:Session,price,name,num,id,code,producttype,mainunit,department,parent_id):
     query = db.query(models.Tools).filter(models.Tools.iikoid==id).first()
     if query:
+        query.department=department
+        query.last_update=datetime.now(timezonetash)
+        db.commit()
+        db.refresh(query)
         return query
     else:
         toolsmod = models.Tools(
@@ -903,6 +907,7 @@ def update_products_price(db:Session,prices):
             query.total_price = i['sum']
             query.amount_left = i['amount']
             query.price = i['sum']/i['amount']
+            query.last_update = datetime.now(timezonetash)
             db.commit()
             db.refresh(query)
     return True
@@ -952,7 +957,8 @@ def gettools(db: Session, name,id,department,few_amounts):
     if id is not None:
         query = query.filter(models.Tools.id == id)
     if few_amounts is not None:
-        query = query.filter(models.Tools.amount_left<models.Tools.min_amount)
+        if few_amounts:
+            query = query.filter(models.Tools.amount_left<models.Tools.min_amount)
     return query.all()
 
 
