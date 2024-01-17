@@ -45,9 +45,9 @@ def get_questions(db:Session,id):
 def get_hrrequest(db:Session,id,sphere):
     query = db.query(models.HrRequest)
     if id is not None:
-        query.filter(models.HrRequest.id==id)
+        query = query.filter(models.HrRequest.id==id)
     if sphere is not None:
-        query.filter(models.HrRequest.sphere==sphere)
+        query = query.filter(models.HrRequest.sphere==sphere)
 
     return query.all()
 
