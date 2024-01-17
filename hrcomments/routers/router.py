@@ -67,10 +67,11 @@ async def get_questions(
 @hrrouter.get("/hr/request", summary="Get Request",tags=["HR"],response_model=Page[schema.HrRequest])
 async def get_hrrequest(
     id: Optional[int] = None,
+    sphere:Optional[int]=None,
     db: Session = Depends(get_db),
     current_user: UserFullBack = Depends(get_current_user),
 ):
-    return paginate(crud.get_hrrequest(db, id))
+    return paginate(crud.get_hrrequest(db, id,sphere=sphere))
 
 
 @hrrouter.put("/hr/request", summary="Update Request",tags=["HR"],response_model=schema.HrRequest)
