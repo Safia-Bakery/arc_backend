@@ -37,12 +37,14 @@ class HrRequest(BaseModel):
     status: Optional[int] = None
     sphere: Optional[int] = None
     created_at: Optional[datetime] = None
+    answer: Optional[str] = None    
     class Config:
         orm_mode = True
 
 class HrRequestUpdate(BaseModel):
     id: int
     status: Optional[int] = None
+    answer:Optional[str] = None
     class Config:
         orm_mode = True
 

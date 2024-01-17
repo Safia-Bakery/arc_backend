@@ -353,6 +353,7 @@ class HrRequest(Base):
     user_id = Column(Integer, ForeignKey("hruser.id"))
     user = relationship("HrUser", back_populates="request")
     created_at = Column(DateTime(timezone=True), default=func.now())
+    answer = Column(String, nullable=True)
 
 
 class HrQuestions(Base):

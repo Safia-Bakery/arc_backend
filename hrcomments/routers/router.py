@@ -27,6 +27,7 @@ from microservices import (
     create_access_token,
     checkpermissions,
 )
+import os
 
 # from main import get_db,get_current_user
 from fastapi import APIRouter, Form
@@ -34,11 +35,10 @@ from hrcomments.schema import schema
 from hrcomments.crud import crud
 
 
-
 load_dotenv()
 hrrouter = APIRouter()
 
-
+HRBOT_TOKEN = os.environ.get("HRBOT_TOKEN")
 @hrrouter.post("/hr/question", summary="Create question",tags=["HR"],response_model=schema.HrQuestionsGet)
 async def create_question(
     form_data: schema.HrQuestionsCreate,
@@ -80,7 +80,10 @@ async def update_hrrequest(
     db: Session = Depends(get_db),
     current_user:UserFullBack = Depends(get_current_user),
 ):
-    return crud.update_hrrequest(db, form_data)
+    query = crud.update_hrrequest(db, form_data)
+    if form_data.answer is not None:
+        sendtotelegramaddcomment(HRBOT_TOKEN,form_data.answer,query.user.telegram_id)
+    return query
 
 
 
