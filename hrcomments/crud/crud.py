@@ -56,6 +56,7 @@ def update_hrrequest(db:Session,form_data:schema.HrRequestUpdate):
     if query:
         if form_data.status is not None:
             query.status = form_data.status
+            query.answer = form_data.answer
         db.commit()
         db.refresh(query)
         return query

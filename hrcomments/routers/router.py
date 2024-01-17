@@ -80,9 +80,13 @@ async def update_hrrequest(
     db: Session = Depends(get_db),
     current_user:UserFullBack = Depends(get_current_user),
 ):
+    
     query = crud.update_hrrequest(db, form_data)
+    if query.status == 1:
+        text_user = f"Спасибо, ваша заявка #{query.id}s по Инвентарю📦 принята. Как ваша заявка будет сделана , вы получите уведомление"
+        sendtotelegramchannel(bot_token=HRBOT_TOKEN,chat_id=query.user.telegram_id,message_text=text_user)
     if form_data.answer is not None:
-        sendtotelegramaddcomment(HRBOT_TOKEN,form_data.answer,query.user.telegram_id)
+        sendtotelegramchannel(bot_token=HRBOT_TOKEN,chat_id=query.user.telegram_id,message_text=form_data.answer)
     return query
 
 
