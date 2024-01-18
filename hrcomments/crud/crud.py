@@ -49,7 +49,7 @@ def get_hrrequest(db:Session,id,sphere):
     if sphere is not None:
         query = query.filter(models.HrRequest.sphere==sphere)
 
-    return query.all()
+    return query.order_by(models.HrRequest.id.desc()).all()
 
 def update_hrrequest(db:Session,form_data:schema.HrRequestUpdate):
     query = db.query(models.HrRequest).filter(models.HrRequest.id==form_data.id).first()
