@@ -60,5 +60,5 @@ def update_hrrequest(db:Session,form_data:schema.HrRequestUpdate):
         db.commit()
         db.refresh(query)
         return query
-    return None
+    return query
 
