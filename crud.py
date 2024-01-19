@@ -123,6 +123,7 @@ def user_role_attach(db: Session, role: schemas.UserRoleAttachSch):
     )
     if db_user_update:
         db_user_update.group_id = role.group_id
+        db_user_update
         db.commit()
         db.refresh(db_user_update)
         return db_user_update

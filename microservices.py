@@ -142,7 +142,6 @@ def sendtotelegramchannel(bot_token, chat_id, message_text):
         json=payload,
     )
 
-    print(response.content)
     # Check the response status
     if response.status_code == 200:
 
