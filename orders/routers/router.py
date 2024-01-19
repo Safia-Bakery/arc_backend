@@ -181,7 +181,7 @@ async def filter_request(
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):  
-    if request_user.brigada_id and request_user.group_id != 3:
+    if request_user.brigada_id:
         requestdata = crud.filter_request_brigada(
             db,
             id=id,
