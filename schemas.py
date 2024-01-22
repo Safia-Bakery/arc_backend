@@ -357,7 +357,7 @@ class AcceptRejectRequest(BaseModel):
     brigada_id: Optional[int] = None
     deny_reason: Optional[str] = None
     category_id: Optional[int] = None
-    fillial_id: Optional[int] = None
+    fillial_id: Optional[UUID] = None
     finishing_time: Optional[datetime] = None
     car_id: Optional[int] = None
 
