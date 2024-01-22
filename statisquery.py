@@ -348,3 +348,27 @@ def tools_order_update(db:Session,form_data:schemas.ToolOrderUpdate):
         db.commit()
         db.refresh(query)
     return query
+
+
+def brigade_openrequests(db:Session,department,sphere_status):
+    query = db.query(func.count(models.Requests.id),models.Brigada.name,models.Brigada.id).join(models.Brigada).join(models.Category).filter((or_(models.Requests.status==1,models.Requests.status==2))).filter(models.Category.department==department).group_by(models.Requests.brigada_id,models.Brigada.name,models.Brigada.id)
+    if sphere_status is not None:
+        query = query.filter(models.Category.sphere_status==sphere_status)
+    return query.all()
+
+def new_requestsamount(db:Session,department,sphere_status):
+    query = db.query(func.count(models.Requests.id)).join(models.Category).filter(models.Requests.status==0).filter(models.Category.department==department)
+    if sphere_status is not None:
+        query = query.filter(models.Category.sphere_status==sphere_status)
+    return query.all()
+
+
+def avg_ratingrequests(db:Session,department,sphere_status):
+    query = db.query(func.avg(models.Comments.rating)).join(models.Requests).join(models.Category).filter(models.Requests.status==3).filter(models.Category.department==department)
+    if sphere_status is not None:
+        query = query.filter(models.Category.sphere_status==sphere_status)
+    return query.all()
+
+
+
+

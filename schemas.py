@@ -353,11 +353,11 @@ class GetToolList(BaseModel):
 
 class AcceptRejectRequest(BaseModel):
     request_id: int
-    status: int
-
+    status: Optional[int] = None
     brigada_id: Optional[int] = None
     deny_reason: Optional[str] = None
-
+    category_id: Optional[int] = None
+    fillial_id: Optional[int] = None
     finishing_time: Optional[datetime] = None
     car_id: Optional[int] = None
 

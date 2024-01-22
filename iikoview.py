@@ -464,3 +464,27 @@ async def update_toolsorder(
     query = statisquery.tools_order_update(db=db,form_data=form_data)
     return query
 
+
+
+# ---------------------main page statistics-----------------------------------
+
+
+@urls.get("/v1/stats/main",tags=['MainPage'])
+async def get_statistics(
+    department: Optional[int] = None,
+    sphere_status: Optional[int] = None,
+    db: Session = Depends(get_db),
+    request_user: schema.UserFullBack = Depends(get_current_user),
+):
+    brig_requests = statisquery.brigade_openrequests(
+        db=db,
+        department=department,
+        sphere_status=sphere_status,
+    )
+    new_requests = statisquery.new_requestsamount(db=db,department=department,sphere_status=sphere_status)
+    avg_rating = statisquery.avg_ratingrequests(db=db,department=department,sphere_status=sphere_status)
+    data = {}
+    for i in brig_requests:
+        data[i[1]]=[i[2],i[0]]
+    
+    return {"brage_requests":data,'new_requests':new_requests[0][0],'avg_rating':int(avg_rating[0][0])}

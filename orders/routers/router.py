@@ -274,7 +274,7 @@ async def put_request_id(
                 )
             except:
                 pass
-    if form_data.status == 2:
+    elif form_data.status == 2:
         if request_list.category.department == 5:
             try:
                 sendtotelegramchannel(
@@ -284,7 +284,7 @@ async def put_request_id(
             except:
                 pass
 
-    if form_data.status == 3:
+    elif form_data.status == 3:
         url = f"{FRONT_URL}tg/order-rating/{request_list.id}?user_id={request_list.user.id}&department={request_list.category.department}&sub_id={request_list.category.sub_id}"
         if request_list.category.department == 3:
             try:
@@ -354,16 +354,13 @@ async def put_request_id(
                                          )
                     
 
-    if form_data.status == 4:
+    elif form_data.status == 4:
         sendtotelegramchannel(
             bot_token=bot_token,
             chat_id=request_list.user.telegram_id,
             message_text=f"Ваша заявка #{request_list.id}s была отменена по причине: {request_list.deny_reason}",
         )
-    if request_list:
-        return request_list
-    else:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="not fund")
+    return request_list
 
 
 @router.post("/request")

@@ -494,7 +494,8 @@ def acceptreject(db: Session, form_data: schemas.AcceptRejectRequest, user):
             db_get.brigada_id = form_data.brigada_id
         if form_data.deny_reason is not None:
             db_get.deny_reason = form_data.deny_reason
-        db_get.status = form_data.status
+        if form_data.status is not None:
+            db_get.status = form_data.status
         db_get.user_manager = user
         db_get.cars_id = form_data.car_id
         if form_data.finishing_time is not None:
@@ -503,6 +504,11 @@ def acceptreject(db: Session, form_data: schemas.AcceptRejectRequest, user):
             db_get.started_at = func.now()
         if form_data.status == 3 or form_data.status == 4:
             db_get.finished_at = func.now()
+        if form_data.category_id is not None:
+            db_get.old_cat_id = form_data.category_id
+            db_get.category_id = form_data.category_id
+        if form_data.fillial_id is not None:
+            db_get.fillial_id = form_data.fillial_id
         updated_data = db_get.update_time or {}
         updated_data[str(form_data.status)] = str(datetime.now(tz=timezonetash))
         db_get.update_time = updated_data
