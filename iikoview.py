@@ -471,7 +471,7 @@ async def update_toolsorder(
 
 @urls.get("/v1/stats/main",tags=['MainPage'])
 async def get_statistics(
-    department: Optional[int] = None,
+    department: int,
     sphere_status: Optional[int] = None,
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
