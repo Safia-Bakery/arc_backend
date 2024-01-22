@@ -7,7 +7,7 @@ from typing import Optional
 import bcrypt
 from sqlalchemy.exc import SQLAlchemyError
 import pytz
-from sqlalchemy import distinct
+from sqlalchemy import distinct,case
 from datetime import datetime, date
 from microservices import sendtotelegramchannel
 from sqlalchemy import or_, and_, Date, cast, func, Integer, Numeric
@@ -351,10 +351,28 @@ def tools_order_update(db:Session,form_data:schemas.ToolOrderUpdate):
 
 
 def brigade_openrequests(db:Session,department,sphere_status):
-    query = db.query(func.count(models.Requests.id),models.Brigada.name,models.Brigada.id).join(models.Brigada).join(models.Category).filter((or_(models.Requests.status==1,models.Requests.status==2))).filter(models.Category.department==department).group_by(models.Requests.brigada_id,models.Brigada.name,models.Brigada.id)
+    query = (
+        db.query(
+            models.Brigada.id,
+            models.Brigada.name,
+            func.count(
+                models.Requests.id).label("request_count"),
+        )
+        .outerjoin(models.Requests)
+        .outerjoin(models.Category)
+        .filter(
+            #or_(models.Requests.status == 1, models.Requests.status == 2),
+            models.Brigada.department == department
+        )
+        .group_by(models.Brigada.id, models.Brigada.name)
+    )
+
     if sphere_status is not None:
-        query = query.filter(models.Category.sphere_status==sphere_status)
-    return query.all()
+        query = query.filter(models.Category.sphere_status == sphere_status)
+
+    result = query.all()
+
+    return result
 
 def new_requestsamount(db:Session,department,sphere_status):
     query = db.query(func.count(models.Requests.id)).join(models.Category).filter(models.Requests.status==0).filter(models.Category.department==department)
@@ -364,11 +382,39 @@ def new_requestsamount(db:Session,department,sphere_status):
 
 
 def avg_ratingrequests(db:Session,department,sphere_status):
-    query = db.query(func.avg(models.Comments.rating)).join(models.Requests).join(models.Category).filter(models.Requests.status==3).filter(models.Category.department==department)
+    query = db.query(cast(func.avg(models.Comments.rating), Integer)).join(models.Requests).join(models.Category).filter(models.Requests.status==3).filter(models.Category.department==department)
     if sphere_status is not None:
         query = query.filter(models.Category.sphere_status==sphere_status)
     return query.all()
 
+
+
+def avg_time_finishing(db:Session,department,sphere_status,timer=60):
+    total = db.query(
+            func.cast(
+                func.avg(
+                    func.extract(
+                        "epoch",
+                        models.Requests.finished_at - models.Requests.started_at,
+                    )
+                )
+                / timer,
+                Integer,
+            ),
+        ).join(models.Category).filter(
+            models.Requests.status == 3,
+            models.Category.department == department)
+    if sphere_status is not None:
+        total = total.filter(models.Category.sphere_status == sphere_status)    
+        
+    return total.all()
+
+
+def total_request_count(db:Session,department,sphere_status):
+    query = db.query(func.count(models.Requests.id)).join(models.Category).filter(models.Category.department==department)
+    if sphere_status is not None:
+        query = query.filter(models.Category.sphere_status==sphere_status)
+    return query.all()
 
 
 
