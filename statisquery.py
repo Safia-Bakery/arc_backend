@@ -417,7 +417,7 @@ def total_request_count(db:Session,department,sphere_status):
     return query.all()
 
 
-def total_request_count(db:Session,department,sphere_status):
+def in_progress_requests(db:Session,department,sphere_status):
     query = db.query(func.count(models.Requests.id)).join(models.Category).filter(models.Category.department==department).filter((or_(models.Requests.status==1,models.Requests.status==2)))
     if sphere_status is not None:
         query = query.filter(models.Category.sphere_status==sphere_status)
