@@ -485,10 +485,9 @@ async def get_statistics(
     avg_rating = statisquery.avg_ratingrequests(db=db,department=department,sphere_status=sphere_status)
     avg_finishtime = statisquery.avg_time_finishing(db=db,department=department,sphere_status=sphere_status)
     total_requests = statisquery.total_request_count(db=db,department=department,sphere_status=sphere_status)
-    print(avg_finishtime)
-    print(total_requests)
+    in_progress = statisquery.in_progress_requests(db=db,department=department,sphere_status=sphere_status)
     data = {}
     for i in brig_requests:
         data[i[1]]=[i[0],i[2]]
     
-    return {"brage_requests":data,'new_requests':new_requests[0][0],'avg_rating':avg_rating[0][0],'avg_time':avg_finishtime[0][0],'total_requests':total_requests[0][0]}
+    return {"brage_requests":data,'new_requests':new_requests[0][0],'avg_rating':avg_rating[0][0],'avg_time':avg_finishtime[0][0],'total_requests':total_requests[0][0],'in_progress':in_progress[0][0]}
