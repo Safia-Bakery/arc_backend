@@ -118,13 +118,12 @@ def meal_pushes(db:Session):
     all_user = all_users(db=db)
     for i in branchs:
         text += f"{i.name}\n"
-    print(text)
     text = 'test'
     limit = 0
     for i in all_user:
         if limit == 30:
             time.sleep(2)
-            sendtotelegramchannel(bot_token=BOT_TOKEN,chat_id=i.telegram_id,message=text)
+            sendtotelegramchannel(bot_token=BOT_TOKEN,chat_id=i.telegram_id,message_text=text)
             limit = 0
         else:
             limit += 1
@@ -140,7 +139,7 @@ def startup_event():
 @app.on_event("startup")
 def meal_messages():
     scheduler = BackgroundScheduler()
-    trigger  = CronTrigger(hour=20, minute=40, second=00,timezone=timezonetash)
+    trigger  = CronTrigger(hour=20, minute=45, second=00,timezone=timezonetash)
     scheduler.add_job(meal_pushes, trigger=trigger,args=[next(get_db())])
     scheduler.start()
 
