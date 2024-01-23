@@ -120,16 +120,22 @@ def meal_pushes(db:Session):
         text += f"{i.name}\n"
     text = 'test'
     limit = 0
-    print(limit)
-    return True
+    send_users = []
+    #return True
     for i in all_user:
-        sendtotelegramchannel(bot_token=BOT_TOKEN,chat_id=i.telegram_id,message_text=text)
-
-        if limit == 30:
-            time.sleep(2)
-            limit = 0
-        else:
-            limit += 1
+        if i.telegram_id not in send_users:
+            #sendtotelegramchannel(bot_token=BOT_TOKEN,chat_id=i.telegram_id,message_text=text)
+            print(i.telegram_id)
+            if limit == 30:
+                time.sleep(2)
+                limit = 0
+            else:
+                limit += 1
+            send_users.append(i.telegram_id)
+    del send_users
+    del all_user
+    del branchs
+    return True
 
 
 @app.on_event("startup")
@@ -142,7 +148,7 @@ def startup_event():
 @app.on_event("startup")
 def meal_messages():
     scheduler = BackgroundScheduler()
-    trigger  = CronTrigger(hour=21, minute=53, second=00,timezone=timezonetash)
+    trigger  = CronTrigger(hour=22, minute=00, second=00,timezone=timezonetash)
     scheduler.add_job(meal_pushes, trigger=trigger,args=[next(get_db())])
     scheduler.start()
 
