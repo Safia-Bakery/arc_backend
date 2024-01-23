@@ -274,6 +274,15 @@ async def put_request_id(
                 )
             except:
                 pass
+        if request_list.category.department==2:
+            try:
+                sendtotelegramchannel(
+                    bot_token=bot_token,
+                    chat_id=request_list.user.telegram_id,
+                    message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по Inventary: В процессе.",
+                )
+            except:
+                pass
     elif form_data.status == 2:
         if request_list.category.department == 5:
             try:
@@ -327,6 +336,15 @@ async def put_request_id(
             except:
                 pass
         if request_list.category.department == 2:
+            try:
+                inlinewebapp(
+                    bot_token=bot_token,
+                    chat_id=request_list.user.telegram_id,
+                    message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по Inventary: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
+                    url=url,
+                )
+            except:
+                pass
             new_neq = []
             for i in request_list.expanditure:
                 if i.status==0:
