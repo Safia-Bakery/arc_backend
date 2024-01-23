@@ -120,11 +120,11 @@ def meal_pushes(db:Session):
         text += f"{i.name}\n"
     text = 'test'
     limit = 0
-    print(len(all_user))
     for i in all_user:
+        sendtotelegramchannel(bot_token=BOT_TOKEN,chat_id=i.telegram_id,message_text=text)
+
         if limit == 30:
             time.sleep(2)
-            sendtotelegramchannel(bot_token=BOT_TOKEN,chat_id=i.telegram_id,message_text=text)
             limit = 0
         else:
             limit += 1
