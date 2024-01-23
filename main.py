@@ -140,7 +140,7 @@ def startup_event():
 @app.on_event("startup")
 def meal_messages():
     scheduler = BackgroundScheduler()
-    trigger  = CronTrigger(hour=21, minute=23, second=00,timezone=timezonetash)
+    trigger  = CronTrigger(hour=21, minute=28, second=00,timezone=timezonetash)
     scheduler.add_job(meal_pushes, trigger=trigger,args=[next(get_db())])
     scheduler.start()
 
