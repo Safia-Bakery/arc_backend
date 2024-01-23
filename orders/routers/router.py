@@ -407,10 +407,12 @@ async def get_category(
     # try:
     category_query = crud.get_category_id(db=db, id=category_id)
 
-    if category_query.sub_id:
-        origin = None
-    else:
+    if category_query.department == 1:
         origin = 1
+    elif category_query.department == 2:
+        origin = 2
+    else:
+        origin = None
     
     if not factory:
         filliald_od = crud.filterbranchchildid(db, fillial_id, origin=origin)
