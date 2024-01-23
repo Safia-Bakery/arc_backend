@@ -120,6 +120,7 @@ def meal_pushes(db:Session):
         text += f"{i.name}\n"
     text = 'test'
     limit = 0
+    print(len(all_user))
     for i in all_user:
         if limit == 30:
             time.sleep(2)
@@ -139,7 +140,7 @@ def startup_event():
 @app.on_event("startup")
 def meal_messages():
     scheduler = BackgroundScheduler()
-    trigger  = CronTrigger(hour=21, minute=9, second=00,timezone=timezonetash)
+    trigger  = CronTrigger(hour=21, minute=16, second=00,timezone=timezonetash)
     scheduler.add_job(meal_pushes, trigger=trigger,args=[next(get_db())])
     scheduler.start()
 
