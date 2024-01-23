@@ -13,7 +13,7 @@ from microservices import (
     sendtotelegramchannel,
     sendtotelegram,
     sendtotelegramaddcomment,
-    inlinewebapp,
+    inlinewebapp,authiiko,send_document_iiko
 )
 from typing import Optional
 import crud
@@ -336,6 +336,9 @@ async def put_request_id(
             except:
                 pass
         if request_list.category.department == 2:
+            
+
+
             try:
                 inlinewebapp(
                     bot_token=bot_token,
@@ -349,6 +352,9 @@ async def put_request_id(
             for i in request_list.expanditure:
                 if i.status==0:
                     new_neq.append(i)
+                else:
+                    edit_expenditure = crud.synch_expanditure_crud(db, id=i.id)
+                    send_document_iiko(key=authiiko(), data=edit_expenditure)
             if new_neq:
                 new_request = crud.add_request(db=db,
                                  category_id=request_list.category_id,

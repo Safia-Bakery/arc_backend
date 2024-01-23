@@ -249,13 +249,34 @@ def send_document_iiko(key, data):
             </items>
             </document>"""
     if data.request.category.sphere_status == 2:
-        pass
+        headers = {
+            "Content-Type": "application/xml",  # Set the content type to XML
+        }
+        xml_data = f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <document>
+            <documentNumber>newinv-{data.id}</documentNumber>
+            <dateIncoming></dateIncoming>
+            <useDefaultDocumentTime>false</useDefaultDocumentTime>
+            <counteragentId>{data.request.fillial.supplier[0].id}</counteragentId>
+            <defaultStoreId>0bfe01f2-6864-48f5-a79e-c885dc76116a</defaultStoreId>
+            <items>
+                <item>
+                    <productId>{data.tool.iikoid}</productId>
+                    <productArticle>{data.tool.code}</productArticle>
+                    <storeId>0bfe01f2-6864-48f5-a79e-c885dc76116a</storeId>
+                    <price>{price}</price>
+                    <amount>{data.amount}</amount>
+                    <sum>{total_price}</sum>
+                    <discountSum>0.000000000</discountSum>
+                </item>
+            </items>
+            </document>"""
     response = requests.post(
         f"{BASE_URL}/resto/api/documents/import/outgoingInvoice?key={key}",
         data=xml_data,
         headers=headers,
     )
-
+    print(response.content)
     return True
 
 
