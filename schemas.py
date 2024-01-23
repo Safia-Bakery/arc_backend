@@ -489,7 +489,7 @@ class SynchExanditureiiko(BaseModel):
 
 class AddComments(BaseModel):
     request_id: int
-    comment: str
+    comment: Optional[str] = None
     rating: int
     user_id: int
 
