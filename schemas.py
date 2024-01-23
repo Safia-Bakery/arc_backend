@@ -299,6 +299,7 @@ class GetRequestid(BaseModel):
     old_cat_id: Optional[int] = None
     request_orpr:Optional[list[schema_router.OrderProductsGet]] = None
     cars:Optional[schema_router.CarsGet] = None
+    communication:Optional[list[schema_router.MessageRequest]] = None
 
     class Config:
         orm_mode = True

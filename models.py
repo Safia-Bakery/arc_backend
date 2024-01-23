@@ -88,6 +88,7 @@ class Users(Base):
     expanditure = relationship("Expanditure", back_populates="user")
     comments = relationship("Comments", back_populates="user")
     toolor = relationship("ToolsOrder", back_populates="user")
+    communication = relationship("Communication", back_populates="user")
 
 #there are 2 types of fillials there is parent fillial that show which fillial is 
 class ParentFillials(Base):
@@ -214,7 +215,18 @@ class Requests(Base):
     request_orpr = relationship("OrderProducts", back_populates="orpr_request")
     cars_id = Column(Integer, ForeignKey("cars.id"), nullable=True)
     cars = relationship("Cars", back_populates="request")
+    communication = relationship("Communication", back_populates="requestc")
 
+
+class Communication(Base):
+    __tablename__ = "communication"
+    id = Column(Integer, primary_key=True, index=True)
+    request_id = Column(Integer, ForeignKey("requests.id"))
+    requestc = relationship("Requests", back_populates="communication")
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("Users", back_populates="communication")
+    message = Column(String, nullable=True)
+    status = Column(Integer, default=0)
 
 class OrderProducts(Base):
     __tablename__ = "orderproducts"

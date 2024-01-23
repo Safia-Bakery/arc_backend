@@ -489,6 +489,8 @@ def acceptreject(db: Session, form_data: schemas.AcceptRejectRequest, user):
         .filter(models.Requests.id == form_data.request_id)
         .first()
     )
+
+    
     if db_get:
         if form_data.brigada_id is not None:
             db_get.brigada_id = form_data.brigada_id
@@ -508,7 +510,15 @@ def acceptreject(db: Session, form_data: schemas.AcceptRejectRequest, user):
             db_get.old_cat_id = form_data.category_id
             db_get.category_id = form_data.category_id
         if form_data.fillial_id is not None:
-            db_get.fillial_id = form_data.fillial_id
+            if db_get.category.department == 1:
+                origin = 1
+            elif db_get.category.department == 2:
+                origin = 2
+            else:
+                origin = None
+
+            filliald_od =filterbranchchildid(db,form_data.fillial_id, origin=origin)
+            db_get.fillial_id = filliald_od.id
         updated_data = db_get.update_time or {}
         updated_data[str(form_data.status)] = str(datetime.now(tz=timezonetash))
         db_get.update_time = updated_data

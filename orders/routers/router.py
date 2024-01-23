@@ -785,3 +785,22 @@ async def update_expenditure(
     request_user: schema.UserFullBack = Depends(get_current_user)):
     db_query = query.update_expenditure(db=db, form_data=form_data)
     return db_query
+
+
+@router.post("/v1/reqest/message",response_model=schema_router.MessageRequestCreate,tags=["Message"])
+async def create_message(
+    form_data: schema_router.MessageRequestCreate,
+    db: Session = Depends(get_db),
+    request_user: schema.UserFullBack = Depends(get_current_user)):
+    db_query = query.message_create(db=db, form_data=form_data,user_id=request_user.id)
+    return db_query
+
+
+@router.get('/v1/test',tags=["test"])
+async def test(
+    db: Session = Depends(get_db),
+    request_user: schema.UserFullBack = Depends(get_current_user)):
+    test = query.get_fillials_unordered(db=db)
+    for i in test:
+        print(i.name)
+    return {"message":"ok"}

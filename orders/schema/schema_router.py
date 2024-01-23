@@ -3,6 +3,7 @@ from fastapi import Form, UploadFile, File
 from typing import Optional, Annotated, Dict
 from datetime import datetime, time
 from fastapi import Form
+from users.schema.schema import User
 
 
 class RedirectRequest(BaseModel):
@@ -61,6 +62,21 @@ class UpdateExpenditure(BaseModel):
     status: Optional[int] = None
     amount: Optional[int] = None
     comment:Optional[str] = None
+    class Config:
+        orm_mode = True
+
+
+class MessageRequestCreate(BaseModel):
+    request_id: int
+    message: str
+    status: Optional[int] = 0
+
+
+class MessageRequest(BaseModel):
+    id: int
+    message: str
+    status: int
+    user: Optional[User] = None
     class Config:
         orm_mode = True
 

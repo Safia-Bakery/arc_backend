@@ -18,6 +18,7 @@ from fastapi import (
     BackgroundTasks,
     Security,
 )
+import time
 from pydantic import ValidationError
 import schemas
 import bcrypt
@@ -42,6 +43,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.date import DateTrigger
 from apscheduler.triggers.interval import IntervalTrigger
+from orders.crud.query import get_fillials_unordered
 
   # Set the desired time for the function to run (here, 12:00 PM)
 from microservices import (
@@ -55,8 +57,10 @@ from microservices import (
     getgroups,
     getproducts,
     get_prices,
+    sendtotelegramchannel
 
 )
+from users.crud.query import all_users
 from dotenv import load_dotenv
 import os
 
@@ -68,6 +72,7 @@ load_dotenv()
 JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")  # should be kept secret
 JWT_REFRESH_SECRET_KEY = os.environ.get("JWT_REFRESH_SECRET_KEY")
 ALGORITHM = os.environ.get("ALGORITHM")
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
 from fastapi.staticfiles import StaticFiles
 
 
@@ -106,12 +111,37 @@ def scheduled_function(db: Session):
     crud.update_products_price(db=db,prices=prices_arc)
     del prices_arc
 
+def meal_pushes(db:Session):
+    branchs = get_fillials_unordered(db=db)
+    
+    text = ""
+    all_user = all_users(db=db)
+    for i in branchs:
+        text += f"{i.name}\n"
+    print(text)
+    text = 'test'
+    limit = 0
+    for i in all_user:
+        if limit == 30:
+            time.sleep(2)
+            sendtotelegramchannel(bot_token=BOT_TOKEN,chat_id=i.telegram_id,message=text)
+            limit = 0
+        else:
+            limit += 1
+
 
 @app.on_event("startup")
 def startup_event():
     scheduler = BackgroundScheduler()
     trigger  = CronTrigger(hour=1, minute=20, second=00,timezone=timezonetash)  # Set the desired time for the function to run (here, 12:00 PM)
     scheduler.add_job(scheduled_function, trigger=trigger, args=[next(get_db())])
+    scheduler.start()
+
+@app.on_event("startup")
+def meal_messages():
+    scheduler = BackgroundScheduler()
+    trigger  = CronTrigger(hour=20, minute=40, second=00,timezone=timezonetash)
+    scheduler.add_job(meal_pushes, trigger=trigger)
     scheduler.start()
 
 @app.post("/user/group/permission")

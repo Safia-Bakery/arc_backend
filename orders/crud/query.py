@@ -282,3 +282,22 @@ def update_expenditure(db:Session,form_data:schema_router.UpdateExpenditure):
         db.commit()
         db.refresh(query)
     return query
+
+
+def message_create(db:Session,form_data:schema_router.MessageRequestCreate,user_id):
+    query= models.Communication(request_id=form_data.request_id,message=form_data.message,status=form_data.status,user_id=user_id)
+    db.add(query)
+    db.commit()
+    return query
+
+
+def get_fillials_unordered(db:Session):
+    current_time = datetime.now(tz=timezonetash).date()
+    query = db.query(models.Fillials).join(models.Requests).join(models.Category).filter(cast(models.Requests.created_at, Date) == current_time).filter(models.Category.department==6).all()
+    data = [ i.id for i in query]
+    query = (db.query(models.ParentFillials).
+             join(models.Fillials).
+             filter(models.Fillials.id.notin_(data)).
+             filter(or_(models.Fillials.origin==1,models.Fillials.origin==2))
+             .all())
+    return query
