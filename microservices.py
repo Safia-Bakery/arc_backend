@@ -248,7 +248,7 @@ def send_document_iiko(key, data):
                 </item>
             </items>
             </document>"""
-    if data.request.category.sphere_status == 2:
+    if data.request.category.department == 2:
         headers = {
             "Content-Type": "application/xml",  # Set the content type to XML
         }
