@@ -806,5 +806,5 @@ async def test(
     request_user: schema.UserFullBack = Depends(get_current_user)):
     test = query.get_fillials_unordered(db=db)
     for i in test:
-        print(i.name)
+        pass
     return {"message":"ok"}
