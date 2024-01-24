@@ -392,11 +392,12 @@ async def gethowmuchleft(
 async def getlistofdisinctexpand(
     started_at: Optional[date] = None,
     finished_at: Optional[date] = None,
+    department: Optional[int] = None,
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
     query = statisquery.getlistofdistinctexp(
-        db=db, started_at=started_at, finished_at=finished_at
+        db=db, started_at=started_at, finished_at=finished_at,department=department
     )
     data = [{"amount": i[0], "name": i[1], "id": i[2],'price':i[3]} for i in query]
     return {"tests": data}

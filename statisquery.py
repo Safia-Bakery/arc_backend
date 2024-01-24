@@ -229,13 +229,15 @@ def howmuchleftgetlist(db: Session, id):
     return query
 
 
-def getlistofdistinctexp(db: Session, started_at, finished_at):
+def getlistofdistinctexp(db: Session, started_at, finished_at,department):
     query = db.query(
         func.sum(cast(models.Expanditure.amount, Integer)),
         models.Tools.name,
         models.Expanditure.tool_id,
         models.Tools.price,
-    ).join(models.Tools)
+    ).join(models.Tools).join(models.Requests).join(models.Category)
+    if department:
+        query = query.filter(models.Category.department==department)
     return (
         query.group_by(models.Tools.name, models.Expanditure.tool_id,models.Tools.price)
         .filter(models.Expanditure.created_at.between(started_at, finished_at))

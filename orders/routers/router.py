@@ -390,8 +390,8 @@ async def put_request_id(
 @router.post("/request")
 async def get_category(
     fillial_id: Annotated[UUID, Form()],
-    description: Annotated[str, Form()],
     category_id: Annotated[int,Form()],
+    description: Annotated[str, Form()]=None,
     files: list[UploadFile] = None,
     cat_prod: Json=Form(None),
     factory: Annotated[bool,Form()] = False,
