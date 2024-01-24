@@ -1075,6 +1075,7 @@ def get_comment(db: Session, request_id):
 
 
 def filterbranchchildid(db: Session, parent_id, origin: Optional[int] = None):
+    print(parent_id, origin)
     query = db.query(models.Fillials).filter(
         models.Fillials.status == 1, models.Fillials.parentfillial_id == parent_id
     )
