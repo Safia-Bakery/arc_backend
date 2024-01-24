@@ -413,11 +413,15 @@ async def get_category(
         origin = 2
     else:
         origin = None
-    
-    if not factory:
-        filliald_od = crud.filterbranchchildid(db, fillial_id, origin=origin)
-        sklad_id = filliald_od.id
-    if factory:
+    parent_fillial = crud.getparentfillial(db, fillial_id)
+    if parent_fillial:
+        if parent_fillial.is_fabrica==1:
+            fillial_id = parent_fillial.id
+            sklad_id = fillial_id
+        else:
+            filliald_od = crud.filterbranchchildid(db, fillial_id, origin=origin)
+            sklad_id = filliald_od.id
+    else:
         sklad_id = fillial_id
 
     responserq = crud.add_request(

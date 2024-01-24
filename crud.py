@@ -1084,6 +1084,11 @@ def filterbranchchildid(db: Session, parent_id, origin: Optional[int] = None):
     return query.first()
 
 
+def getparentfillial(db: Session, id):
+    query = db.query(models.ParentFillials).filter(models.ParentFillials.id == id).first()
+    return query
+
+
 def getfillialchildfabrica(db: Session):
     query = (
         db.query(models.Fillials)
