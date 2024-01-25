@@ -125,7 +125,6 @@ def meal_pushes(db:Session):
     for i in all_user:
         if i.telegram_id not in send_users:
             sendtotelegramchannel(bot_token=BOT_TOKEN,chat_id=i.telegram_id,message_text=text)
-            print(i.telegram_id)
             if limit == 30:
                 time.sleep(2)
                 limit = 0
@@ -277,17 +276,16 @@ async def get_brigada_id(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="not found")
 
 
-@app.get("/users/for/brigada/{id}", response_model=list[schemas.UserGetlist])
+@app.get("/users/for/brigada/{id}", response_model=Page[schemas.UserGetlist])
 async def user_for_brigada(
     id: int,
+    name: Optional[str] = None,
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
-    brigrada = crud.get_user_for_brig(db, id)
-    if brigrada:
-        return brigrada
-    else:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="not found")
+    brigrada = crud.get_user_for_brig(db, id,name=name)
+    return paginate(brigrada)
+
 
 
 @app.put("/brigadas")

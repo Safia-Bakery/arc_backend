@@ -318,16 +318,19 @@ def update_brigada_id(db: Session, form_data: schemas.UpdateBrigadaSch):
         return False
 
 
-def get_user_for_brig(db: Session, id):
+def get_user_for_brig(db: Session, id,name):
     db_get_users = (
         db.query(models.Users)
         .filter(
             (or_(models.Users.brigada_id == None, models.Users.brigada_id == id)),
             and_(models.Users.status == 0),
         )
-        .all()
     )
-    return db_get_users
+
+    if name is not None:
+        db_get_users = db_get_users.filter(or_(models.Users.full_name.ilike(f"%{name}%"),models.Users.phone_number.ilike(f"%{name}%"),models.Users.username.ilike(f"%{name}%")))
+    
+    return db_get_users.all()
 
 
 def get_category_list(db: Session, sub_id, sphere_status):

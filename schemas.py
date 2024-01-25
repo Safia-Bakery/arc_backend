@@ -547,16 +547,6 @@ class WorkTimeUpdate(BaseModel):
         orm_mode = True
 
 
-
-class ToolsOrderget(BaseModel):
-    id:int
-    status:int
-    user:Optional[UserGetlist]=None
-    created_at:datetime
-    class Config:
-        orm_mode = True
-
-
 class NeedToolsGet(BaseModel):
     id:int
     status:int
@@ -568,6 +558,18 @@ class NeedToolsGet(BaseModel):
     updated_at:Optional[datetime]=None
     class Config:
         orm_mode = True
+
+class ToolsOrderget(BaseModel):
+    id:int
+    status:int
+    user:Optional[UserGetlist]=None
+    order_need:Optional[list[NeedToolsGet]]=None
+    created_at:datetime
+    class Config:
+        orm_mode = True
+
+
+
 
 
 class ToolOrderUpdate(BaseModel):

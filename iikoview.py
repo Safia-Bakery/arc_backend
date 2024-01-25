@@ -334,11 +334,13 @@ async def getbrigadavscategoryst(
     timer: int,
     started_at: Optional[date] = None,
     finished_at: Optional[date] = None,
+    sphere_status: Optional[int] = None,
+    department: Optional[int] = None,
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
     query = statisquery.countbrigadavscategory(
-        db=db, timer=timer, started_at=started_at, finished_at=finished_at
+        db=db, timer=timer, started_at=started_at, finished_at=finished_at,department=department,sphere_status=sphere_status
     )
     is_in = {}
     for i in query:
@@ -381,10 +383,11 @@ async def gethowmuchleft(
 @urls.get("/v1/tools/left", response_model=Page[schemas.ToolsLeft])
 async def gethowmuchleft(
     store_id: UUID = None,
+    name: Optional[str] = None,
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
-    query = statisquery.howmuchleftgetlist(db=db, id=store_id)
+    query = statisquery.howmuchleftgetlist(db=db, id=store_id,name=name)
     return paginate(query)
 
 
@@ -393,11 +396,12 @@ async def getlistofdisinctexpand(
     started_at: Optional[date] = None,
     finished_at: Optional[date] = None,
     department: Optional[int] = None,
+    sphere_status: Optional[int] = None,
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
     query = statisquery.getlistofdistinctexp(
-        db=db, started_at=started_at, finished_at=finished_at,department=department
+        db=db, started_at=started_at, finished_at=finished_at,department=department,sphere_status=sphere_status
     )
     data = [{"amount": i[0], "name": i[1], "id": i[2],'price':i[3]} for i in query]
     return {"tests": data}
@@ -444,20 +448,21 @@ async def generate_tools(
 @urls.get("/toolsorder",response_model=Page[schemas.ToolsOrderget],tags=['ToolOrder'])
 async def get_tools(
     status:Optional[int]=None,
+    id:Optional[int]=None,
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),):
-    query = statisquery.tools_order_query(db=db,status=status)
+    query = statisquery.tools_order_query(db=db,status=status,id=id)
     return paginate(query)
 
-@urls.get("/tools/order/needed",response_model=Page[schemas.NeedToolsGet],tags=['ToolOrder'])
-async def get_needed_tools(
-    toolorder_id:int,
-    db: Session = Depends(get_db),
-    request_user: schema.UserFullBack = Depends(get_current_user),):
-    query = statisquery.needed_tools(db=db,toolorder_id=toolorder_id)
-    return paginate(query)
+#@urls.get("/tools/order/needed",response_model=Page[schemas.NeedToolsGet],tags=['ToolOrder'])
+#async def get_needed_tools(
+#    toolorder_id:int,
+#    db: Session = Depends(get_db),
+#    request_user: schema.UserFullBack = Depends(get_current_user),):
+#    query = statisquery.needed_tools(db=db,toolorder_id=toolorder_id)
+#    return paginate(query)
 
-@urls.put("/toolorder",response_model=schemas.NeedToolsGet,tags=['ToolOrder'])
+@urls.put("/toolorder",response_model=schemas.ToolsOrderget,tags=['ToolOrder'])
 async def update_toolsorder(
     form_data:schemas.ToolOrderUpdate,
     db: Session = Depends(get_db),

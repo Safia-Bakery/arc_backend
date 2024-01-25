@@ -172,7 +172,7 @@ def countbbrigadarequest(
     return total
 
 
-def countbrigadavscategory(timer, started_at, finished_at, db: Session):
+def countbrigadavscategory(timer, started_at, finished_at,sphere_status,department, db: Session):
     total = (
         db.query(
             models.Brigada.name.label("brigada_name"),
@@ -195,10 +195,15 @@ def countbrigadavscategory(timer, started_at, finished_at, db: Session):
             models.Requests.status == 3,
             models.Requests.created_at.between(started_at, finished_at),
         )
+        
         .group_by(models.Brigada.name, models.Category.name)
-        .all()
+        
     )
-    return total
+    if sphere_status is not None:
+        total = total.filter(models.Category.sphere_status == sphere_status)
+    if department is not None:
+        total = total.filter(models.Category.department == department)
+    return total.all()
 
 
 def howmuchleftcrud(db: Session, lst, store_id):
@@ -224,12 +229,15 @@ def howmuchleftcrud(db: Session, lst, store_id):
     return True
 
 
-def howmuchleftgetlist(db: Session, id):
-    query = db.query(models.Tools).filter(models.Tools.sklad_id.contains([id])).all()
-    return query
+def howmuchleftgetlist(db: Session, id,name):
+    query = db.query(models.Tools).filter(models.Tools.sklad_id.contains([id]))
+    if name is not None:
+        query = query.filter(models.Tools.name.ilike(f"%{name}%"))
+
+    return query.all()
 
 
-def getlistofdistinctexp(db: Session, started_at, finished_at,department):
+def getlistofdistinctexp(db: Session, started_at, finished_at,department,sphere_status):
     query = db.query(
         func.sum(cast(models.Expanditure.amount, Integer)),
         models.Tools.name,
@@ -238,6 +246,8 @@ def getlistofdistinctexp(db: Session, started_at, finished_at,department):
     ).join(models.Tools).join(models.Requests).join(models.Category)
     if department:
         query = query.filter(models.Category.department==department)
+    if sphere_status:
+        query = query.filter(models.Category.sphere_status==sphere_status)
     return (
         query.group_by(models.Tools.name, models.Expanditure.tool_id,models.Tools.price)
         .filter(models.Expanditure.created_at.between(started_at, finished_at))
@@ -332,10 +342,12 @@ def order_tool_create(db:Session,user_id):
     return True
 
 
-def tools_order_query(db: Session, status):
+def tools_order_query(db: Session, status,id):
     query = db.query(models.ToolsOrder)
     if status is not None:
         query = query.filter(models.ToolsOrder.status == status)
+    if id is not None:
+        query = query.filter(models.ToolsOrder.id == id)
     return query.order_by(models.ToolsOrder.created_at.desc()).all()
 
 def needed_tools(db:Session,toolorder_id):
