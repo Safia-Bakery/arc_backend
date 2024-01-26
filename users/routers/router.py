@@ -46,6 +46,7 @@ async def login(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Incorrect username or password",
         )
+    
 
     hashed_pass = user.password
     if not verify_password(form_data.password, hashed_pass):
@@ -70,6 +71,7 @@ async def register(form_data: schema.UserCreate, db: Session = Depends(get_db)):
         )
 
     return schema.User(id=user.id, username=user.username, full_name=user.full_name)
+
 
 
 @user_router.get(

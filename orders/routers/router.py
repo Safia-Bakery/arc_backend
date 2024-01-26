@@ -281,6 +281,17 @@ async def put_request_id(
                     chat_id=request_list.user.telegram_id,
                     message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по Inventary: В процессе.",
                 )
+                
+            except:
+                pass
+        if request_list.category.department==4:
+            try:
+                sendtotelegramchannel(
+                    bot_token=bot_token,
+                    chat_id=request_list.user.telegram_id,
+                    message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s назначена техник👨‍💻: {request_list.brigada.name}",
+                )
+                
             except:
                 pass
     elif form_data.status == 2:
@@ -331,6 +342,16 @@ async def put_request_id(
                     bot_token=bot_token,
                     chat_id=request_list.user.telegram_id,
                     message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
+                    url=url,
+                )
+            except:
+                pass
+        if request_list.category.department == 4:
+            try:
+                inlinewebapp(
+                    bot_token=bot_token,
+                    chat_id=request_list.user.telegram_id,
+                    message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по IT: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
                     url=url,
                 )
             except:
