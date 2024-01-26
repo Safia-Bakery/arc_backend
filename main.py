@@ -124,7 +124,7 @@ def meal_pushes(db:Session):
     #return True
     for i in all_user:
         if i.id not in send_users:
-            print('hello')
+            print(i.id)
             #sendtotelegramchannel(bot_token=BOT_TOKEN,chat_id=i.telegram_id,message_text=text)
             if limit == 30:
                 time.sleep(2)
