@@ -8,10 +8,9 @@ import bcrypt
 from sqlalchemy.exc import SQLAlchemyError
 import pytz
 from sqlalchemy import distinct,case
-from datetime import datetime, date
+from datetime import datetime, date,timedelta
 from microservices import sendtotelegramchannel
 from sqlalchemy import or_, and_, Date, cast, func, Integer, Numeric
-
 backend_url = "https://backend.service.safiabakery.uz"
 import time
 import requests
@@ -437,4 +436,15 @@ def in_progress_requests(db:Session,department,sphere_status):
         query = query.filter(models.Category.sphere_status==sphere_status)
     return query.all()
 
+def last_30_days(db:Session,department,sphere_status):
+    query = db.query(func.count(models.Requests.id)).join(models.Category).filter(models.Category.department==department).filter(models.Requests.created_at>=datetime.now(timezonetash)-timedelta(days=30)).filter(models.Requests.status==3)
+    if sphere_status is not None:
+        query = query.filter(models.Category.sphere_status==sphere_status)
+    return query.all()
+
+def current_month(db:Session,department,sphere_status):
+    query = db.query(func.count(models.Requests.id)).join(models.Category).filter(models.Category.department==department).filter(models.Requests.created_at>=datetime.now(timezonetash).replace(day=1)).filter(models.Requests.status==3)
+    if sphere_status is not None:
+        query = query.filter(models.Category.sphere_status==sphere_status)
+    return query.all()
 

@@ -5,6 +5,7 @@ import schemas
 from typing import Optional
 import bcrypt
 from microservices import find_hierarchy
+from Variables import role_ids
 import pytz
 from sqlalchemy.sql import func
 from datetime import datetime
@@ -318,14 +319,28 @@ def update_brigada_id(db: Session, form_data: schemas.UpdateBrigadaSch):
         return False
 
 
-def get_user_for_brig(db: Session, id,name):
+def get_user_for_brig(db: Session, id,name,department,sphere_status):
     db_get_users = (
-        db.query(models.Users)
+        db.query(models.Users).join(models.Groups).join(models.Roles)
         .filter(
             (or_(models.Users.brigada_id == None, models.Users.brigada_id == id)),
             and_(models.Users.status == 0),
         )
     )
+    # logic is when admin want to attach user to brigade filtering only department has users
+    if department ==1:
+        if sphere_status==1:
+            roles_ids = role_ids[str(department)][str(sphere_status)]
+            db_get_users = db_get_users.filter(models.Roles.page_id.in_(roles_ids))
+        elif sphere_status==2:
+            roles_ids = role_ids[str(department)][str(sphere_status)]
+            db_get_users = db_get_users.filter(models.Roles.page_id.in_(roles_ids))
+        else:
+            roles_ids = role_ids[str(department)]['1']+role_ids[str(department)]['2']
+            db_get_users = db_get_users.filter(models.Roles.page_id.in_(roles_ids))
+    if department in [2,4]:
+        roles_ids = role_ids[str(department)]
+        db_get_users = db_get_users.filter(models.Roles.page_id.in_(roles_ids))
 
     if name is not None:
         db_get_users = db_get_users.filter(or_(models.Users.full_name.ilike(f"%{name}%"),models.Users.phone_number.ilike(f"%{name}%"),models.Users.username.ilike(f"%{name}%")))

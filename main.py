@@ -114,11 +114,11 @@ def scheduled_function(db: Session):
 def meal_pushes(db:Session):
     branchs = get_fillials_unordered(db=db)
     
-    text = ""
+    text = "Филиалы не отправившие заявку на Стафф питание🥘\n\n"
     all_user = all_users(db=db)
     for i in branchs:
         text += f"{i.name}\n"
-    text = 'test'
+    text += "\n\nНеобходимо отправить заявку до 17:00 ❗️"
     limit = 0
     send_users = []
     #return True
@@ -143,13 +143,13 @@ def startup_event():
     trigger  = CronTrigger(hour=1, minute=20, second=00,timezone=timezonetash)  # Set the desired time for the function to run (here, 12:00 PM)
     scheduler.add_job(scheduled_function, trigger=trigger, args=[next(get_db())])
     scheduler.start()
-#
-#@app.on_event("startup")
-#def meal_messages():
-#    scheduler = BackgroundScheduler()
-#    trigger  = CronTrigger(hour=16, minute=00, second=00,timezone=timezonetash)
-#    scheduler.add_job(meal_pushes, trigger=trigger,args=[next(get_db())])
-#    scheduler.start()
+
+@app.on_event("startup")
+def meal_messages():
+    scheduler = BackgroundScheduler()
+    trigger  = CronTrigger(hour=16, minute=00, second=00,timezone=timezonetash)
+    scheduler.add_job(meal_pushes, trigger=trigger,args=[next(get_db())])
+    scheduler.start()
 
 @app.post("/user/group/permission")
 async def group_permissions(
@@ -280,10 +280,11 @@ async def get_brigada_id(
 async def user_for_brigada(
     id: int,
     name: Optional[str] = None,
+    department: Optional[int] = None,
+    sphere_status: Optional[int] = None,
     db: Session = Depends(get_db),
-    request_user: schema.UserFullBack = Depends(get_current_user),
-):
-    brigrada = crud.get_user_for_brig(db, id,name=name)
+    request_user: schema.UserFullBack = Depends(get_current_user)):
+    brigrada = crud.get_user_for_brig(db, id,name=name,department=department,sphere_status=sphere_status)
     return paginate(brigrada)
 
 
