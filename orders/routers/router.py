@@ -179,6 +179,7 @@ async def filter_request(
     sphere_status: Optional[int] = None,
     arrival_date: Optional[date] = None,
     db: Session = Depends(get_db),
+    rate: Optional[bool] = False,
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):  
     if request_user.brigada_id:
@@ -195,6 +196,7 @@ async def filter_request(
             sphere_status=sphere_status,
             department=department,
             arrival_date=arrival_date,
+            rate=rate
         )
         return paginate(requestdata)
     request_list = crud.filter_requests_all(

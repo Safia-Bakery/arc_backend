@@ -479,6 +479,7 @@ async def update_toolsorder(
 async def get_statistics(
     department: int,
     sphere_status: Optional[int] = None,
+    sub_id: Optional[int] = None,
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
@@ -487,13 +488,13 @@ async def get_statistics(
         department=department,
         sphere_status=sphere_status,
     )
-    new_requests = statisquery.new_requestsamount(db=db,department=department,sphere_status=sphere_status)
-    avg_rating = statisquery.avg_ratingrequests(db=db,department=department,sphere_status=sphere_status)
-    avg_finishtime = statisquery.avg_time_finishing(db=db,department=department,sphere_status=sphere_status)
-    total_requests = statisquery.total_request_count(db=db,department=department,sphere_status=sphere_status)
-    in_progress = statisquery.in_progress_requests(db=db,department=department,sphere_status=sphere_status)
-    last_30 = statisquery.last_30_days(db=db,department=department,sphere_status=sphere_status)
-    last_month = statisquery.current_month(db=db,department=department,sphere_status=sphere_status)
+    new_requests = statisquery.new_requestsamount(db=db,department=department,sphere_status=sphere_status,sub_id=sub_id)
+    avg_rating = statisquery.avg_ratingrequests(db=db,department=department,sphere_status=sphere_status,sub_id=sub_id)
+    avg_finishtime = statisquery.avg_time_finishing(db=db,department=department,sphere_status=sphere_status,sub_id=sub_id)
+    total_requests = statisquery.total_request_count(db=db,department=department,sphere_status=sphere_status,sub_id=sub_id)
+    in_progress = statisquery.in_progress_requests(db=db,department=department,sphere_status=sphere_status,sub_id=sub_id)
+    last_30 = statisquery.last_30_days(db=db,department=department,sphere_status=sphere_status,sub_id=sub_id)
+    last_month = statisquery.current_month(db=db,department=department,sphere_status=sphere_status,sub_id=sub_id)
     data = {}
     for i in brig_requests:
         data[i[1]]=[i[0],i[2]]

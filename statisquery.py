@@ -387,22 +387,26 @@ def brigade_openrequests(db:Session,department,sphere_status):
 
     return result
 
-def new_requestsamount(db:Session,department,sphere_status):
+def new_requestsamount(db:Session,department,sphere_status,sub_id):
     query = db.query(func.count(models.Requests.id)).join(models.Category).filter(models.Requests.status==0).filter(models.Category.department==department)
     if sphere_status is not None:
         query = query.filter(models.Category.sphere_status==sphere_status)
+    if sub_id is not None:
+        query = query.filter(models.Category.sub_id==sub_id)    
     return query.all()
 
 
-def avg_ratingrequests(db:Session,department,sphere_status):
+def avg_ratingrequests(db:Session,department,sphere_status,sub_id):
     query = db.query(cast(func.avg(models.Comments.rating), Integer)).join(models.Requests).join(models.Category).filter(models.Requests.status==3).filter(models.Category.department==department)
     if sphere_status is not None:
         query = query.filter(models.Category.sphere_status==sphere_status)
+    if sub_id is not None:
+        query = query.filter(models.Category.sub_id==sub_id)
     return query.all()
 
 
 
-def avg_time_finishing(db:Session,department,sphere_status,timer=60):
+def avg_time_finishing(db:Session,department,sphere_status,sub_id,timer=60 ):
     total = db.query(
             func.cast(
                 func.avg(
@@ -418,33 +422,45 @@ def avg_time_finishing(db:Session,department,sphere_status,timer=60):
             models.Requests.status == 3,
             models.Category.department == department)
     if sphere_status is not None:
-        total = total.filter(models.Category.sphere_status == sphere_status)    
+        total = total.filter(models.Category.sphere_status == sphere_status) 
+    if sub_id is not None:
+        total = total.filter(models.Category.sub_id==sub_id)
+
         
     return total.all()
 
 
-def total_request_count(db:Session,department,sphere_status):
+def total_request_count(db:Session,department,sphere_status,sub_id):
     query = db.query(func.count(models.Requests.id)).join(models.Category).filter(models.Category.department==department)
     if sphere_status is not None:
         query = query.filter(models.Category.sphere_status==sphere_status)
+    if sub_id is not None:
+        query = query.filter(models.Category.sub_id==sub_id)
     return query.all()
 
 
-def in_progress_requests(db:Session,department,sphere_status):
+def in_progress_requests(db:Session,department,sphere_status,sub_id):
     query = db.query(func.count(models.Requests.id)).join(models.Category).filter(models.Category.department==department).filter((or_(models.Requests.status==1,models.Requests.status==2)))
     if sphere_status is not None:
         query = query.filter(models.Category.sphere_status==sphere_status)
+    if sub_id is not None:
+        query = query.filter(models.Category.sub_id==sub_id)
     return query.all()
 
-def last_30_days(db:Session,department,sphere_status):
+def last_30_days(db:Session,department,sphere_status,sub_id):
     query = db.query(func.count(models.Requests.id)).join(models.Category).filter(models.Category.department==department).filter(models.Requests.created_at>=datetime.now(timezonetash)-timedelta(days=30)).filter(models.Requests.status==3)
     if sphere_status is not None:
         query = query.filter(models.Category.sphere_status==sphere_status)
+    if sub_id is not None:
+        query = query.filter(models.Category.sub_id==sub_id)
+    
     return query.all()
 
-def current_month(db:Session,department,sphere_status):
+def current_month(db:Session,department,sphere_status,sub_id):
     query = db.query(func.count(models.Requests.id)).join(models.Category).filter(models.Category.department==department).filter(models.Requests.created_at>=datetime.now(timezonetash).replace(day=1)).filter(models.Requests.status==3)
     if sphere_status is not None:
         query = query.filter(models.Category.sphere_status==sphere_status)
+    if sub_id is not None:
+        query = query.filter(models.Category.sub_id==sub_id)
     return query.all()
 

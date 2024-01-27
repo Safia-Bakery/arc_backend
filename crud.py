@@ -605,8 +605,9 @@ def filter_request_brigada(
     department,
     sub_id,
     arrival_date,
+    rate
 ):
-    query = db.query(models.Requests).join(models.Category)
+    query = db.query(models.Requests).join(models.Category).join(models.Comments)
     if id is not None:
         query = query.filter(models.Requests.id == id)
     if sub_id is not None:
@@ -627,6 +628,8 @@ def filter_request_brigada(
         query = query.filter(models.Category.sphere_status == sphere_status)
     if arrival_date is not None:
         query = query.filter(cast(models.Requests.arrival_date, Date) == arrival_date)
+    if rate ==True:
+        query = query.filter(models.Requests.comments.isnot(None))
     query = query.filter(models.Requests.brigada_id == brigada_id)
     return query.order_by(models.Requests.id.desc()).all()
 
