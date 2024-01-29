@@ -629,7 +629,7 @@ def filter_request_brigada(
     if arrival_date is not None:
         query = query.filter(cast(models.Requests.arrival_date, Date) == arrival_date)
     if rate ==True:
-        query = query.filter(models.Requests.comments.isnot(None))
+        query = query.filter(models.Requests.comments!=None)
     query = query.filter(models.Requests.brigada_id == brigada_id)
     return query.order_by(models.Requests.id.desc()).all()
 
