@@ -302,4 +302,5 @@ def get_fillials_unordered(db:Session):
              .all())
     for i in query:
         print(i.name)
+    print('this is came')
     return query
