@@ -9,3 +9,4 @@ pytz
 psycopg2
 fastapi-pagination
 pandas
+openpyxl
