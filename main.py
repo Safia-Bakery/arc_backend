@@ -147,8 +147,9 @@ def startup_event():
 def meal_messages():
     scheduler = BackgroundScheduler()
     trigger  = CronTrigger(hour=11, minute=52, second=00,timezone=timezonetash)
-    scheduler.add_job(meal_pushes, trigger=trigger,args=[next(get_db())])
+    scheduler.add_job(meal_pushes, trigger=trigger,args=[next(get_db())],max_instances=1)
     scheduler.start()
+
 
 @app.post("/user/group/permission")
 async def group_permissions(
@@ -417,7 +418,6 @@ async def get_fillials_id(
     #     raise HTTPException(
     #         status_code=status.HTTP_403_FORBIDDEN, detail="You are not super user"
     #     )
-
 
 add_pagination(app)
 add_pagination(router)
