@@ -20,6 +20,7 @@ from fastapi import (
     Request,
     status,
 )
+import pandas as pd
 from database import engine, SessionLocal
 from pydantic import ValidationError
 from fastapi.security import OAuth2PasswordBearer
@@ -405,3 +406,46 @@ def find_hierarchy(data, parent_id):
         }] + dfs(parent_id)
     else:
         return []
+    
+
+def name_generator(length=20):
+    import random
+    import string
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(length))
+
+
+
+statusdata = {'0':'Новая','1':'В работе',"2":'В работе','3':'Завершена','4':'Отменена'}
+def file_generator(data):
+    inserting_data = {"Номер заявки":[],"Клиент":[],'Филиал':[],'Порция еды':[],'Порции хлеба':[],'Дата поставки':[],'Статус':[]}
+    for row in data:
+        inserting_data['Номер заявки'].append(row.id)
+        inserting_data['Клиент'].append(row.user.full_name)
+        inserting_data['Филиал'].append(row.fillial.parentfillial.name)
+        inserting_data['Порция еды'].append(row.size)
+        inserting_data['Порции хлеба'].append(row.bread_size)
+        finish_time = row.arrival_date.strftime("%d-%m-%Y")
+        inserting_data['Дата поставки'].append(finish_time)
+
+        inserting_data['Статус'].append(statusdata[str(row.status)])
+
+    
+    file  = f"files/{name_generator()}.xlsx"
+    df = pd.DataFrame(inserting_data)
+    total_food = df["Порция еды"].sum()
+    total_bread = df["Порции хлеба"].sum()
+    totals_row = pd.DataFrame({"Номер заявки": ["Total"], "Порция еды": [total_food], "Порции хлеба": [total_bread]})
+
+    # Concatenate DataFrame with totals row
+    df = pd.concat([df, totals_row], ignore_index=True)
+
+
+    # Generate Excel file
+    df.to_excel(file, index=False)
+    return file
+    # Write the Excel file to a BytesIO object
+
+    # Close the BytesIO object
+
+    

@@ -464,3 +464,7 @@ def current_month(db:Session,department,sphere_status,sub_id):
         query = query.filter(models.Category.sub_id==sub_id)
     return query.all()
 
+def safia_eats(db:Session,request_data):
+    query = db.query(models.Requests).join(models.Category).filter(models.Category.department==6).filter(cast(models.Requests.arrival_date,Date)==request_data).all()
+    return query
+

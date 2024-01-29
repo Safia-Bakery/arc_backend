@@ -8,3 +8,4 @@ passlib[bcrypt]
 pytz
 psycopg2
 fastapi-pagination
+pandas

@@ -33,7 +33,8 @@ from microservices import (
     send_document_iiko,
     howmuchleft,
     find_hierarchy,
-    get_prices
+    get_prices,
+    file_generator
 )
 
 # from main import get_db,get_current_user
@@ -376,7 +377,7 @@ async def gethowmuchleft(
     store_dict = [
         {"name": "АРС Фабрика Склад", "id": "f09c2c8d-00bb-4fa4-81b5-4f4e31995b86"},
         {"name": "АРС Розница Склад", "id": "4aafb5af-66c3-4419-af2d-72897f652019"},
-    ]
+        ]
     return {"stores": store_dict}
 
 
@@ -500,3 +501,13 @@ async def get_statistics(
         data[i[1]]=[i[0],i[2]]
     
     return {"brage_requests":data,'new_requests':new_requests[0][0],'avg_rating':avg_rating[0][0],'avg_time':avg_finishtime[0][0],'total_requests':total_requests[0][0],'in_progress':in_progress[0][0],'last_30':last_30[0][0],'last_month':last_month[0][0]}
+
+@urls.get("/v1/excell", tags=['Excell'])
+async def get_excell(
+    date : Optional[date] = None,
+    db: Session = Depends(get_db),
+    request_user: schema.UserFullBack = Depends(get_current_user),
+):
+    query = statisquery.safia_eats(db=db,request_data=date) 
+    folder = file_generator(data=query)
+    return {"success":True,'url':folder}
