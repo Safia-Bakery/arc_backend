@@ -99,7 +99,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-async def scheduled_function(db: Session):
+def scheduled_function(db: Session):
     key = authiiko()
     groups = getgroups(key=key)
     group_list = crud.synchgroups(db, groups)
@@ -115,7 +115,7 @@ async def scheduled_function(db: Session):
     crud.update_products_price(db=db,prices=prices_arc)
     del prices_arc
 
-async def meal_pushes(db:Session):
+def meal_pushes(db:Session):
     branchs = get_fillials_unordered(db=db)
     
     text = "Филиалы не отправившие заявку на Стафф питание🥘\n\n"
@@ -150,7 +150,7 @@ def startup_event():
 @app.on_event("startup")
 def meal_messages():
     scheduler = BackgroundScheduler()
-    trigger  = CronTrigger(hour=16, minute=10, second=00,timezone=timezonetash)
+    trigger  = CronTrigger(hour=16, minute=12, second=00,timezone=timezonetash)
     scheduler.add_job(meal_pushes, trigger=trigger,args=[next(get_db())])
     scheduler.start()
 
