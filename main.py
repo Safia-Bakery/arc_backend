@@ -139,11 +139,13 @@ def meal_pushes(db:Session):
     del all_user
     del branchs
     return True
+async def my_scheduled_function(db:Session):
+    print("Executing scheduled function at 12 o'clock!")
 
 scheduler.add_job(
-    meal_pushes,
+    my_scheduled_function,
     args=[next(get_db())],
-    trigger=CronTrigger(hour=14, minute=5, second=00,timezone=timezonetash)  # Execute at 12:00:00 every day
+    trigger=CronTrigger(hour=14, minute=7, second=00,timezone=timezonetash)  # Execute at 12:00:00 every day
 )
 
 scheduler.start()
