@@ -83,6 +83,7 @@ async def insert_groups(
     request_user: schema.UserFullBack = Depends(get_current_user)
 ):
     permission = checkpermissions(request_user=request_user, db=db, page=30)
+    return {'success':True}
     if permission:
         key = authiiko()
         groups = getgroups(key=key)
