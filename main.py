@@ -63,6 +63,9 @@ from microservices import (
 from users.crud.query import all_users
 from dotenv import load_dotenv
 import os
+from fastapi.staticfiles import StaticFiles
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
 
 models.Base.metadata.create_all(bind=engine)
 load_dotenv()
@@ -73,8 +76,7 @@ JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")  # should be kept secret
 JWT_REFRESH_SECRET_KEY = os.environ.get("JWT_REFRESH_SECRET_KEY")
 ALGORITHM = os.environ.get("ALGORITHM")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
-from fastapi.staticfiles import StaticFiles
-
+scheduler = AsyncIOScheduler()
 
 origins = ["*"]
 
@@ -134,6 +136,12 @@ def meal_pushes(db:Session):
     del all_user
     del branchs
     return True
+
+scheduler.add_job(
+    meal_pushes,
+    args=[next(get_db())],
+    trigger=CronTrigger(hour=13, minute=56, second=0,timezone=timezonetash)  # Execute at 12:00:00 every day
+)
 
 
 @app.on_event("startup")
