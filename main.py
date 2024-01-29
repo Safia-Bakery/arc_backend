@@ -140,9 +140,10 @@ def meal_pushes(db:Session):
 scheduler.add_job(
     meal_pushes,
     args=[next(get_db())],
-    trigger=CronTrigger(hour=13, minute=56, second=0,timezone=timezonetash)  # Execute at 12:00:00 every day
+    trigger=CronTrigger(hour=14, minute=1, second=00,timezone=timezonetash)  # Execute at 12:00:00 every day
 )
 
+scheduler.start()
 
 @app.on_event("startup")
 def startup_event():
