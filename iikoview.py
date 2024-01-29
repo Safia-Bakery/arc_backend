@@ -511,4 +511,4 @@ async def get_excell(
 ):
     query = statisquery.safia_eats(db=db,request_data=date) 
     folder = file_generator(data=query,file=file)
-    return {"success":True,'url':folder[0],'total_food':folder[1],'total_bread':folder[2]}
+    return {"success":True,'url':folder[0],'total_food':int(folder[1]),'total_bread':int(folder[2])}
