@@ -294,10 +294,12 @@ def message_create(db:Session,form_data:schema_router.MessageRequestCreate,user_
 def get_fillials_unordered(db:Session):
     current_time = datetime.now(tz=timezonetash).date()
     query = db.query(models.Fillials).join(models.Requests).join(models.Category).filter(cast(models.Requests.created_at, Date) == current_time).filter(models.Category.department==6).all()
-    data = [ i.id for i in query]
+    data = [ i.parentfillial_id for i in query]
     query = (db.query(models.ParentFillials).
              join(models.Fillials).
-             filter(models.Fillials.id.notin_(data)).
+             filter(models.ParentFillials.id.notin_(data)).
              filter(or_(models.Fillials.origin==1,models.Fillials.origin==2))
              .all())
+    for i in query:
+        print(i.name)
     return query

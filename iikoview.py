@@ -505,9 +505,10 @@ async def get_statistics(
 @urls.get("/v1/excell", tags=['Excell'])
 async def get_excell(
     date : Optional[date] = None,
+    file:Optional[bool]=False,
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
     query = statisquery.safia_eats(db=db,request_data=date) 
-    folder = file_generator(data=query)
-    return {"success":True,'url':folder}
+    folder = file_generator(data=query,file=file)
+    return {"success":True,'url':folder[0],'total_food':folder[1],'total_bread':folder[2]}
