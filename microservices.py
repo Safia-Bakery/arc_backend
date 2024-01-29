@@ -423,12 +423,14 @@ def file_generator(data):
         inserting_data['Номер заявки'].append(row.id)
         inserting_data['Клиент'].append(row.user.full_name)
         inserting_data['Филиал'].append(row.fillial.parentfillial.name)
-        inserting_data['Порция еды'].append(row.size)
-        inserting_data['Порции хлеба'].append(row.bread_size)
+        inserting_data['Порция еды'].append(int(row.size))
+        inserting_data['Порции хлеба'].append(int(row.bread_size))
         finish_time = row.arrival_date.strftime("%d-%m-%Y")
         inserting_data['Дата поставки'].append(finish_time)
 
         inserting_data['Статус'].append(statusdata[str(row.status)])
+        total_food += row.size
+        total_bread += row.bread_size
 
     
     file  = f"files/{name_generator()}.xlsx"
