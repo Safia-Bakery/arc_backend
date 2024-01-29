@@ -99,7 +99,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def scheduled_function(db: Session):
+async def scheduled_function(db: Session):
     key = authiiko()
     groups = getgroups(key=key)
     group_list = crud.synchgroups(db, groups)
@@ -115,7 +115,7 @@ def scheduled_function(db: Session):
     crud.update_products_price(db=db,prices=prices_arc)
     del prices_arc
 
-def meal_pushes(db:Session):
+async def meal_pushes(db:Session):
     branchs = get_fillials_unordered(db=db)
     
     text = "Филиалы не отправившие заявку на Стафф питание🥘\n\n"
@@ -125,7 +125,6 @@ def meal_pushes(db:Session):
     text += "\n\nНеобходимо отправить заявку до 17:00 ❗️"
     limit = 0
     send_users = []
-    return True
     for i in all_user:
         if i.id not in send_users:
             sendtotelegramchannel(bot_token=BOT_TOKEN,chat_id=i.telegram_id,message_text=text)
@@ -151,7 +150,7 @@ def startup_event():
 @app.on_event("startup")
 def meal_messages():
     scheduler = BackgroundScheduler()
-    trigger  = CronTrigger(hour=14, minute=25, second=00,timezone=timezonetash)
+    trigger  = CronTrigger(hour=16, minute=00, second=00,timezone=timezonetash)
     scheduler.add_job(meal_pushes, trigger=trigger,args=[next(get_db())],coalesce=False,max_instances=1)
     scheduler.start()
 
