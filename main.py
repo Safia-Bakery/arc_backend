@@ -139,35 +139,21 @@ def meal_pushes(db:Session):
     del branchs
     return True
 
-scheduler = AsyncIOScheduler()
 
 
-async def my_scheduled_function():
-    print("Executing scheduled function at 12 o'clock!")
+@app.on_event("startup")
+def startup_event():
+    scheduler = BackgroundScheduler()
+    trigger  = CronTrigger(hour=1, minute=20, second=00,timezone=timezonetash)  # Set the desired time for the function to run (here, 12:00 PM)
+    scheduler.add_job(scheduled_function, trigger=trigger, args=[next(get_db())])
+    scheduler.start()
 
-
-
-scheduler.add_job(
-    my_scheduled_function,
-    trigger=CronTrigger(hour=14, minute=20, second=00,timezone=timezonetash)  # Execute at 12:00:00 every day
-)
-print('eh')
-
-scheduler.start()
-
-#@app.on_event("startup")
-#def startup_event():
-#    scheduler = BackgroundScheduler()
-#    trigger  = CronTrigger(hour=1, minute=20, second=00,timezone=timezonetash)  # Set the desired time for the function to run (here, 12:00 PM)
-#    scheduler.add_job(scheduled_function, trigger=trigger, args=[next(get_db())])
-#    scheduler.start()
-#
-#@app.on_event("startup")
-#def meal_messages():
-#    scheduler = BackgroundScheduler()
-#    trigger  = CronTrigger(hour=13, minute=29, second=00,timezone=timezonetash)
-#    scheduler.add_job(meal_pushes, trigger=trigger,args=[next(get_db())],coalesce=False,max_instances=1)
-#    scheduler.start()
+@app.on_event("startup")
+def meal_messages():
+    scheduler = BackgroundScheduler()
+    trigger  = CronTrigger(hour=14, minute=25, second=00,timezone=timezonetash)
+    scheduler.add_job(meal_pushes, trigger=trigger,args=[next(get_db())],coalesce=False,max_instances=1)
+    scheduler.start()
 
 
 @app.post("/user/group/permission")
