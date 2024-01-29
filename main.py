@@ -76,6 +76,7 @@ JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")  # should be kept secret
 JWT_REFRESH_SECRET_KEY = os.environ.get("JWT_REFRESH_SECRET_KEY")
 ALGORITHM = os.environ.get("ALGORITHM")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
+
 scheduler = AsyncIOScheduler()
 
 origins = ["*"]
@@ -88,7 +89,9 @@ app.include_router(urls)
 app.include_router(hrrouter)
 app.include_router(user_router)
 app.mount("/files", StaticFiles(directory="files"), name="files")
+
 timezonetash = pytz.timezone("Asia/Tashkent")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -140,7 +143,7 @@ def meal_pushes(db:Session):
 scheduler.add_job(
     meal_pushes,
     args=[next(get_db())],
-    trigger=CronTrigger(hour=14, minute=1, second=00,timezone=timezonetash)  # Execute at 12:00:00 every day
+    trigger=CronTrigger(hour=14, minute=5, second=00,timezone=timezonetash)  # Execute at 12:00:00 every day
 )
 
 scheduler.start()
