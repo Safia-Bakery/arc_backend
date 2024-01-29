@@ -121,7 +121,7 @@ def meal_pushes(db:Session):
     text += "\n\nНеобходимо отправить заявку до 17:00 ❗️"
     limit = 0
     send_users = []
-    #return True
+    return True
     for i in all_user:
         if i.id not in send_users:
             sendtotelegramchannel(bot_token=BOT_TOKEN,chat_id=i.telegram_id,message_text=text)
@@ -143,12 +143,12 @@ def startup_event():
     scheduler.add_job(scheduled_function, trigger=trigger, args=[next(get_db())])
     scheduler.start()
 
-#@app.on_event("startup")
-#def meal_messages():
-#    scheduler = BackgroundScheduler()
-#    trigger  = CronTrigger(hour=16, minute=00, second=00,timezone=timezonetash)
-#    scheduler.add_job(meal_pushes, trigger=trigger,args=[next(get_db())])
-#    scheduler.start()
+@app.on_event("startup")
+def meal_messages():
+    scheduler = BackgroundScheduler()
+    trigger  = CronTrigger(hour=11, minute=57, second=00,timezone=timezonetash)
+    scheduler.add_job(meal_pushes, trigger=trigger,args=[next(get_db())])
+    scheduler.start()
 
 @app.post("/user/group/permission")
 async def group_permissions(
