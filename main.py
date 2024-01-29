@@ -149,7 +149,7 @@ async def my_scheduled_function():
 
 scheduler.add_job(
     my_scheduled_function,
-    trigger=CronTrigger(hour=14, minute=13, second=00,timezone=timezonetash)  # Execute at 12:00:00 every day
+    trigger=CronTrigger(hour=14, minute=16, second=00,timezone=timezonetash)  # Execute at 12:00:00 every day
 )
 
 scheduler.start()
