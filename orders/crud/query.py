@@ -300,7 +300,4 @@ def get_fillials_unordered(db:Session):
              filter(models.ParentFillials.id.notin_(data)).
              filter(or_(models.Fillials.origin==1,models.Fillials.origin==2))
              .all())
-    for i in query:
-        print(i.name)
-    print('this is came')
     return query
