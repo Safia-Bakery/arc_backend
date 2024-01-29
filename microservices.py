@@ -429,8 +429,6 @@ def file_generator(data):
         inserting_data['Дата поставки'].append(finish_time)
 
         inserting_data['Статус'].append(statusdata[str(row.status)])
-        total_food += row.size
-        total_bread += row.bread_size
 
     
     file  = f"files/{name_generator()}.xlsx"
