@@ -154,19 +154,19 @@ scheduler.add_job(
 
 scheduler.start()
 
-@app.on_event("startup")
-def startup_event():
-    scheduler = BackgroundScheduler()
-    trigger  = CronTrigger(hour=1, minute=20, second=00,timezone=timezonetash)  # Set the desired time for the function to run (here, 12:00 PM)
-    scheduler.add_job(scheduled_function, trigger=trigger, args=[next(get_db())])
-    scheduler.start()
-
-@app.on_event("startup")
-def meal_messages():
-    scheduler = BackgroundScheduler()
-    trigger  = CronTrigger(hour=13, minute=29, second=00,timezone=timezonetash)
-    scheduler.add_job(meal_pushes, trigger=trigger,args=[next(get_db())],coalesce=False,max_instances=1)
-    scheduler.start()
+#@app.on_event("startup")
+#def startup_event():
+#    scheduler = BackgroundScheduler()
+#    trigger  = CronTrigger(hour=1, minute=20, second=00,timezone=timezonetash)  # Set the desired time for the function to run (here, 12:00 PM)
+#    scheduler.add_job(scheduled_function, trigger=trigger, args=[next(get_db())])
+#    scheduler.start()
+#
+#@app.on_event("startup")
+#def meal_messages():
+#    scheduler = BackgroundScheduler()
+#    trigger  = CronTrigger(hour=13, minute=29, second=00,timezone=timezonetash)
+#    scheduler.add_job(meal_pushes, trigger=trigger,args=[next(get_db())],coalesce=False,max_instances=1)
+#    scheduler.start()
 
 
 @app.post("/user/group/permission")
