@@ -518,8 +518,13 @@ async def get_excell(
 
 @urls.get("/v2/stats/marketing",tags=['Marketing'])
 async def get_marketing(
+    finished_at: Optional[date] = None,
+    started_at: Optional[date] = None,
+    sub_id: Optional[int] = None,
+    department: Optional[int] = None,
+    sphere_status: Optional[int] = None,
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
-    query = statisquery.marketing_stats_v2(db=db)
-    return {'success':True}
+    query = statisquery.marketing_stats_v2(db=db,finished_at=finished_at,started_at=started_at,sub_id=sub_id,department=department,sphere_status=sphere_status)
+    return query
