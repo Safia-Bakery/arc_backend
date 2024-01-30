@@ -470,7 +470,7 @@ def safia_eats(db:Session,request_data):
 
 
 def marketing_stats_v2(db:Session,started_at, finished_at,department,sphere_status,sub_id,timer=60):
-    categories = db.query(models.Category).filter(models.Category.department==3)
+    categories = db.query(models.Category)
     if sphere_status is not None:
         categories = categories.filter(models.Category.sphere_status==sphere_status)
     if sub_id is not None:
