@@ -513,3 +513,13 @@ async def get_excell(
     query = statisquery.safia_eats(db=db,request_data=date) 
     folder = file_generator(data=query,file=file)
     return {"success":True,'url':folder[0],'total_food':int(folder[1]),'total_bread':int(folder[2])}
+
+
+
+@urls.get("/v2/stats/marketing",tags=['Marketing'])
+async def get_marketing(
+    db: Session = Depends(get_db),
+    request_user: schema.UserFullBack = Depends(get_current_user),
+):
+    query = statisquery.marketing_stats_v2(db=db)
+    return {'success':True}

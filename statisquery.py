@@ -468,3 +468,27 @@ def safia_eats(db:Session,request_data):
     query = db.query(models.Requests).join(models.Category).filter(models.Category.department==6).filter(cast(models.Requests.arrival_date,Date)==request_data).all()
     return query
 
+
+def marketing_stats_v2(db:Session):
+    categories = db.query(models.Category).filter(models.Category.department==3).all()
+    for category in categories:
+        total_requests = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status.in_([0,1,3])).count()
+        total_requestsp = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status.in_([0,1,3])).all()
+        for i in total_requestsp:
+            print(i.status,i.started_at,i.finished_at)
+    
+        ftime_timedelta = timedelta(hours=category.ftime)
+
+        finished_on_time = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status==3).filter(
+            models.Requests.finished_at - models.Requests.started_at <= ftime_timedelta
+        ).count()
+
+
+        not_finished_on_time = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status==3).filter(
+            models.Requests.finished_at  - models.Requests.started_at > ftime_timedelta).count()
+        
+        status_zero = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status.in_([0,1])).filter(models.Requests.status == 0).count()
+        print(total_requests,finished_on_time,not_finished_on_time,status_zero)
+    return True
+
+
