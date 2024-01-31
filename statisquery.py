@@ -562,13 +562,15 @@ def marketing_stats_v2(db:Session,started_at, finished_at,department,sphere_stat
         #------------end avg finishing time------------
 
 
+
         #------------create response data------------
 
         if total:
             total = total[0][2]
         else: 
             total = 0
-        data[category.name] = {
+        
+        dict_data = {
             "total_requests":total_requests,
             "finished_on_time":finished_on_time,
             "not_finished_on_time":not_finished_on_time,
@@ -577,12 +579,13 @@ def marketing_stats_v2(db:Session,started_at, finished_at,department,sphere_stat
             "percentage_not_finished_on_time":percentage_not_finished_on_time,
             "percentage_status_zero":percentage_status_zero,
             "avg_finishing":total,
-            'sub_id':category.sub_id
+            'category':category.name
         }
-    
-    
+        if data.get(category.sub_id):
+            data[category.sub_id].append(dict_data)
+        else:
+            data[category.sub_id] = [dict_data]
 
-        
         
     return data
 
