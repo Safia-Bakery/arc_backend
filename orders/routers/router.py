@@ -211,6 +211,7 @@ async def filter_request(
         user=user,
         sphere_status=sphere_status,
         arrival_date=arrival_date,
+        rate=rate
     )
     return paginate(request_list)
 

@@ -225,6 +225,13 @@ class GetExpanditure(BaseModel):
     class Config:
         orm_mode = True
 
+class RatingNumber(BaseModel):
+    id: int
+    rating: Optional[int] = None
+
+    class Config:
+        orm_mode = True
+
 
 class GetRequestList(BaseModel):
     product: Optional[str] = None
@@ -250,6 +257,7 @@ class GetRequestList(BaseModel):
     id: int
     location: Optional[Dict[str, str]] = None
     update_time: Optional[Dict[str, str]] = None
+    comments: Optional[list[RatingNumber]]=None
 
     class Config:
         orm_mode = True
