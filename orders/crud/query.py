@@ -40,7 +40,6 @@ def marketing_table(db: Session, timer, created_at, finished_at):
         .group_by(models.Category.sub_id)
         .all()
     )
-    print(total)
     dict_data = {}
     for i in total:
         dict_data[i[0]] = [i[1], i[2],i[3]]
