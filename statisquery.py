@@ -374,7 +374,7 @@ def brigade_openrequests(db:Session,department,sphere_status):
         .outerjoin(models.Requests)
         .outerjoin(models.Category)
         .filter(
-            #or_(models.Requests.status == 1, models.Requests.status == 2),
+            models.Requests.status.in_([1,2]),
             models.Brigada.department == department
         )
         .group_by(models.Brigada.id, models.Brigada.name)

@@ -18,30 +18,32 @@ def marketing_table(db: Session, timer, created_at, finished_at):
     total = (
         db.query(
             models.Category.sub_id,
-            func.count(models.Requests.id),
+            func.count(models.Requests.id).filter(models.Requests.status == 3),
             func.cast(
                 func.avg(
                     func.extract(
                         "epoch",
                         models.Requests.finished_at - models.Requests.started_at,
                     )
-                )
+                ).filter(models.Requests.status == 3)
                 / timer,
                 Integer,
             ),
+            func.count(models.Requests.id).filter(models.Requests.status.in_([0, 1,2])),
+
         )
         .join(models.Requests)
         .filter(
-            models.Requests.status == 3,
             models.Category.department == 3,
             models.Requests.created_at.between(created_at, finished_at),
         )
         .group_by(models.Category.sub_id)
         .all()
     )
+    print(total)
     dict_data = {}
     for i in total:
-        dict_data[i[0]] = [i[1], i[2]]
+        dict_data[i[0]] = [i[1], i[2],i[3]]
     return dict_data
 
 
