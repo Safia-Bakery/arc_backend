@@ -95,6 +95,7 @@ class ToolsSearch(BaseModel):
     amount_left:Optional[float]=None
     min_amount:Optional[float]=None
     max_amount:Optional[float]=None
+    ftime:Optional[float]=None
     class Config:
         orm_mode = True
 
@@ -107,6 +108,7 @@ class ToolsUpdate(BaseModel):
     min_amount: Optional[float] = None
     max_amount: Optional[float] = None
     image: Optional[str] = None
+    ftime: Optional[float] = None   
 
 class UpdateFillialSch(BaseModel):
     id: UUID

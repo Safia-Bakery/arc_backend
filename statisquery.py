@@ -307,6 +307,8 @@ def tools_update(db: Session,form_data:schemas.ToolsUpdate):
             query.max_amount = form_data.max_amount
         if form_data.image is not None:
             query.image = form_data.image
+        if form_data.ftime is not None:
+            query.ftime = form_data.ftime
         db.commit()
         db.refresh(query)
     return query

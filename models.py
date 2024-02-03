@@ -300,7 +300,9 @@ class Tools(Base):
     min_amount = Column(Float, nullable=True)
     max_amount = Column(Float, nullable=True)
     image = Column(String, nullable=True)
+    ftime = Column(Float, nullable=True)
     tool_need = relationship("NeededTools", back_populates="need_tool")
+
 
 
 class Working(Base):
