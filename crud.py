@@ -377,7 +377,7 @@ def add_request(
     vidfrom,
     vidto
 ):
-    update_time = {"0": str(datetime.now(tz=timezonetash))},
+    update_time = {"0":str(datetime.now(tz=timezonetash))}
     if vidfrom is not None:
         update_time['vidfrom'] = vidfrom
     if vidto is not None:
