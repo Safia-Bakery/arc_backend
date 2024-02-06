@@ -374,7 +374,14 @@ def add_request(
     size,
     bread_size,
     location,
+    vidfrom,
+    vidto
 ):
+    update_time = {"0": str(datetime.now(tz=timezonetash))},
+    if vidfrom is not None:
+        update_time['vidfrom'] = vidfrom
+    if vidto is not None:
+        update_time['vidto'] = vidto
     db_add_request = models.Requests(
         category_id=category_id,
         description=description,
@@ -386,7 +393,7 @@ def add_request(
         arrival_date=arrival_date,
         bread_size=bread_size,
         location=location,
-        update_time={"0": str(datetime.now(tz=timezonetash))},
+        update_time=update_time,
     )
     db.add(db_add_request)
     db.commit()

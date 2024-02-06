@@ -427,9 +427,12 @@ async def get_category(
     expenditure:Json=Form(None),
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
+    vidfrom: Annotated[str,Form()] = None,
+    vidto: Annotated[str,Form()] = None
 ):
     # try:
     category_query = crud.get_category_id(db=db, id=category_id)
+
 
     if category_query.department == 1:
         origin = 1
@@ -447,7 +450,7 @@ async def get_category(
             sklad_id = filliald_od.id
     else:
         sklad_id = fillial_id
-
+        
     responserq = crud.add_request(
         db,
         category_id=category_id,
@@ -460,6 +463,8 @@ async def get_category(
         arrival_date=arrival_date,
         bread_size=bread_size,
         location=location,
+        vidfrom=vidfrom,
+        vidto=vidto
     )
     if cat_prod is not None:
         for product_id, amount in dict(cat_prod).items():
