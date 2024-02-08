@@ -59,6 +59,8 @@ async def add_category(
     sphere_status: Annotated[int, Form()] = None,
     file: UploadFile = None,
     sub_id: Annotated[int, Form()] = None,
+    parent_id:Annotated[int,Form()]=None,
+    is_child:Annotated[bool,Form()]=False,
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
@@ -83,6 +85,8 @@ async def add_category(
         sphere_status=sphere_status,
         sub_id=sub_id,
         file=file,
+        parent_id=parent_id,
+        is_child=is_child
     )
 
 
@@ -98,6 +102,8 @@ async def update_category(
     sphere_status: Annotated[int, Form()] = None,
     file: UploadFile = None,
     sub_id: Annotated[int, Form()] = None,
+    parent_id:Annotated[int,Form()]=None,
+    is_child:Annotated[bool,Form()]=None,
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
@@ -123,6 +129,8 @@ async def update_category(
         sphere_status=sphere_status,
         sub_id=sub_id,
         ftime=ftime,
+        parent_id=parent_id,
+        is_child=is_child
     )
     if response:
         return response
@@ -137,6 +145,7 @@ async def filter_category(
     department: Optional[int] = None,
     category_status: Optional[int] = None,
     name: Optional[str] = None,
+    parent_id:Optional[int]=None,
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
@@ -147,6 +156,7 @@ async def filter_category(
         sub_id=sub_id,
         department=department,
         sphere_status=sphere_status,
+        parent_id=parent_id
     )
     return paginate(response)
 

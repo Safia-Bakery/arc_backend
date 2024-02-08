@@ -237,6 +237,8 @@ def add_category_cr(
     sphere_status,
     file,
     ftime,
+    parent_id,
+    is_child
 ):
     db_add_category = models.Category(
         name=name,
@@ -248,6 +250,8 @@ def add_category_cr(
         sphere_status=sphere_status,
         file=file,
         ftime=ftime,
+        parent_id=parent_id,
+        is_child=is_child
     )
     db.add(db_add_category)
     db.commit()
@@ -267,6 +271,8 @@ def update_category_cr(
     sphere_status,
     file,
     ftime,
+    parent_id,
+    is_child
 ):
     db_update_category = (
         db.query(models.Category).filter(models.Category.id == id).first()
@@ -291,6 +297,10 @@ def update_category_cr(
             db_update_category.file = file
         if ftime is not None:
             db_update_category.ftime = ftime
+        if parent_id is not None:
+            db_update_category.parent_id = parent_id
+        if is_child is not None:
+            db_update_category.is_child = is_child
         db.commit()
         db.refresh(db_update_category)
         return db_update_category
@@ -666,7 +676,7 @@ def filter_user(
 
 
 def filter_category(
-    db: Session, category_status, name, department, sub_id, sphere_status
+    db: Session, category_status, name, department, sub_id, sphere_status,parent_id
 ):
     query = db.query(models.Category)
     if category_status is not None:
@@ -679,6 +689,7 @@ def filter_category(
         query = query.filter(models.Category.department == department)
     if sphere_status is not None:
         query = query.filter(models.Category.sphere_status == sphere_status)
+    query = query.filter(models.Category.parent_id==parent_id)
     return query.all()
 
 
@@ -950,14 +961,23 @@ def synchproducts(db: Session, grouplist, products):
 def update_products_price(db:Session,prices):
     for i in prices:
         id = i["product"]
-        query = db.query(models.Tools).filter(models.Tools.iikoid==id).first()
-        if query:
-            query.total_price = i['sum']
-            query.amount_left = i['amount']
-            query.price = i['sum']/i['amount']
-            query.last_update = datetime.now(timezonetash)
-            db.commit()
-            db.refresh(query)
+        store_id = i['store']
+
+        if i['sum']==0:
+            price = 0
+        else:
+            price = i['sum']/i['amount']
+        if store_id =='4aafb5af-66c3-4419-af2d-72897f652019':
+
+            query = db.query(models.Tools).filter(models.Tools.iikoid==id).first()
+
+            if query:
+                query.total_price = i['sum']
+                query.amount_left = i['amount']
+                query.price = price
+                query.last_update = datetime.now(timezonetash)
+                db.commit()
+                db.refresh(query)
     return True
 
 def check_suppier_exist(db: Session, supplier_id):

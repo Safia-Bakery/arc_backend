@@ -145,6 +145,7 @@ class UpdateCategorySch(BaseModel):
     sub_id: Optional[int] = None
     department: Optional[int] = None
     sphere_status: Optional[int] = None
+    
 
     @validator("status")
     def validate_status_length(cls, status):
@@ -164,6 +165,8 @@ class GetCategorySch(BaseModel):
     sphere_status: Optional[int] = None
     file: Optional[str] = None
     ftime: Optional[float] = None
+    parent_id:Optional[int] = None
+    is_child:Optional[bool]=None
 
     class Config:
         orm_mode = True

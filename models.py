@@ -139,7 +139,8 @@ class Category(Base):
     file = Column(String, nullable=True)
     ftime = Column(Float, nullable=True)
     cat_prod = relationship("Products", back_populates="prod_cat")
-
+    parent_id = Column(Integer, nullable=True)
+    is_child = Column(Boolean,default=False)
 
 class Products(Base):
     __tablename__ = "products"
