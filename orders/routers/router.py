@@ -526,6 +526,12 @@ async def get_category(
             message_text=text,
             keyboard=keyboard,
         )
+    if responserq.category.department==8:
+        sendtotelegramchannel(
+            bot_token=bot_token,
+            chat_id="-1002124172379",
+            message_text="📑Заявка № "+str(responserq.id)+"\n\n📍Филиал: "+str(responserq.fillial.parentfillial.name)+"\n🕘Дата поступления заявки: "+str(formatted_datetime_str)+"\n\n💬Комментарии: "+str(responserq.description),
+        )
 
     return {"success": True, "message": "everything is saved"}
 
