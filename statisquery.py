@@ -472,13 +472,15 @@ def safia_eats(db:Session,request_data):
 
 
 def marketing_stats_v2(db:Session,started_at, finished_at,department,sphere_status,sub_id,timer=60):
-    categories = db.query(models.Category).filter(models.Category.status==1)
+    categories = db.query(models.Category).join(models.Requests).filter(models.Category.status==1)
     if sphere_status is not None:
         categories = categories.filter(models.Category.sphere_status==sphere_status)
     if sub_id is not None:
         categories = categories.filter(models.Category.sub_id==sub_id)
     if department is not None:
         categories = categories.filter(models.Category.department==department)
+    if finished_at is not None and started_at is not None:
+        categories = categories.filter(models.Requests.created_at.between(started_at,finished_at))
     categories = categories.all()
     
 
