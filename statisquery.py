@@ -481,6 +481,7 @@ def marketing_stats_v2(db:Session,started_at, finished_at,department,sphere_stat
         categories = categories.filter(models.Category.department==department)
     if finished_at is not None and started_at is not None:
         categories = categories.filter(models.Requests.created_at.between(started_at,finished_at))
+    categories = categories.filter(models.Requests.status.in_([0,1,2,3,4]))
     categories = categories.all()
     
 
@@ -490,7 +491,7 @@ def marketing_stats_v2(db:Session,started_at, finished_at,department,sphere_stat
         ftime_timedelta = timedelta(seconds=category.ftime*3600)
 
         #---------number of total requests-----------
-        total_requests = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status.in_([0,1,3]))
+        total_requests = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status.in_([0,1,2,3,4]))
         if started_at is not None and finished_at is not None:
             total_requests = total_requests.filter(models.Requests.created_at.between(started_at,finished_at))
         total_requests = total_requests.count()
@@ -514,7 +515,7 @@ def marketing_stats_v2(db:Session,started_at, finished_at,department,sphere_stat
         
 
         #---------number of status zero requests-----------
-        status_zero = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status.in_([0,1]))
+        status_zero = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status.in_([0,1,2]))
         if started_at is not None and finished_at is not None:
             status_zero = status_zero.filter(models.Requests.created_at.between(started_at,finished_at))
         status_zero = status_zero.count()
@@ -553,7 +554,7 @@ def marketing_stats_v2(db:Session,started_at, finished_at,department,sphere_stat
         )
         .join(models.Requests)
         .filter(
-            models.Requests.status.in_([0,1,3]),
+            models.Requests.status.in_([0,1,2,3]),
             models.Category.id == category.id,
         )
         .group_by(models.Category.name)
