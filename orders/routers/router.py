@@ -401,6 +401,8 @@ async def put_request_id(
                                  bread_size=request_list.bread_size,
                                  location=request_list.location,
                                  arrival_date=request_list.arrival_date,
+                                vidfrom=None,
+                                vidto=None
                                  )
                 for i in new_neq:
                     query.add_expenditure(db=db,
@@ -484,7 +486,7 @@ async def get_category(
 
     file_obj_list = []
     # parsed_datetime = datetime.strptime(responserq.created_at,"%Y-%m-%dT%H:%M:%S.%f")
-    formatted_datetime_str = responserq.created_at.strftime("%Y-%m-%d %H:%M")
+    formatted_datetime_str = responserq.created_at.strftime("%d.%m.%Y %H:%M")
     text = (
         f"📑Заявка № {responserq.id}\n\n📍Филиал: {responserq.fillial.parentfillial.name}\n"
         f"🕘Дата поступления заявки: {formatted_datetime_str}\n\n"
@@ -530,7 +532,7 @@ async def get_category(
         sendtotelegramchannel(
             bot_token=bot_token,
             chat_id="-1002124172379",
-            message_text="📑Заявка № "+str(responserq.id)+"\n\n📍Филиал: "+str(responserq.fillial.parentfillial.name)+"\n🕘Дата поступления заявки: "+str(formatted_datetime_str)+"\n\n💬Комментарии: "+str(responserq.description),
+            message_text="📑Заявка № "+str(responserq.id)+"\n\n📍Филиал: "+str(responserq.fillial.parentfillial.name)+"\n🕘Дата поступления заявки: "+str(formatted_datetime_str)+"\n\n🏳️Дата и время начало события: "+responserq.update_time['vidfrom']+"\n🏁Дата и время конца события: "+responserq.update_time['vidto']+"\n\n💬Комментарии: "+str(responserq.description),
         )
 
     return {"success": True, "message": "everything is saved"}
