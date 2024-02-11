@@ -534,7 +534,8 @@ def acceptreject(db: Session, form_data: schemas.AcceptRejectRequest, user):
         if form_data.status is not None:
             db_get.status = form_data.status
         db_get.user_manager = user
-        db_get.cars_id = form_data.car_id
+        if form_data.car_id is not None:
+            db_get.cars_id = form_data.car_id
         if form_data.finishing_time is not None:
             db_get.finishing_time = form_data.finishing_time
         if form_data.status == 1:
