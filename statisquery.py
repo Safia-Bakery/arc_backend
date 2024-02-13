@@ -653,6 +653,18 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         models.Category.department==department,
         models.Tools.parentid==parent_id.parentid
         ).all()
+
+
+        not_finishedon_time =db.query(models.Expanditure).join(models.Requests).join(models.Tools).join(models.Category).filter(
+        models.Requests.status == 3,
+        models.Tools.ftime!=None,
+        extract('epoch', models.Requests.finished_at - models.Requests.started_at) >34234 * 3600,
+        models.Tools.parentid == parent_id.parentid,
+        models.Category.department==department
+        ).all()
+        for i in not_finishedon_time:
+            print(i.request_id) 
+        print("---------------------")
         for i in total_tools:
             print(i.request_id)
         print("---------------------")
