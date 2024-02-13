@@ -662,6 +662,23 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         models.Tools.parentid == parent_id.parentid,
         models.Category.department==department
         ).all()
+
+        # not_finishedon_time =db.query(models.Expanditure).join(models.Requests).join(models.Tools).join(models.Category).filter(
+        # models.Requests.status == 3,
+        # models.Tools.ftime!=None,
+        # extract('epoch', models.Requests.finished_at - models.Requests.started_at) > models.Tools.ftime * 3600,
+        # models.Tools.parentid == parent_id.parentid,
+        # models.Category.department==department
+        # ).count()
+
+        not_started = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(
+        models.Requests.status.in_([0,1,2]),
+        models.Tools.ftime.is_not(None),
+        models.Tools.parentid == parent_id.parentid,
+        models.Category.department==department
+        ).count()
+
+        print(not_started)
         for i in not_finishedon_time:
             print(i.request_id) 
         print("---------------------")
@@ -672,20 +689,6 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
             print(i.request_id)
         
         return {"success":True}
-        not_finishedon_time =db.query(models.Expanditure).join(models.Requests).join(models.Tools).join(models.Category).filter(
-        models.Requests.status == 3,
-        models.Tools.ftime!=None,
-        extract('epoch', models.Requests.finished_at - models.Requests.started_at) > models.Tools.ftime * 3600,
-        models.Tools.parentid == parent_id.parentid,
-        models.Category.department==department
-        ).count()
-
-        not_started = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(
-        models.Requests.status.in_([0,1,2]),
-        models.Tools.ftime.is_not(None),
-        models.Tools.parentid == parent_id.parentid,
-        models.Category.department==department
-        ).count()
         not_finishedon_time_percent = (not_finishedon_time/total_tools)*100
         on_time_requests_percent = (on_time_requests/total_tools)*100
         not_started_percent = (not_started/total_tools)*100
