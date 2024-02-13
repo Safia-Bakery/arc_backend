@@ -628,8 +628,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
             models.Tools.department== department,
             models.Tools.parentid == parent_id.parentid,
         )
-        .group_by(models.Category.name)
-        
+        .group_by(models.Tools.parentid)
         )
         if started_at is not None and finished_at is not None:
             total = total.filter(models.Requests.created_at.between(started_at,finished_at))
