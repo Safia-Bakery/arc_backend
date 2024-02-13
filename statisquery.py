@@ -633,9 +633,9 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         # .group_by(models.Category.name)
         
         # )
-        if started_at is not None and finished_at is not None:
-            total = total.filter(models.Requests.created_at.between(started_at,finished_at))
-        total = total.all()
+        # if started_at is not None and finished_at is not None:
+        #     total = total.filter(models.Requests.created_at.between(started_at,finished_at))
+        # total = total.all()
 
 
 
