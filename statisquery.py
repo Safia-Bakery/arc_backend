@@ -606,7 +606,7 @@ def inventory_stats(db:Session,started_at,finished_at,department):
     data = {}
 
     for parent_id in parent_ids:
-        total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(models.Category.department==department).filter(models.Tools.ftime.isnot(None)).filter(models.Requests.status.in_([0,1,2,3])).count()
+        total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(models.Category.department==department).filter(models.Tools.ftime.is_not(None)).filter(models.Requests.status.in_([0,1,2,3])).count()
         on_time_requests = db.query(models.Expanditure).join(models.Requests).join(models.Tools).join(models.Category).filter(
         models.Requests.status == 3,
         models.Tools.ftime.isnot(None),
@@ -617,7 +617,7 @@ def inventory_stats(db:Session,started_at,finished_at,department):
 
         not_finishedon_time =db.query(models.Expanditure).join(models.Requests).join(models.Tools).join(models.Category).filter(
         models.Requests.status == 3,
-        models.Tools.ftime.isnot(None),
+        models.Tools.ftime.is_not(None),
         extract('epoch', models.Requests.finished_at - models.Requests.started_at) < models.Tools.ftime * 3600,
         models.Tools.parentid == parent_id.parentid,
         models.Category.department==department
@@ -625,7 +625,7 @@ def inventory_stats(db:Session,started_at,finished_at,department):
 
         not_started = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(
         models.Requests.status.in_([0,1,2]),
-        models.Tools.ftime.isnot(None),
+        models.Tools.ftime.is_not(None),
         models.Tools.parentid == parent_id.parentid,
         models.Category.department==department
         ).count()
