@@ -633,7 +633,6 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         if started_at is not None and finished_at is not None:
             total = total.filter(models.Requests.created_at.between(started_at,finished_at))
         total = total.all()
-        print(total)
 
 
         total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(
