@@ -675,7 +675,6 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
             models.Requests.status.in_([0,1,2])).count()
 
         
-        return {"success":True}
         not_finishedon_time_percent = (not_finishedon_time/total_tools)*100
         on_time_requests_percent = (on_time_requests/total_tools)*100
         not_started_percent = (not_started/total_tools)*100
