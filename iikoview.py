@@ -528,3 +528,17 @@ async def get_marketing(
 ):
     query = statisquery.marketing_stats_v2(db=db,finished_at=finished_at,started_at=started_at,sub_id=sub_id,department=department,sphere_status=sphere_status)
     return query
+
+
+
+@urls.get("/v1/stats/inventory",tags=['InventoryStats'])
+async def get_inventory(
+    finished_at: Optional[date] = None,
+    started_at: Optional[date] = None,
+    #department: Optional[int] = None,
+
+    db: Session = Depends(get_db),
+    request_user: schema.UserFullBack = Depends(get_current_user),
+):
+    query = statisquery.inventory_stats(db=db,finished_at=finished_at,started_at=started_at,department=2)
+    return query

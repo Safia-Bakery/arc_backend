@@ -10,7 +10,7 @@ import pytz
 from sqlalchemy import distinct,case
 from datetime import datetime, date,timedelta
 from microservices import sendtotelegramchannel
-from sqlalchemy import or_, and_, Date, cast, func, Integer, Numeric
+from sqlalchemy import or_, and_, Date, cast, func, Integer, Numeric,Interval,extract,literal_column
 backend_url = "https://backend.service.safiabakery.uz"
 import time
 import requests
@@ -594,4 +594,52 @@ def marketing_stats_v2(db:Session,started_at, finished_at,department,sphere_stat
         
     return data
 
+
+
+def inventory_stats(db:Session,started_at,finished_at,department):
+    parent_ids = db.query(models.Tools).join(models.Expanditure).join(models.Requests).join(models.Category).filter(models.Category.department==department)
+    
+    if started_at is not None and finished_at is not None:
+        parent_ids = parent_ids.filter(models.Requests.created_at.between(started_at,finished_at))
+
+    parent_ids = parent_ids.distinct(models.Tools.parentid).filter(models.Requests.status==3).all()
+    print(parent_ids)
+    data = {}
+
+    for parent_id in parent_ids:
+        total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(models.Category.department==department).filter(models.Requests.status.in_([0,1,2,3])).count()
+        on_time_requests = db.query(models.Expanditure).join(models.Requests).join(models.Tools).filter(
+        models.Requests.status == 3,
+        extract('epoch', models.Requests.finished_at - models.Requests.started_at) >= (literal_column('ftime') * 3600),
+        models.Tools.parentid == parent_id.parentid
+        ).count()
+
+        not_finishedon_time =db.query(models.Expanditure).join(models.Requests).join(models.Tools).filter(
+        models.Requests.status == 3,
+        extract('epoch', models.Requests.finished_at - models.Requests.started_at) < (literal_column('ftime') * 3600),
+        models.Tools.parentid == parent_id.parentid
+        ).count()
+
+        not_started = db.query(models.Expanditure).join(models.Requests).join(models.Tools).filter(
+        models.Requests.status.in_([0,1,2]),
+        models.Tools.parentid == parent_id.parentid
+        ).count()
+        not_finishedon_time_percent = (not_finishedon_time/total_tools)*100
+        on_time_requests_percent = (on_time_requests/total_tools)*100
+        not_started_percent = (not_started/total_tools)*100
+
+        parent_id_name = db.query(models.ToolParents).filter(models.ToolParents.id==parent_id.parentid).first()
+
+        data[parent_id_name.name] = {'total_tools':total_tools,
+                                     "on_time_requests":on_time_requests,
+                                     'not_finishedontime':not_finishedon_time,
+                                     'not_even_started':not_started,
+                                        'not_finishedon_time_percent':not_finishedon_time_percent,
+                                        'on_time_requests_percent':on_time_requests_percent,
+                                        'not_started_percent':not_started_percent
+                                     }
+
+        
+
+    return data
 
