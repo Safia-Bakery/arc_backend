@@ -606,7 +606,7 @@ def inventory_stats(db:Session,started_at,finished_at,department):
     data = {}
 
     for parent_id in parent_ids:
-        total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(models.Category.department==department).filter(models.Tools.ftime.isnot(None)).filter(models.Requests.status.in_([0,1,2,3])).count()
+        total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(models.Category.department==department).filter(models.Tools.ftime.isnot(None)).filter(models.Requests.status.in_([0,1,2,3])).count()
         on_time_requests = db.query(models.Expanditure).join(models.Requests).join(models.Tools).join(models.Category).filter(
         models.Requests.status == 3,
         models.Tools.ftime.isnot(None),
