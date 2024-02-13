@@ -603,7 +603,6 @@ def inventory_stats(db:Session,started_at,finished_at,department):
         parent_ids = parent_ids.filter(models.Requests.created_at.between(started_at,finished_at))
 
     parent_ids = parent_ids.distinct(models.Tools.parentid).filter(models.Requests.status==3).all()
-    print(parent_ids)
     data = {}
 
     for parent_id in parent_ids:
