@@ -649,7 +649,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         on_time_requests = db.query(models.Expanditure).join(models.Requests).join(models.Tools).join(models.Category).filter(
         models.Requests.status == 3,
         models.Tools.ftime.is_not(None),
-        extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= models.Tools.ftime * 3600,
+        extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= 4000 * 3600,
         models.Category.department==department,
         models.Tools.parentid==parent_id.parentid
         ).all()
