@@ -660,6 +660,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         models.Tools.parentid == parent_id.parentid,
         models.Category.department==department
         ).count()
+        print(not_finishedon_time)
 
         not_started = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(
         models.Requests.status.in_([0,1,2]),
