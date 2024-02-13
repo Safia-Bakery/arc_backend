@@ -686,7 +686,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
                                         'not_finishedon_time_percent':not_finishedon_time_percent,
                                         'on_time_requests_percent':on_time_requests_percent,
                                         'not_started_percent':not_started_percent,
-                                        'avg_finishing':total
+                                        'avg_finishing':avg_finishing
                                      }
 
         
