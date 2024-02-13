@@ -618,7 +618,7 @@ def inventory_stats(db:Session,started_at,finished_at,department):
         not_finishedon_time =db.query(models.Expanditure).join(models.Requests).join(models.Tools).join(models.Category).filter(
         models.Requests.status == 3,
         models.Tools.ftime.isnot(None),
-        extract('epoch', models.Requests.finished_at - models.Requests.started_at) >= models.Tools.ftime * 3600,
+        extract('epoch', models.Requests.finished_at - models.Requests.started_at) < models.Tools.ftime * 3600,
         models.Tools.parentid == parent_id.parentid,
         models.Category.department==department
         ).count()
