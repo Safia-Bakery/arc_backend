@@ -602,25 +602,28 @@ def inventory_stats(db:Session,started_at,finished_at,department):
     if started_at is not None and finished_at is not None:
         parent_ids = parent_ids.filter(models.Requests.created_at.between(started_at,finished_at))
 
-    parent_ids = parent_ids.distinct(models.Tools.parentid).filter(models.Requests.status==3).all()
+    parent_ids = parent_ids.distinct(models.Tools.parentid).filter(models.Requests.status==3).filter(models.Tools.ftime.is_not(None)).all()
     data = {}
 
     for parent_id in parent_ids:
-        total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(models.Category.department==department).filter(models.Requests.status.in_([0,1,2,3])).count()
+        total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(models.Category.department==department).filter(models.Tools.ftime.is_not(None)).filter(models.Requests.status.in_([0,1,2,3])).count()
         on_time_requests = db.query(models.Expanditure).join(models.Requests).join(models.Tools).filter(
         models.Requests.status == 3,
+        models.Tools.ftime.is_not(None),
         extract('epoch', models.Requests.finished_at - models.Requests.started_at) >= (literal_column('ftime') * 3600),
         models.Tools.parentid == parent_id.parentid
         ).count()
 
         not_finishedon_time =db.query(models.Expanditure).join(models.Requests).join(models.Tools).filter(
         models.Requests.status == 3,
+        models.Tools.ftime.is_not(None),
         extract('epoch', models.Requests.finished_at - models.Requests.started_at) < (literal_column('ftime') * 3600),
         models.Tools.parentid == parent_id.parentid
         ).count()
 
         not_started = db.query(models.Expanditure).join(models.Requests).join(models.Tools).filter(
         models.Requests.status.in_([0,1,2]),
+        models.Tools.ftime.is_not(None),
         models.Tools.parentid == parent_id.parentid
         ).count()
         not_finishedon_time_percent = (not_finishedon_time/total_tools)*100
