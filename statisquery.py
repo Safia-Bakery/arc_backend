@@ -675,6 +675,10 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
 
         parent_id_name = db.query(models.ToolParents).filter(models.ToolParents.id==parent_id.parentid).first()
 
+        if total[0][0] is not None:
+            avg_finishing = total[0][0]
+        else:
+            avg_finishing= 0
         data[parent_id_name.name] = {'total_tools':total_tools,
                                      "on_time_requests":on_time_requests,
                                      'not_finishedontime':not_finishedon_time,
@@ -682,7 +686,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
                                         'not_finishedon_time_percent':not_finishedon_time_percent,
                                         'on_time_requests_percent':on_time_requests_percent,
                                         'not_started_percent':not_started_percent,
-                                        'avg_finishing':total[0][0]
+                                        'avg_finishing':total
                                      }
 
         
