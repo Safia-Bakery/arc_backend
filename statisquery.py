@@ -644,15 +644,18 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
             models.Tools.parentid==parent_id.parentid).filter(
             models.Category.department==department).filter(
             models.Tools.ftime.is_not(None)).filter(
-            models.Requests.status.in_([0,1,2,3])).count()
+            models.Requests.status.in_([0,1,2,3])).all()
         
         on_time_requests = db.query(models.Expanditure).join(models.Requests).join(models.Tools).join(models.Category).filter(
         models.Requests.status == 3,
         models.Tools.ftime.is_not(None),
-        extract('epoch', models.Requests.finished_at - models.Requests.started_at) <=models.Tools.ftime*3600,
+        extract('epoch', models.Requests.finished_at - models.Requests.started_at) <=ftime_timedelta,
         models.Category.department==department,
         models.Tools.parentid==parent_id.parentid
-        ).count()
+        ).all()
+
+        
+        return {"success":True}
         not_finishedon_time =db.query(models.Expanditure).join(models.Requests).join(models.Tools).join(models.Category).filter(
         models.Requests.status == 3,
         models.Tools.ftime!=None,
@@ -660,7 +663,6 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         models.Tools.parentid == parent_id.parentid,
         models.Category.department==department
         ).count()
-        print(not_finishedon_time)
 
         not_started = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(
         models.Requests.status.in_([0,1,2]),
