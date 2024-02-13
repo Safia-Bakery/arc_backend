@@ -653,7 +653,11 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         models.Category.department==department,
         models.Tools.parentid==parent_id.parentid
         ).all()
-
+        for i in total_tools:
+            print(i.request_id)
+        print("---------------------")
+        for i in on_time_requests:
+            print(i.request_id)
         
         return {"success":True}
         not_finishedon_time =db.query(models.Expanditure).join(models.Requests).join(models.Tools).join(models.Category).filter(
