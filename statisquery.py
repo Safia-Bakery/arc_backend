@@ -596,7 +596,8 @@ def marketing_stats_v2(db:Session,started_at, finished_at,department,sphere_stat
 
 
 
-def inventory_stats(db:Session,started_at,finished_at,department):
+def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
+
     parent_ids = db.query(models.Tools).join(models.Expanditure).join(models.Requests).join(models.Category).filter(models.Category.department==department)
     
     if started_at is not None and finished_at is not None:
@@ -606,6 +607,38 @@ def inventory_stats(db:Session,started_at,finished_at,department):
     data = {}
 
     for parent_id in parent_ids:
+
+        # total = (
+        # db.query(
+        #     func.count(models.Requests.id),
+        #     func.cast(
+        #         func.avg(
+        #             func.extract(
+        #                 "epoch",
+        #                 models.Requests.finished_at - models.Requests.started_at,
+        #             )
+        #         )
+        #         / timer,
+        #         Integer,
+        #     ),
+        # )
+        # .join(models.Category).join(models.Expanditure).join(models.Tools)
+        # .filter(
+        #     models.Requests.status.in_([3]),
+        #     models.Category.department==department,
+        #     models.Tools.parentid==parent_id.parentid
+
+
+        # )
+        # .group_by(models.Category.name)
+        
+        # )
+        if started_at is not None and finished_at is not None:
+            total = total.filter(models.Requests.created_at.between(started_at,finished_at))
+        total = total.all()
+
+
+
         total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(
             models.Tools.parentid==parent_id.parentid).filter(
             models.Category.department==department).filter(
@@ -646,7 +679,8 @@ def inventory_stats(db:Session,started_at,finished_at,department):
                                      'not_even_started':not_started,
                                         'not_finishedon_time_percent':not_finishedon_time_percent,
                                         'on_time_requests_percent':on_time_requests_percent,
-                                        'not_started_percent':not_started_percent
+                                        'not_started_percent':not_started_percent,
+                                        'avg_finishing':50
                                      }
 
         
