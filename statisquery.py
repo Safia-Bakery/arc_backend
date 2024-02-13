@@ -624,7 +624,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         )
         .join(models.Expanditure).join(models.Tools).join(models.Category)
         .filter(
-            models.Requests.status.in_([0,1,2,3]),
+            models.Requests.status.in_([3]),
             models.Tools.department== department,
             models.Tools.parentid == parent_id.parentid,
         )
