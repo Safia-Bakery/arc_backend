@@ -655,29 +655,28 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
 
 
         finished_ontime = db.query(
-        func.count(models.Requests.id)).join(models.Expanditure).join(models.Tools).filter(
+        models.Requests).join(models.Expanditure).join(models.Tools).filter(
         models.Requests.status == 3,
         models.Tools.parentid == parent_id.parentid,
-        models.Requests.finished_at -  models.Requests.started_at<= ftime_timedelta).all()
-
+        models.Requests.finished_at -  models.Requests.started_at<= ftime_timedelta).count()
 
 
         not_finished_ontime = db.query(
-        func.count(models.Requests.id)).join(models.Expanditure).join(models.Tools).filter(
+        models.Requests).join(models.Expanditure).join(models.Tools).filter(
         models.Requests.status == 3,
         models.Tools.parentid == parent_id.parentid,
-        models.Requests.finished_at -  models.Requests.started_at> ftime_timedelta).all()
+        models.Requests.finished_at -  models.Requests.started_at> ftime_timedelta).count()
 
 
         not_started = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(
             models.Category.department==department).filter(
             models.Requests.status.in_([0,1,2])).count()
 
-        print(not_finished_ontime)
-        print(total_tools)
-        print(finished_ontime)
-        print(not_started)
-        return {'fucks':'you'}
+        #print(not_finished_ontime)
+        #print(total_tools)
+        #print(finished_ontime)
+        #print(not_started)
+        #return {'fucks':'you'}
 
         # not_finishedon_time =db.query(models.Expanditure).join(models.Requests).join(models.Tools).join(models.Category).filter(
         # models.Requests.status == 3,
@@ -693,7 +692,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
             models.Requests.status.in_([0,1,2])).count()
 
         
-        not_finishedon_time_percent = (finished_ontime/total_tools)*100
+        not_finishedon_time_percent = (not_finished_ontime/total_tools)*100
         on_time_requests_percent = (finished_ontime/total_tools)*100
         not_started_percent = (not_started/total_tools)*100
 
