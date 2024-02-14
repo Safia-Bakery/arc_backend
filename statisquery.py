@@ -19,6 +19,7 @@ from dotenv import load_dotenv
 timezonetash = pytz.timezone("Asia/Tashkent")
 load_dotenv()
 import os
+from sqlalchemy import extract
 
 bot_token = os.environ.get("BOT_TOKEN")
 
@@ -634,6 +635,8 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         if started_at is not None and finished_at is not None:
             total = total.filter(models.Requests.created_at.between(started_at,finished_at))
         total = total.all()
+        
+
 
 
         total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Tools).filter(
@@ -655,17 +658,21 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
 
 
         finished_ontime = db.query(
-        models.Requests).join(models.Expanditure).join(models.Tools).filter(
-        models.Requests.status == 3,
-        models.Tools.parentid == parent_id.parentid,
-        models.Requests.finished_at -  models.Requests.started_at<= ftime_timedelta).count()
+            models.Requests
+        ).join(models.Expanditure).join(models.Tools).filter(
+            models.Requests.status == 3,
+            models.Tools.parentid == parent_id.parentid,
+            extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= ftime_timedelta.total_seconds()
+        ).count()
 
 
         not_finished_ontime = db.query(
-        models.Requests).join(models.Expanditure).join(models.Tools).filter(
-        models.Requests.status == 3,
-        models.Tools.parentid == parent_id.parentid,
-        models.Requests.finished_at -  models.Requests.started_at> ftime_timedelta).count()
+        models.Requests
+            ).join(models.Expanditure).join(models.Tools).filter(
+            models.Requests.status == 3,
+            models.Tools.parentid == parent_id.parentid,
+            extract('epoch', models.Requests.finished_at - models.Requests.started_at)> ftime_timedelta.total_seconds()
+        ).count()
 
 
         not_started = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(
