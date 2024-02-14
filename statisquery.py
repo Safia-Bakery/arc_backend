@@ -642,29 +642,36 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
             models.Tools.ftime.is_not(None)).filter(
             models.Requests.status.in_([0,1,2,3])).count()
         
-        on_time_requests = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(
-            models.Category.department==department).filter(
-            models.Tools.ftime.is_not(None)).filter(
-            models.Requests.status==3 ).filter(func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= ftime_timedelta.total_seconds()).count()
+        # on_time_requests = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(
+        #     models.Category.department==department).filter(
+        #     models.Tools.ftime.is_not(None)).filter(
+        #     models.Requests.status==3 ).filter(func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= ftime_timedelta.total_seconds()).count()
          
 
 
-        not_finishedon_time =db.query(models.Expanditure).join(models.Requests).join(models.Tools).join(models.Category).filter(models.Tools.parentid==parent_id.parentid).filter(
-            models.Category.department==department).filter(
-            models.Tools.ftime.is_not(None)).filter(
-            models.Requests.status==3).filter(func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= ftime_timedelta.total_seconds()).count()
+        # not_finishedon_time =db.query(models.Expanditure).join(models.Requests).join(models.Tools).join(models.Category).filter(models.Tools.parentid==parent_id.parentid).filter(
+        #     models.Category.department==department).filter(
+        #     models.Tools.ftime.is_not(None)).filter(
+        #     models.Requests.status==3).filter(func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= ftime_timedelta.total_seconds()).count()
 
 
 
-        not_finishedsdf = db.query(
+        finished_ontime = db.query(
         func.count(models.Requests.id)).join(models.Expanditure).join(models.Tools).filter(
         models.Requests.status == 3,
         models.Tools.ftime!=None,
         models.Tools.parentid == parent_id.parentid,
         models.Category.department==department,
-        func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= ftime_timedelta.total_seconds()
-            ).all()
-        print(not_finishedsdf)
+        func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= models.Tools.ftime*3600).all()[0][0]
+
+
+        not_finished_ontime = db.query(
+        func.count(models.Requests.id)).join(models.Expanditure).join(models.Tools).filter(
+        models.Requests.status == 3,
+        models.Tools.ftime!=None,
+        models.Tools.parentid == parent_id.parentid,
+        models.Category.department==department,
+        func.extract('epoch', models.Requests.finished_at - models.Requests.started_at)> models.Tools.ftime*3600).all()[0][0]
 
         # not_finishedon_time =db.query(models.Expanditure).join(models.Requests).join(models.Tools).join(models.Category).filter(
         # models.Requests.status == 3,
@@ -680,8 +687,8 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
             models.Requests.status.in_([0,1,2])).count()
 
         
-        not_finishedon_time_percent = (not_finishedon_time/total_tools)*100
-        on_time_requests_percent = (on_time_requests/total_tools)*100
+        not_finishedon_time_percent = (finished_ontime/total_tools)*100
+        on_time_requests_percent = (finished_ontime/total_tools)*100
         not_started_percent = (not_started/total_tools)*100
 
         parent_id_name = db.query(models.ToolParents).filter(models.ToolParents.id==parent_id.parentid).first()
@@ -691,8 +698,8 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         else:
             avg_finishing= 0
         data[parent_id_name.name] = {'total_tools':total_tools,
-                                     "on_time_requests":on_time_requests,
-                                     'not_finishedontime':not_finishedon_time,
+                                     "on_time_requests":finished_ontime,
+                                     'not_finishedontime':not_finished_ontime,
                                      'not_even_started':not_started,
                                         'not_finishedon_time_percent':not_finishedon_time_percent,
                                         'on_time_requests_percent':on_time_requests_percent,
