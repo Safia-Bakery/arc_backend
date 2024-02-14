@@ -662,7 +662,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         models.Tools.ftime!=None,
         models.Tools.parentid == parent_id.parentid,
         models.Category.department==department,
-        func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= ftime_timedelta).all()[0][0]
+        func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= ftime_timedelta).all()
 
 
         not_finished_ontime = db.query(
@@ -671,7 +671,10 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         models.Tools.ftime!=None,
         models.Tools.parentid == parent_id.parentid,
         models.Category.department==department,
-        func.extract('epoch', models.Requests.finished_at - models.Requests.started_at)> ftime_timedelta).all()[0][0]
+        func.extract('epoch', models.Requests.finished_at - models.Requests.started_at)> ftime_timedelta).all()
+        print(not_finished_ontime)
+        print(finished_ontime)
+        return {'fucks':'you'}
 
         # not_finishedon_time =db.query(models.Expanditure).join(models.Requests).join(models.Tools).join(models.Category).filter(
         # models.Requests.status == 3,
