@@ -662,7 +662,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         models.Tools.ftime!=None,
         models.Tools.parentid == parent_id.parentid,
         models.Category.department==department,
-        func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= ftime_timedelta).all()
+        func.extract('epoch', models.Requests.finished_at) - func.extract('epoch', models.Requests.started_at) <= ftime_timedelta).all()
 
 
 
@@ -672,7 +672,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         models.Tools.ftime!=None,
         models.Tools.parentid == parent_id.parentid,
         models.Category.department==department,
-        func.extract('epoch', models.Requests.finished_at - models.Requests.started_at)> ftime_timedelta).all()
+        func.extract('epoch', models.Requests.finished_at) - func.extract('epoch', models.Requests.started_at)> ftime_timedelta).all()
 
 
         not_started = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(
