@@ -640,7 +640,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
 
 
         total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Tools).filter(
-            models.Tools.parentid==parent_id.parentid).filter(
+            models.Tools.parentid==parent_id.parentid,models.Tools.ftime!=None).filter(
             models.Requests.status.in_([0,1,2,3])).count()
         
         # on_time_requests = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(
@@ -661,6 +661,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
             models.Requests
         ).join(models.Expanditure).join(models.Tools).filter(
             models.Requests.status == 3,
+            models.Tools.ftime!=None,
             models.Tools.parentid == parent_id.parentid,
             extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= ftime_timedelta.total_seconds()
         ).count()
@@ -670,13 +671,14 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         models.Requests
             ).join(models.Expanditure).join(models.Tools).filter(
             models.Requests.status == 3,
+            models.Tools.ftime!=None,
             models.Tools.parentid == parent_id.parentid,
             extract('epoch', models.Requests.finished_at - models.Requests.started_at)> ftime_timedelta.total_seconds()
         ).count()
 
 
         not_started = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(
-            models.Category.department==department).filter(
+            models.Category.department==department,models.Tools.ftime!=None).filter(
             models.Requests.status.in_([0,1,2])).count()
 
         #print(not_finished_ontime)
