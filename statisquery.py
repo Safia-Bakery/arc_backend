@@ -638,7 +638,6 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
 
         total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Tools).filter(
             models.Tools.parentid==parent_id.parentid).filter(
-            models.Tools.ftime.is_not(None)).filter(
             models.Requests.status.in_([0,1,2,3])).count()
         
         # on_time_requests = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(
@@ -659,7 +658,6 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         func.count(models.Requests.id)).join(models.Expanditure).join(models.Tools).filter(
         models.Requests.status == 3,
         models.Tools.parentid == parent_id.parentid,
-        models.Tools.ftime.is_not(None),
         models.Requests.finished_at -  models.Requests.started_at<= ftime_timedelta).all()
 
 
@@ -668,7 +666,6 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         func.count(models.Requests.id)).join(models.Expanditure).join(models.Tools).filter(
         models.Requests.status == 3,
         models.Tools.parentid == parent_id.parentid,
-        models.Tools.ftime.is_not(None),
         models.Requests.finished_at -  models.Requests.started_at> ftime_timedelta).all()
 
 
