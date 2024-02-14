@@ -659,6 +659,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         func.count(models.Requests.id)).join(models.Expanditure).join(models.Tools).filter(
         models.Requests.status == 3,
         models.Tools.parentid == parent_id.parentid,
+        models.Tools.ftime.is_not(None),
         models.Requests.finished_at -  models.Requests.started_at<= ftime_timedelta).all()
 
 
@@ -667,6 +668,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         func.count(models.Requests.id)).join(models.Expanditure).join(models.Tools).filter(
         models.Requests.status == 3,
         models.Tools.parentid == parent_id.parentid,
+        models.Tools.ftime.is_not(None),
         models.Requests.finished_at -  models.Requests.started_at> ftime_timedelta).all()
 
 
