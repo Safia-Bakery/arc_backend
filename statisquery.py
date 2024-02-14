@@ -658,7 +658,6 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         finished_ontime = db.query(
         func.count(models.Requests.id)).join(models.Expanditure).join(models.Tools).filter(
         models.Requests.status == 3,
-        models.Tools.ftime!=None,
         models.Tools.parentid == parent_id.parentid,
         models.Requests.finished_at -  models.Requests.started_at<= ftime_timedelta).all()
 
@@ -667,14 +666,12 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         not_finished_ontime = db.query(
         func.count(models.Requests.id)).join(models.Expanditure).join(models.Tools).filter(
         models.Requests.status == 3,
-        models.Tools.ftime!=None,
         models.Tools.parentid == parent_id.parentid,
         models.Requests.finished_at -  models.Requests.started_at> ftime_timedelta).all()
 
 
         not_started = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(
             models.Category.department==department).filter(
-            models.Tools.ftime.is_not(None)).filter(
             models.Requests.status.in_([0,1,2])).count()
 
         print(not_finished_ontime)
