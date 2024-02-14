@@ -606,8 +606,8 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
     parent_ids = parent_ids.distinct(models.Tools.parentid).filter(models.Requests.status==3).filter(models.Tools.ftime!=None).all()
     data = {}
 
-    #ftime_timedelta = timedelta(seconds=48*3600)
-    ftime_timedelta = 48*3600
+    ftime_timedelta = timedelta(seconds=48*3600)
+    #ftime_timedelta = 48*3600
     for parent_id in parent_ids:
 
         total = (
@@ -660,7 +660,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         models.Requests.status == 3,
         models.Tools.ftime!=None,
         models.Tools.parentid == parent_id.parentid,
-        func.extract('epoch', models.Requests.finished_at) - func.extract('epoch', models.Requests.started_at) <= ftime_timedelta).all()
+        models.Requests.finished_at -  models.Requests.started_at<= ftime_timedelta).all()
 
 
 
@@ -669,7 +669,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         models.Requests.status == 3,
         models.Tools.ftime!=None,
         models.Tools.parentid == parent_id.parentid,
-        func.extract('epoch', models.Requests.finished_at) - func.extract('epoch', models.Requests.started_at)> ftime_timedelta).all()
+        models.Requests.finished_at -  models.Requests.started_at> ftime_timedelta).all()
 
 
         not_started = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(
