@@ -657,7 +657,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
 
 
         finished_ontime = db.query(
-        func.count(models.Requests.id)).join(models.Expanditure).join(models.Tools).filter(
+        func.count(models.Requests.id)).join(models.Expanditure).join(models.Tools).join(models.Category).filter(
         models.Requests.status == 3,
         models.Tools.ftime!=None,
         models.Tools.parentid == parent_id.parentid,
@@ -666,7 +666,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
 
 
         not_finished_ontime = db.query(
-        func.count(models.Requests.id)).join(models.Expanditure).join(models.Tools).filter(
+        func.count(models.Requests.id)).join(models.Expanditure).join(models.Tools).join(models.Category).filter(
         models.Requests.status == 3,
         models.Tools.ftime!=None,
         models.Tools.parentid == parent_id.parentid,
