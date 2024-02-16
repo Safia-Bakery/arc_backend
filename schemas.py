@@ -40,7 +40,6 @@ class AddFillialSch(BaseModel):
     latitude: Optional[float] = None
     country: Optional[str] = None
     status: int
-
     class Config:
         orm_mode = True
 
@@ -377,7 +376,7 @@ class AcceptRejectRequest(BaseModel):
 
     @validator("status")
     def validate_status_length(cls, status):
-        if status not in [4, 1, 2, 3, 5]:
+        if status not in [4, 1, 2, 3, 5,6]:
             raise ValueError("send valid  status code ")
         return status
 
@@ -590,3 +589,19 @@ class ToolOrderUpdate(BaseModel):
     status:int
     class Config:
         orm_mode = True
+
+
+
+class AddStoreSh(BaseModel):
+    name:str
+    status:Optional[int]=1
+    origin:Optional[int]=None
+    parentfillial_id:UUID
+    class Config:
+        orm_mode = True
+
+    @validator("status")
+    def validate_password_length(cls, status):
+        if status not in [0, 1]:
+            raise ValueError("send valid  status code ")
+        return status

@@ -38,6 +38,7 @@ from iikoview import urls
 from hrcomments.routers.router import hrrouter
 from users.routers.router import user_router
 from users.schema import schema
+from queries import it_query
 from orders.routers.router import router
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -112,7 +113,7 @@ def scheduled_function(db: Session):
     crud.update_products_price(db=db,prices=prices_inv)
     del prices_inv
     prices_arc = get_prices(key=key,department_id='fe7dce09-c2d4-46b9-bab1-86be331ed641')
-    crud.update_products_price(db=db,prices=prices_arc)
+    crud.update_products_price(db=db,prices=prices_arc,store_id_checker='4aafb5af-66c3-4419-af2d-72897f652019')
     del prices_arc
 
 def meal_pushes(db:Session):
@@ -138,6 +139,11 @@ def meal_pushes(db:Session):
     del branchs
     return True
 
+def it_close_request(db:Session):
+    queries = it_query.it_query_with_status(db=db,status=6)
+    for i in queries:
+        it_query.update_status_it(db=db,id=i.id)
+    return True
 
 
 @app.on_event("startup")
@@ -152,6 +158,15 @@ def meal_messages():
     scheduler = BackgroundScheduler()
     trigger  = CronTrigger(hour=16, minute=00, second=00,timezone=timezonetash)
     scheduler.add_job(meal_pushes, trigger=trigger,args=[next(get_db())])
+    scheduler.start()
+
+
+
+@app.on_event("startup")
+def it_query_checker():
+    scheduler = BackgroundScheduler()
+    trigger = CronTrigger(minute="*/30")  # Trigger every half hour
+    scheduler.add_job(it_close_request, trigger=trigger, args=[next(get_db())])
     scheduler.start()
 
 
@@ -403,11 +418,6 @@ async def filter_fillials(
         )
     )
 
-    #else:
-    #    raise HTTPException(
-    #        status_code=status.HTTP_403_FORBIDDEN, detail="You are not super user"
-    #    )
-
 
 @app.get("/fillials/{id}", response_model=schemas.GetFillialSch)
 async def get_fillials_id(
@@ -418,10 +428,28 @@ async def get_fillials_id(
     
     return crud.get_fillial_id(db, id)
 
-    # else:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_403_FORBIDDEN, detail="You are not super user"
-    #     )
+
+@app.post("/fillials",tags=["fillials"])
+async def create_fillial(
+    form_data: schemas.AddFillialSch,
+    db: Session = Depends(get_db),
+    request_user: schema.UserFullBack = Depends(get_current_user),
+):
+    query =crud.add_fillials(db=db,data=form_data)
+    return query
+
+
+@app.post("/store",tags=["fillials"])
+async def create_store(
+    form_data: schemas.AddStoreSh,
+    db: Session = Depends(get_db),
+    request_user: schema.UserFullBack = Depends(get_current_user),
+):
+    query =crud.add_store(db=db,data=form_data)
+    return query
+
+
+
 
 add_pagination(app)
 add_pagination(router)

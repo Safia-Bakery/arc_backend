@@ -840,10 +840,25 @@ async def update_expenditure(
 
 @router.post("/v1/reqest/message",response_model=schema_router.MessageRequestCreate,tags=["Message"])
 async def create_message(
-    form_data: schema_router.MessageRequestCreate,
+    request_id: Annotated[int,Form()],
+    message: Annotated[str,Form()] = None,
+    status: Annotated[int,Form()] = None,
+    photo: UploadFile = None,   
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user)):
-    db_query = query.message_create(db=db, form_data=form_data,user_id=request_user.id)
+
+    if photo:
+        file_path = f"files/{util.generate_random_filename()}{photo.filename}"
+        with open(file_path, "wb") as buffer:
+            while True:
+                chunk = await photo.read(1024)
+                if not chunk:
+                    break
+                buffer.write(chunk)
+    else:
+        file_path = None
+
+    db_query = query.message_create(db=db, request_id=request_id, message=message, status=status, photo=file_path,user_id=request_user.id)
     return db_query
 
 

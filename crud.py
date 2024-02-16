@@ -10,6 +10,7 @@ import pytz
 from sqlalchemy.sql import func
 from datetime import datetime
 from sqlalchemy import or_, and_, Date, cast
+from uuid import UUID
 
 timezonetash = pytz.timezone("Asia/Tashkent")
 
@@ -152,7 +153,7 @@ def get_brigada_id(db: Session, id):
 
 
 def add_fillials(db: Session, data: schemas.AddFillialSch):
-    filials_cr = models.Fillials(
+    filials_cr = models.ParentFillials(
         name=data.name,
         latitude=data.latitude,
         longtitude=data.longtitude,
@@ -959,7 +960,7 @@ def synchproducts(db: Session, grouplist, products):
             get_or_update(db,price,name,num,id,code,producttype,mainunit,2,parentId)
     return True
 
-def update_products_price(db:Session,prices):
+def update_products_price(db:Session,prices,store_id_checker:Optional[UUID]=None):
     for i in prices:
         id = i["product"]
         store_id = i['store']
@@ -968,10 +969,20 @@ def update_products_price(db:Session,prices):
             price = 0
         else:
             price = i['sum']/i['amount']
-        if store_id =='4aafb5af-66c3-4419-af2d-72897f652019':
+        if store_id_checker is not None:
+            if store_id ==store_id_checker:
 
+                query = db.query(models.Tools).filter(models.Tools.iikoid==id).first()
+
+                if query:
+                    query.total_price = i['sum']
+                    query.amount_left = i['amount']
+                    query.price = price
+                    query.last_update = datetime.now(timezonetash)
+                    db.commit()
+                    db.refresh(query)
+        else:
             query = db.query(models.Tools).filter(models.Tools.iikoid==id).first()
-
             if query:
                 query.total_price = i['sum']
                 query.amount_left = i['amount']
@@ -1165,4 +1176,13 @@ def workingtimeupdate(db: Session, form_data: schemas.WorkTimeUpdate):
 
 def working_time(db: Session):
     query = db.query(models.Working).first()
+    return query
+
+
+
+def add_store(db:Session,form_data:schemas.AddStoreSh):
+    query = models.Fillials(name=form_data.name,origin=form_data.origin,status=form_data.status,parentfillial_id=form_data.parentfillial_id)
+    db.add(query)
+    db.commit()
+    db.refresh(query)
     return query

@@ -4,6 +4,8 @@ request_status = [
     {"id": 2, "status_name": "taken to fixing"},
     {"id": 3, "status_name": "done"},
     {"id": 4, "status_name": "rejected"},
+    {"id": 5, "status_name": "delayed"},
+    {"id": 6, "status_name": "done and waiting for confirmation"},
 ]
 
 

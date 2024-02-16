@@ -227,6 +227,7 @@ class Communication(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship("Users", back_populates="communication")
     message = Column(String, nullable=True)
+    photo= Column(String, nullable=True)
     status = Column(Integer, default=0)
 
 class OrderProducts(Base):

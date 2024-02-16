@@ -285,8 +285,8 @@ def update_expenditure(db:Session,form_data:schema_router.UpdateExpenditure):
     return query
 
 
-def message_create(db:Session,form_data:schema_router.MessageRequestCreate,user_id):
-    query= models.Communication(request_id=form_data.request_id,message=form_data.message,status=form_data.status,user_id=user_id)
+def message_create(db:Session,message,request_id,status,photo,user_id):
+    query= models.Communication(request_id=request_id,message=message,status=status,user_id=user_id,photo=photo)
     db.add(query)
     db.commit()
     return query
