@@ -96,8 +96,8 @@ async def insert_groups(
         prices_inv = get_prices(key=key,department_id='c39aa435-8cdf-4441-8723-f532797fbeb9')
         crud.update_products_price(db=db,prices=prices_inv)
         del prices_inv
-        prices_arc = get_prices(key=key,department_id='fe7dce09-c2d4-46b9-bab1-86be331ed641')
-        crud.update_products_price(db=db,prices=prices_arc)
+        prices_arc = get_prices(key=key,department_id='fe7dce09-c2d4-46b9-bab1-86be331ed641',)
+        crud.update_products_price(db=db,prices=prices_arc,store_id_checker='4aafb5af-66c3-4419-af2d-72897f652019')
         del prices_arc
         return {"success": True}
     else:
