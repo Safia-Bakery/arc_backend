@@ -74,9 +74,10 @@ class MessageRequestCreate(BaseModel):
 
 class MessageRequest(BaseModel):
     id: int
-    message: str
+    message: Optional[str] = None
     status: int
     user: Optional[User] = None
+    photo: Optional[str] = None
     class Config:
         orm_mode = True
 
