@@ -108,6 +108,7 @@ class ToolsUpdate(BaseModel):
     max_amount: Optional[float] = None
     image: Optional[str] = None
     ftime: Optional[float] = None   
+    status:Optional[int]=None  
 
 class UpdateFillialSch(BaseModel):
     id: UUID
@@ -262,7 +263,7 @@ class GetRequestList(BaseModel):
     location: Optional[Dict[str, str]] = None
     update_time: Optional[Dict[str, str]] = None
     comments: Optional[list[RatingNumber]]=None
-
+    pause_reason: Optional[str] = None
     class Config:
         orm_mode = True
 
@@ -285,6 +286,7 @@ class GetRequestid(BaseModel):
     product: Optional[str] = None
     description: Optional[str] = None
     deny_reason: Optional[str] = None
+    pause_reason: Optional[str] = None
     id: int
     rating: Optional[int] = None
     created_at: datetime
@@ -373,6 +375,7 @@ class AcceptRejectRequest(BaseModel):
     fillial_id: Optional[UUID] = None
     finishing_time: Optional[datetime] = None
     car_id: Optional[int] = None
+    pause_reason: Optional[str] = None
 
     @validator("status")
     def validate_status_length(cls, status):

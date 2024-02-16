@@ -310,6 +310,8 @@ def tools_update(db: Session,form_data:schemas.ToolsUpdate):
             query.image = form_data.image
         if form_data.ftime is not None:
             query.ftime = form_data.ftime
+        if form_data.status is not None:
+            query.status = form_data.status
         db.commit()
         db.refresh(query)
     return query
@@ -318,7 +320,7 @@ def tools_update(db: Session,form_data:schemas.ToolsUpdate):
 def tools_query_iarch(db: Session, parent_id):
     query = db.query(models.Tools)
     if parent_id is not None:
-        query = query.filter(models.Tools.parentid == str(parent_id)).all()
+        query = query.filter(models.Tools.parentid == str(parent_id)).filter(models.Tools.status==1).all()
     else:
         return []
     return query

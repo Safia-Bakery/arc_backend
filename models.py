@@ -198,7 +198,8 @@ class Requests(Base):
     status = Column(Integer, default=0)
     started_at = Column(DateTime(timezone=True), nullable=True)
     finished_at = Column(DateTime(timezone=True), nullable=True)
-    deny_reason = Column(String, nullable=True)
+    pause_reason = Column(String, nullable=True)
+    delay_reason = Column(String, nullable=True)
     user = relationship("Users", back_populates="request")
     expanditure = relationship("Expanditure", back_populates="request")
     user_id = Column(Integer, ForeignKey("users.id"))
@@ -304,6 +305,7 @@ class Tools(Base):
     image = Column(String, nullable=True)
     ftime = Column(Float, nullable=True)
     tool_need = relationship("NeededTools", back_populates="need_tool")
+    status= Column(Integer, default=1)
 
 
 

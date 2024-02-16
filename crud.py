@@ -546,6 +546,8 @@ def acceptreject(db: Session, form_data: schemas.AcceptRejectRequest, user):
         if form_data.category_id is not None:
             db_get.old_cat_id = form_data.category_id
             db_get.category_id = form_data.category_id
+        if form_data.pause_reason is not None:
+            db_get.pause_reason = form_data.pause_reason
         if form_data.fillial_id is not None:
             if db_get.category.department == 1:
                 origin = 1
