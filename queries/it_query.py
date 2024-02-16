@@ -11,6 +11,8 @@ from sqlalchemy.sql import func
 from datetime import datetime
 from sqlalchemy import or_, and_, Date, cast
 from datetime import datetime,timedelta
+from allschemas import it_schema
+
 
 
 timezonetash = pytz.timezone("Asia/Tashkent")
@@ -29,3 +31,11 @@ def update_status_it(db:Session,id):
     query = db.query(models.Requests).filter(models.Requests.id == id).update({models.Requests.status: 3})
     db.commit()
     return query
+
+
+def get_it_excell(db:Session,form_data:it_schema.generate_excell):
+    query = db.query(models.Requests).join(models.Category).filter(models.Category.department == 4).filter(models.Requests.created_at.between(form_data.start_date,form_data.finish_date))
+    if form_data.status:
+        query = query.filter(models.Requests.status == form_data.status)
+
+    return query.all()

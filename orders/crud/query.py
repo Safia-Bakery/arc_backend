@@ -302,3 +302,10 @@ def get_fillials_unordered(db:Session):
              filter(or_(models.Fillials.origin==1,models.Fillials.origin==2))
              .all())
     return query
+
+
+
+def update_finishing_time(db:Session,request_id,finishing_time):
+    query = db.query(models.Requests).filter(models.Requests.id==request_id).update({models.Requests.finishing_time:finishing_time})
+    db.commit()
+    return True

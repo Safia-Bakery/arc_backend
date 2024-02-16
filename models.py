@@ -211,7 +211,7 @@ class Requests(Base):
     bread_size = Column(String, nullable=True)
     location = Column(JSON, nullable=True)
     update_time = Column(JSONB, nullable=True)
-    finishing_time = Column(DateTime, nullable=True)
+    finishing_time = Column(DateTime(timezone=True), nullable=True)
     is_redirected = Column(Boolean, default=False)
     old_cat_id = Column(Integer, nullable=True)
     request_orpr = relationship("OrderProducts", back_populates="orpr_request")
@@ -230,6 +230,7 @@ class Communication(Base):
     message = Column(String, nullable=True)
     photo= Column(String, nullable=True)
     status = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), default=func.now())
 
 class OrderProducts(Base):
     __tablename__ = "orderproducts"

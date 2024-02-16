@@ -78,6 +78,7 @@ class MessageRequest(BaseModel):
     status: int
     user: Optional[User] = None
     photo: Optional[str] = None
+    created_at: Optional[datetime]=None
     class Config:
         orm_mode = True
 

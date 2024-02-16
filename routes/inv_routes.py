@@ -32,7 +32,7 @@ from microservices import (
     find_hierarchy,
     get_prices,
     file_generator,
-    get_db
+    get_db,get_current_user
 )
 from fastapi import APIRouter
 from queries import inv_query
@@ -44,6 +44,6 @@ inv_router = APIRouter()
 
 
 @inv_router.delete("/tools", tags=["Tools"], status_code=status.HTTP_200_OK)
-def delete_tool(id: int, db: Session = Depends(get_db)):
+def delete_tool(id: int, db: Session = Depends(get_db),request_user: schema.UserFullBack = Depends(get_current_user),):
     query = inv_query.delete_tool(db=db, id=id)
     return  {'success': True}

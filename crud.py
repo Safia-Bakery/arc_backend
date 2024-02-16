@@ -386,7 +386,8 @@ def add_request(
     bread_size,
     location,
     vidfrom,
-    vidto
+    vidto,
+    finishing_time
 ):
     update_time = {"0":str(datetime.now(tz=timezonetash))}
     if vidfrom is not None:
@@ -405,6 +406,7 @@ def add_request(
         bread_size=bread_size,
         location=location,
         update_time=update_time,
+        finishing_time=finishing_time
     )
     db.add(db_add_request)
     db.commit()
@@ -587,7 +589,8 @@ def filter_requests_all(
     department,
     sphere_status,
     arrival_date,
-    rate
+    rate,
+    brigada_id
 ):
     query = db.query(models.Requests).join(models.Category).join(models.Users)
     if id is not None:
@@ -613,6 +616,8 @@ def filter_requests_all(
         query = query.filter(cast(models.Requests.arrival_date, Date) == arrival_date)
     if rate ==True:
         query = query.filter(models.Requests.id==models.Comments.request_id)
+    if brigada_id is not None:
+        query = query.filter(models.Requests.brigada_id == brigada_id)
     return query.order_by(models.Requests.id.desc()).all()
 
 

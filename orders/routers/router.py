@@ -27,6 +27,7 @@ from microservices import (
     create_access_token,
     checkpermissions,
 )
+import pytz
 
 # from main import get_db,get_current_user
 from fastapi import APIRouter, Form
@@ -36,7 +37,7 @@ from orders.crud import query
 from orders.utils import util
 from orders.schema import schema_router
 
-
+timezonetash = pytz.timezone("Asia/Tashkent")
 
 load_dotenv()
 router = APIRouter()
@@ -187,6 +188,7 @@ async def filter_request(
     request_status: Optional[int] = None,
     user: Optional[str] = None,
     sphere_status: Optional[int] = None,
+    brigada_id: Optional[int] = None,
     arrival_date: Optional[date] = None,
     db: Session = Depends(get_db),
     rate: Optional[bool] = False,
@@ -221,7 +223,8 @@ async def filter_request(
         user=user,
         sphere_status=sphere_status,
         arrival_date=arrival_date,
-        rate=rate
+        rate=rate,
+        brigada_id=brigada_id
     )
     return paginate(request_list)
 
@@ -298,11 +301,12 @@ async def put_request_id(
             except:
                 pass
         if request_list.category.department==4:
+
             try:
                 sendtotelegramchannel(
                     bot_token=bot_token,
                     chat_id=request_list.user.telegram_id,
-                    message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s назначена техник👨‍💻: {request_list.brigada.name}",
+                    message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s назначена техник👨‍💻: {request_list.brigada.name} ",
                 )
                 
             except:
@@ -463,6 +467,12 @@ async def get_category(
     else:
         sklad_id = fillial_id
         
+    if category_query.department == 4:
+        deadline = timedelta(hours=category_query.ftime)
+        current_time = datetime.now(tz=timezonetash)
+        finishing_time = current_time + deadline
+    else:
+        finishing_time = None
     responserq = crud.add_request(
         db,
         category_id=category_id,
@@ -476,7 +486,9 @@ async def get_category(
         bread_size=bread_size,
         location=location,
         vidfrom=vidfrom,
-        vidto=vidto
+        vidto=vidto,
+        finishing_time=finishing_time
+
     )
     if cat_prod is not None:
         for product_id, amount in dict(cat_prod).items():

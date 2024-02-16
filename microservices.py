@@ -418,9 +418,9 @@ def name_generator(length=20):
 
 
 
-statusdata = {'0':'Новая','1':'В работе',"2":'В работе','3':'Завершена','4':'Отменена'}
+statusdata = {'0':'Новая','1':'В работе',"2":'В работе','3':'Завершена','4':'Отменена','5':'На паузе','6':"Окончание"}
 def file_generator(data,file):
-    inserting_data = {"Номер заявки":[],"Клиент":[],'Филиал':[],'Порция еды':[],'Порции хлеба':[],'Дата поставки':[],'Статус':[]}
+    inserting_data = {"Номер заявки":[],"Клиент":[],'Филиал':[],'Порция еды':[],'Дата поставки':[],'Статус':[],'Порции хлеба':[]}
     for row in data:
         inserting_data['Номер заявки'].append(row.id)
         inserting_data['Клиент'].append(row.user.full_name)
@@ -447,8 +447,37 @@ def file_generator(data,file):
         # Generate Excel file
         df.to_excel(file_name, index=False)
     return [file_name ,total_food,total_bread]
-    # Write the Excel file to a BytesIO object
 
-    # Close the BytesIO object
+
+
+def Excell_generate_it(data):
+    inserting_data = {"Номер заявки":[],"Клиент":[],'Филиал':[],'Дата создания':[],'Дата окончания':[],'Крайний срок':[],'Статус':[],'Категория':[]}
+    for row in data:
+        inserting_data['Номер заявки'].append(row.id)
+        inserting_data['Клиент'].append(row.user.full_name)
+        inserting_data['Филиал'].append(row.fillial.parentfillial.name)
+        create_time = row.created_at.strftime("%d-%m-%Y %H:%M")
+        inserting_data['Дата создания'].append(create_time)
+        if row.finishing_time:
+            deadline = row.finishing_time.strftime("%d-%m-%Y %H:%M")
+        else:
+            deadline = ""
+            
+        inserting_data['Крайний срок'].append(deadline)
+        inserting_data['Статус'].append(statusdata[str(row.status)])
+        inserting_data['Категория'].append(row.category.name)
+        if row.finished_at:
+            finish_time = row.finished_at.strftime("%d-%m-%Y %H:%M")
+            inserting_data['Дата окончания'].append(finish_time)
+        else:
+            inserting_data['Дата окончания'].append("")
+        inserting_data['Комментарий'].append(row.description)
+
+    
+    file_name  = f"files/{name_generator()}.xlsx"
+    df = pd.DataFrame(inserting_data)
+    # Generate Excel file
+    df.to_excel(file_name, index=False)
+    return file_name
 
     
