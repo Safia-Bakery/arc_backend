@@ -406,7 +406,8 @@ async def put_request_id(
                                  location=request_list.location,
                                  arrival_date=request_list.arrival_date,
                                 vidfrom=None,
-                                vidto=None
+                                vidto=None,
+                                finishing_time=None
                                  )
                 for i in new_neq:
                     query.add_expenditure(db=db,

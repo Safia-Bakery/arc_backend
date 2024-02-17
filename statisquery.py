@@ -317,10 +317,13 @@ def tools_update(db: Session,form_data:schemas.ToolsUpdate):
     return query
 
 
-def tools_query_iarch(db: Session, parent_id):
+def tools_query_iarch(db: Session, parent_id,name):
     query = db.query(models.Tools)
     if parent_id is not None:
-        query = query.filter(models.Tools.parentid == str(parent_id)).filter(models.Tools.status==1).all()
+        query = query.filter(models.Tools.parentid == str(parent_id)).filter(models.Tools.status==1)
+        if name is not None:
+            query = query.filter(models.Tools.name.ilike(f"%{name}%"))
+        query = query.all()
     else:
         return []
     return query
