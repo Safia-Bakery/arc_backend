@@ -95,6 +95,7 @@ class ToolsSearch(BaseModel):
     min_amount:Optional[float]=None
     max_amount:Optional[float]=None
     ftime:Optional[float]=None
+    status:Optional[int]=None   
     class Config:
         orm_mode = True
 

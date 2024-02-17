@@ -12,6 +12,9 @@ from datetime import datetime
 from sqlalchemy import or_, and_, Date, cast
 from uuid import UUID
 
+import time
+
+
 timezonetash = pytz.timezone("Asia/Tashkent")
 
 
@@ -966,38 +969,32 @@ def synchproducts(db: Session, grouplist, products):
         if parentId in grouplist[1]:
             get_or_update(db,price,name,num,id,code,producttype,mainunit,2,parentId)
     return True
-
 def update_products_price(db:Session,prices,store_id_checker:Optional[UUID]=None):
-    for i in prices:
-        id = i["product"]
-        store_id = i['store']
+        for i in prices:
+            
+            id = i["product"]
+            store_id = i['store']
 
-        if i['sum']==0:
-            price = 0
-        else:
-            price = i['sum']/i['amount']
-        if store_id_checker is not None:
-            if store_id ==store_id_checker:
+            if i['sum'] == 0:
+                price = 0
+            else:
+                price = i['sum'] / i['amount']
 
-                query = db.query(models.Tools).filter(models.Tools.iikoid==id).first()
+            if store_id_checker is not None :
+                if store_id == store_id_checker:
+                    query = db.query(models.Tools).filter(models.Tools.iikoid == id).first()
+                    if query:
+                        query.total_price = i['sum']
+                        query.amount_left = i['amount']
+                        query.price = price
+                        query.last_update = datetime.now(timezonetash)
+            else:
+                query = db.query(models.Tools).filter(models.Tools.iikoid == id).update({models.Tools.total_price:i['sum'],models.Tools.amount_left:i['amount'],models.Tools.price:price,models.Tools.last_update:datetime.now(timezonetash)},synchronize_session=False)
 
-                if query:
-                    query.total_price = i['sum']
-                    query.amount_left = i['amount']
-                    query.price = price
-                    query.last_update = datetime.now(timezonetash)
-                    db.commit()
-                    db.refresh(query)
-        else:
-            query = db.query(models.Tools).filter(models.Tools.iikoid==id).first()
-            if query:
-                query.total_price = i['sum']
-                query.amount_left = i['amount']
-                query.price = price
-                query.last_update = datetime.now(timezonetash)
-                db.commit()
-                db.refresh(query)
-    return True
+            
+            db.commit()
+        return True
+
 
 def check_suppier_exist(db: Session, supplier_id):
     query = (
