@@ -85,16 +85,16 @@ async def insert_groups(
     permission = checkpermissions(request_user=request_user, db=db, page=30)
     #return {'success':True}
     if permission:
-        key ='4912d4b7-a9c8-54d0-341d-0239812721a5' #authiiko()
-        #groups = getgroups(key=key)
-        #group_list = crud.synchgroups(db, groups)
-        #del groups
-        #products = getproducts(key=key)
-        #
-        #product_list = crud.synchproducts(db, grouplist=group_list, products=products)
-        #del products
+        key =authiiko()
+        groups = getgroups(key=key)
+        group_list = crud.synchgroups(db, groups)
+        del groups
+        products = getproducts(key=key)
         
-        prices_arc = get_prices(key=key,department_id='fe7dce09-c2d4-46b9-bab1-86be331ed641',)
+        product_list = crud.synchproducts(db, grouplist=group_list, products=products)
+        del products
+        
+        prices_arc = get_prices(key=key,department_id='fe7dce09-c2d4-46b9-bab1-86be331ed641')
         crud.update_products_price(db=db,prices=prices_arc,store_id_checker='4aafb5af-66c3-4419-af2d-72897f652019')
         del prices_arc
         prices_inv = get_prices(key=key,department_id='c39aa435-8cdf-4441-8723-f532797fbeb9')
