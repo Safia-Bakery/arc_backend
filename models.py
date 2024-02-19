@@ -135,7 +135,10 @@ class Category(Base):
     urgent = Column(Boolean)
     sphere_status = Column(Integer, nullable=True)
     department = Column(Integer)
+    department_name = Column(String, nullable=True)
+
     sub_id = Column(Integer, nullable=True)
+    sub_name = Column(String, nullable=True)    
     file = Column(String, nullable=True)
     ftime = Column(Float, nullable=True)
     cat_prod = relationship("Products", back_populates="prod_cat")
