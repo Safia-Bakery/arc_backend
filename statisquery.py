@@ -612,8 +612,8 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
     parent_ids = parent_ids.distinct(models.Tools.parentid).filter(models.Requests.status==3).filter(models.Tools.ftime!=None).all()
     data = {}
 
-    ftime_timedelta = timedelta(seconds=48*3600)
-    #ftime_timedelta = 48*3600
+    #ftime_timedelta = timedelta(seconds=48*3600)
+    ftime_timedelta = 48*3600
     for parent_id in parent_ids:
 
         total = (
@@ -628,7 +628,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
                 / timer,
                 Integer,
             ),
-        )
+        ) 
         .join(models.Expanditure).join(models.Tools).join(models.Category)
         .filter(
             models.Requests.status==3,
@@ -647,6 +647,8 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Tools).filter(
             models.Tools.parentid==parent_id.parentid,models.Tools.ftime!=None).filter(
             models.Requests.status.in_([0,1,2,3])).count()
+        print(total_tools)
+        
         
         # on_time_requests = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(
         #     models.Category.department==department).filter(
@@ -664,11 +666,12 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
 
         finished_ontime = db.query(
             models.Requests
-        ).join(models.Expanditure).join(models.Tools).filter(
+        ).join(models.Expanditure).join(models.Tools).join(models.Category).filter(
             models.Requests.status == 3,
+            models.Category.department==department, 
             models.Tools.ftime!=None,
             models.Tools.parentid == parent_id.parentid,
-            extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= ftime_timedelta.total_seconds()
+            extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= ftime_timedelta
         ).count()
 
 
