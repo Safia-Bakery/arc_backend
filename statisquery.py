@@ -613,7 +613,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
     data = {}
 
     #ftime_timedelta = timedelta(seconds=48*3600)
-    ftime_timedelta = 48*3600
+    ftime_timedelta = 100*3600
     for parent_id in parent_ids:
 
         total = (
@@ -632,6 +632,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         .join(models.Expanditure).join(models.Tools).join(models.Category)
         .filter(
             models.Requests.status==3,
+            models.Expanditure.status==1,
             models.Tools.department== department,
             models.Tools.parentid == parent_id.parentid,
         )
