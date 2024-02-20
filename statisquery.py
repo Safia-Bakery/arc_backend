@@ -664,9 +664,10 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
 
 
         finished_ontime = db.query(
-            models.Requests
-        ).join(models.Expanditure).join(models.Tools).join(models.Category).filter(
+            models.Expanditure
+        ).join(models.Requests).join(models.Tools).join(models.Category).filter(
             models.Requests.status == 3,
+            models.Tools.ftime!=None,
             models.Category.department==department, 
             models.Tools.parentid == parent_id.parentid,
             extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= ftime_timedelta
@@ -674,9 +675,10 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
 
 
         not_finished_ontime = db.query(
-        models.Requests
-            ).join(models.Expanditure).join(models.Tools).filter(
+        models.Expanditure
+            ).join(models.Requests).join(models.Tools).filter(
             models.Requests.status == 3,
+            models.Tools.ftime!=None,
             models.Category.department==department,
             models.Tools.parentid == parent_id.parentid,
             extract('epoch', models.Requests.finished_at - models.Requests.started_at)> ftime_timedelta
