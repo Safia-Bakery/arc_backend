@@ -129,11 +129,15 @@ def create_data_dict(db:Session,data,categories,started_at,finished_at,categorie
         }
 
         if category.id in categoriesids:
+            print('sub',category.name)
             data[category.name]['sub'].append(dict_data)
         else:
-            data[category.name] = {"own":[],'sub':[]}
-            data[category.name]['own'].append(dict_data)
-            categoriesids.append(category.id)
+            if category.parent_id is not None:
+                data[category.name] = {"own":[],'sub':[]}
+                data[category.name]['own'].append(dict_data)
+                categoriesids.append(category.id)
+            else:
+                print(category.name)
 
     return [data,categoriesids]
 
@@ -147,6 +151,7 @@ def stats_query(db:Session,started_at,finished_at,timer=60):
     }
     data,categoriesids = create_data_dict(db=db,data=data,categories=parent_categories,started_at=started_at,finished_at=finished_at,categoriesids=categoriesids,timer=timer)
     for category in parent_categories:
+
         sub_categories = get_category_list(db=db,department=1,sphere_status=1,parent_id=category.id)
         data,categoriesids = create_data_dict(db=db,data=data,categories=sub_categories,started_at=started_at,finished_at=finished_at,categoriesids=categoriesids,timer=timer)
     return data
