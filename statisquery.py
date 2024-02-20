@@ -659,7 +659,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
 
         finished_ontime = db.query(
             models.Expanditure
-        ).join(models.Requests).join(models.Tools).join(models.Category).filter(
+        ).join(models.Requests).join(models.Tools).filter(
             models.Requests.status == 3,
             models.Tools.ftime!=None,
             models.Tools.parentid == parent_id.parentid,
@@ -677,8 +677,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         ).count()
 
 
-        not_started = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(
-            models.Category.department==department).filter(
+        not_started = db.query(models.Expanditure).join(models.Requests).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(models.Tools.ftime!=None).filter(
             models.Requests.status.in_([0,1,2])).count()
 
         #print(not_finished_ontime)
@@ -695,9 +694,6 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         # models.Category.department==department
         # ).count()
 
-        not_started = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(
-            models.Category.department==department).filter(
-            models.Requests.status.in_([0,1,2])).count()
 
         
         not_finishedon_time_percent = (not_finished_ontime/total_tools)*100
