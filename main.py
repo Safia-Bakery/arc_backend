@@ -68,6 +68,7 @@ from fastapi.staticfiles import StaticFiles
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from routes.inv_routes import inv_router
 from routes.it_routes import it_router
+from routes.arc_routes import arc_routes
 
 models.Base.metadata.create_all(bind=engine)
 load_dotenv()
@@ -91,6 +92,7 @@ app.include_router(hrrouter)
 app.include_router(user_router)
 app.include_router(inv_router)
 app.include_router(it_router)
+app.include_router(arc_routes)
 app.mount("/files", StaticFiles(directory="files"), name="files")
 
 timezonetash = pytz.timezone("Asia/Tashkent")
