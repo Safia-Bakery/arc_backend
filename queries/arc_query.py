@@ -65,7 +65,8 @@ def create_data_dict(db:Session,category,started_at,finished_at,timer=60):
         if started_at is not None and finished_at is not None:
             status_zero = status_zero.filter(models.Requests.created_at.between(started_at,finished_at))
         status_zero = status_zero.count()
-
+        if finished_on_time+not_finished_on_time+status_zero == 0:
+            return None
         #---------calculating percentages-----------
         try:
             percentage_finished_on_time = (finished_on_time / total_requests) * 100
@@ -141,25 +142,22 @@ def stats_query(db:Session,started_at,finished_at,timer=60):
 
     def get_children(category_id):
         children = db.query(models.Category).filter_by(parent_id=category_id).filter(models.Category.status==1)
-        if started_at is not None and finished_at is not None:
-            children = children.filter(models.Requests.created_at.between(started_at,finished_at))
         children = children.all()
         for child in children:
             yield child
             yield from get_children(child.id)
 
     categories = db.query(models.Category).join(models.Requests).filter(models.Category.parent_id==None,models.Category.department==1,models.Category.sphere_status==1)
-    if started_at is not None and finished_at is not None:
-        categories = categories.filter(models.Requests.created_at.between(started_at,finished_at))
     categories = categories.filter(models.Category.status==1).all()
-
     for category in categories:
         data[category.name] = []
         all_data = create_data_dict(db=db,category=category,started_at=started_at,finished_at=finished_at,timer=timer)
-        data[category.name].append(all_data)
+        if all_data is not None:
+            data[category.name].append(all_data)
         for child in get_children(category.id):
             all_data = create_data_dict(db=db,category=child,started_at=started_at,finished_at=finished_at,timer=timer)
-            data[category.name].append(all_data)
+            if all_data is not None:
+                data[category.name].append(all_data)
 
   
     return data
