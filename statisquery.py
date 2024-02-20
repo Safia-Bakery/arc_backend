@@ -645,7 +645,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
 
         total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Tools).filter(
             models.Tools.parentid==parent_id.parentid).filter(models.Expanditure.status==1).filter(models.Tools.ftime!=None).filter(
-            models.Requests.status==0).count()
+            models.Requests.status.in_([0,1,2,3])).count()
         
         # on_time_requests = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(
         #     models.Category.department==department).filter(
@@ -660,7 +660,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         finished_ontime = db.query(
             models.Expanditure
         ).join(models.Requests).join(models.Tools).filter(
-            models.Expanditure.status == 1,
+            models.Requests.status == 3,
             models.Tools.ftime!=None,
             models.Tools.parentid == parent_id.parentid,
             models.Requests.finished_at - models.Requests.started_at <= ftime_timedelta
@@ -669,7 +669,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         not_finished_ontime = db.query(
         models.Expanditure
             ).join(models.Requests).join(models.Tools).filter(
-            models.Expanditure.status == 1,
+            models.Requests.status == 3,
             models.Tools.ftime!=None,
             models.Tools.parentid == parent_id.parentid,
             models.Requests.finished_at - models.Requests.started_at> ftime_timedelta
