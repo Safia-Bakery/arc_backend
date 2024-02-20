@@ -28,11 +28,11 @@ def get_category_list(db:Session,parent_id,department,sphere_status):
     return query.all()
 
 
-def create_data_dict(db:Session,data,categories,started_at,finished_at,categoriesids,timer=60):
-
+def create_data_dict(db:Session,category,started_at,finished_at,timer=60):
+    
    
 
-    for category in categories:
+
         #---------time delta create------------
         ftime_timedelta = timedelta(seconds=category.ftime*3600)
 
@@ -128,32 +128,40 @@ def create_data_dict(db:Session,data,categories,started_at,finished_at,categorie
             'category':category.name
         }
 
-        if category.id in categoriesids:
-            print('sub',category.name)
-            data[category.name]['sub'].append(dict_data)
-        else:
-            if category.parent_id is not None:
-                data[category.name] = {"own":[],'sub':[]}
-                data[category.name]['own'].append(dict_data)
-                categoriesids.append(category.id)
-            else:
-                print(category.name)
-
-    return [data,categoriesids]
+        return dict_data
 
 
 
 
 def stats_query(db:Session,started_at,finished_at,timer=60):
-    parent_categories = get_category_list(db=db,department=1,sphere_status=1,parent_id=None)
-    categoriesids = []
+
     data = {
     }
-    data,categoriesids = create_data_dict(db=db,data=data,categories=parent_categories,started_at=started_at,finished_at=finished_at,categoriesids=categoriesids,timer=timer)
-    for category in parent_categories:
 
-        sub_categories = get_category_list(db=db,department=1,sphere_status=1,parent_id=category.id)
-        data,categoriesids = create_data_dict(db=db,data=data,categories=sub_categories,started_at=started_at,finished_at=finished_at,categoriesids=categoriesids,timer=timer)
+
+    def get_children(category_id):
+        children = db.query(models.Category).filter_by(parent_id=category_id).filter(models.Category.status==1)
+        if started_at is not None and finished_at is not None:
+            children = children.filter(models.Requests.created_at.between(started_at,finished_at))
+        children = children.all()
+        for child in children:
+            yield child
+            yield from get_children(child.id)
+
+    categories = db.query(models.Category).join(models.Requests).filter(models.Category.parent_id==None,models.Category.department==1,models.Category.sphere_status==1)
+    if started_at is not None and finished_at is not None:
+        categories = categories.filter(models.Requests.created_at.between(started_at,finished_at))
+    categories = categories.filter(models.Category.status==1).all()
+
+    for category in categories:
+        data[category.name] = []
+        all_data = create_data_dict(db=db,category=category,started_at=started_at,finished_at=finished_at,timer=timer)
+        data[category.name].append(all_data)
+        for child in get_children(category.id):
+            all_data = create_data_dict(db=db,category=child,started_at=started_at,finished_at=finished_at,timer=timer)
+            data[category.name].append(all_data)
+
+  
     return data
 
 
