@@ -646,7 +646,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
 
 
         total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Tools).filter(
-            models.Tools.parentid==parent_id.parentid).filter(
+            models.Tools.parentid==parent_id.parentid).filter(models.Tools.ftime!=None).filter(
             models.Requests.status.in_([0,1,2,3])).count()
         
         
