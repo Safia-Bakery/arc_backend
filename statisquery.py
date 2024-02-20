@@ -646,7 +646,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
 
 
         total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Tools).filter(
-            models.Tools.parentid==parent_id.parentid).filter(models.Tools.ftime!=None).filter(
+            models.Tools.parentid==parent_id.parentid).filter(
             models.Requests.status.in_([0,1,2,3])).count()
         
         
@@ -668,7 +668,6 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
             models.Expanditure
         ).join(models.Requests).join(models.Tools).join(models.Category).filter(
             models.Requests.status == 3,
-            models.Tools.ftime!=None,
             models.Category.department==department, 
             models.Tools.parentid == parent_id.parentid,
             extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= ftime_timedelta
@@ -679,7 +678,6 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         models.Expanditure
             ).join(models.Requests).join(models.Tools).filter(
             models.Requests.status == 3,
-            models.Tools.ftime!=None,
             models.Category.department==department,
             models.Tools.parentid == parent_id.parentid,
             extract('epoch', models.Requests.finished_at - models.Requests.started_at)> ftime_timedelta
