@@ -8,7 +8,7 @@ from microservices import find_hierarchy
 from Variables import role_ids
 import pytz
 from sqlalchemy.sql import func
-from datetime import datetime
+from datetime import datetime,timedelta
 from sqlalchemy import or_, and_, Date, cast
 from uuid import UUID
 
@@ -530,7 +530,8 @@ def acceptreject(db: Session, form_data: schemas.AcceptRejectRequest, user):
         .filter(models.Requests.id == form_data.request_id)
         .first()
     )
-
+    if form_data.category_id is not None:
+        category= db.query(models.Category).filter(models.Category.id==form_data.category_id).first()
     
     if db_get:
         if form_data.brigada_id is not None:
@@ -551,6 +552,7 @@ def acceptreject(db: Session, form_data: schemas.AcceptRejectRequest, user):
         if form_data.category_id is not None:
             db_get.old_cat_id = form_data.category_id
             db_get.category_id = form_data.category_id
+            db_get.finishing_time= timedelta(hours=category.ftime)+db_get.created_at    
         if form_data.pause_reason is not None:
             db_get.pause_reason = form_data.pause_reason
         if form_data.fillial_id is not None:

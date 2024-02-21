@@ -641,21 +641,10 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         if started_at is not None and finished_at is not None:
             total = total.filter(models.Requests.created_at.between(started_at,finished_at))
         total = total.all()
-        
 
         total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Tools).filter(
             models.Tools.parentid==parent_id.parentid).filter(models.Expanditure.status==1).filter(models.Tools.ftime!=None).filter(
             models.Requests.status.in_([0,1,2,3])).count()
-        
-        # on_time_requests = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(
-        #     models.Category.department==department).filter(
-        #     models.Tools.ftime.is_not(None)).filter(
-        #     models.Requests.status==3 ).filter(func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= ftime_timedelta.total_seconds()).count()
-
-        # not_finishedon_time =db.query(models.Expanditure).join(models.Requests).join(models.Tools).join(models.Category).filter(models.Tools.parentid==parent_id.parentid).filter(
-        #     models.Category.department==department).filter(
-        #     models.Tools.ftime.is_not(None)).filter(
-        #     models.Requests.status==3).filter(func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= ftime_timedelta.total_seconds()).count()
 
         finished_ontime = db.query(
             models.Expanditure
@@ -677,22 +666,6 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
 
         not_started = db.query(models.Expanditure).join(models.Requests).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(models.Tools.ftime!=None).filter(
             models.Requests.status.in_([0,1,2])).count()
-
-        #print(not_finished_ontime)
-        #print(total_tools)
-        #print(finished_ontime)
-        #print(not_started)
-        #return {'fucks':'you'}
-
-        # not_finishedon_time =db.query(models.Expanditure).join(models.Requests).join(models.Tools).join(models.Category).filter(
-        # models.Requests.status == 3,
-        # models.Tools.ftime!=None,
-        # extract('epoch', models.Requests.finished_at - models.Requests.started_at) > models.Tools.ftime * 3600,
-        # models.Tools.parentid == parent_id.parentid,
-        # models.Category.department==department
-        # ).count()
-
-
         
         not_finishedon_time_percent = (not_finished_ontime/total_tools)*100
         on_time_requests_percent = (finished_ontime/total_tools)*100
@@ -713,8 +686,5 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
                                         'not_started_percent':not_started_percent,
                                         'avg_finishing':avg_finishing
                                      }
-
-        
-
     return data
 
