@@ -642,31 +642,36 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
             total = total.filter(models.Requests.created_at.between(started_at,finished_at))
         total = total.all()
 
-        total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Tools).filter(
-            models.Tools.parentid==parent_id.parentid).filter(models.Expanditure.status==1).filter(models.Tools.ftime!=None).filter(
+        total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(
+            models.Tools.parentid==parent_id.parentid,models.Category.department==department).filter(models.Expanditure.status==1).filter(models.Tools.ftime!=None).filter(
             models.Requests.status.in_([0,1,2,3])).count()
 
         finished_ontime = db.query(
             models.Expanditure
-        ).join(models.Requests).join(models.Tools).filter(
+        ).join(models.Requests).join(models.Category).join(models.Tools).filter(
             models.Requests.status == 3,
             models.Tools.ftime!=None,
+            models.Expanditure.status==1,
+            models.Category.department==department,
+            func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= models.Tools.ftime * 3600,
             models.Tools.parentid == parent_id.parentid,
-            models.Requests.finished_at - models.Requests.started_at <= ftime_timedelta
+            #models.Requests.finished_at - models.Requests.started_at <= ftime_timedelta
         ).count()
 
         not_finished_ontime = db.query(
         models.Expanditure
-            ).join(models.Requests).join(models.Tools).filter(
+            ).join(models.Requests).join(models.Category).join(models.Tools).filter(
+            models.Category.department==department, 
             models.Requests.status == 3,
+            models.Expanditure.status==1,
             models.Tools.ftime!=None,
             models.Tools.parentid == parent_id.parentid,
-            models.Requests.finished_at - models.Requests.started_at> ftime_timedelta
+            func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) > models.Tools.ftime * 3600,
         ).count()
 
-        not_started = db.query(models.Expanditure).join(models.Requests).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(models.Tools.ftime!=None).filter(
+        not_started = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(models.Tools.ftime!=None,models.Category.department==department,models.Expanditure.status==0).filter(
             models.Requests.status.in_([0,1,2])).count()
-        
+
         not_finishedon_time_percent = (not_finished_ontime/total_tools)*100
         on_time_requests_percent = (finished_ontime/total_tools)*100
         not_started_percent = (not_started/total_tools)*100
