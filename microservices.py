@@ -253,7 +253,6 @@ def send_document_iiko(key, data):
         data=xml_data,
         headers=headers,
     )
-    return True
     if data.request.category.department == 2:
         headers = {
             "Content-Type": "application/xml",  # Set the content type to XML
