@@ -425,6 +425,19 @@ async def put_request_id(
             chat_id=request_list.user.telegram_id,
             message_text=f"Ваша заявка #{request_list.id}s была отменена по причине: {request_list.deny_reason}",
         )
+    elif form_data.status == 5:
+        sendtotelegramchannel(
+            bot_token=bot_token,
+            chat_id=request_list.user.telegram_id,
+            message_text=f"Уважаемый {request_list.user.full_name}, ваша заявка #{request_list.id}s временно приостановлена по причине: {request_list.pause_reason}",
+        )
+    elif form_data.status == 6:
+        inlinewebapp(
+                    bot_token=bot_token,
+                    chat_id=request_list.user.telegram_id,
+                    message_text=f"Уважаемый {request_list.user.full_name}, Ваша заявка #{request_list.id}s решена (отменена).В течение 3-х дней вы можете сказать \"Спасибо\" или пожаловаться на выполнение. Поставьте, пожалуйста, рейтинг решения вашей заявки от 1 до 5.",
+                    url=url,
+                )
     return request_list
 
 
