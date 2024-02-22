@@ -990,11 +990,18 @@ def update_products_price(db:Session,prices,store_id_checker:Optional[UUID]=None
                         query.amount_left = i['amount']
                         query.price = price
                         query.last_update = datetime.now(timezonetash)
+                        db.commit()
             else:
-                query = db.query(models.Tools).filter(models.Tools.iikoid == id).update({models.Tools.total_price:i['sum'],models.Tools.amount_left:i['amount'],models.Tools.price:price,models.Tools.last_update:datetime.now(timezonetash)},synchronize_session=False)
+                query = db.query(models.Tools).filter(models.Tools.iikoid == id).first()
+                if query:
+                    query.total_price = i['sum']
+                    query.amount_left = i['amount']
+                    query.price = price
+                    query.last_update = datetime.now(timezonetash)
+
+                    db.commit()
 
             
-            db.commit()
         return True
 
 
