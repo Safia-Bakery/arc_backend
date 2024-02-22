@@ -991,16 +991,16 @@ def update_products_price(db:Session,prices,store_id_checker:Optional[UUID]=None
                         query.price = price
                         query.last_update = datetime.now(timezonetash)
                         db.commit()
-            else:
-                query = db.query(models.Tools).filter(models.Tools.iikoid == id).first()
-                if query:
-                    query.total_price = i['sum']
-                    query.amount_left = i['amount']
-                    query.price = price
-                    query.last_update = datetime.now(timezonetash)
-
-                    db.commit()
-
+            #else:
+            #    query = db.query(models.Tools).filter(models.Tools.iikoid == id).first()
+            #    if query:
+            #        query.total_price = i['sum']
+            #        query.amount_left = i['amount']
+            #        query.price = price
+            #        query.last_update = datetime.now(timezonetash)
+#
+            #        db.commit()
+#
             
         return True
 
