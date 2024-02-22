@@ -354,6 +354,7 @@ async def put_request_id(
             except:
                 pass
         if request_list.category.department == 6:
+            url = f"{FRONT_URL}tg/order-rating/{request_list.id}?user_id={request_list.user.id}&department={request_list.category.department}&sub_id={request_list.category.sub_id}"
             try:
                 inlinewebapp(
                     bot_token=bot_token,
