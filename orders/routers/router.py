@@ -354,7 +354,6 @@ async def put_request_id(
             except:
                 pass
         if request_list.category.department == 6:
-            url = f"{FRONT_URL}tg/order-rating/{request_list.id}?user_id={request_list.user.id}&department={request_list.category.department}&sub_id={request_list.category.sub_id}"
             try:
                 inlinewebapp(
                     bot_token=bot_token,
@@ -433,6 +432,8 @@ async def put_request_id(
             message_text=f"Уважаемый {request_list.user.full_name}, ваша заявка #{request_list.id}s временно приостановлена по причине: {request_list.pause_reason}",
         )
     elif form_data.status == 6:
+        url = f"{FRONT_URL}tg/order-rating/{request_list.id}?user_id={request_list.user.id}&department={request_list.category.department}&sub_id={request_list.category.sub_id}"
+
         inlinewebapp(
                     bot_token=bot_token,
                     chat_id=request_list.user.telegram_id,
