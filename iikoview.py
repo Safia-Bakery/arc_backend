@@ -206,11 +206,12 @@ async def synch_expanditure_iiko(
 ):
     # permission = checkpermissions(request_user=request_user,db=db,page=26)
     # if permission:
+    key=authiiko()
     data = crud.check_expanditure_iiko(db, form_data=form_data)
     for i in data:
         if i.status == 0:
             query = crud.synch_expanditure_crud(db, id=i.id)
-            send_document_iiko(key=authiiko(), data=query)
+            send_document_iiko(key=key, data=query)
     return True
 
 
