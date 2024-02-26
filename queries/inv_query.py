@@ -15,6 +15,8 @@ from datetime import datetime,timedelta
 
 
 
+
+
 def delete_tool(db:Session,id):
     query = db.query(models.Tools).filter(models.Tools.id == id).delete()
     db.commit()

@@ -207,6 +207,7 @@ async def synch_expanditure_iiko(
     # permission = checkpermissions(request_user=request_user,db=db,page=26)
     # if permission:
     key=authiiko()
+    
     data = crud.check_expanditure_iiko(db, form_data=form_data)
     for i in data:
         if i.status == 0:
