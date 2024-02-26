@@ -277,6 +277,7 @@ def send_document_iiko(key, data):
         data=xml_data,
         headers=headers,
     )
+    print(response.content)
     return True
 
 
