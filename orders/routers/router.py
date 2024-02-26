@@ -251,6 +251,7 @@ async def put_request_id(
     request_list = crud.acceptreject(
         db, form_data=form_data, user=request_user.full_name
     )
+
     if form_data.status == 1:
         try:
             brigada_id = request_list.brigada.id
@@ -310,7 +311,6 @@ async def put_request_id(
                 )
             except:
                 pass
-
     elif form_data.status == 2:
         if request_list.category.department == 5:
             try:
@@ -320,7 +320,6 @@ async def put_request_id(
                     message_text=f"Уважаемый {request_list.user.full_name}, мы отправили транспорт по вашему запросу #{request_list.id}s Ожидайте его прибытия. \n🚛Грузовик: {request_list.cars.name} {request_list.cars.number}")
             except:
                 pass
-
     elif form_data.status == 3:
         url = f"{FRONT_URL}tg/order-rating/{request_list.id}?user_id={request_list.user.id}&department={request_list.category.department}&sub_id={request_list.category.sub_id}"
         if request_list.category.department == 3:
@@ -374,26 +373,24 @@ async def put_request_id(
             except:
                 pass
         if request_list.category.department == 2:
+            # message_ready  is for sending product to user 
+            message_ready = f"""Уважаемый {request_list.user.full_name}, инвентарь по вашей заявке #{request_list.id}s """
             
-
-
-            try:
-                inlinewebapp(
-                    bot_token=bot_token,
-                    chat_id=request_list.user.telegram_id,
-                    message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по Inventary: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
-                    url=url,
-                )
-            except:
-                pass
             new_neq = []
             for i in request_list.expanditure:
                 if i.status==0:
                     new_neq.append(i)
                 else:
+                    message_ready += f"\n{i.tool.name} - {i.amount} шт. "
                     edit_expenditure = crud.synch_expanditure_crud(db, id=i.id)
                     send_document_iiko(key=authiiko(), data=edit_expenditure)
+
+            message_ready += "\nГотов и отправлен вам на филиал, прибудет через 12 часов."
+
             if new_neq:
+
+                message_ready+=f"\n\n♻️Инвентарь в обработке:"
+
                 new_request = crud.add_request(db=db,
                                  category_id=request_list.category_id,
                                  fillial_id=request_list.fillial_id,
@@ -410,6 +407,7 @@ async def put_request_id(
                                 finishing_time=None
                                  )
                 for i in new_neq:
+                    message_ready+=f"\n{i.tool.name} - {i.amount} шт. "
                     query.add_expenditure(db=db,
                                          request_id=new_request.id,
                                          tool_id=i.tool_id,
@@ -417,8 +415,16 @@ async def put_request_id(
                                          comment=i.comment,
                                          status=0
                                          )
-                    
-
+                message_ready +="\nПри первой возможности будет отправлено"
+            try:
+                inlinewebapp(
+                    bot_token=bot_token,
+                    chat_id=request_list.user.telegram_id,
+                    message_text=message_ready,
+                    url=url,
+                )
+            except:
+                pass
     elif form_data.status == 4:
         sendtotelegramchannel(
             bot_token=bot_token,

@@ -12,6 +12,7 @@ from fastapi import (
     Request,
     status,
 )
+import pytz
 import schemas
 from typing import Annotated
 import models
@@ -36,11 +37,21 @@ from microservices import (
 )
 from fastapi import APIRouter
 from queries import inv_query
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
 
-
+timezonetash = pytz.timezone("Asia/Tashkent")
 
 inv_router = APIRouter()
 
+#def 
+#
+#@inv_query.on_event("startup")
+#def startup_event():
+#    scheduler = BackgroundScheduler()
+#    trigger  = CronTrigger(hour=1, minute=20, second=00,timezone=timezonetash)  # Set the desired time for the function to run (here, 12:00 PM)
+#    scheduler.add_job(scheduled_function, trigger=trigger, args=[next(get_db())])
+#    scheduler.start()
 
 
 @inv_router.delete("/tools", tags=["Tools"], status_code=status.HTTP_200_OK)

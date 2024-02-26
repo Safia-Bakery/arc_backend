@@ -333,6 +333,22 @@ def few_tools_query(db: Session):
     query = query.filter(models.Tools.amount_left<models.Tools.min_amount).all()
     return query
 
+# check if the tool is already ordered
+# and if not still delivered you can create
+# and if tool order is  in deliverd request you can create another request
+
+def tool_check_order(db:Session,tool_id):
+    query = db.query(models.NeededTools).join(models.ToolsOrder).filter(models.NeededTools.tool_id==tool_id).filter(models.ToolsOrder.status==0).all()
+    if query:
+        return False
+    return True
+
+
+# here we are creating a new tool order
+# orders are created according to in minimum amount of tools
+# minimum amount of tools is set by the admin
+# amount of tools are synchronized with the iiko    
+
 def order_tool_create(db:Session,user_id):
     tools = few_tools_query(db=db)
     if not tools:
@@ -341,11 +357,13 @@ def order_tool_create(db:Session,user_id):
     db.add(query)
     db.commit()
     db.refresh(query)
+
     for i in tools:
-        ordering_amount = i.max_amount - i.amount_left
-        tool_query = models.NeededTools(tool_id=i.id,toolorder_id=query.id,ordered_amount = ordering_amount,amount_last=i.amount_left)
-        db.add(tool_query)
-        db.commit()
+        if tool_check_order(db=db,tool_id=i.id):
+            ordering_amount = i.max_amount - i.amount_left
+            tool_query = models.NeededTools(tool_id=i.id,toolorder_id=query.id,ordered_amount = ordering_amount,amount_last=i.amount_left)
+            db.add(tool_query)
+            db.commit()
     return True
 
 

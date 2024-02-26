@@ -111,10 +111,10 @@ def scheduled_function(db: Session):
     group_list = crud.synchgroups(db, groups)
     del groups
     products = getproducts(key=key)
-    
+
     product_list = crud.synchproducts(db, grouplist=group_list, products=products)
     del products
-    
+
     prices_arc = get_prices(key=key,department_id='fe7dce09-c2d4-46b9-bab1-86be331ed641')
     crud.update_products_price(db=db,prices=prices_arc,store_id_checker='4aafb5af-66c3-4419-af2d-72897f652019')
     del prices_arc
