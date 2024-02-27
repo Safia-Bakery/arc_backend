@@ -450,10 +450,11 @@ def file_generator(data,file):
 
 
 def Excell_generate_it(data):
-    inserting_data = {"Номер заявки":[],"Клиент":[],'Филиал':[],'Дата создания':[],'Дата окончания':[],'Дедлайн':[],'Статус':[],'Категория':[],'Комментарий':[],'Срочно':[],'Дата решения':[],'Дата отмены':[],'Переоткрыта':[]}
+    inserting_data = {"Номер заявки":[],"Клиент":[],"Исполнитель":[],'Филиал':[],'Дата создания':[],'Дата окончания':[],'Дедлайн':[],'Статус':[],'Категория':[],'Комментарий':[],'Срочно':[],'Дата решения':[],'Дата отмены':[],'Переоткрыта':[]}
     for row in data:
         inserting_data['Номер заявки'].append(row.id)
         inserting_data['Клиент'].append(row.user.full_name)
+        inserting_data['Исполнитель'].append(row.user_manager)
         inserting_data['Филиал'].append(row.fillial.parentfillial.name)
         inserting_data['Категория'].append(row.category.name)
         inserting_data['Комментарий'].append(row.description)
