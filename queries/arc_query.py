@@ -11,6 +11,8 @@ from sqlalchemy.sql import func
 from datetime import datetime
 from sqlalchemy import or_, and_, Date, cast,Integer
 from datetime import datetime,timedelta
+from allschemas import arc_schema
+
 
 
 
@@ -162,6 +164,60 @@ def stats_query(db:Session,started_at,finished_at,timer=60):
   
     return data
 
+def create_expense_type(db:Session,form_data:arc_schema.CreateExpensetype):
+    query = models.ArcExpenseType(name=form_data.name,status=form_data.status)
+    db.add(query)
+    db.commit()
+    db.refresh(query)
+    return query
 
+
+def get_expense_type(db:Session,name,id,status):
+    query = db.query(models.ArcExpenseType)
+    if name is not None:
+        query = query.filter(models.ArcExpenseType.name==name)
+    if status is not None:
+        query = query.filter(models.ArcExpenseType.status==status)
+    if id is not None:
+        query = query.filter(models.ArcExpenseType.id==id)
+    return query.all()
+
+def create_expense(db:Session,form_data:arc_schema.CreateExpense):
+    query = models.ArcExpense(amount=form_data.amount,description=form_data.description,from_date=form_data.from_date,to_date=form_data.to_date,expensetype_id=form_data.expensetype_id,status=form_data.status)
+    db.add(query)
+    db.commit()
+    db.refresh(query)
+    return query
+
+def get_expense(db:Session,amount,description,expensetype_id,status,id):
+    query = db.query(models.ArcExpense)
+    if amount is not None:
+        query = query.filter(models.ArcExpense.amount==amount)
+    if description is not None:
+        query = query.filter(models.ArcExpense.description.ilike(f"%{description}%"))
+    if expensetype_id is not None:
+        query = query.filter(models.ArcExpense.expensetype_id==expensetype_id)
+    if status is not None:
+        query = query.filter(models.ArcExpense.status==status)
+    if id is not None:
+        query = query.filter(models.ArcExpense.id==id)
+    return query.all()
+
+def update_expense(db:Session,form_data:arc_schema.UpdateExpense):
+    query = db.query(models.ArcExpense).filter(models.ArcExpense.id==form_data.id).first()
+    if form_data.amount is not None:
+        query.amount = form_data.amount
+    if form_data.description is not None:
+        query.description = form_data.description
+    if form_data.from_date is not None:
+        query.from_date = form_data.from_date
+    if form_data.to_date is not None:
+        query.to_date = form_data.to_date
+    if form_data.expensetype_id is not None:
+        query.expensetype_id = form_data.expensetype_id
+    if form_data.status is not None:
+        query.status = form_data.status
+    db.commit()
+    return query
         
 
