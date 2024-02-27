@@ -22,7 +22,7 @@ def it_query_with_status(db:Session,status):
     three_days_timedelta = timedelta(days=3)
     current_time = datetime.now(timezonetash)
     query = db.query(models.Requests).join(models.Category).filter(models.Requests.status == status).filter(
-        models.Category.department == 2).filter(models.Requests.finished_at- current_time < three_days_timedelta).all()
+        models.Category.department == 2).filter(models.Requests.finished_at- current_time >= three_days_timedelta).all()
     return query
 
 

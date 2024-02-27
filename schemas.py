@@ -265,6 +265,7 @@ class GetRequestList(BaseModel):
     update_time: Optional[Dict[str, str]] = None
     comments: Optional[list[RatingNumber]]=None
     pause_reason: Optional[str] = None
+    price:Optional[float]=None
     class Config:
         orm_mode = True
 
@@ -315,6 +316,7 @@ class GetRequestid(BaseModel):
     request_orpr:Optional[list[schema_router.OrderProductsGet]] = None
     cars:Optional[schema_router.CarsGet] = None
     communication:Optional[list[schema_router.MessageRequest]] = None
+    price:Optional[float]=None
 
     class Config:
         orm_mode = True
@@ -377,6 +379,7 @@ class AcceptRejectRequest(BaseModel):
     finishing_time: Optional[datetime] = None
     car_id: Optional[int] = None
     pause_reason: Optional[str] = None
+    price:Optional[float]=None
 
     @validator("status")
     def validate_status_length(cls, status):

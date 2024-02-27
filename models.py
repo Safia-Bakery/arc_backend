@@ -11,6 +11,7 @@ from sqlalchemy import (
     Time,
     JSON,
     VARCHAR,
+    Date,
 )
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -89,6 +90,7 @@ class Users(Base):
     comments = relationship("Comments", back_populates="user")
     toolor = relationship("ToolsOrder", back_populates="user")
     communication = relationship("Communication", back_populates="user")
+    arcexpense = relationship("ArcExpense", back_populates="user")
 
 #there are 2 types of fillials there is parent fillial that show which fillial is 
 class ParentFillials(Base):
@@ -168,6 +170,7 @@ class Brigada(Base):
     created_at = Column(DateTime(timezone=True), default=func.now())
     sphere_status = Column(Integer, default=1)
     department = Column(Integer, nullable=True)
+    is_outsource = Column(Boolean, default=False)
 
 
 class Expanditure(Base):
@@ -221,6 +224,7 @@ class Requests(Base):
     cars_id = Column(Integer, ForeignKey("cars.id"), nullable=True)
     cars = relationship("Cars", back_populates="request")
     communication = relationship("Communication", back_populates="requestc")
+    price = Column(Float, nullable=True)
 
 
 class Communication(Base):
@@ -384,4 +388,28 @@ class HrQuestions(Base):
     question = Column(String, nullable=True)
     answer = Column(String, nullable=True)
     status = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), default=func.now())
+
+class ArcExpenseType(Base):
+    __tablename__ = "arcexpensetype"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=True)
+    status = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), default=func.now())
+    expense = relationship("ArcExpense", back_populates="expensetype")
+
+
+class ArcExpense(Base):
+    __tablename__ = "arcexpense"
+    id = Column(Integer, primary_key=True, index=True)
+    amount = Column(Float, nullable=True)
+    description = Column(String, nullable=True)
+    status = Column(Integer, default=0)
+    created_at = Column(DateTime(timezone=True), default=func.now())
+    from_date = Column(Date, nullable=True)
+    to_date = Column(Date, nullable=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("Users", back_populates="arcexpense")
+    expensetype_id = Column(Integer, ForeignKey("arcexpensetype.id"))
+    expensetype = relationship("ArcExpenseType", back_populates="expense")
     created_at = Column(DateTime(timezone=True), default=func.now())

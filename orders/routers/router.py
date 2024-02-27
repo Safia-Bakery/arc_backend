@@ -87,7 +87,7 @@ async def add_category(
         sub_id=sub_id,
         file=file,
         parent_id=parent_id,
-        is_child=is_child
+        is_child=is_child,
     )
 
 
@@ -426,11 +426,21 @@ async def put_request_id(
             except:
                 pass
     elif form_data.status == 4:
-        sendtotelegramchannel(
-            bot_token=bot_token,
-            chat_id=request_list.user.telegram_id,
-            message_text=f"Ваша заявка #{request_list.id}s была отменена по причине: {request_list.deny_reason}",
-        )
+        if request_list.category.department == 4:
+            url = f"{FRONT_URL}tg/order-rating/{request_list.id}?user_id={request_list.user.id}&department={request_list.category.department}&sub_id={request_list.category.sub_id}"
+            inlinewebapp(
+                    bot_token=bot_token,
+                    chat_id=request_list.user.telegram_id,
+                    message_text=f"""❌Ваша заявка #{request_list.id}s по IT👨🏻‍💻 отменена по причине: {request_list.deny_reason}\n\nЕсли вы с этим не согласны.\n 
+Поставьте, пожалуйста, рейтинг решения вашей заявки от 1 до 5, и напишите свои комментарии.""",
+                    url=url,
+                )
+        else:
+            sendtotelegramchannel(
+                bot_token=bot_token,
+                chat_id=request_list.user.telegram_id,
+                message_text=f"Ваша заявка #{request_list.id}s была отменена по причине: {request_list.deny_reason}",
+            )
     elif form_data.status == 5:
         sendtotelegramchannel(
             bot_token=bot_token,

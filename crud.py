@@ -555,6 +555,8 @@ def acceptreject(db: Session, form_data: schemas.AcceptRejectRequest, user):
             db_get.finishing_time= timedelta(hours=category.ftime)+db_get.created_at    
         if form_data.pause_reason is not None:
             db_get.pause_reason = form_data.pause_reason
+        if form_data.price is not None:
+            db_get.price = form_data.price
         if form_data.fillial_id is not None:
             if db_get.category.department == 1:
                 origin = 1
