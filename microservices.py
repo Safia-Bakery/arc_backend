@@ -506,7 +506,7 @@ def Excell_generate_it(data):
             else:
                 inserting_data['Переоткрыта'].append("Нет")
         else:
-            inserting_data['Переоткрыта'].append("")
+            inserting_data['Переоткрыта'].append("Нет")
         
 
     
