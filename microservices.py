@@ -450,27 +450,64 @@ def file_generator(data,file):
 
 
 def Excell_generate_it(data):
-    inserting_data = {"Номер заявки":[],"Клиент":[],'Филиал':[],'Дата создания':[],'Дата окончания':[],'Крайний срок':[],'Статус':[],'Категория':[],'Комментарий':[]}
+    inserting_data = {"Номер заявки":[],"Клиент":[],'Филиал':[],'Дата создания':[],'Дата окончания':[],'Дедлайн':[],'Статус':[],'Категория':[],'Комментарий':[],'Срочно':[],'Дата решения':[],'Дата отмены':[],'Переоткрыта':[]}
     for row in data:
         inserting_data['Номер заявки'].append(row.id)
         inserting_data['Клиент'].append(row.user.full_name)
         inserting_data['Филиал'].append(row.fillial.parentfillial.name)
+        inserting_data['Категория'].append(row.category.name)
+        inserting_data['Комментарий'].append(row.description)
+        inserting_data['Статус'].append(statusdata[str(row.status)])
+        
         create_time = row.created_at.strftime("%d-%m-%Y %H:%M")
         inserting_data['Дата создания'].append(create_time)
         if row.finishing_time:
             deadline = row.finishing_time.strftime("%d-%m-%Y %H:%M")
         else:
             deadline = ""
-            
-        inserting_data['Крайний срок'].append(deadline)
-        inserting_data['Статус'].append(statusdata[str(row.status)])
-        inserting_data['Категория'].append(row.category.name)
-        if row.finished_at:
-            finish_time = row.finished_at.strftime("%d-%m-%Y %H:%M")
-            inserting_data['Дата окончания'].append(finish_time)
+
+        
+        if row.category.urgent:
+            inserting_data['Срочно'].append("Да")
+        else:
+            inserting_data['Срочно'].append("Нет")
+
+        inserting_data['Дедлайн'].append(deadline)
+
+
+        if row.status == 3:
+            if row.finished_at:
+                finish_time = row.finished_at.strftime("%d-%m-%Y %H:%M")
+                inserting_data['Дата окончания'].append(finish_time)
+            else:
+                inserting_data['Дата окончания'].append("")
         else:
             inserting_data['Дата окончания'].append("")
-        inserting_data['Комментарий'].append(row.description)
+
+
+        if row.update_time:
+            reshen_time = dict(row.update_time).get('6')
+            inserting_data['Дата решения'].append(reshen_time)
+        else:
+            inserting_data['Дата решения'].append("")
+        
+        if row.status==6:
+            if row.update_time:
+                cancel_time = dict(row.update_time).get('6')
+                inserting_data['Дата отмены'].append(cancel_time)
+            else:
+                inserting_data['Дата отмены'].append("")
+        else:
+            inserting_data['Дата отмены'].append("")
+        
+        if row.finished_at:
+            if row.status !=3:
+                inserting_data['Переоткрыта'].append("Да")
+            else:
+                inserting_data['Переоткрыта'].append("Нет")
+        else:
+            inserting_data['Переоткрыта'].append("")
+        
 
     
     file_name  = f"files/{name_generator()}.xlsx"
