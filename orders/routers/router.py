@@ -453,7 +453,8 @@ async def put_request_id(
         inlinewebapp(
                     bot_token=bot_token,
                     chat_id=request_list.user.telegram_id,
-                    message_text=f"Уважаемый {request_list.user.full_name}, Ваша заявка #{request_list.id}s решена (отменена).В течение 3-х дней вы можете сказать \"Спасибо\" или пожаловаться на выполнение. Поставьте, пожалуйста, рейтинг решения вашей заявки от 1 до 5.",
+                    message_text=f"""Уважаемый {request_list.user.full_name}, Ваша заявка #{request_list.id}s решена.\n
+В течение 3-х дней вы можете сказать "Спасибо" или пожаловаться на выполнение. Поставьте, пожалуйста, рейтинг решения вашей заявки от 1 до 5.""",
                     url=url,
                 )
     return request_list
