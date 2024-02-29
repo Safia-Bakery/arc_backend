@@ -431,7 +431,7 @@ def get_brigada_list(db: Session, sphere_status, department):
         query = query.filter(models.Brigada.sphere_status == sphere_status)
     if department is not None:
         query = query.filter(models.Brigada.department == department)
-    return query.all()
+    return query.order_by(models.Brigada.name).all()
 
 
 def get_request_list(db: Session):

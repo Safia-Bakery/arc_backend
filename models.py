@@ -138,7 +138,7 @@ class Category(Base):
     sphere_status = Column(Integer, nullable=True)
     department = Column(Integer)
     department_name = Column(String, nullable=True)
-
+    sphere_status_name = Column(String,nullable=True)
     sub_id = Column(Integer, nullable=True)
     sub_name = Column(String, nullable=True)    
     file = Column(String, nullable=True)
@@ -412,4 +412,3 @@ class ArcExpense(Base):
     user = relationship("Users", back_populates="arcexpense")
     expensetype_id = Column(Integer, ForeignKey("arcexpensetype.id"))
     expensetype = relationship("ArcExpenseType", back_populates="expense")
-    created_at = Column(DateTime(timezone=True), default=func.now())
