@@ -194,7 +194,7 @@ class GetBrigadaList(BaseModel):
     user: list[UserGetlist]
     sphere_status: int
     department: int
-
+    is_outsource: Optional[bool] = None
     class Config:
         orm_mode = True
 
@@ -206,7 +206,7 @@ class GetBrigadaIdSch(BaseModel):
     status: int
     user: list[UserGetlist]
     sphere_status: Optional[int] = None
-
+    is_outsource: Optional[bool] = None
     class Config:
         orm_mode = True
 
@@ -335,6 +335,7 @@ class UpdateBrigadaSch(BaseModel):
     users: Optional[list[int]] = None
     sphere_status: Optional[int] = None
     department: Optional[int] = None
+    is_outsource: Optional[bool] = None
 
 
 class GetUserIdSch(BaseModel):
