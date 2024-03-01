@@ -487,14 +487,15 @@ def Excell_generate_it(data):
 
 
         if row.update_time:
-            reshen_time = dict(row.update_time).get('6')
+            reshen_time = dict(row.update_time).get('6').strftime("%d.%m.%Y %H:%M:%S")
+
             inserting_data['Дата решения'].append(reshen_time)
         else:
             inserting_data['Дата решения'].append("")
         
         if row.status==6:
             if row.update_time:
-                cancel_time = dict(row.update_time).get('6')
+                cancel_time = dict(row.update_time).get('6').strftime("%d.%m.%Y %H:%M:%S")
                 inserting_data['Дата отмены'].append(cancel_time)
             else:
                 inserting_data['Дата отмены'].append("")
