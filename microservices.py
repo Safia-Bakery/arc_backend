@@ -460,10 +460,10 @@ def Excell_generate_it(data):
         inserting_data['Комментарий'].append(row.description)
         inserting_data['Статус'].append(statusdata[str(row.status)])
         
-        create_time = row.created_at.strftime("%d-%m-%Y %H:%M")
+        create_time = row.created_at.strftime("%d.%m.%Y %H:%M:%S")
         inserting_data['Дата создания'].append(create_time)
         if row.finishing_time:
-            deadline = row.finishing_time.strftime("%d-%m-%Y %H:%M")
+            deadline = row.finishing_time.strftime("%d.%m.%Y %H:%M:%S")
         else:
             deadline = ""
 
@@ -478,7 +478,7 @@ def Excell_generate_it(data):
 
         if row.status == 3:
             if row.finished_at:
-                finish_time = row.finished_at.strftime("%d-%m-%Y %H:%M")
+                finish_time = row.finished_at.strftime("%d.%m.%Y %H:%M:%S")
                 inserting_data['Дата окончания'].append(finish_time)
             else:
                 inserting_data['Дата окончания'].append("")

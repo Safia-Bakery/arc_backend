@@ -38,4 +38,4 @@ def get_it_excell(db:Session,form_data:it_schema.generate_excell):
     if form_data.status:
         query = query.filter(models.Requests.status == form_data.status)
 
-    return query.all()
+    return query.order_by(models.Requests.id.desc()).all()
