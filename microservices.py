@@ -248,7 +248,9 @@ def send_document_iiko(key, data):
                     </item>
                 </items>
                 </document>"""
-        
+        else:
+            xml_data= None
+
     if data.request.category.department == 2:
         headers = {
             "Content-Type": "application/xml",  # Set the content type to XML
@@ -272,6 +274,7 @@ def send_document_iiko(key, data):
                 </item>
             </items>
             </document>"""
+    
     response = requests.post(
         f"{BASE_URL}/resto/api/documents/import/outgoingInvoice?key={key}",
         data=xml_data,
