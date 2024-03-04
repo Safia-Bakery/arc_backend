@@ -62,7 +62,7 @@ def get_expense_type(name:Optional[str]=None,status:Optional[int]=None,id:Option
 
 @arc_routes.post('/v1/expense', tags=["ARC"], status_code=status.HTTP_200_OK)
 def create_expense(form_data:arc_schema.CreateExpense,db: Session = Depends(get_db),request_user: schema.UserFullBack = Depends(get_current_user),):
-    query = arc_query.create_expense(db=db,form_data=form_data)
+    query = arc_query.create_expense(db=db,form_data=form_data,user_id=request_user.id)
     return query
 
 @arc_routes.get('/v1/expense',response_model=Page[arc_schema.GetExpenses], tags=["ARC"], status_code=status.HTTP_200_OK)

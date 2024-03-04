@@ -182,8 +182,8 @@ def get_expense_type(db:Session,name,id,status):
         query = query.filter(models.ArcExpenseType.id==id)
     return query.all()
 
-def create_expense(db:Session,form_data:arc_schema.CreateExpense):
-    query = models.ArcExpense(amount=form_data.amount,description=form_data.description,from_date=form_data.from_date,to_date=form_data.to_date,expensetype_id=form_data.expensetype_id,status=form_data.status)
+def create_expense(db:Session,form_data:arc_schema.CreateExpense,user_id):
+    query = models.ArcExpense(amount=form_data.amount,description=form_data.description,from_date=form_data.from_date,to_date=form_data.to_date,expensetype_id=form_data.expensetype_id,status=form_data.status,user_id=user_id)
     db.add(query)
     db.commit()
     db.refresh(query)

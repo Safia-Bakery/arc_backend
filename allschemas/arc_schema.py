@@ -38,7 +38,7 @@ class GetExpenses(BaseModel):
     to_date:Optional[date]=None
     expensetype_id:int
     status:Optional[int] = None
-    created_at:Optional[date] = None
+    created_at:Optional[datetime] = None
     id:Optional[int] = None
     expensetype:Optional[GetExpensetype] = None
     class Config:
