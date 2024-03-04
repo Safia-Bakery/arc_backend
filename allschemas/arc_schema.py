@@ -15,7 +15,7 @@ class CreateExpensetype(BaseModel):
 class GetExpensetype(BaseModel):
     name:Optional[str] = None
     status:Optional[int] = None
-    created_at:Optional[date] = None
+    created_at:Optional[datetime] = None
     id:Optional[int] = None
     class Config:
         orm_mode = True
