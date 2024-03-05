@@ -9,7 +9,7 @@ from Variables import role_ids
 import pytz
 from sqlalchemy.sql import func
 from datetime import datetime
-from sqlalchemy import or_, and_, Date, cast
+from sqlalchemy import or_, and_, Date, cast,between
 from datetime import datetime,timedelta
 from allschemas import it_schema
 
@@ -34,7 +34,8 @@ def update_status_it(db:Session,id):
 
 
 def get_it_excell(db:Session,form_data:it_schema.generate_excell):
-    query = db.query(models.Requests).join(models.Category).filter(models.Category.department == 4).filter(models.Requests.created_at.between(form_data.start_date,form_data.finish_date))
+    finish_date = form_data.finish_date + timedelta(days=1)
+    query = db.query(models.Requests).join(models.Category).filter(models.Category.department == 4).filter(models.Requests.created_at.between(form_data.start_date,finish_date))
     if form_data.status:
         query = query.filter(models.Requests.status == form_data.status)
 

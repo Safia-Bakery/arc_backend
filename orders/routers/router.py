@@ -373,7 +373,7 @@ async def put_request_id(
             except:
                 pass
         if request_list.category.department == 2:
-            # message_ready  is for sending product to user 
+            # message_ready  is for sending product to user
             message_ready = f"""Уважаемый {request_list.user.full_name}, инвентарь по вашей заявке #{request_list.id}s """
             
             new_neq = []
