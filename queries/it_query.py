@@ -31,8 +31,6 @@ def update_status_it(db:Session,id):
     query = db.query(models.Requests).filter(models.Requests.id == id).update({models.Requests.status: 3})
     db.commit()
     return query
-
-
 def get_it_excell(db:Session,form_data:it_schema.generate_excell):
     finish_date = form_data.finish_date + timedelta(days=1)
     query = db.query(models.Requests).join(models.Category).filter(models.Category.department == 4).filter(models.Requests.created_at.between(form_data.start_date,finish_date))

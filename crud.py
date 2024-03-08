@@ -1055,7 +1055,7 @@ def gettools(db: Session, name,id,department,few_amounts):
         query = query.filter(models.Tools.id == id)
     if few_amounts is not None:
         if few_amounts:
-            query = query.filter(models.Tools.amount_left<models.Tools.min_amount)
+            query = query.filter(models.Tools.amount_left<=models.Tools.min_amount)
     return query.all()
 
 

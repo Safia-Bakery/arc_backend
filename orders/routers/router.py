@@ -307,7 +307,7 @@ async def put_request_id(
                 sendtotelegramchannel(
                     bot_token=bot_token,
                     chat_id=request_list.user.telegram_id,
-                    message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s назначен специалист👨‍💻: {request_list.brigada.name} ",
+                    message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s назначен специалист👨‍💻: {request_list.brigada.name}\nВремя выполнения: {request_list.category.ftime} часов",
                 )
             except:
                 pass
