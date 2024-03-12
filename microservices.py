@@ -479,14 +479,6 @@ def Excell_generate_it(data):
         inserting_data['Дедлайн'].append(deadline)
 
 
-        if row.status == 3:
-            if row.finished_at:
-                finish_time = row.finished_at.strftime("%d.%m.%Y %H:%M:%S")
-                inserting_data['Дата закрыт'].append(finish_time)
-            else:
-                inserting_data['Дата закрыт'].append("")
-        else:
-            inserting_data['Дата закрыт'].append("")
 
 
         if row.update_time:
