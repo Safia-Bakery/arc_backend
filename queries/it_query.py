@@ -40,10 +40,8 @@ def get_it_excell(db:Session,form_data:it_schema.generate_excell):
     return query.order_by(models.Requests.id.desc()).all()
 
 
-def IT_stats_v2(db:Session,started_at, finished_at,department,sphere_status,timer=60):
+def IT_stats_v2(db:Session,started_at, finished_at,department,timer=60):
     categories = db.query(models.Category).join(models.Requests).filter(models.Category.status==1)
-    if sphere_status is not None:
-        categories = categories.filter(models.Category.sphere_status==sphere_status)
     if department is not None:
         categories = categories.filter(models.Category.department==department)
     if finished_at is not None and started_at is not None:
