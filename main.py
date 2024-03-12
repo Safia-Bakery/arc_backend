@@ -148,6 +148,7 @@ def meal_pushes(db:Session):
 def it_close_request(db:Session):
     queries = it_query.it_query_with_status(db=db,status=6)
     for i in queries:
+        print(i.id)
         it_query.update_status_it(db=db,id=i.id)
     return True
 
@@ -171,7 +172,7 @@ def meal_messages():
 @app.on_event("startup")
 def it_query_checker():
     scheduler = BackgroundScheduler()
-    trigger = CronTrigger(minute="*/30")  # Trigger every half hour
+    trigger = CronTrigger(minute="*/1")  # Trigger every half hour
     scheduler.add_job(it_close_request, trigger=trigger, args=[next(get_db())])
     scheduler.start()
 

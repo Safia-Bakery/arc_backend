@@ -28,7 +28,8 @@ def it_query_with_status(db:Session,status):
 
 
 def update_status_it(db:Session,id):
-    query = db.query(models.Requests).filter(models.Requests.id == id).update({models.Requests.status: 3})
+    query = db.query(models.Requests).filter(models.Requests.id == id).first()
+    query.status = 3
     db.commit()
     return query
 def get_it_excell(db:Session,form_data:it_schema.generate_excell):
