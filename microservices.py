@@ -498,6 +498,8 @@ def Excell_generate_it(data):
                 reshen_time = reshen_time.strftime("%d.%m.%Y %H:%M:%S")
             
                 inserting_data['Дата решения'].append(reshen_time)
+            else:
+                inserting_data['Дата решения'].append("")
         else:
             inserting_data['Дата решения'].append("")
         
