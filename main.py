@@ -171,7 +171,7 @@ def meal_messages():
 @app.on_event("startup")
 def it_query_checker():
     scheduler = BackgroundScheduler()
-    trigger = CronTrigger(minute="*/1")  # Trigger every half hour
+    trigger = CronTrigger(minute="*/30")  # Trigger every half hour
     scheduler.add_job(it_close_request, trigger=trigger, args=[next(get_db())])
     scheduler.start()
 
