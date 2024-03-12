@@ -453,7 +453,7 @@ def file_generator(data,file):
 
 
 def Excell_generate_it(data):
-    inserting_data = {"Номер заявки":[],"Клиент":[],"Исполнитель":[],'Филиал':[],'Дата создания':[],"Дата закрыт":[],'Дедлайн':[],'Статус':[],'Категория':[],'Комментарий':[],'Срочно':[],'Дата решения':[],'Дата отмены':[],'Переоткрыта':[]}
+    inserting_data = {"Номер заявки":[],"Клиент":[],"Исполнитель":[],'Филиал':[],'Категория':[],'Комментарий':[],'Статус':[],'Дата создания':[],'Срочно':[],'Переоткрыта':[],'Дедлайн':[],"Дата приостановки":[],'Дата решения':[],'Дата отмены':[],}
     for row in data:
         inserting_data['Номер заявки'].append(row.id)
         inserting_data['Клиент'].append(row.user.full_name)
@@ -500,8 +500,18 @@ def Excell_generate_it(data):
                 inserting_data['Дата решения'].append(reshen_time)
             else:
                 inserting_data['Дата решения'].append("")
+            delayed = dict(row.update_time).get('5')
+            if delayed:
+                delayed = datetime.strptime(delayed, "%Y-%m-%d %H:%M:%S.%f%z")
+
+                # Now you can use the strftime method
+                delayed = delayed.strftime("%d.%m.%Y %H:%M:%S")
+                inserting_data['Дата приостановки'].append(delayed)
+            else:
+                inserting_data['Дата приостановки'].append("")
         else:
             inserting_data['Дата решения'].append("")
+            inserting_data['Дата приостановки'].append("")
         
         if row.status==4:
             if row.update_time:
