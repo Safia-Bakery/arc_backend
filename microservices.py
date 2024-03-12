@@ -503,13 +503,13 @@ def Excell_generate_it(data):
         
         if row.status==4:
             if row.update_time:
-                reshen_time = dict(row.update_time).get('4')
+                cancel_time = dict(row.update_time).get('4')
                 if cancel_time:
-                    cancel_time = datetime.strptime(reshen_time, "%Y-%m-%d %H:%M:%S.%f%z")
+                    cancel_time = datetime.strptime(cancel_time, "%Y-%m-%d %H:%M:%S.%f%z")
 
                     # Now you can use the strftime method
-                    reshen_time = reshen_time.strftime("%d.%m.%Y %H:%M:%S")
-                inserting_data['Дата отмены'].append(reshen_time)
+                    cancel_time = cancel_time.strftime("%d.%m.%Y %H:%M:%S")
+                inserting_data['Дата отмены'].append(cancel_time)
             else:
                 inserting_data['Дата отмены'].append("")
         else:
