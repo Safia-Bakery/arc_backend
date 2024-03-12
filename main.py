@@ -147,6 +147,7 @@ def meal_pushes(db:Session):
 
 def it_close_request(db:Session):
     queries = it_query.it_query_with_status(db=db,status=6)
+    print('came to it close')
     for i in queries:
         print(i.id)
         it_query.update_status_it(db=db,id=i.id)
