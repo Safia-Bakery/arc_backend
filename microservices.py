@@ -420,7 +420,7 @@ def name_generator(length=20):
 
 
 
-statusdata = {'0':'Новая','1':'В работе',"2":'В работе','3':'Завершена','4':'Отменена','5':'На паузе','6':"Окончание"}
+statusdata = {'0':'Новая','1':'В работе',"2":'В работе','3':'Завершена','4':'Отменена','5':'На паузе','6':"Решен"}
 def file_generator(data,file):
     inserting_data = {"Номер заявки":[],"Клиент":[],'Филиал':[],'Порция еды':[],'Дата поставки':[],'Статус':[],'Порции хлеба':[]}
     for row in data:
@@ -453,7 +453,7 @@ def file_generator(data,file):
 
 
 def Excell_generate_it(data):
-    inserting_data = {"Номер заявки":[],"Клиент":[],"Исполнитель":[],'Филиал':[],'Дата создания':[],'Дата окончания':[],'Дедлайн':[],'Статус':[],'Категория':[],'Комментарий':[],'Срочно':[],'Дата решения':[],'Дата отмены':[],'Переоткрыта':[]}
+    inserting_data = {"Номер заявки":[],"Клиент":[],"Исполнитель":[],'Филиал':[],'Дата создания':[],"Дата закрыт":[],'Дедлайн':[],'Статус':[],'Категория':[],'Комментарий':[],'Срочно':[],'Дата решения':[],'Дата отмены':[],'Переоткрыта':[]}
     for row in data:
         inserting_data['Номер заявки'].append(row.id)
         inserting_data['Клиент'].append(row.user.full_name)
@@ -482,11 +482,11 @@ def Excell_generate_it(data):
         if row.status == 3:
             if row.finished_at:
                 finish_time = row.finished_at.strftime("%d.%m.%Y %H:%M:%S")
-                inserting_data['Дата окончания'].append(finish_time)
+                inserting_data['Дата закрыт'].append(finish_time)
             else:
-                inserting_data['Дата окончания'].append("")
+                inserting_data['Дата закрыт'].append("")
         else:
-            inserting_data['Дата окончания'].append("")
+            inserting_data['Дата закрыт'].append("")
 
 
         if row.update_time:
@@ -497,19 +497,19 @@ def Excell_generate_it(data):
                 # Now you can use the strftime method
                 reshen_time = reshen_time.strftime("%d.%m.%Y %H:%M:%S")
             
-            inserting_data['Дата решения'].append(reshen_time)
+                inserting_data['Дата решения'].append(reshen_time)
         else:
             inserting_data['Дата решения'].append("")
         
-        if row.status==6:
+        if row.status==4:
             if row.update_time:
-                cancel_time = dict(row.update_time).get('6')
+                reshen_time = dict(row.update_time).get('4')
                 if cancel_time:
-                    cancel_time = datetime.strptime(cancel_time, "%Y-%m-%d %H:%M:%S.%f%z")
+                    cancel_time = datetime.strptime(reshen_time, "%Y-%m-%d %H:%M:%S.%f%z")
 
                     # Now you can use the strftime method
-                    cancel_time = cancel_time.strftime("%d.%m.%Y %H:%M:%S")
-                inserting_data['Дата отмены'].append(cancel_time)
+                    reshen_time = reshen_time.strftime("%d.%m.%Y %H:%M:%S")
+                inserting_data['Дата отмены'].append(reshen_time)
             else:
                 inserting_data['Дата отмены'].append("")
         else:

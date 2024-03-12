@@ -29,8 +29,13 @@ def it_query_with_status(db:Session,status):
 def update_status_it(db:Session,id):
     query = db.query(models.Requests).filter(models.Requests.id == id).first()
     query.status = 3
+    update_time = dict(query.updated_time)
+    update_time['3'] = datetime.now(timezonetash)
+    query.updated_time = update_time
     db.commit()
     return query
+
+
 def get_it_excell(db:Session,form_data:it_schema.generate_excell):
     finish_date = form_data.finish_date + timedelta(days=1)
     query = db.query(models.Requests).join(models.Category).filter(models.Category.department == 4).filter(models.Requests.created_at.between(form_data.start_date,finish_date))
@@ -46,24 +51,25 @@ def IT_stats_v2(db:Session,started_at, finished_at,department,timer=60):
         categories = categories.filter(models.Category.department==department)
     if finished_at is not None and started_at is not None:
         categories = categories.filter(models.Requests.created_at.between(started_at,finished_at))
-    categories = categories.filter(models.Requests.status.in_([0,1,2,3]))
+    categories = categories.filter(models.Requests.status.in_([0,1,2,3,5,6,]))
     categories = categories.all()
     
 
     data = {}
     for category in categories:
+
         #---------time delta create------------
         ftime_timedelta = timedelta(seconds=category.ftime*3600)
 
         #---------number of total requests-----------
-        total_requests = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status.in_([0,1,2,3]))
+        total_requests = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status.in_([0,1,2,3,5,6]))
         if started_at is not None and finished_at is not None:
             total_requests = total_requests.filter(models.Requests.created_at.between(started_at,finished_at))
         total_requests = total_requests.count()
 
 
         #---------number of finished on time requests-----------
-        finished_on_time = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status==3).filter(
+        finished_on_time = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status.in_([3,6])).filter(
             models.Requests.finished_at - models.Requests.started_at <= ftime_timedelta
         )
         if started_at is not None and finished_at is not None:
@@ -72,15 +78,15 @@ def IT_stats_v2(db:Session,started_at, finished_at,department,timer=60):
 
 
         #---------number of not finished on time requests-----------
-        not_finished_on_time = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status==3).filter(
+        not_finished_on_time = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status.in_([3,6])).filter(
             models.Requests.finished_at - models.Requests.started_at > ftime_timedelta)
         if started_at is not None and finished_at is not None:
             not_finished_on_time = not_finished_on_time.filter(models.Requests.created_at.between(started_at,finished_at))
         not_finished_on_time = not_finished_on_time.count()
-        
+
 
         #---------number of status zero requests-----------
-        status_zero = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status.in_([0,1,2]))
+        status_zero = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status.in_([0,1,2,5]))
         if started_at is not None and finished_at is not None:
             status_zero = status_zero.filter(models.Requests.created_at.between(started_at,finished_at))
         status_zero = status_zero.count()

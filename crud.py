@@ -361,7 +361,7 @@ def get_user_for_brig(db: Session, id,name,department,sphere_status):
     if name is not None:
         db_get_users = db_get_users.filter(or_(models.Users.full_name.ilike(f"%{name}%"),models.Users.phone_number.ilike(f"%{name}%"),models.Users.username.ilike(f"%{name}%")))
     
-    return db_get_users.all()
+    return db_get_users.order_by(models.Users.full_name).all()
 
 
 def get_category_list(db: Session, sub_id, sphere_status):
@@ -708,7 +708,7 @@ def filter_category(
     if sphere_status is not None:
         query = query.filter(models.Category.sphere_status == sphere_status)
     query = query.filter(models.Category.parent_id==parent_id)
-    return query.all()
+    return query.order_by(models.Category.name).all()
 
 
 def filter_fillials(
