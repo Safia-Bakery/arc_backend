@@ -389,16 +389,11 @@ async def update_fillials(
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
-    # permission = checkpermissions(request_user=request_user, db=db, page=23)
-    # if permission:
+
     fillials = crud.update_fillial_cr(db, form_data)
     if form_data.department_id:
         crud.update_fillil_origin(db, form_data=form_data)
     return fillials
-    # else:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_403_FORBIDDEN, detail="You are not super user"
-    #     )
 
 
 @app.get("/fillials", response_model=Page[schemas.GetFillialSch])

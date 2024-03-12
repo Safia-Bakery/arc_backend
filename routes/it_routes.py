@@ -52,3 +52,11 @@ def get_it_excell(form_data : it_schema.generate_excell,db: Session = Depends(ge
     file_name = Excell_generate_it(data=query)
     return {'file_name':file_name}
 
+
+
+
+@it_router.get("/it/stats", tags=["IT"], status_code=status.HTTP_200_OK)
+def IT_stats_v2(started_at: Optional[datetime] = None, finished_at: Optional[datetime] = None, department: Optional[int] = None,  db: Session = Depends(get_db),request_user: schema.UserFullBack = Depends(get_current_user),):
+    data = it_query.IT_stats_v2(db=db,started_at=started_at, finished_at=finished_at,department=department,timer=60)
+    return data
+

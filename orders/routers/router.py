@@ -905,12 +905,3 @@ async def create_message(
     db_query = query.message_create(db=db, request_id=request_id, message=message, status=status, photo=file_path,user_id=request_user.id)
     return db_query
 
-
-@router.get('/v1/test',tags=["test"])
-async def test(
-    db: Session = Depends(get_db),
-    request_user: schema.UserFullBack = Depends(get_current_user)):
-    test = query.get_fillials_unordered(db=db)
-    for i in test:
-        pass
-    return {"message":"ok"}
