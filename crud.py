@@ -549,7 +549,7 @@ def acceptreject(db: Session, form_data: schemas.AcceptRejectRequest, user):
             db_get.finishing_time = form_data.finishing_time
         if form_data.status == 1:
             db_get.started_at = func.now()
-        if form_data.status == 3 or form_data.status == 4:
+        if form_data.status in [3,4,6]:
             db_get.finished_at = func.now()
         if form_data.category_id is not None:
             db_get.old_cat_id = form_data.category_id
