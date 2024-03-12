@@ -7,7 +7,7 @@ import bcrypt
 from microservices import find_hierarchy
 from Variables import role_ids
 import pytz
-from sqlalchemy.sql import func
+from sqlalchemy import func
 from datetime import datetime
 from sqlalchemy import or_, and_, Date, cast,between,Integer
 from datetime import datetime,timedelta
@@ -22,7 +22,7 @@ def it_query_with_status(db:Session,status):
     three_days_timedelta = timedelta(days=3)
     current_time = datetime.now(timezonetash)
     query = db.query(models.Requests).join(models.Category).filter(models.Requests.status == status).filter(
-        models.Category.department == 4).filter(current_time - models.Requests.finished_at >= three_days_timedelta).all()
+        models.Category.department == 4).filter(func.datetime_diff(current_time, models.Requests.finished_at) >= three_days_timedelta.total_seconds()).all()
     return query
 
 
