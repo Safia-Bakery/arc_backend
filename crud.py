@@ -612,7 +612,7 @@ def filter_requests_all(
     if created_at is not None:
         query = query.filter(cast(models.Requests.created_at, Date) == created_at)
     if request_status is not None:
-        query = query.filter(models.Requests.status == request_status)
+        query = query.filter(models.Requests.status.in_(request_status))
     if user is not None:
         query = query.filter(models.Users.full_name.ilike(f"%{user}%"))
     if department is not None:
@@ -659,7 +659,7 @@ def filter_request_brigada(
     if created_at is not None:
         query = query.filter(models.Requests.created_at == created_at)
     if request_status is not None:
-        query = query.filter(models.Requests.status == request_status)
+        query = query.filter(models.Requests.status.in_(request_status))
     if user is not None:
         query = query.filter(models.Users.full_name.ilike(f"%{user}/%"))
     if sphere_status is not None:

@@ -1,7 +1,7 @@
 # ----------import packages
 from datetime import datetime, timedelta, date, time
 from sqlalchemy.orm import Session
-from fastapi import Depends, HTTPException, UploadFile, status, BackgroundTasks
+from fastapi import Depends, HTTPException, UploadFile, status, BackgroundTasks,Query
 from pydantic import ValidationError,Json
 import statisquery
 import schemas
@@ -185,7 +185,7 @@ async def filter_request(
     category_id: Optional[int] = None,
     fillial_id: Optional[UUID] = None,
     created_at: Optional[date] = None,
-    request_status: Optional[int] = None,
+    request_status: list = Query(None),
     user: Optional[str] = None,
     sphere_status: Optional[int] = None,
     brigada_id: Optional[int] = None,
@@ -209,6 +209,7 @@ async def filter_request(
             department=department,
             arrival_date=arrival_date,
             rate=rate
+
         )
         return paginate(requestdata)
     request_list = crud.filter_requests_all(
@@ -685,7 +686,7 @@ async def get_user_with_id(
 #            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
 #            detail="database not found",
 #        )
-#
+
 
 @router.get("/get/fillial/fabrica", response_model=Page[schemas.GetFillialChild])
 async def get_fillials_fabrica(

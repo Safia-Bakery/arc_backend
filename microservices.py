@@ -453,7 +453,7 @@ def file_generator(data,file):
 
 
 def Excell_generate_it(data):
-    inserting_data = {"Номер заявки":[],"Клиент":[],"Исполнитель":[],'Филиал':[],'Категория':[],'Комментарий':[],'Статус':[],'Дата создания':[],'Срочно':[],'Переоткрыта':[],'Дедлайн':[],"Дата приостановки":[],'Дата решения':[],'Дата отмены':[],}
+    inserting_data = {"Номер заявки":[],"Клиент":[],"Исполнитель":[],'Филиал':[],'Дата создания':[],'Дата окончания':[],'Дедлайн':[],'Статус':[],'Категория':[],'Комментарий':[],"Срочно":[],'Дата решения':[],'Дата отмены':[],'Переоткрыта':[]}
     for row in data:
         inserting_data['Номер заявки'].append(row.id)
         inserting_data['Клиент'].append(row.user.full_name)
@@ -501,6 +501,15 @@ def Excell_generate_it(data):
                 inserting_data['Дата приостановки'].append(delayed)
             else:
                 inserting_data['Дата приостановки'].append("")
+            finish_time = dict(row.update_time).get('3')
+            if finish_time:
+                finish_time = datetime.strptime(finish_time, "%Y-%m-%d %H:%M:%S.%f%z")
+
+                # Now you can use the strftime method
+                finish_time = finish_time.strftime("%d.%m.%Y %H:%M:%S")
+                inserting_data['Дата окончания'].append(finish_time)
+            else:
+                inserting_data['Дата окончания'].append("")
         else:
             inserting_data['Дата решения'].append("")
             inserting_data['Дата приостановки'].append("")
@@ -534,5 +543,3 @@ def Excell_generate_it(data):
     # Generate Excel file
     df.to_excel(file_name, index=False)
     return file_name
-
-    
