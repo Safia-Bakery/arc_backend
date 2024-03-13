@@ -29,9 +29,9 @@ def it_query_with_status(db:Session,status):
 def update_status_it(db:Session,id):
     query = db.query(models.Requests).filter(models.Requests.id == id).first()
     query.status = 3
-    update_time = dict(query.updated_time)
+    update_time = dict(query.update_time)
     update_time['3'] = datetime.now(timezonetash)
-    query.updated_time = update_time
+    query.update_time = update_time
     db.commit()
     return query
 
