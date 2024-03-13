@@ -492,15 +492,15 @@ def Excell_generate_it(data):
                 inserting_data['Дата решения'].append(reshen_time)
             else:
                 inserting_data['Дата решения'].append("")
-            delayed = dict(row.update_time).get('5')
-            if delayed:
-                delayed = datetime.strptime(delayed, "%Y-%m-%d %H:%M:%S.%f%z")
-
-                # Now you can use the strftime method
-                delayed = delayed.strftime("%d.%m.%Y %H:%M:%S")
-                inserting_data['Дата приостановки'].append(delayed)
-            else:
-                inserting_data['Дата приостановки'].append("")
+            # delayed = dict(row.update_time).get('5')
+            # if delayed:
+                # delayed = datetime.strptime(delayed, "%Y-%m-%d %H:%M:%S.%f%z")
+# 
+            #    Now you can use the strftime method
+                # delayed = delayed.strftime("%d.%m.%Y %H:%M:%S")
+                # inserting_data['Дата приостановки'].append(delayed)
+            # else:
+                # inserting_data['Дата приостановки'].append("")
             finish_time = dict(row.update_time).get('3')
             if finish_time:
                 finish_time = datetime.strptime(finish_time, "%Y-%m-%d %H:%M:%S.%f%z")
