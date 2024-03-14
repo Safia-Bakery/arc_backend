@@ -247,8 +247,7 @@ async def get_request_id(
 async def put_request_id(
     form_data: schemas.AcceptRejectRequest,
     db: Session = Depends(get_db),
-    request_user: schema.UserFullBack = Depends(get_current_user),
-):
+    request_user: schema.UserFullBack = Depends(get_current_user)):
     request_list = crud.acceptreject(
         db, form_data=form_data, user=request_user.full_name
     )
