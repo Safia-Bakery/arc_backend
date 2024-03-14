@@ -148,7 +148,12 @@ def meal_pushes(db:Session):
 def it_close_request(db:Session):
     queries = it_query.it_query_with_status(db=db,status=6)
     for i in queries:
-        it_query.update_status_it(db=db,id=i.id)
+        it_query.update_status_it(db=db,id=i.id,status=3)
+    del queries
+    queries = it_query.it_query_with_status(db=db,status=8)
+    for i in queries:
+        it_query.update_status_it(db=db,id=i.id,status=4)
+    del queries
     return True
 
 

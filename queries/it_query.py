@@ -26,11 +26,11 @@ def it_query_with_status(db:Session,status):
 
 
 
-def update_status_it(db:Session,id):
+def update_status_it(db:Session,id,status):
     query = db.query(models.Requests).filter(models.Requests.id == id).first()
-    query.status = 3
+    query.status = status
     update_time = dict(query.update_time)
-    update_time['3'] = datetime.now(timezonetash).isoformat()
+    update_time[str(status)] = datetime.now(timezonetash).isoformat()
     query.update_time = update_time
     db.commit()
     return query

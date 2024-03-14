@@ -448,6 +448,7 @@ async def put_request_id(
             message_text=f"Уважаемый {request_list.user.full_name}, ваша заявка #{request_list.id}s временно приостановлена по причине: {request_list.pause_reason}",
         )
     elif form_data.status == 6:
+
         url = f"{FRONT_URL}tg/order-rating/{request_list.id}?user_id={request_list.user.id}&department={request_list.category.department}&sub_id={request_list.category.sub_id}"
 
         inlinewebapp(
@@ -455,6 +456,21 @@ async def put_request_id(
                     chat_id=request_list.user.telegram_id,
                     message_text=f"""Уважаемый {request_list.user.full_name}, Ваша заявка #{request_list.id}s решена.\n
 В течение 3-х дней вы можете сказать "Спасибо" или пожаловаться на выполнение. Поставьте, пожалуйста, рейтинг решения вашей заявки от 1 до 5.""",
+                    url=url,
+                )
+    elif form_data.status == 7:
+       sendtotelegramchannel(
+                bot_token=bot_token,
+                chat_id=request_list.user.telegram_id,
+                message_text=f"Ваша заявка #{request_list.id}s возобновлено",
+            ) 
+    elif form_data.status == 8:
+        if request_list.category.department == 4:
+            url = f"{FRONT_URL}tg/order-rating/{request_list.id}?user_id={request_list.user.id}&department={request_list.category.department}&sub_id={request_list.category.sub_id}"
+            inlinewebapp(
+                    bot_token=bot_token,
+                    chat_id=request_list.user.telegram_id,
+                    message_text=f"""❌Ваша заявка #{request_list.id}s по IT👨🏻‍💻 отменена по причине: {request_list.deny_reason}\n\nЕсли Вы с этим не согласны, поставьте, пожалуйста, рейтинг нашему решению по Вашей заявке от 1 до 5, и напишите свои комментарий.""",
                     url=url,
                 )
     return request_list
