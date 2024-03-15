@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from users.schema import schema
 import models
+import re
 import schemas
 from typing import Optional
 import bcrypt
@@ -612,6 +613,7 @@ def filter_requests_all(
     if created_at is not None:
         query = query.filter(cast(models.Requests.created_at, Date) == created_at)
     if request_status is not None:
+        request_status = [int(i) for i in re.findall(r"\d+", str(request_status))]
         query = query.filter(models.Requests.status.in_(request_status))
     if user is not None:
         query = query.filter(models.Users.full_name.ilike(f"%{user}%"))
@@ -659,6 +661,7 @@ def filter_request_brigada(
     if created_at is not None:
         query = query.filter(models.Requests.created_at == created_at)
     if request_status is not None:
+        request_status = [int(i) for i in re.findall(r"\d+", str(request_status))]
         query = query.filter(models.Requests.status.in_(request_status))
     if user is not None:
         query = query.filter(models.Users.full_name.ilike(f"%{user}/%"))

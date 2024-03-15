@@ -185,7 +185,7 @@ async def filter_request(
     category_id: Optional[int] = None,
     fillial_id: Optional[UUID] = None,
     created_at: Optional[date] = None,
-    request_status: list = Query(None),
+    request_status: Optional[str] = None,
     user: Optional[str] = None,
     sphere_status: Optional[int] = None,
     brigada_id: Optional[int] = None,
@@ -194,6 +194,7 @@ async def filter_request(
     rate: Optional[bool] = False,
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):  
+    
     if request_user.brigada_id:
         requestdata = crud.filter_request_brigada(
             db,
