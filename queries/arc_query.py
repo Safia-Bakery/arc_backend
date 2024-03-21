@@ -151,6 +151,7 @@ def stats_query(db:Session,started_at,finished_at,timer=60):
 
     categories = db.query(models.Category).join(models.Requests).filter(models.Category.parent_id==None,models.Category.department==1,models.Category.sphere_status==1)
     categories = categories.filter(models.Category.status==1).all()
+    print(categories)
     for category in categories:
         data[category.name] = []
         all_data = create_data_dict(db=db,category=category,started_at=started_at,finished_at=finished_at,timer=timer)
