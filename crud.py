@@ -600,7 +600,8 @@ def filter_requests_all(
     sphere_status,
     arrival_date,
     rate,
-    brigada_id
+    brigada_id,
+    urgent
 ):
     query = db.query(models.Requests).join(models.Category).join(models.Users)
     if id is not None:
@@ -629,6 +630,8 @@ def filter_requests_all(
         query = query.filter(models.Requests.id==models.Comments.request_id)
     if brigada_id is not None:
         query = query.filter(models.Requests.brigada_id == brigada_id)
+    if urgent is not None:
+        query = query.filter(models.Category.urgent == urgent)
     return query.order_by(models.Requests.id.desc()).all()
 
 
@@ -645,7 +648,8 @@ def filter_request_brigada(
     department,
     sub_id,
     arrival_date,
-    rate
+    rate,
+    urgent
 ):
     query = db.query(models.Requests).join(models.Category).join(models.Comments)
     if id is not None:
@@ -671,6 +675,8 @@ def filter_request_brigada(
         query = query.filter(cast(models.Requests.arrival_date, Date) == arrival_date)
     if rate ==True:
         query = query.filter(models.Requests.id==models.Comments.request_id)
+    if urgent is not None:
+        query = query.filter(models.Category.urgent == urgent)
     query = query.filter(models.Requests.brigada_id == brigada_id)
     return query.order_by(models.Requests.id.desc()).all()
 

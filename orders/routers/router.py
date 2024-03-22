@@ -193,6 +193,7 @@ async def filter_request(
     db: Session = Depends(get_db),
     rate: Optional[bool] = False,
     request_user: schema.UserFullBack = Depends(get_current_user),
+    urgent: Optional[bool] = None,
 ):  
     
     if request_user.brigada_id:
@@ -209,7 +210,8 @@ async def filter_request(
             sphere_status=sphere_status,
             department=department,
             arrival_date=arrival_date,
-            rate=rate
+            rate=rate,
+            urgent=urgent
 
         )
         return paginate(requestdata)
@@ -226,7 +228,8 @@ async def filter_request(
         sphere_status=sphere_status,
         arrival_date=arrival_date,
         rate=rate,
-        brigada_id=brigada_id
+        brigada_id=brigada_id,
+        urgent=urgent
     )
     return paginate(request_list)
 
