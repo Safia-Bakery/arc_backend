@@ -503,7 +503,10 @@ def Excell_generate_it(data):
                 # inserting_data['Дата приостановки'].append("")
             finish_time = dict(row.update_time).get('3')
             if finish_time:
-                finish_time = datetime.strptime(finish_time, "%Y-%m-%dT%H:%M:%S.%f%z")
+                try:
+                    finish_time = datetime.strptime(finish_time, "%Y-%m-%d %H:%M:%S.%f%z")
+                except:
+                    finish_time = datetime.strptime(finish_time, "%Y-%m-%dT%H:%M:%S.%f%z")
 
                 # Now you can use the strftime method
                 finish_time = finish_time.strftime("%d.%m.%Y %H:%M:%S")
