@@ -518,7 +518,10 @@ def Excell_generate_it(data):
             if row.update_time:
                 cancel_time = dict(row.update_time).get('4')
                 if cancel_time:
-                    cancel_time = datetime.strptime(cancel_time, "%Y-%m-%d %H:%M:%S.%f%z")
+                    try:
+                        cancel_time = datetime.strptime(cancel_time, "%Y-%m-%d %H:%M:%S.%f%z")
+                    except:
+                        cancel_time = datetime.strptime(cancel_time, "%Y-%m-%dT%H:%M:%S.%f%z")
 
                     # Now you can use the strftime method
                     cancel_time = cancel_time.strftime("%d.%m.%Y %H:%M:%S")
