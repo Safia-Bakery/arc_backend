@@ -43,22 +43,22 @@ from fastapi import APIRouter
 urls = APIRouter()
 
 
+# ---------------------departments synchronizing with iiko-----------------------------------
+
 @urls.get("/synch/department", response_model=Page[schemas.GetFillialSch])
 async def insert_departments(
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
-    permission = checkpermissions(request_user=request_user, db=db, page=9)
-    if permission:
-        data = crud.insert_fillials(db, items=list_departments(key=authiiko()))
-        stores = crud.insert_otdels(db, items=list_stores(key=authiiko()))
-        suppliers = crud.synch_suppliers(db, suppliers=get_suppliers(key=authiiko()))
-        branches = crud.get_branch_list(db)
-        return paginate(branches)
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="You are not super user"
-        )
+
+    data = crud.insert_fillials(db, items=list_departments(key=authiiko()))
+    stores = crud.insert_otdels(db, items=list_stores(key=authiiko()))
+    suppliers = crud.synch_suppliers(db, suppliers=get_suppliers(key=authiiko()))
+    branches = crud.get_branch_list(db)
+    return paginate(branches)
+
+
+# ---------------------departments update departments -----------------------------------
 
 
 @urls.put("/deparment/update")
@@ -67,46 +67,42 @@ async def update_otdel(
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
-    permission = checkpermissions(request_user=request_user, db=db, page=23)
-    if permission:
-        query = crud.udpatedepartment(db, form_data=form_data)
-        return query
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="You are not super user"
-        )
+    
+    query = crud.udpatedepartment(db, form_data=form_data)
+    return query
 
+
+
+# ---------------------synch groups and products with iiko-----------------------------------
+# ---------------------it gets certain group of dat-----------------------------------
 
 @urls.get("/synch/groups")
 async def insert_groups(
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user)
 ):
-    permission = checkpermissions(request_user=request_user, db=db, page=30)
-    #return {'success':True}
-    if permission:
-        key =authiiko()
-        groups = getgroups(key=key)
-        group_list = crud.synchgroups(db, groups)
-        del groups
-        products = getproducts(key=key)
-        
-        product_list = crud.synchproducts(db, grouplist=group_list, products=products)
-        del products
-        
-        prices_arc = get_prices(key=key,department_id='fe7dce09-c2d4-46b9-bab1-86be331ed641')
-        crud.update_products_price(db=db,prices=prices_arc,store_id_checker='4aafb5af-66c3-4419-af2d-72897f652019')
-        del prices_arc
-        prices_inv = get_prices(key=key,department_id='c39aa435-8cdf-4441-8723-f532797fbeb9')
-        crud.update_products_price(db=db,prices=prices_inv,store_id_checker="0bfe01f2-6864-48f5-a79e-c885dc76116a")
-        del prices_inv
-        return {"success": True}
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="You are not super user"
-        )
+    
+    key =authiiko()
+    groups = getgroups(key=key)
+    group_list = crud.synchgroups(db, groups)
+    del groups
+    products = getproducts(key=key)
+    
+    product_list = crud.synchproducts(db, grouplist=group_list, products=products)
+    del products
+    prices_arc = get_prices(key=key,department_id='fe7dce09-c2d4-46b9-bab1-86be331ed641')
+    crud.update_products_price(db=db,prices=prices_arc,store_id_checker='4aafb5af-66c3-4419-af2d-72897f652019')
+    del prices_arc
+    prices_inv = get_prices(key=key,department_id='c39aa435-8cdf-4441-8723-f532797fbeb9')
+    crud.update_products_price(db=db,prices=prices_inv,store_id_checker="0bfe01f2-6864-48f5-a79e-c885dc76116a")
+    del prices_inv
+    return {"success": True}
 
 
+# ---------------------get and filter products and groups -----------------------------------
+# --------------------- if user insersts parent_id it usually gets products and groups childs of parent groups-----------------------------------
+# ---------------------one group can be parent of products and also groups-----------------------------------
+# ---------------------groups are like folders products are like files-----------------------------------
 
 @urls.get("/tool/iarch")
 async def toolgroups(
@@ -118,7 +114,7 @@ async def toolgroups(
     data = {'folders':crud.getarchtools(db,parent_id),'tools':statisquery.tools_query_iarch(db,parent_id,name)}
     return data
     
-
+# ---------------------Get all products -----------------------------------
 
 @urls.get("/tools/", response_model=Page[schemas.ToolsSearch])
 async def toolgroups(
@@ -132,6 +128,7 @@ async def toolgroups(
     return paginate(data)
 
 
+# ---------------------update products  -----------------------------------
 
 @urls.put("/tools/", response_model=schemas.ToolsSearch)
 async def tools_update(
@@ -142,6 +139,7 @@ async def tools_update(
     data = statisquery.tools_update(db=db,form_data=form_data)
     return data
 
+# ---------------------after finishing product -----------------------------------
 
 @urls.post("/v1/expenditure")
 async def insert_expenditure(
@@ -152,8 +150,6 @@ async def insert_expenditure(
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
-    # permission = checkpermissions(request_user=request_user,db=db,page=28)
-    # if permission:
 
     query_expenditure = crud.addexpenditure(
         db,
@@ -166,12 +162,6 @@ async def insert_expenditure(
 
     return {"success": True}
 
-
-# else:
-#    raise HTTPException(
-#        status_code=status.HTTP_403_FORBIDDEN,
-#        detail="You are not super user"
-#    )
 
 
 @urls.post("/v1/upload/file")
