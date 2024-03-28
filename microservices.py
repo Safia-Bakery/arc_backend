@@ -463,10 +463,10 @@ def Excell_generate_it(data):
         inserting_data['Комментарий'].append(row.description)
         inserting_data['Статус'].append(statusdata[str(row.status)])
         
-        create_time = row.created_at.strftime("%d.%m.%Y %H:%M:%S")
+        create_time = row.created_at.strftime("%d.%m.%Y %H:%M:%S")+timedelta(hours=5)
         inserting_data['Дата создания'].append(create_time)
         if row.finishing_time:
-            deadline = row.finishing_time.strftime("%d.%m.%Y %H:%M:%S")
+            deadline = row.finishing_time.strftime("%d.%m.%Y %H:%M:%S")+timedelta(hours=5)
         else:
             deadline = ""
 
@@ -513,6 +513,12 @@ def Excell_generate_it(data):
                 inserting_data['Дата окончания'].append(finish_time)
             else:
                 inserting_data['Дата окончания'].append("")
+            reopened = dict(row.update_time).get('7')
+            if reopened:
+                inserting_data['Переоткрыта'].append("Да")
+            else:
+                inserting_data['Переоткрыта'].append("Нет")
+
         else:
             inserting_data['Дата решения'].append("")
             inserting_data['Дата приостановки'].append("")
@@ -534,13 +540,13 @@ def Excell_generate_it(data):
         else:
             inserting_data['Дата отмены'].append("")
         
-        if row.finished_at:
-            if row.status !=3:
-                inserting_data['Переоткрыта'].append("Да")
-            else:
-                inserting_data['Переоткрыта'].append("Нет")
-        else:
-            inserting_data['Переоткрыта'].append("Нет")
+        #if row.finished_at:
+        #    if row.status !=3:
+        #        inserting_data['Переоткрыта'].append("Да")
+        #    else:
+        #        inserting_data['Переоткрыта'].append("Нет")
+        #else:
+        #    inserting_data['Переоткрыта'].append("Нет")
         
 
     
