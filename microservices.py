@@ -526,10 +526,19 @@ def Excell_generate_it(data):
             inserting_data['Дата решения'].append("")
             inserting_data['Дата приостановки'].append("")
         
-        if row.status==4:
+        if row.status==4 or row.status==8:
             if row.update_time:
                 cancel_time = dict(row.update_time).get('4')
-                if cancel_time:
+                cancel_time8 =dict(row.update_time).get('8')
+                if cancel_time8:
+                    try:
+                        cancel_time8 = datetime.strptime(cancel_time8, "%Y-%m-%d %H:%M:%S.%f%z")
+                    except:
+                        cancel_time8 = datetime.strptime(cancel_time8, "%Y-%m-%dT%H:%M:%S.%f%z")
+
+                    # Now you can use the strftime method
+                    cancel_time = cancel_time8.strftime("%d.%m.%Y %H:%M:%S")
+                elif cancel_time:
                     try:
                         cancel_time = datetime.strptime(cancel_time, "%Y-%m-%d %H:%M:%S.%f%z")
                     except:
@@ -537,6 +546,8 @@ def Excell_generate_it(data):
 
                     # Now you can use the strftime method
                     cancel_time = cancel_time.strftime("%d.%m.%Y %H:%M:%S")
+            
+
                 inserting_data['Дата отмены'].append(cancel_time)
             else:
                 inserting_data['Дата отмены'].append("")
