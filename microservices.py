@@ -457,7 +457,7 @@ def Excell_generate_it(data):
     for row in data:
         inserting_data['Номер заявки'].append(row.id)
         inserting_data['Клиент'].append(row.user.full_name)
-        inserting_data['Исполнитель'].append(row.brigada.name)
+        
         inserting_data['Филиал'].append(row.fillial.parentfillial.name)
         inserting_data['Категория'].append(row.category.name)
         inserting_data['Комментарий'].append(row.description)
@@ -469,7 +469,10 @@ def Excell_generate_it(data):
             deadline = (row.finishing_time+timedelta(hours=5)).strftime("%d.%m.%Y %H:%M:%S")
         else:
             deadline = ""
-
+        if row.brigada_id is not None:
+            inserting_data['Исполнитель'].append(row.brigada.name)
+        else:
+            inserting_data['Исполнитель'].append('')
         
         if row.category.urgent:
             inserting_data['Срочно'].append("Да")
