@@ -463,10 +463,10 @@ def Excell_generate_it(data):
         inserting_data['Комментарий'].append(row.description)
         inserting_data['Статус'].append(statusdata[str(row.status)])
         
-        create_time = (row.created_at+timedelta(hours=5)).strftime("%d.%m.%Y %H:%M:%S")+timedelta(hours=5)
+        create_time = (row.created_at+timedelta(hours=5)).strftime("%d.%m.%Y %H:%M:%S")
         inserting_data['Дата создания'].append(create_time)
         if row.finishing_time:
-            deadline = (row.finishing_time+timedelta(hours=5)).strftime("%d.%m.%Y %H:%M:%S")+timedelta(hours=5)
+            deadline = (row.finishing_time+timedelta(hours=5)).strftime("%d.%m.%Y %H:%M:%S")
         else:
             deadline = ""
 
