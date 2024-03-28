@@ -457,7 +457,7 @@ def Excell_generate_it(data):
     for row in data:
         inserting_data['Номер заявки'].append(row.id)
         inserting_data['Клиент'].append(row.user.full_name)
-        inserting_data['Исполнитель'].append(row.user_manager)
+        inserting_data['Исполнитель'].append(row.brigada.name)
         inserting_data['Филиал'].append(row.fillial.parentfillial.name)
         inserting_data['Категория'].append(row.category.name)
         inserting_data['Комментарий'].append(row.description)
