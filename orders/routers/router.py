@@ -194,6 +194,8 @@ async def filter_request(
     rate: Optional[bool] = False,
     request_user: schema.UserFullBack = Depends(get_current_user),
     urgent: Optional[bool] = None,
+    reopened: Optional[bool] = None,
+
 ):  
     
     if request_user.brigada_id:
@@ -211,7 +213,8 @@ async def filter_request(
             department=department,
             arrival_date=arrival_date,
             rate=rate,
-            urgent=urgent
+            urgent=urgent,
+            reopened=reopened
 
         )
         return paginate(requestdata)
@@ -229,7 +232,8 @@ async def filter_request(
         arrival_date=arrival_date,
         rate=rate,
         brigada_id=brigada_id,
-        urgent=urgent
+        urgent=urgent,
+        reopened=reopened
     )
     return paginate(request_list)
 

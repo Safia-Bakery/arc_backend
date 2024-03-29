@@ -12,7 +12,7 @@ from sqlalchemy.sql import func
 from datetime import datetime,timedelta
 from sqlalchemy import or_, and_, Date, cast
 from uuid import UUID
-
+from sqlalchemy.dialects.postgresql import JSONB
 import time
 
 
@@ -601,13 +601,14 @@ def filter_requests_all(
     arrival_date,
     rate,
     brigada_id,
-    urgent
+    urgent,
+    reopened
 ):
-    query = db.query(models.Requests).join(models.Category).join(models.Users)
+    query = db.query(models.Requests).join(models.Category).join(models.Users).join(models.Fillials)
     if id is not None:
         query = query.filter(models.Requests.id == id)
     if fillial_id is not None:
-        query = query.filter(models.Requests.fillial_id == fillial_id)
+        query = query.filter(models.Fillials.parentfillial_id == fillial_id)
     if category_id is not None:
         query = query.filter(models.Requests.category_id == category_id)
 
@@ -632,6 +633,9 @@ def filter_requests_all(
         query = query.filter(models.Requests.brigada_id == brigada_id)
     if urgent is not None:
         query = query.filter(models.Category.urgent == urgent)
+    #if reopened is not None:
+#
+    #    query = query.filter(func.jsonb_object_keys(models.Requests.update_time) == '7')
     return query.order_by(models.Requests.id.desc()).all()
 
 
@@ -649,15 +653,16 @@ def filter_request_brigada(
     sub_id,
     arrival_date,
     rate,
-    urgent
+    urgent,
+    reopened
 ):
-    query = db.query(models.Requests).join(models.Category).join(models.Comments)
+    query = db.query(models.Requests).join(models.Category).join(models.Comments).join(models.Users).join(models.Fillials)
     if id is not None:
         query = query.filter(models.Requests.id == id)
     if sub_id is not None:
         query = query.filter(models.Category.sub_id == sub_id)
     if fillial_id is not None:
-        query = query.filter(models.Requests.fillial_id == fillial_id)
+        query = query.filter(models.Fillials.parentfillial_id == fillial_id)
     if category_id is not None:
         query = query.filter(models.Requests.category_id == category_id)
     if department is not None:
@@ -677,6 +682,8 @@ def filter_request_brigada(
         query = query.filter(models.Requests.id==models.Comments.request_id)
     if urgent is not None:
         query = query.filter(models.Category.urgent == urgent)
+    #if reopened is not None:
+    #    query = query.filter(func.jsonb_object_keys(models.Requests.update_time) == '7')
     query = query.filter(models.Requests.brigada_id == brigada_id)
     return query.order_by(models.Requests.id.desc()).all()
 
