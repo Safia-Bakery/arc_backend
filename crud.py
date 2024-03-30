@@ -604,11 +604,12 @@ def filter_requests_all(
     urgent,
     reopened
 ):
-    query = db.query(models.Requests).join(models.Fillials).join(models.Category).join(models.Users)
+    query = db.query(models.Requests).join(models.Category)
     if id is not None:
         query = query.filter(models.Requests.id == id)
     if fillial_id is not None:
-        query = query.filter(models.Fillials.parentfillial_id == fillial_id)
+        query = query.outerjoin(models.Fillials,models.Fillials.id == fillial_id)
+        #query = query.filter(models.Fillials.parentfillial_id == fillial_id)
     if category_id is not None:
         query = query.filter(models.Requests.category_id == category_id)
 
@@ -620,6 +621,7 @@ def filter_requests_all(
     if user is not None:
         query = query.filter(models.Users.full_name.ilike(f"%{user}%"))
     if department is not None:
+        
         query = query.filter(models.Category.department == department)
     if sub_id is not None:
         query = query.filter(models.Category.sub_id == sub_id)
