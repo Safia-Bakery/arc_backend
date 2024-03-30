@@ -604,7 +604,7 @@ def filter_requests_all(
     urgent,
     reopened
 ):
-    query = db.query(models.Requests).join(models.Category).join(models.Fillials)
+    query = db.query(models.Requests).join(models.Category)
     if id is not None:
         query = query.filter(models.Requests.id == id)
     if fillial_id is not None:
