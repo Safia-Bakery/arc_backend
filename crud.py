@@ -608,7 +608,7 @@ def filter_requests_all(
     if id is not None:
         query = query.filter(models.Requests.id == id)
     if fillial_id is not None:
-        query = query.outerjoin(models.Fillials,models.Fillials.id == fillial_id)
+        query = query.outerjoin(models.Fillials).filter(models.Fillials.parentfillial_id == fillial_id)
         #query = query.filter(models.Fillials.parentfillial_id == fillial_id)
     if category_id is not None:
         query = query.filter(models.Requests.category_id == category_id)
