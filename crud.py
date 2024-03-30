@@ -656,7 +656,7 @@ def filter_request_brigada(
     urgent,
     reopened
 ):
-    query = db.query(models.Requests).join(models.Category).join(models.Comments).join(models.Users).join(models.Fillials)
+    query = db.query(models.Requests).join(models.Category).join(models.Comments).join(models.Fillials)
     if id is not None:
         query = query.filter(models.Requests.id == id)
     if sub_id is not None:
