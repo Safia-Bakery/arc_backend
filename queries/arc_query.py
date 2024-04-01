@@ -128,7 +128,8 @@ def create_data_dict(db:Session,category,started_at,finished_at,timer=60):
             "percentage_not_finished_on_time":percentage_not_finished_on_time,
             "percentage_status_zero":percentage_status_zero,
             "avg_finishing":total,
-            'category':category.name
+            'category':category.name,
+            'category_id':category.id
         }
 
         return dict_data

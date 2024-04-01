@@ -195,6 +195,8 @@ async def filter_request(
     request_user: schema.UserFullBack = Depends(get_current_user),
     urgent: Optional[bool] = None,
     reopened: Optional[bool] = None,
+    started_at: Optional[date] = None,
+    finished_at: Optional[date] = None,
 
 ):  
     
@@ -214,7 +216,9 @@ async def filter_request(
             arrival_date=arrival_date,
             rate=rate,
             urgent=urgent,
-            reopened=reopened
+            reopened=reopened,
+            started_at=started_at,
+            finished_at=finished_at
 
         )
         return paginate(requestdata)
@@ -233,7 +237,9 @@ async def filter_request(
         rate=rate,
         brigada_id=brigada_id,
         urgent=urgent,
-        reopened=reopened
+        reopened=reopened,
+        started_at=started_at,
+        finished_at=finished_at
     )
     return paginate(request_list)
 

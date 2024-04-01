@@ -602,7 +602,9 @@ def filter_requests_all(
     rate,
     brigada_id,
     urgent,
-    reopened
+    reopened,
+    started_at,
+    finished_at
 ):
     query = db.query(models.Requests).join(models.Category)
     if id is not None:
@@ -635,10 +637,17 @@ def filter_requests_all(
         query = query.filter(models.Requests.brigada_id == brigada_id)
     if urgent is not None:
         query = query.filter(models.Category.urgent == urgent)
+    if started_at is not None and finished_at is not None:
+        query = query.filter(models.Requests.created_at.between(started_at,finished_at))
+    if created_at is not None and finished_at is not None:
+        query = query.filter(models.Requests.created_at.between(created_at,finished_at))
     #if reopened is not None:
 #
     #    query = query.filter(func.jsonb_object_keys(models.Requests.update_time) == '7')
     return query.order_by(models.Requests.id.desc()).all()
+
+
+
 
 
 def filter_request_brigada(
@@ -656,7 +665,9 @@ def filter_request_brigada(
     arrival_date,
     rate,
     urgent,
-    reopened
+    reopened,
+    started_at,
+    finished_at
 ):
     query = db.query(models.Requests).join(models.Category).join(models.Comments).join(models.Fillials)
     if id is not None:
@@ -684,6 +695,10 @@ def filter_request_brigada(
         query = query.filter(models.Requests.id==models.Comments.request_id)
     if urgent is not None:
         query = query.filter(models.Category.urgent == urgent)
+    if started_at is not None and finished_at is not None:
+        query = query.filter(models.Requests.created_at.between(started_at,finished_at))
+    if created_at is not None and finished_at is not None:
+        query = query.filter(models.Requests.created_at.between(created_at,finished_at))
     #if reopened is not None:
     #    query = query.filter(func.jsonb_object_keys(models.Requests.update_time) == '7')
     query = query.filter(models.Requests.brigada_id == brigada_id)
@@ -1211,3 +1226,5 @@ def add_store(db:Session,form_data:schemas.AddStoreSh):
     db.commit()
     db.refresh(query)
     return query
+
+

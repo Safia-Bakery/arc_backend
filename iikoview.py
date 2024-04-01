@@ -495,7 +495,7 @@ async def get_statistics(
     for i in brig_requests:
         data[i[1]]=[i[0],i[2]]
     
-    return {"brage_requests":data,'new_requests':new_requests[0][0],'avg_rating':avg_rating[0][0],'avg_time':avg_finishtime[0][0],'total_requests':total_requests[0][0],'in_progress':in_progress[0][0],'last_30':last_30[0][0],'last_month':last_month[0][0]}
+    return {"brage_requests":data,'new_requests':new_requests[0][0],'avg_rating':avg_rating,'avg_time':avg_finishtime[0][0],'total_requests':total_requests[0][0],'in_progress':in_progress[0][0],'last_30':last_30[0][0],'last_month':last_month[0][0]}
 
 @urls.get("/v1/excell", tags=['Excell'])
 async def get_excell(

@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 timezonetash = pytz.timezone("Asia/Tashkent")
 load_dotenv()
 import os
-from sqlalchemy import extract
+from sqlalchemy import extract,Float
 
 bot_token = os.environ.get("BOT_TOKEN")
 
@@ -422,13 +422,16 @@ def new_requestsamount(db:Session,department,sphere_status,sub_id):
     return query.all()
 
 
-def avg_ratingrequests(db:Session,department,sphere_status,sub_id):
-    query = db.query(cast(func.avg(models.Comments.rating), Integer)).join(models.Requests).join(models.Category).filter(models.Requests.status==3).filter(models.Category.department==department)
+def avg_ratingrequests(db: Session, department, sphere_status, sub_id):
+    query = db.query(cast(func.avg(models.Comments.rating), Float)).join(models.Requests).join(models.Category).filter(models.Requests.status == 3).filter(models.Category.department == department)
+    
     if sphere_status is not None:
-        query = query.filter(models.Category.sphere_status==sphere_status)
+        query = query.filter(models.Category.sphere_status == sphere_status)
+    
     if sub_id is not None:
-        query = query.filter(models.Category.sub_id==sub_id)
-    return query.all()
+        query = query.filter(models.Category.sub_id == sub_id)
+    
+    return query.scalar() 
 
 
 
