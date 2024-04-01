@@ -177,6 +177,14 @@ async def get_category_id(
         )
 
 
+def get_children(category_id,db:Session):
+        children = db.query(models.Category).filter_by(parent_id=category_id).filter(models.Category.status==1)
+        children = children.all()
+        for child in children:
+            yield child
+            yield from get_children(child.id,db=db)
+
+
 @router.get("/request", response_model=Page[schemas.GetRequestList])
 async def filter_request(
     department: Optional[int] = None,
@@ -199,13 +207,19 @@ async def filter_request(
     finished_at: Optional[date] = None,
 
 ):  
+    # if user input data it filter all child categories 
+    # so in this case get child function gets all child categories
+    cat_list = []
+    cat_list.append(category_id)
+    for i in get_children(category_id=category_id,db=db):
+        cat_list.append(i.id)
     
     if request_user.brigada_id:
         requestdata = crud.filter_request_brigada(
             db,
             id=id,
             sub_id=sub_id,
-            category_id=category_id,
+            category_id=cat_list,
             fillial_id=fillial_id,
             request_status=request_status,
             created_at=created_at,
@@ -222,12 +236,13 @@ async def filter_request(
 
         )
         return paginate(requestdata)
+        
     request_list = crud.filter_requests_all(
         db,
         sub_id=sub_id,
         department=department,
         id=id,
-        category_id=category_id,
+        category_id=cat_list,
         fillial_id=fillial_id,
         request_status=request_status,
         created_at=created_at,

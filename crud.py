@@ -613,7 +613,7 @@ def filter_requests_all(
         query = query.outerjoin(models.Fillials).filter(models.Fillials.parentfillial_id == fillial_id)
         #query = query.filter(models.Fillials.parentfillial_id == fillial_id)
     if category_id is not None:
-        query = query.filter(models.Requests.category_id == category_id)
+        query = query.filter(models.Requests.category_id.in_(category_id))
 
     if created_at is not None:
         query = query.filter(cast(models.Requests.created_at, Date) == created_at)
@@ -677,7 +677,7 @@ def filter_request_brigada(
     if fillial_id is not None:
         query = query.filter(models.Fillials.parentfillial_id == fillial_id)
     if category_id is not None:
-        query = query.filter(models.Requests.category_id == category_id)
+        query = query.filter(models.Requests.category_id.in_(category_id))
     if department is not None:
         query = query.filter(models.Category.department == department)
     if created_at is not None:
