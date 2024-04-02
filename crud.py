@@ -615,7 +615,7 @@ def filter_requests_all(
     if category_id is not None:
         query = query.filter(models.Requests.category_id.in_(category_id))
 
-    if created_at is not None:
+    if created_at is not None and finished_at is None:
         query = query.filter(cast(models.Requests.created_at, Date) == created_at)
     if request_status is not None:
         request_status = [int(i) for i in re.findall(r"\d+", str(request_status))]
