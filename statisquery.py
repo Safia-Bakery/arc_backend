@@ -424,7 +424,7 @@ def new_requestsamount(db:Session,department,sphere_status,sub_id):
 
 def avg_ratingrequests(db: Session, department, sphere_status, sub_id):
     query = db.query(cast(func.avg(models.Comments.rating), Float)).join(models.Requests).join(models.Category).filter(models.Requests.status == 3).filter(models.Category.department == department)
-    
+    query = query.filter(models.Comments.rating != None)
     if sphere_status is not None:
         query = query.filter(models.Category.sphere_status == sphere_status)
     
