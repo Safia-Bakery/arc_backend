@@ -423,44 +423,37 @@ def new_requestsamount(db:Session,department,sphere_status,sub_id):
 
 
 def avg_ratingrequests(db: Session, department, sphere_status, sub_id):
-    query = db.query(
-        cast(func.sum(models.Comments.rating), Float),
-        func.count(models.Comments.rating),
-    ).join(
-        models.Requests
+    subquery = db.query(
+        models.Requests.id,
+        cast(func.sum(models.Comments.rating), Float).label('total_rating'),
+        func.count(models.Comments.rating).label('comment_count')
     ).join(
         models.Category
     ).filter(
         models.Category.department == department
+    ).filter(
+        models.Comments.rating != None
     )
-    query = query.filter(models.Comments.rating != None)
+    
     if sphere_status is not None:
-        query = query.filter(models.Category.sphere_status == sphere_status)
+        subquery = subquery.filter(models.Category.sphere_status == sphere_status)
     
     if sub_id is not None:
-        query = query.filter(models.Category.sub_id == sub_id)
+        subquery = subquery.filter(models.Category.sub_id == sub_id)
     
-    query = query.group_by(models.Requests.id)  # Group by requests.id to resolve the error
-    
-    avg_rating = query.all()
+    subquery = subquery.group_by(models.Requests.id).subquery()
 
+    query = db.query(
+        cast(func.sum(subquery.c.total_rating), Float),
+        func.sum(subquery.c.comment_count)
+    )
     
-    total_ratings = 0
-    total_comments = 0
-    print(avg_rating)
+    avg_rating = query.one_or_none()
     
-    for rating, comments_count in avg_rating:
-        if rating is not None:
-            total_ratings += rating
-            total_comments += comments_count
-    print('total_ratings', total_ratings)
-
-    if total_comments == 0:
-        avg_rating = None
-    else:
-        avg_rating = total_ratings / total_comments
+    if avg_rating[1] == 0 or avg_rating[0] is None:
+        return None
     
-    return avg_rating
+    return float(avg_rating[0]) / float(avg_rating[1])
 
 def avg_time_finishing(db:Session,department,sphere_status,sub_id,timer=60 ):
     total = db.query(
