@@ -443,7 +443,7 @@ def avg_ratingrequests(db: Session, department, sphere_status, sub_id):
 
     
     avg_rating = query.all()  # Extracting the first column of the first result row
-    
+    query = query.distinct(models.Comments.request_id)
 # For example, setting the average rating to None
     print(avg_rating)
 
@@ -468,7 +468,7 @@ def avg_time_finishing(db:Session,department,sphere_status,sub_id,timer=60 ):
         ).join(models.Category).filter(
             models.Requests.status == 3,
             models.Category.department == department)
-    query = query.distinct(models.Comments.request_id)
+    
     if sphere_status is not None:
         total = total.filter(models.Category.sphere_status == sphere_status) 
     if sub_id is not None:
