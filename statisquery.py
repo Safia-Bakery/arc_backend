@@ -440,18 +440,24 @@ def avg_ratingrequests(db: Session, department, sphere_status, sub_id):
     if sub_id is not None:
         query = query.filter(models.Category.sub_id == sub_id)
     
-
+    query = query.group_by(models.Requests.id)  # Group by requests.id to resolve the error
     
-    avg_rating = query.all()  # Extracting the first column of the first result row
-    query = query.distinct(models.Comments.request_id)
-# For example, setting the average rating to None
-    print(avg_rating)
-
-    if avg_rating:
-        avg_rating = avg_rating[0][0] / avg_rating[0][1]
+    avg_rating = query.all()
+    
+    total_ratings = 0
+    total_comments = 0
+    
+    for rating, comments_count in avg_rating:
+        if rating is not None:
+            total_ratings += rating
+            total_comments += comments_count
+    
+    if total_comments == 0:
+        avg_rating = None
+    else:
+        avg_rating = total_ratings / total_comments
+    
     return avg_rating
-
-
 
 def avg_time_finishing(db:Session,department,sphere_status,sub_id,timer=60 ):
     total = db.query(

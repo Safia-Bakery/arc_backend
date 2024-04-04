@@ -606,7 +606,7 @@ def filter_requests_all(
     started_at,
     finished_at
 ):
-    query = db.query(models.Requests).join(models.Category)
+    query = db.query(models.Requests)
     if id is not None:
         query = query.filter(models.Requests.id == id)
     if fillial_id is not None:
