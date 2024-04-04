@@ -614,7 +614,6 @@ def filter_requests_all(
         #query = query.filter(models.Fillials.parentfillial_id == fillial_id)
     if category_id is not None:
         query = query.filter(models.Requests.category_id.in_(category_id))
-
     if created_at is not None and finished_at is None:
         query = query.filter(cast(models.Requests.created_at, Date) == created_at)
     if request_status is not None:
@@ -623,7 +622,6 @@ def filter_requests_all(
     if user is not None:
         query = query.filter(models.Users.full_name.ilike(f"%{user}%"))
     if department is not None:
-        
         query = query.filter(models.Category.department == department)
     if sub_id is not None:
         query = query.filter(models.Category.sub_id == sub_id)

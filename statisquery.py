@@ -443,15 +443,18 @@ def avg_ratingrequests(db: Session, department, sphere_status, sub_id):
     query = query.group_by(models.Requests.id)  # Group by requests.id to resolve the error
     
     avg_rating = query.all()
+
     
     total_ratings = 0
     total_comments = 0
+    print(avg_rating)
     
     for rating, comments_count in avg_rating:
         if rating is not None:
             total_ratings += rating
             total_comments += comments_count
-    
+    print('total_ratings', total_ratings)
+
     if total_comments == 0:
         avg_rating = None
     else:
