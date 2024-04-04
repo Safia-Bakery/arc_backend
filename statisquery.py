@@ -423,17 +423,17 @@ def new_requestsamount(db:Session,department,sphere_status,sub_id):
 
 
 def avg_ratingrequests(db: Session, department, sphere_status, sub_id):
-    query = db.query(cast(func.avg(models.Comments.rating), Float)).join(models.Requests).join(models.Category).filter(models.Requests.status == 3).filter(models.Category.department == department)
-    query = query.filter(models.Comments.rating != None)
+    query = db.query(cast(func.avg(models.Comments.rating), Float)).join(models.Requests).join(models.Category).filter(models.Category.department == department)
+    
     if sphere_status is not None:
         query = query.filter(models.Category.sphere_status == sphere_status)
     
     if sub_id is not None:
         query = query.filter(models.Category.sub_id == sub_id)
     avg_rating = query.scalar()
-    #if avg_rating is not None:
-    #    # Round to nearest 0.1
-    #    avg_rating = round(avg_rating * 2) / 2 
+    if avg_rating is not None:
+        # Round to nearest 0.1
+        avg_rating = round(avg_rating * 2) / 2 
     return avg_rating
 
 
