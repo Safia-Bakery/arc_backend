@@ -430,7 +430,7 @@ def avg_ratingrequests(db: Session, department, sphere_status, sub_id):
     ).join(
         models.Category
     ).group_by(
-        models.Requests.id  # Group by request id to count each request once
+        models.Requests.id
     ).filter(
         models.Category.department == department
     )
@@ -441,12 +441,17 @@ def avg_ratingrequests(db: Session, department, sphere_status, sub_id):
     if sub_id is not None:
         query = query.filter(models.Category.sub_id == sub_id)
     
-    avg_rating = query.scalar()
-    
+    try:
+        avg_rating = query.one()[0]  # Extracting the first column of the first result row
+    except:
+        # Handle the case where multiple rows are found
+        # You may want to log an error, return a default value, or raise an exception
+        avg_rating = None  # For example, setting the average rating to None
+
     if avg_rating is not None:
         # Round to nearest 0.1
         avg_rating = round(avg_rating * 2) / 2 
-        
+    
     return avg_rating
 
 
