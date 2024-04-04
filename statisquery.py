@@ -430,8 +430,6 @@ def avg_ratingrequests(db: Session, department, sphere_status, sub_id):
         models.Requests
     ).join(
         models.Category
-    ).group_by(
-        models.Comments.request_id
     ).filter(
         models.Category.department == department
     )
