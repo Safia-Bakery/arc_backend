@@ -424,9 +424,9 @@ def new_requestsamount(db:Session,department,sphere_status,sub_id):
 
 def avg_ratingrequests(db: Session, department, sphere_status, sub_id):
     subquery = db.query(
-        models.Requests.id,
-        cast(func.sum(models.Comments.rating), Float).label('total_rating'),
-        func.count(models.Comments.rating).label('comment_count')
+        func.avg(models.Comments.rating).label('avg_rating')
+    ).join(
+        models.Requests
     ).join(
         models.Category
     ).filter(
@@ -441,19 +441,13 @@ def avg_ratingrequests(db: Session, department, sphere_status, sub_id):
     if sub_id is not None:
         subquery = subquery.filter(models.Category.sub_id == sub_id)
     
-    subquery = subquery.group_by(models.Requests.id).subquery()
+    avg_of_avg_rating = db.query(
+        cast(func.avg(subquery.scalar()), Float)
+    ).scalar()
 
-    query = db.query(
-        cast(func.sum(subquery.c.total_rating), Float),
-        func.sum(subquery.c.comment_count)
-    )
-    
-    avg_rating = query.one_or_none()
-    
-    if avg_rating[1] == 0 or avg_rating[0] is None:
-        return None
-    
-    return float(avg_rating[0]) / float(avg_rating[1])
+    return avg_of_avg_rating
+
+
 
 def avg_time_finishing(db:Session,department,sphere_status,sub_id,timer=60 ):
     total = db.query(
@@ -470,7 +464,6 @@ def avg_time_finishing(db:Session,department,sphere_status,sub_id,timer=60 ):
         ).join(models.Category).filter(
             models.Requests.status == 3,
             models.Category.department == department)
-    
     if sphere_status is not None:
         total = total.filter(models.Category.sphere_status == sphere_status) 
     if sub_id is not None:
