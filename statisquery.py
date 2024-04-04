@@ -447,10 +447,10 @@ def avg_ratingrequests(db: Session, department, sphere_status, sub_id):
     avg_rating = query.all()  # Extracting the first column of the first result row
     
 # For example, setting the average rating to None
+    print(avg_rating)
 
     if avg_rating:
         avg_rating = avg_rating[0][0] / avg_rating[0][1]
-    
     return avg_rating
 
 
