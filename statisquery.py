@@ -424,33 +424,32 @@ def new_requestsamount(db:Session,department,sphere_status,sub_id):
 
 def avg_ratingrequests(db: Session, department, sphere_status, sub_id):
     query = db.query(
-        cast(func.avg(models.Comments.rating), Float)
+        cast(func.sum(models.Comments.rating), Float),
+        func.count(models.Comments.rating),
     ).join(
         models.Requests
     ).join(
         models.Category
     ).group_by(
-        models.Requests.id
+        models.Comments.request_id
     ).filter(
         models.Category.department == department
     )
-
+    query = query.filter(models.Comments.rating != None)
     if sphere_status is not None:
         query = query.filter(models.Category.sphere_status == sphere_status)
     
     if sub_id is not None:
         query = query.filter(models.Category.sub_id == sub_id)
     
-    try:
-        avg_rating = query.one()[0]  # Extracting the first column of the first result row
-    except:
-        # Handle the case where multiple rows are found
-        # You may want to log an error, return a default value, or raise an exception
-        avg_rating = None  # For example, setting the average rating to None
 
-    if avg_rating is not None:
-        # Round to nearest 0.1
-        avg_rating = round(avg_rating * 2) / 2 
+    
+    avg_rating = query.all()  # Extracting the first column of the first result row
+    
+# For example, setting the average rating to None
+
+    if avg_rating:
+        avg_rating = avg_rating[0][0] / avg_rating[0][1]
     
     return avg_rating
 
