@@ -431,9 +431,9 @@ def avg_ratingrequests(db: Session, department, sphere_status, sub_id):
     if sub_id is not None:
         query = query.filter(models.Category.sub_id == sub_id)
     avg_rating = query.scalar()
-    if avg_rating is not None:
-        # Round to nearest 0.1
-        avg_rating = round(avg_rating * 2) / 2 
+    #if avg_rating is not None:
+    #    # Round to nearest 0.1
+    #    avg_rating = round(avg_rating * 2) / 2 
     return avg_rating
 
 
