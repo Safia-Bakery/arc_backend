@@ -424,9 +424,8 @@ def new_requestsamount(db:Session,department,sphere_status,sub_id):
 
 def avg_ratingrequests(db: Session, department, sphere_status, sub_id):
     subquery = db.query(
+        models.Requests.id,
         func.avg(models.Comments.rating).label('avg_rating')
-    ).join(
-        models.Requests
     ).join(
         models.Category
     ).filter(
@@ -441,11 +440,17 @@ def avg_ratingrequests(db: Session, department, sphere_status, sub_id):
     if sub_id is not None:
         subquery = subquery.filter(models.Category.sub_id == sub_id)
     
-    avg_of_avg_rating = db.query(
-        cast(func.avg(subquery.scalar()), Float)
-    ).scalar()
+    subquery = subquery.group_by(models.Requests.id).subquery()
 
-    return avg_of_avg_rating
+    query = db.query(
+        cast(func.avg(subquery.c.avg_rating), Float)
+    )
+    
+    avg_rating = query.scalar()
+    if avg_rating:
+        avg_rating = round(avg_rating, 1)
+    
+    return avg_rating
 
 
 

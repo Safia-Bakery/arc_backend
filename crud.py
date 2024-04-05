@@ -640,7 +640,6 @@ def filter_requests_all(
     if created_at is not None and finished_at is not None:
         query = query.filter(models.Requests.created_at.between(created_at,finished_at))
     #if reopened is not None:
-#
     #    query = query.filter(func.jsonb_object_keys(models.Requests.update_time) == '7')
     return query.order_by(models.Requests.id.desc()).all()
 

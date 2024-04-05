@@ -367,7 +367,7 @@ class HrUser(Base):
     status = Column(Integer, default=0)
     created_at = Column(DateTime(timezone=True), default=func.now())
     lang = Column(Integer,nullable= True)
-    sphere = Column(Integer, nullable=True) 
+    sphere = Column(Integer, nullable=True)
     request = relationship("HrRequest", back_populates="user")
 
 class HrRequest(Base):
