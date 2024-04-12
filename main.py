@@ -129,7 +129,7 @@ def meal_pushes(db:Session):
     all_user = all_users(db=db)
     for i in branchs:
         text += f"{i.name}\n"
-    text += "\n\nНеобходимо отправить заявку до 17:00 ❗️"
+    text += "\n\nНеобходимо отправить заявку до 16:00 ❗️"
     limit = 0
     send_users = []
     for i in all_user:
@@ -167,7 +167,7 @@ def startup_event():
 @app.on_event("startup")
 def meal_messages():
     scheduler = BackgroundScheduler()
-    trigger  = CronTrigger(hour=16, minute=00, second=00,timezone=timezonetash)
+    trigger  = CronTrigger(hour=15, minute=00, second=00,timezone=timezonetash)
     scheduler.add_job(meal_pushes, trigger=trigger,args=[next(get_db())])
     scheduler.start()
 
