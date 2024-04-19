@@ -643,12 +643,9 @@ def marketing_stats_v2(db:Session,started_at, finished_at,department,sphere_stat
 
 
 def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
-
     parent_ids = db.query(models.Tools).join(models.Expanditure).join(models.Requests).join(models.Category).filter(models.Category.department==department)
-    
     if started_at is not None and finished_at is not None:
         parent_ids = parent_ids.filter(models.Requests.created_at.between(started_at,finished_at))
-
     parent_ids = parent_ids.distinct(models.Tools.parentid).filter(models.Requests.status==3).filter(models.Tools.ftime!=None).all()
     data = {}
 
@@ -683,7 +680,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         total = total.all()
 
         total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(
-            models.Tools.parentid==parent_id.parentid,models.Category.department==department).filter(models.Expanditure.status==1).filter(models.Tools.ftime!=None).filter(
+            models.Tools.parentid==parent_id.parentid,models.Category.department==department).filter(models.Tools.ftime!=None).filter(
             models.Requests.status.in_([0,1,2,3])).count()
 
         finished_ontime = db.query(
@@ -709,7 +706,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
             func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) > models.Tools.ftime * 3600,
         ).count()
 
-        not_started = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(models.Tools.ftime!=None,models.Category.department==department,models.Expanditure.status==0).filter(
+        not_started = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(models.Tools.parentid==parent_id.parentid).filter(models.Tools.ftime!=None,models.Category.department==department).filter(
             models.Requests.status.in_([0,1,2])).count()
 
         not_finishedon_time_percent = (not_finished_ontime/total_tools)*100

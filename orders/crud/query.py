@@ -168,6 +168,7 @@ def department_counter(db: Session):
         )
         .filter(models.Requests.status == 0)
         .join(models.Requests, models.Category.id == models.Requests.category_id)
+        .filter(models.Category.status==1)
         .group_by(models.Category.department, models.Category.sphere_status)
         .all()
     )
