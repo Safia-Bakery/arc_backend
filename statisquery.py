@@ -688,7 +688,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         ).join(models.Requests).join(models.Category).join(models.Tools).filter(
             models.Requests.status == 3,
             models.Tools.ftime!=None,
-            models.Expanditure.status==1,
+            #models.Expanditure.status==1,
             models.Category.department==department,
             func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= models.Tools.ftime * 3600,
             models.Tools.parentid == parent_id.parentid,
@@ -700,7 +700,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
             ).join(models.Requests).join(models.Category).join(models.Tools).filter(
             models.Category.department==department, 
             models.Requests.status == 3,
-            models.Expanditure.status==1,
+            #models.Expanditure.status==1,
             models.Tools.ftime!=None,
             models.Tools.parentid == parent_id.parentid,
             func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) > models.Tools.ftime * 3600,
