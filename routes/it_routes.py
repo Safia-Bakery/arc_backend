@@ -39,6 +39,7 @@ from microservices import (
 from fastapi import APIRouter
 from queries import it_query
 from allschemas import it_schema
+import subprocess
 
 
 
@@ -59,4 +60,23 @@ def get_it_excell(form_data : it_schema.generate_excell,db: Session = Depends(ge
 def IT_stats_v2(started_at: Optional[date] = None, finished_at: Optional[date] = None, department: Optional[int] = None,  db: Session = Depends(get_db),request_user: schema.UserFullBack = Depends(get_current_user),):
     data = it_query.IT_stats_v2(db=db,started_at=started_at, finished_at=finished_at,department=department,timer=60)
     return data
+
+
+
+
+@it_router.post("/restart-arcbot/")
+async def restart_arcbot(request_user: schema.UserFullBack = Depends(get_current_user)):
+    try:
+        completed_process = subprocess.run(
+            ["sudo", "systemctl", "restart", "Arcbot.service"],
+            check=True,
+            text=True,
+            capture_output=True
+        )
+        return {"message": "Arcbot service restarted successfully", "stdout": completed_process.stdout}
+    except subprocess.CalledProcessError as e:
+        raise HTTPException(status_code=500, detail=f"Failed to restart Arcbot service: {e.stderr}")
+
+
+
 

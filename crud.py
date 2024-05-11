@@ -1141,7 +1141,6 @@ def check_expanditure_iiko(db: Session, form_data: schemas.SynchExanditureiiko):
 def synch_expanditure_crud(db: Session, id):
     query = db.query(models.Expanditure).filter(models.Expanditure.id == id).first()
     query.status = 1
-
     db.commit()
     db.refresh(query)
     return query

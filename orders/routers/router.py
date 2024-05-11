@@ -404,7 +404,6 @@ async def put_request_id(
         if request_list.category.department == 2:
             # message_ready  is for sending product to user
             message_ready = f"""Уважаемый {request_list.user.full_name}, инвентарь по вашей заявке #{request_list.id}s """
-            
             new_neq = []
             for i in request_list.expanditure:
                 if i.status==0:
