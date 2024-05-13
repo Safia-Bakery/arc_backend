@@ -717,9 +717,10 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         not_started_percent = (not_started/total_tools)*100
 
         parent_id_name = db.query(models.ToolParents).filter(models.ToolParents.id==parent_id.parentid).first()
+        if total:
+            if total[0][0] is not None:
+                avg_finishing = total[0][0]
 
-        if total[0][0] is not None:
-            avg_finishing = total[0][0]
         else:
             avg_finishing= 0
         data[parent_id_name.name] = {'total_tools':total_tools,
