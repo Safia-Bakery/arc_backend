@@ -195,9 +195,9 @@ def countbrigadavscategory(timer, started_at, finished_at,sphere_status,departme
             models.Requests.status == 3,
             models.Requests.created_at.between(started_at, finished_at),
         )
-        
+
         .group_by(models.Brigada.name, models.Category.name)
-        
+
     )
     if sphere_status is not None:
         total = total.filter(models.Category.sphere_status == sphere_status)
@@ -347,7 +347,7 @@ def tool_check_order(db:Session,tool_id):
 # here we are creating a new tool order
 # orders are created according to in minimum amount of tools
 # minimum amount of tools is set by the admin
-# amount of tools are synchronized with the iiko    
+# amount of tools are synchronized with the iiko
 
 def order_tool_create(db:Session,user_id):
     tools = few_tools_query(db=db)
@@ -414,11 +414,11 @@ def brigade_openrequests(db:Session,department,sphere_status):
     return result
 
 def new_requestsamount(db:Session,department,sphere_status,sub_id):
-    query = db.query(func.count(models.Requests.id)).join(models.Category).filter(models.Requests.status==0).filter(models.Category.department==department)
+    query = db.query(func.count(models.Requests.id)).join(models.Category).filter(models.Requests.status==0).filter(models.Category.department==department).filter(models.Category.status==1)
     if sphere_status is not None:
         query = query.filter(models.Category.sphere_status==sphere_status)
     if sub_id is not None:
-        query = query.filter(models.Category.sub_id==sub_id)    
+        query = query.filter(models.Category.sub_id==sub_id)
     return query.all()
 
 
@@ -433,23 +433,23 @@ def avg_ratingrequests(db: Session, department, sphere_status, sub_id):
     ).filter(
         models.Comments.rating != None
     )
-    
+
     if sphere_status is not None:
         subquery = subquery.filter(models.Category.sphere_status == sphere_status)
-    
+
     if sub_id is not None:
         subquery = subquery.filter(models.Category.sub_id == sub_id)
-    
+
     subquery = subquery.group_by(models.Requests.id).subquery()
 
     query = db.query(
         cast(func.avg(subquery.c.avg_rating), Float)
     )
-    
+
     avg_rating = query.scalar()
     if avg_rating:
         avg_rating = round(avg_rating, 1)
-    
+
     return avg_rating
 
 
@@ -470,11 +470,11 @@ def avg_time_finishing(db:Session,department,sphere_status,sub_id,timer=60 ):
             models.Requests.status == 3,
             models.Category.department == department)
     if sphere_status is not None:
-        total = total.filter(models.Category.sphere_status == sphere_status) 
+        total = total.filter(models.Category.sphere_status == sphere_status)
     if sub_id is not None:
         total = total.filter(models.Category.sub_id==sub_id)
 
-        
+
     return total.all()
 
 
@@ -501,7 +501,7 @@ def last_30_days(db:Session,department,sphere_status,sub_id):
         query = query.filter(models.Category.sphere_status==sphere_status)
     if sub_id is not None:
         query = query.filter(models.Category.sub_id==sub_id)
-    
+
     return query.all()
 
 def current_month(db:Session,department,sphere_status,sub_id):
@@ -529,7 +529,7 @@ def marketing_stats_v2(db:Session,started_at, finished_at,department,sphere_stat
         categories = categories.filter(models.Requests.created_at.between(started_at,finished_at))
     categories = categories.filter(models.Requests.status.in_([0,1,2,3]))
     categories = categories.all()
-    
+
 
     data = {}
     for category in categories:
@@ -558,7 +558,7 @@ def marketing_stats_v2(db:Session,started_at, finished_at,department,sphere_stat
         if started_at is not None and finished_at is not None:
             not_finished_on_time = not_finished_on_time.filter(models.Requests.created_at.between(started_at,finished_at))
         not_finished_on_time = not_finished_on_time.count()
-        
+
 
         #---------number of status zero requests-----------
         status_zero = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status.in_([0,1,2]))
@@ -604,7 +604,7 @@ def marketing_stats_v2(db:Session,started_at, finished_at,department,sphere_stat
             models.Category.id == category.id,
         )
         .group_by(models.Category.name)
-        
+
         )
         if started_at is not None and finished_at is not None:
             total = total.filter(models.Requests.created_at.between(started_at,finished_at))
@@ -618,9 +618,9 @@ def marketing_stats_v2(db:Session,started_at, finished_at,department,sphere_stat
 
         if total:
             total = total[0][2]
-        else: 
+        else:
             total = 0
-        
+
         dict_data = {
             "total_requests":total_requests,
             "finished_on_time":finished_on_time,
@@ -637,7 +637,7 @@ def marketing_stats_v2(db:Session,started_at, finished_at,department,sphere_stat
         else:
             data[category.sub_id] = [dict_data]
 
-        
+
     return data
 
 
@@ -665,7 +665,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
                 / timer,
                 Integer,
             ),
-        ) 
+        )
         .join(models.Expanditure).join(models.Tools).join(models.Category)
         .filter(
             models.Requests.status==3,
@@ -716,7 +716,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         on_time_requests_percent = (finished_ontime/total_tools)*100
         not_started_percent = (not_started/total_tools)*100
 
-        parent_id_name = db.query(models.ToolParents).filter(models.ToolParents.id==parent_id.parentid).first()
+        parent_id_name = db.query(models.ToolParents).filter(models.ToolParents.id == parent_id.parentid).first()
         if total:
             if total[0][0] is not None:
                 avg_finishing = total[0][0]

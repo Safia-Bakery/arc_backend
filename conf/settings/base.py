@@ -1,0 +1,6 @@
+API_VERSION = 'v2'
+DB_NAME     = ''
+DB_HOST     = '127.0.0.1'
+DB_USER     = ''
+DB_PASSWORD = ''
+DB_TYPE     = 'mysql'

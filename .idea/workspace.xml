@@ -5,6 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1f1f0639-c1d9-4344-9867-ccfba30c4f64" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/conf/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/conf/settings/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/conf/settings/base.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/conf/settings/prod.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/etc/deploy/gunicorn-run.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/statisquery.py" beforeDir="false" afterPath="$PROJECT_DIR$/statisquery.py" afterDir="false" />
     </list>
@@ -18,6 +23,9 @@
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="DEPENDENCY_CHECKER_PROBLEMS_TAB" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -61,5 +69,16 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
