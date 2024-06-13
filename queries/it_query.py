@@ -41,7 +41,8 @@ def get_it_excell(db:Session,form_data:it_schema.generate_excell):
     query = db.query(models.Requests).join(models.Category).filter(models.Category.status==1).filter(models.Category.department == 4).filter(models.Requests.created_at.between(form_data.start_date,finish_date))
     if form_data.status:
         query = query.filter(models.Requests.status == form_data.status)
-
+    if form_data.category_id is not None:
+        query = query.filter(models.Requests.category_id == form_data.category_id)
     return query.order_by(models.Requests.id.desc()).all()
 
 

@@ -11,6 +11,7 @@ from uuid import UUID
 class generate_excell(BaseModel):
     start_date: date
     finish_date: date
+    category_id: Optional[int] = None
     status: Optional[int] = None
     class Config:
         orm_mode = True

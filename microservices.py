@@ -193,7 +193,6 @@ def getproducts(key):
     products = requests.get(
         f"{BASE_URL}/resto/api/v2/entities/products/list?key={key}"
     ).json()
-
     return products
 
 
