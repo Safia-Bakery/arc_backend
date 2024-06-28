@@ -83,6 +83,7 @@ def create_group(db: Session, group: schema.CreateGroupSch):
     return group_user
 
 
+
 def update_group(db: Session, group: schemas.UpdateGroupSch):
     db_group_obj = db.query(models.Groups).filter(models.Groups.id == group.id).first()
     if db_group_obj:
@@ -129,7 +130,6 @@ def user_role_attach(db: Session, role: schemas.UserRoleAttachSch):
     )
     if db_user_update:
         db_user_update.group_id = role.group_id
-        db_user_update
         db.commit()
         db.refresh(db_user_update)
         return db_user_update
