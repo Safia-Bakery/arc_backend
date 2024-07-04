@@ -5,10 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1f1f0639-c1d9-4344-9867-ccfba30c4f64" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/arc_backend.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/arc_backend.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/crud.py" beforeDir="false" afterPath="$PROJECT_DIR$/crud.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/iikoview.py" beforeDir="false" afterPath="$PROJECT_DIR$/iikoview.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,7 +76,9 @@
       <workItem from="1718716603592" duration="485000" />
       <workItem from="1719293671235" duration="1274000" />
       <workItem from="1719396142160" duration="24000" />
-      <workItem from="1719583325576" duration="57000" />
+      <workItem from="1719583325576" duration="1135000" />
+      <workItem from="1719823210034" duration="18000" />
+      <workItem from="1720070633608" duration="659000" />
     </task>
     <servers />
   </component>
