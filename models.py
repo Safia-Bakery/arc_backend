@@ -146,7 +146,18 @@ class Category(Base):
     cat_prod = relationship("Products", back_populates="prod_cat")
     parent_id = Column(Integer, nullable=True)
     is_child = Column(Boolean,default=False)
+    telegram_id = Column(Integer,ForeignKey("telegrams.id"),nullable=True)
+    telegram = relationship("Telegrams", back_populates="categories")
+
+
+class Telegrams(Base):
+    __tablename__ = "telegrams"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
     chat_id = Column(String, nullable=True)
+    categories = relationship("Category", back_populates="telegram")
+
+
 
 class Products(Base):
     __tablename__ = "products"

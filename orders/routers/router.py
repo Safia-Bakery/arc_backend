@@ -62,7 +62,7 @@ async def add_category(
     sub_id: Annotated[int, Form()] = None,
     parent_id:Annotated[int,Form()]=None,
     is_child:Annotated[bool,Form()]=False,
-    chat_id: Annotated[str, Form()] = None,
+    telegram_id: Annotated[str, Form()] = None,
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
@@ -89,7 +89,7 @@ async def add_category(
         file=file,
         parent_id=parent_id,
         is_child=is_child,
-        chat_id=chat_id
+        telegram_id=telegram_id
     )
 
 
@@ -107,7 +107,7 @@ async def update_category(
     sub_id: Annotated[int, Form()] = None,
     parent_id:Annotated[int,Form()]=None,
     is_child:Annotated[bool,Form()]=None,
-    chat_id: Annotated[str, Form()] = None,
+    telegram_id: Annotated[str, Form()] = None,
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
@@ -135,7 +135,7 @@ async def update_category(
         ftime=ftime,
         parent_id=parent_id,
         is_child=is_child,
-        chat_id = chat_id
+        telegram_id = telegram_id
     )
     if response:
         return response

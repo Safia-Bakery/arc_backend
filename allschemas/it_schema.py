@@ -15,3 +15,25 @@ class generate_excell(BaseModel):
     status: Optional[int] = None
     class Config:
         orm_mode = True
+
+
+
+class GetTelegram(BaseModel):
+    id: int
+    chat_id: str
+    name: str
+    class Config:
+        orm_mode = True
+
+class CreateTelegram(BaseModel):
+    chat_id: str
+    name: str
+    class Config:
+        orm_mode = True
+
+class UpdateTelegram(BaseModel):
+    id: int
+    chat_id: str
+    name: str
+    class Config:
+        orm_mode = True

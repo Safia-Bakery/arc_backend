@@ -163,3 +163,33 @@ def IT_stats_v2(db:Session,started_at, finished_at,department,timer=60):
 
         
     return data
+
+
+
+def create_telegram(db:Session,form_data:it_schema.CreateTelegram):
+    query = models.Telegrams(
+        chat_id = form_data.chat_id,
+        name = form_data.name
+    )
+    db.add(query)
+    db.commit()
+    db.refresh(query)
+    return query
+
+def update_telegram(db:Session,form_data:it_schema.UpdateTelegram):
+    query = db.query(models.Telegrams).filter(models.Telegrams.id==form_data.id).first()
+    if query:
+        if query.chat_id is not None:
+            query.chat_id = form_data.chat_id
+        if query.name is not None:
+            query.name = form_data.name
+        db.commit()
+        db.refresh(query)
+    return query
+
+
+def get_telegram(db:Session,id):
+    query = db.query(models.Telegrams)
+    if id is not None:
+        query = query.filter(models.Telegrams.id==id)
+    return query.all()

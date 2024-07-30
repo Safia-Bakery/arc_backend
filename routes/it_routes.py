@@ -79,4 +79,35 @@ async def restart_arcbot(request_user: schema.UserFullBack = Depends(get_current
 
 
 
+@it_router.post("/v1/telegrams", tags=["IT"],response_model=it_schema.GetTelegram)
+async def send_telegram_message(
+        form_data : it_schema.CreateTelegram,
+        request_user: schema.UserFullBack = Depends(get_current_user),
+        db: Session = Depends(get_db),
+):
+    return it_query.create_telegram(db=db,form_data=form_data)
+
+
+@it_router.put("/v1/telegrams", tags=["IT"],response_model=it_schema.GetTelegram)
+async def update_telegram_message(
+        form_data : it_schema.UpdateTelegram,
+
+        db: Session = Depends(get_db),
+        request_user: schema.UserFullBack = Depends(get_current_user),
+):
+    return it_query.update_telegram(db=db,form_data=form_data)
+
+
+@it_router.get("/v1/telegrams", tags=["IT"],response_model=Page[it_schema.GetTelegram])
+async def get_telegram_messages(
+        id:Optional[int]=None,
+        db: Session = Depends(get_db),
+        request_user: schema.UserFullBack = Depends(get_current_user),
+):
+    return paginate(it_query.get_telegram(db=db,id=id))
+
+
+
+
+
 
