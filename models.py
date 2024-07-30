@@ -146,6 +146,7 @@ class Category(Base):
     cat_prod = relationship("Products", back_populates="prod_cat")
     parent_id = Column(Integer, nullable=True)
     is_child = Column(Boolean,default=False)
+    chat_id = Column(String, nullable=True)
 
 class Products(Base):
     __tablename__ = "products"

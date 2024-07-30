@@ -243,7 +243,8 @@ def add_category_cr(
     file,
     ftime,
     parent_id,
-    is_child
+    is_child,
+        chat_id
 ):
     db_add_category = models.Category(
         name=name,
@@ -256,7 +257,8 @@ def add_category_cr(
         file=file,
         ftime=ftime,
         parent_id=parent_id,
-        is_child=is_child
+        is_child=is_child,
+        chat_id=chat_id
     )
     db.add(db_add_category)
     db.commit()
@@ -277,7 +279,8 @@ def update_category_cr(
     file,
     ftime,
     parent_id,
-    is_child
+    is_child,
+        chat_id
 ):
     db_update_category = (
         db.query(models.Category).filter(models.Category.id == id).first()
@@ -306,6 +309,8 @@ def update_category_cr(
             db_update_category.parent_id = parent_id
         if is_child is not None:
             db_update_category.is_child = is_child
+        if chat_id is not None:
+            db_update_category.chat_id = chat_id
         db.commit()
         db.refresh(db_update_category)
         return db_update_category
