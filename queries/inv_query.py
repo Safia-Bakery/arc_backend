@@ -54,6 +54,6 @@ def get_category_tools(db:Session,category_id,id):
     if id is not None:
         query = query.filter(models.Tools.id == id)
     if category_id is not None:
-        query = query.filter(models.CategoryTools.category_id == category_id)
+        query = query.filter(models.Tools.CategoryTools.any(category_id=category_id))
     return query.all()
 

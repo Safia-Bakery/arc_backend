@@ -78,7 +78,7 @@ async def upload_image(file: UploadFile = File(...),db: Session = Depends(get_db
 
 
 
-@inv_router.post('/v1/my/orders', tags=["INV"], status_code=status.HTTP_200_OK, response_model=Page[schemas.GetRequestid])
+@inv_router.get('/v1/my/orders', tags=["INV"], status_code=status.HTTP_200_OK, response_model=Page[schemas.GetRequestid])
 def my_orders(status:Optional[bool]=None,
               db: Session = Depends(get_db),
               request_user: schema.UserFullBack = Depends(get_current_user)):
