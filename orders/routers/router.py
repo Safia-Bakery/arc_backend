@@ -237,7 +237,6 @@ async def filter_request(
             reopened=reopened,
             started_at=started_at,
             finished_at=finished_at
-
         )
         return paginate(requestdata)
         
