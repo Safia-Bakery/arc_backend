@@ -78,7 +78,10 @@ async def upload_image(file: UploadFile = File(...),db: Session = Depends(get_db
 
 
 
-@inv_router.get('/v1/my/orders', tags=["INV"], status_code=status.HTTP_200_OK, response_model=Page[schemas.GetRequestid])
+@inv_router.get('/v1/my/orders', tags=["INV"],
+                status_code=status.HTTP_200_OK,
+                response_model=Page[schemas.GetRequestid],
+                summary="if you send true it returns finished order of yours if you send false it returns unfinished ones")
 def my_orders(status:Optional[bool]=None,
               db: Session = Depends(get_db),
               request_user: schema.UserFullBack = Depends(get_current_user)):
