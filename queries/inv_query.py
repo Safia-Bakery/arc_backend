@@ -25,8 +25,8 @@ def delete_tool(db:Session,id):
 
 
 def get_my_orders(db:Session,user_id:int,status):
-    query = db.query(models.Requests).filter(models.Requests.user_id == user_id)
-    query = query.filter(models.Category.department==2)
+    query = db.query(models.Requests).filter(models.Requests.user_id == user_id,models.Category.department==2)
+
     if status is not None:
         if status:
             query = query.filter(models.Requests.status != 0)
