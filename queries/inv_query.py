@@ -42,16 +42,21 @@ def get_my_orders(db:Session,user_id:int,status,from_date,to_date):
 
 
 def add_category_tool(db:Session,form_data:inv_schemas.CreateCategoryTool):
-    query = models.CategoryTools(category_id=form_data.category_id,tool_id=form_data.tool_id,)
-    db.add(query)
-    db.commit()
-    db.refresh(query)
+    query = db.query(models.Tools).filter(models.Tools.id == form_data.tool_id).first()
+    if query:
+        query.category_id = form_data.category_id
+        db.commit()
+        db.refresh(query)
+
     return query
 
 
 def delete_category_tool(db:Session,form_data:inv_schemas.DeleteCategoryTool):
-    query = db.query(models.CategoryTools).filter(models.CategoryTools.category_id == form_data.category_id,models.CategoryTools.tool_id ==form_data.tool_id).delete()
-    db.commit()
+    query = db.query(models.Tools).filter(models.Tools.id == form_data.tool_id).first()
+    if query:
+        query.category_id = None
+        db.commit()
+        db.refresh(query)
     return query
 
 def get_category_tools(db:Session,category_id,id):
@@ -59,6 +64,6 @@ def get_category_tools(db:Session,category_id,id):
     if id is not None:
         query = query.filter(models.Tools.id == id)
     if category_id is not None:
-        query = query.filter(models.Tools.cattool.any(category_id=category_id))
+        query = query.filter(models.Tools.category_id==category_id)
     return query.all()
 

@@ -148,7 +148,7 @@ class Category(Base):
     is_child = Column(Boolean,default=False)
     telegram_id = Column(Integer,ForeignKey("telegrams.id"),nullable=True)
     telegram = relationship("Telegrams", back_populates="categories")
-    cattool = relationship("CategoryTools", back_populates="categories")
+    tool = relationship("Tools", back_populates="categories")
 
 
 class Telegrams(Base):
@@ -327,7 +327,8 @@ class Tools(Base):
     ftime = Column(Float, nullable=True)
     tool_need = relationship("NeededTools", back_populates="need_tool")
     status= Column(Integer, default=1)
-    cattool = relationship("CategoryTools", back_populates="tool")
+    category_id = Column(Integer, ForeignKey("category.id"))
+    categories = relationship("Category", back_populates="tool")
 
 
 
@@ -429,14 +430,7 @@ class ArcExpense(Base):
 
 
 
-class CategoryTools(Base):
-    __tablename__ = "categorytools"
-    id = Column(Integer, primary_key=True, index=True)
-    category_id = Column(Integer, ForeignKey("category.id"))
-    tool_id = Column(Integer, ForeignKey("tools.id"))
-    categories = relationship("Category", back_populates="cattool")
-    tool = relationship("Tools", back_populates="cattool")
-    created_at = Column(DateTime(timezone=True), default=func.now())
+
 
 
 
