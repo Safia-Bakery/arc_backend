@@ -101,7 +101,7 @@ def delete_category_tools(form_data:inv_schemas.DeleteCategoryTool, db: Session 
 
 
 @inv_router.get('/v1/category/tools', tags=["INV"], status_code=status.HTTP_200_OK,response_model=Page[schemas.ToolsSearch])
-def get_category_tools(id: Optional[int] = None,category_id:Optional[int]=None, db: Session = Depends(get_db),request_user: schema.UserFullBack = Depends(get_current_user),):
-    return paginate(inv_query.get_category_tools(db=db,id=id,category_id=category_id))
+def get_category_tools(id: Optional[int] = None,name:Optional[str]=None,category_id:Optional[int]=None, db: Session = Depends(get_db),request_user: schema.UserFullBack = Depends(get_current_user),):
+    return paginate(inv_query.get_category_tools(db=db,id=id,category_id=category_id,name=name))
 
 

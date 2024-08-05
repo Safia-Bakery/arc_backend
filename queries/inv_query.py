@@ -59,11 +59,13 @@ def delete_category_tool(db:Session,form_data:inv_schemas.DeleteCategoryTool):
         db.refresh(query)
     return query
 
-def get_category_tools(db:Session,category_id,id):
+def get_category_tools(db:Session,category_id,id,name):
     query = db.query(models.Tools)
     if id is not None:
         query = query.filter(models.Tools.id == id)
     if category_id is not None:
         query = query.filter(models.Tools.category_id==category_id)
+    if name is not None:
+        query = query.filter(models.Tools.name.ilike(f"%{name}%"))
     return query.all()
 
