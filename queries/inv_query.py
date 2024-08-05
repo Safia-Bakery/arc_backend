@@ -29,9 +29,9 @@ def get_my_orders(db:Session,user_id:int,status):
 
     if status is not None:
         if status:
-            query = query.filter(models.Requests.status != 0)
+            query = query.filter(models.Requests.status.in_([3,4,5,6,7,8,9]))
         elif not status:
-            query = query.filter(models.Requests.status == 0)
+            query = query.filter(models.Requests.status.in_([0,1,2]))
 
     return query.all()
 
