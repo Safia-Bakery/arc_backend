@@ -24,7 +24,7 @@ def delete_tool(db:Session,id):
     return query
 
 
-def get_my_orders(db:Session,user_id:int,status):
+def get_my_orders(db:Session,user_id:int,status,from_date,to_date):
     query = db.query(models.Requests).filter(models.Requests.user_id == user_id,models.Requests.category.has(models.Category.department == 2))
 
     if status is not None:
@@ -32,6 +32,11 @@ def get_my_orders(db:Session,user_id:int,status):
             query = query.filter(models.Requests.status.in_([3,4,5,6,7,8,9]))
         elif not status:
             query = query.filter(models.Requests.status.in_([0,1,2]))
+
+    if from_date is not None:
+        query = query.filter(models.Requests.created_at >= from_date)
+    if to_date is not None:
+        query = query.filter(models.Requests.created_at <= to_date)
 
     return query.all()
 

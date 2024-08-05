@@ -83,9 +83,11 @@ async def upload_image(file: UploadFile = File(...),db: Session = Depends(get_db
                 response_model=Page[schemas.GetRequestid],
                 summary="if you send true it returns finished order of yours if you send false it returns unfinished ones")
 def my_orders(status:Optional[bool]=None,
+              from_date:Optional[date]=None,
+                to_date:Optional[date]=None,
               db: Session = Depends(get_db),
               request_user: schema.UserFullBack = Depends(get_current_user)):
-    return paginate(inv_query.get_my_orders(db=db,user_id=request_user.id,status=status))
+    return paginate(inv_query.get_my_orders(db=db,user_id=request_user.id,status=status,from_date=from_date,to_date=to_date))
 
 
 @inv_router.post('/v1/category/tools', tags=["INV"], status_code=status.HTTP_200_OK)
