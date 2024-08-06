@@ -626,7 +626,7 @@ async def get_category(
             message_text="📑Заявка № "+str(responserq.id)+"\n\n📍Филиал: "+str(responserq.fillial.parentfillial.name)+"\n🕘Дата поступления заявки: "+str(formatted_datetime_str)+"\n\n🏳️Дата и время начало события: "+responserq.update_time['vidfrom']+"\n🏁Дата и время конца события: "+responserq.update_time['vidto']+"\n\n💬Комментарии: "+str(responserq.description),
         )
 
-    return {"success": True, "message": "everything is saved"}
+    return {"success": True, "message": "everything is saved", "id": responserq.id}
 
 
 @router.get(
