@@ -32,13 +32,12 @@ def get_my_orders(db:Session,user_id:int,status,from_date,to_date):
             query = query.filter(models.Requests.status.in_([3,4,5,6,7,8,9]))
         elif not status:
             query = query.filter(models.Requests.status.in_([0,1,2]))
+    if from_date is not None and to_date is not None:
+        query = query.filter(and_(models.Requests.created_at >= from_date,models.Requests.created_at <= to_date+timedelta(days=1)))
 
-    if from_date is not None:
-        query = query.filter(models.Requests.created_at >= from_date)
-    if to_date is not None:
-        query = query.filter(models.Requests.created_at <= to_date)
 
-    return query.all()
+
+    return query.order_by(models.Requests.created_at.desc()).all()
 
 
 def add_category_tool(db:Session,form_data:inv_schemas.CreateCategoryTool):
