@@ -244,7 +244,8 @@ def add_category_cr(
     ftime,
     parent_id,
     is_child,
-    telegram_id
+    telegram_id,
+    price
 ):
     db_add_category = models.Category(
         name=name,
@@ -258,7 +259,8 @@ def add_category_cr(
         ftime=ftime,
         parent_id=parent_id,
         is_child=is_child,
-        telegram_id=telegram_id
+        telegram_id=telegram_id,
+        price=price
     )
     db.add(db_add_category)
     db.commit()
@@ -280,7 +282,8 @@ def update_category_cr(
     ftime,
     parent_id,
     is_child,
-    telegram_id
+    telegram_id,
+    price
 ):
     db_update_category = (
         db.query(models.Category).filter(models.Category.id == id).first()
@@ -311,6 +314,8 @@ def update_category_cr(
             db_update_category.is_child = is_child
         if telegram_id is not None:
             db_update_category.telegram_id = telegram_id
+        if price is not None:
+            db_update_category.price = price
         db.commit()
         db.refresh(db_update_category)
         return db_update_category

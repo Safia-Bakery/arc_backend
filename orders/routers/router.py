@@ -167,6 +167,7 @@ async def filter_category(
         sphere_status=sphere_status,
         parent_id=parent_id
     )
+    print(response)
     return paginate(response)
 
 
