@@ -63,6 +63,7 @@ async def add_category(
     parent_id:Annotated[int,Form()]=None,
     is_child:Annotated[bool,Form()]=False,
     telegram_id: Annotated[str, Form()] = None,
+    price:Annotated[float,Form()]=None,
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
@@ -89,7 +90,8 @@ async def add_category(
         file=file,
         parent_id=parent_id,
         is_child=is_child,
-        telegram_id=telegram_id
+        telegram_id=telegram_id,
+        price=price
     )
 
 
@@ -108,6 +110,7 @@ async def update_category(
     parent_id:Annotated[int,Form()]=None,
     is_child:Annotated[bool,Form()]=None,
     telegram_id: Annotated[str, Form()] = None,
+    price:Annotated[float,Form()]=None,
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
@@ -135,7 +138,8 @@ async def update_category(
         ftime=ftime,
         parent_id=parent_id,
         is_child=is_child,
-        telegram_id = telegram_id
+        telegram_id = telegram_id,
+        price=price
     )
     if response:
         return response
@@ -259,6 +263,7 @@ async def filter_request(
         started_at=started_at,
         finished_at=finished_at
     )
+
     return paginate(request_list)
 
 

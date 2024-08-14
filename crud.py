@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session,joinedload
 from users.schema import schema
 import models
 import re
@@ -612,6 +612,12 @@ def filter_requests_all(
     finished_at
 ):
     query = db.query(models.Requests).join(models.Category)
+    query.options(
+        joinedload(models.Requests.request_orpr)
+        .joinedload(models.OrderProducts.orpr_product)
+        .joinedload(models.Products.prod_cat)
+    )
+
     if id is not None:
         query = query.filter(models.Requests.id == id)
     if fillial_id is not None:
@@ -646,7 +652,8 @@ def filter_requests_all(
         query = query.filter(models.Requests.created_at.between(created_at,finished_at))
     #if reopened is not None:
     #    query = query.filter(func.jsonb_object_keys(models.Requests.update_time) == '7')
-    return query.order_by(models.Requests.id.desc()).all()
+    results = query.order_by(models.Requests.id.desc()).all()
+    return results
 
 
 
@@ -672,6 +679,11 @@ def filter_request_brigada(
     finished_at
 ):
     query = db.query(models.Requests).join(models.Category).join(models.Comments).join(models.Fillials)
+    query.options(joinedload(models.Requests.request_orpr)  # Load OrderProducts related to Requests
+                  .joinedload(models.OrderProducts.orpr_product)  # Load Product related to OrderProducts
+                  .joinedload(models.Products.prod_cat))
+
+
     if id is not None:
         query = query.filter(models.Requests.id == id)
     if sub_id is not None:

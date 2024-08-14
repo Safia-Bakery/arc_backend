@@ -145,6 +145,7 @@ class Category(Base):
     ftime = Column(Float, nullable=True)
     cat_prod = relationship("Products", back_populates="prod_cat")
     parent_id = Column(Integer, nullable=True)
+    price = Column(String,nullable=True)
     is_child = Column(Boolean,default=False)
     telegram_id = Column(Integer,ForeignKey("telegrams.id"),nullable=True)
     telegram = relationship("Telegrams", back_populates="categories")

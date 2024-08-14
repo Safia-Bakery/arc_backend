@@ -1,6 +1,7 @@
-from pydantic import BaseModel, validator
-from fastapi import Form, UploadFile, File
+from pydantic import BaseModel, Field,validator,root_validator
+from fastapi import Form, UploadFile, File,Query,Depends
 from typing import Optional, Annotated, Dict
+from pydantic.utils import GetterDict
 from datetime import datetime, time
 from fastapi import Form
 from users.schema.schema import User
@@ -25,14 +26,33 @@ class UpdateGetCatProduct(BaseModel):
     description: Optional[str] = None
     image: Optional[str] = None
 
+
     class Config:
         orm_mode = True
 
 
+class CategoryNameGet(BaseModel):
+    name:str
+    price:Optional[float]=None
+    class Config:
+        orm_mode = True
+
+class OrderProducts(BaseModel):
+    name: str
+    prod_cat : Optional[CategoryNameGet] = None
+
+
+    class Config:
+        orm_mode = True
+
+
+
 class OrderProductsGet(BaseModel):
     id: int
-    amount: int
-    orpr_product:Optional[UpdateGetCatProduct]=None
+    amount: Optional[int]=None
+    orpr_product: Optional[OrderProducts] = None
+
+
     class Config:
         orm_mode = True
 
