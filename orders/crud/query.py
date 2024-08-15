@@ -192,6 +192,15 @@ def createcat_product(db: Session, name, category_id, status, image, description
     return query
 
 
+def deletecat_product(db: Session, category_id):
+    query = db.query(models.Products).filter(models.Products.category_id == category_id).all()
+    if query:
+        for i in query:
+            db.delete(i)
+            db.commit()
+    return True
+
+
 def updatecat_product(db: Session, id, name, category_id, status, image, description):
     query = db.query(models.Products).filter(models.Products.id == id).first()
     if query:

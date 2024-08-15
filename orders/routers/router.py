@@ -48,6 +48,16 @@ bot_token = os.environ.get("BOT_TOKEN")
 BASE_URL = "https://api.service.safiabakery.uz/"
 FRONT_URL = "https://admin.service.safiabakery.uz/"
 
+sizes = [
+    'XS (42 - 44)',
+    'S (46 - 48)',
+    'M (50 - 52)',
+    'L (54 - 56)',
+    'XL (58 - 60)',
+    'XXL (62 - 64)',
+    'XXXL (66 - 68)'
+         ]
+
 
 @router.post("/category")
 async def add_category(
@@ -77,7 +87,7 @@ async def add_category(
                     break
                 buffer.write(chunk)
         file = folder_name
-    return crud.add_category_cr(
+    add_category_cr = crud.add_category_cr(
         db=db,
         ftime=ftime,
         name=name,
@@ -93,6 +103,12 @@ async def add_category(
         telegram_id=telegram_id,
         price=price
     )
+
+    for i in sizes:
+        query.createcat_product(db=db,category_id=add_category_cr.id,name=i,description=None,image=None,status=1)
+
+
+    return add_category_cr
 
 
 @router.put("/category")
@@ -141,6 +157,10 @@ async def update_category(
         telegram_id = telegram_id,
         price=price
     )
+    query.deletecat_product(db=db,category_id=id)
+    for i in sizes:
+        query.createcat_product(db=db,category_id=id,name=i,description=None,image=None,status=1)
+
     if response:
         return response
     else:
