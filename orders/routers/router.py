@@ -103,12 +103,12 @@ async def add_category(
         telegram_id=telegram_id,
         price=price
     )
+    if department==9:
+        for i in sizes:
+            query.createcat_product(db=db,category_id=add_category_cr.id,name=i,description=None,image=None,status=1)
 
-    for i in sizes:
-        query.createcat_product(db=db,category_id=add_category_cr.id,name=i,description=None,image=None,status=1)
 
-
-    return add_category_cr
+    return {"id": add_category_cr.id, "name": add_category_cr.name, "status": add_category_cr.status}
 
 
 @router.put("/category")
@@ -157,12 +157,12 @@ async def update_category(
         telegram_id = telegram_id,
         price=price
     )
-    query.deletecat_product(db=db,category_id=id)
-    for i in sizes:
-        query.createcat_product(db=db,category_id=id,name=i,description=None,image=None,status=1)
-
+    if response.department==9:
+        query.deletecat_product(db=db,category_id=id)
+        for i in sizes:
+            query.createcat_product(db=db,category_id=id,name=i,description=None,image=None,status=1)
     if response:
-        return response
+        return schemas.GetCategorySch.from_orm(response)
     else:
         return {"message": "not found"}
 
