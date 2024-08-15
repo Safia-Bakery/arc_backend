@@ -110,12 +110,10 @@ async def get_telegram_messages(
 
 @it_router.get('/v1/excell/uniforms', tags=["Uniforms"])
 async def get_uniforms(
-        from_date: Optional[date] = None,
-        to_date: Optional[date] = None,
-        status: Optional[list[int]] = None,
+        form_data:it_schema.Uniformexcellgeneration,
         db: Session = Depends(get_db),
                        request_user: schema.UserFullBack = Depends(get_current_user)):
-    data = it_query.get_uniform_requests(db=db,from_date=from_date,to_date=to_date,status=status)
+    data = it_query.get_uniform_requests(db=db,from_date=form_data.from_date,to_date=form_data.to_date,status=form_data.status)
     return uniform_excell_generate(data=data)
 
 

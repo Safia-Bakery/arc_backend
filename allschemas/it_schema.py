@@ -37,3 +37,9 @@ class UpdateTelegram(BaseModel):
     name: str
     class Config:
         orm_mode = True
+
+
+class Uniformexcellgeneration(BaseModel):
+    from_date:Optional[date]=None
+    to_date:Optional[date]=None
+    status: Optional[list[int]]=None
