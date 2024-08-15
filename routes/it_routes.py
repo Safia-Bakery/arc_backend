@@ -108,7 +108,7 @@ async def get_telegram_messages(
     return paginate(it_query.get_telegram(db=db,id=id))
 
 
-@it_router.get('/v1/excell/uniforms', tags=["Uniforms"])
+@it_router.post('/v1/excell/uniforms', tags=["Uniforms"])
 async def get_uniforms(
         form_data:it_schema.Uniformexcellgeneration,
         db: Session = Depends(get_db),
