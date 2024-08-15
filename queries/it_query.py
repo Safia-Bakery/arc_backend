@@ -193,3 +193,12 @@ def get_telegram(db:Session,id):
     if id is not None:
         query = query.filter(models.Telegrams.id==id)
     return query.all()
+
+
+def get_uniform_requests(db:Session,from_date,to_date):
+    query = db.query(models.Requests).join(models.Category).filter(models.Category.department==9)
+    if from_date is not None:
+        query = query.filter(models.Requests.created_at >= from_date)
+    if to_date is not None:
+        query = query.filter(models.Requests.created_at <= to_date)
+    return query.all()

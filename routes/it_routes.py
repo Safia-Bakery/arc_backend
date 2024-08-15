@@ -34,7 +34,8 @@ from microservices import (
     file_generator,
     get_db,
     get_current_user,
-    Excell_generate_it
+    Excell_generate_it,
+uniform_excell_generate
 )
 from fastapi import APIRouter
 from queries import it_query
@@ -106,6 +107,15 @@ async def get_telegram_messages(
 ):
     return paginate(it_query.get_telegram(db=db,id=id))
 
+
+@it_router.get('/v1/excell/uniforms', tags=["Uniforms"])
+async def get_uniforms(
+        from_date: Optional[date] = None,
+        to_date: Optional[date] = None,
+        db: Session = Depends(get_db),
+                       request_user: schema.UserFullBack = Depends(get_current_user)):
+    data = it_query.get_uniform_requests(db=db,from_date=from_date,to_date=to_date)
+    return uniform_excell_generate(data=data)
 
 
 

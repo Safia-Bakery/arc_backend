@@ -568,3 +568,30 @@ def Excell_generate_it(data):
     # Generate Excel file
     df.to_excel(file_name, index=False)
     return file_name
+
+
+
+def uniform_excell_generate(data):
+    inserting_data = {"Номер заявки":[],"Филиал":[],'Дата поступления':[],"Форма":[],'Общ. сумма':[],'Сотрудник':[],'Статус':[]}
+    for row in data:
+        forma_list = ''
+        total_sum = 0
+        inserting_data['Номер заявки'].append(row.id)
+        inserting_data['Филиал'].append(row.fillial.parentfillial.name)
+        for product in row.request_orpr:
+            forma_list += f"{product.orpr_product.prod_cat.name} {product.orpr_product.name} x {product.amount}\n"
+            if product.orpr_product.prod_cat.price:
+                total_sum += product.orpr_product.prod_cat.price*product.amount
+        inserting_data['Форма'].append(forma_list)
+        inserting_data['Сотрудник'].append(row.description)
+        inserting_data['Статус'].append(statusdata[str(row.status)])
+        create_time = (row.created_at+timedelta(hours=5)).strftime("%d.%m.%Y %H:%M:%S")
+        inserting_data['Дата поступления'].append(create_time)
+        inserting_data['Общ. сумма'].append(total_sum)
+
+    file_name  = f"files/{name_generator()}.xlsx"
+    df = pd.DataFrame(inserting_data)
+    # Generate Excel file
+    df.to_excel(file_name, index=False)
+    return file_name
+
