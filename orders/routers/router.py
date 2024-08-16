@@ -368,6 +368,17 @@ async def put_request_id(
                 )
             except:
                 pass
+        if request_list.category.department==9:
+            try:
+                text = f"Ваша заявка {request_list.id} на форму принята.\n\nКак ваша форма будет готова, мы вам сообщим"
+
+                sendtotelegramchannel(
+                    bot_token=bot_token,
+                    chat_id=request_list.user.telegram_id,
+                    message_text=text
+                )
+            except:
+                pass
     elif form_data.status == 2:
         if request_list.category.department == 5:
             try:
@@ -481,6 +492,16 @@ async def put_request_id(
                 )
             except:
                 pass
+        if request_list.category.department == 9:
+            try:
+                sendtotelegramchannel(
+                    bot_token=bot_token,
+                    chat_id=request_list.user.telegram_id,
+                    message_text=f"Ваша форма по заявке {request_list.id} готова.\n\nМожете приехать в головной офис и забрать",
+                )
+            except:
+                pass
+
     elif form_data.status == 4:
         if request_list.category.department == 4:
             url = f"{FRONT_URL}tg/order-rating/{request_list.id}?user_id={request_list.user.id}&department={request_list.category.department}&sub_id={request_list.category.sub_id}"
