@@ -372,7 +372,6 @@ def howmuchleft(key, store_id):
     departments = requests.get(
         f"{BASE_URL}/resto/api/v2/reports/balance/stores?key={key}&store={store_id}&timestamp={now_time}"
     )
-
     return departments.json()
 
 

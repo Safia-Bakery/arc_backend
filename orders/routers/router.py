@@ -370,7 +370,7 @@ async def put_request_id(
                 pass
         if request_list.category.department==9:
             try:
-                text = f"Ваша заявка {request_list.id} на форму принята.\n\nКак ваша форма будет готова, мы вам сообщим"
+                text = f"Ваша заявка #{request_list.id}s на форму принята.\n\nКак ваша форма будет готова, мы вам сообщим"
 
                 sendtotelegramchannel(
                     bot_token=bot_token,
@@ -497,7 +497,7 @@ async def put_request_id(
                 sendtotelegramchannel(
                     bot_token=bot_token,
                     chat_id=request_list.user.telegram_id,
-                    message_text=f"Ваша форма по заявке {request_list.id} готова.\n\nМожете приехать в головной офис и забрать",
+                    message_text=f"Ваша форма по заявке #{request_list.id}s готова.\n\nМожете приехать в головной офис и забрать",
                 )
             except:
                 pass
