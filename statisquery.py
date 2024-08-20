@@ -711,10 +711,21 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
                                ).filter(models.Tools.parentid==parent_id.parentid
                                ).filter(models.Tools.ftime!=None,models.Category.department==department
                                ).filter(models.Requests.status.in_([0,1,2])).count()
-
-        not_finishedon_time_percent = (not_finished_ontime/total_tools)*100
-        on_time_requests_percent = (finished_ontime/total_tools)*100
-        not_started_percent = (not_started/total_tools)*100
+        if not_finished_ontime == 0:
+            not_finished_ontime_percent = 0
+        else:
+            not_finished_ontime_percent = (not_finished_ontime/total_tools)*100
+        if finished_ontime == 0:
+            on_time_requests_percent = 0
+        else:
+            on_time_requests_percent = (finished_ontime/total_tools)*100
+        if not_started == 0:
+            not_started_percent = 0
+        else:
+            not_started_percent = (not_started/total_tools)*100
+        # not_finishedon_time_percent = (not_finished_ontime/total_tools)*100
+        # on_time_requests_percent = (finished_ontime/total_tools)*100
+        # not_started_percent = (not_started/total_tools)*100
 
         parent_id_name = db.query(models.ToolParents).filter(models.ToolParents.id == parent_id.parentid).first()
         if total:
@@ -727,7 +738,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
                                      "on_time_requests":finished_ontime,
                                      'not_finishedontime':not_finished_ontime,
                                      'not_even_started':not_started,
-                                        'not_finishedon_time_percent':not_finishedon_time_percent,
+                                        'not_finishedon_time_percent':not_finished_ontime_percent,
                                         'on_time_requests_percent':on_time_requests_percent,
                                         'not_started_percent':not_started_percent,
                                         'avg_finishing':avg_finishing
