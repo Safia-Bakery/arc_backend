@@ -282,7 +282,12 @@ def get_files(db: Session):
 def send_to_user_message(db: Session, message):
     query = db.query(models.Users).filter(models.Users.telegram_id.isnot(None)).all()
     try:
+        limit = 0
         for i in query:
+            limit += 1
+            if limit == 30:
+                time.sleep(3)
+                limit = 0
             sendtotelegramchannel(
                 bot_token=bot_token, chat_id=i.telegram_id, message_text=message
             )
