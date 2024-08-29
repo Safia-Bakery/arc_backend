@@ -113,7 +113,7 @@ async def get_uniforms(
         form_data:it_schema.Uniformexcellgeneration,
         db: Session = Depends(get_db),
                        request_user: schema.UserFullBack = Depends(get_current_user)):
-    data = it_query.get_uniform_requests(db=db,from_date=form_data.from_date,to_date=form_data.to_date,status=form_data.status)
+    data = it_query.get_uniform_requests(db=db,from_date=form_data.start_date,to_date=form_data.finish_date,status=form_data.status)
     return uniform_excell_generate(data=data)
 
 

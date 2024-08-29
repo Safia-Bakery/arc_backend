@@ -40,6 +40,6 @@ class UpdateTelegram(BaseModel):
 
 
 class Uniformexcellgeneration(BaseModel):
-    from_date:Optional[date]=None
-    to_date:Optional[date]=None
+    start_date:Optional[date]=None
+    finish_date:Optional[date]=None
     status: Optional[list[int]]=None
