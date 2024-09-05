@@ -32,6 +32,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 import crud
 from database import engine, SessionLocal
 from fastapi_pagination import paginate, Page, add_pagination
+from app.routes.v2.endpoints.calendars import calendar_router
 
 # from secondmain import router
 from iikoview import urls
@@ -86,6 +87,7 @@ origins = ["*"]
 reuseable_oauth = OAuth2PasswordBearer(tokenUrl="/login", scheme_name="JWT")
 # database connection
 app = FastAPI()
+app.include_router(calendar_router,tags=["calendars"])
 app.include_router(router)
 app.include_router(urls)
 app.include_router(hrrouter)

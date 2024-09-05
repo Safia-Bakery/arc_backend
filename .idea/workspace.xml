@@ -5,8 +5,64 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1f1f0639-c1d9-4344-9867-ccfba30c4f64" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/app/core/config.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/crud/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/crud/calendars.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/crud/users.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/db/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/db/base.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/db/session.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/arcexpense.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/arcexpensetype.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/brigada.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/calendars.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/cars.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/category.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/comments.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/communication.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/expanditure.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/files.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/fillials.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/groups.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/hrquestions.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/hrrequest.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/hrusers.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/neededtools.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/orderproducts.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/pages.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/parentfillials.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/parentpage.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/products.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/requests.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/roles.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/suppliers.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/telegrams.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/toolparents.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/tools.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/toolsorder.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/users_model.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/working.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/routes/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/routes/depth.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/routes/v2/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/routes/v2/endpoints/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/routes/v2/endpoints/calendars.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/schemas/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/schemas/branchs.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/schemas/calendars.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/schemas/departments.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/schemas/users.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/utils/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/utils/utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/microservices.py" beforeDir="false" afterPath="$PROJECT_DIR$/microservices.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/settings/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/core/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/settings/base.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf/settings/prod.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/etc/deploy/gunicorn-run.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,22 +104,34 @@
     <option name="openDirectoriesWithSingleClick" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.it_query.executor&quot;: &quot;Debug&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/gayratbekakhmedov/projects/backend/arc_backend&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.fonts.default&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.it_query.executor": "Debug",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/Users/gayratbekakhmedov/projects/backend/arc_backend",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "editor.preferences.fonts.default",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/routes/v2/endpoints" />
+      <recent name="$PROJECT_DIR$/app/routes/v2" />
+      <recent name="$PROJECT_DIR$/app/db" />
+      <recent name="$PROJECT_DIR$/app" />
+      <recent name="$PROJECT_DIR$/app/crud" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/routes/v2/endpoints" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -128,7 +196,10 @@
       <workItem from="1724392039105" duration="4710000" />
       <workItem from="1724589239286" duration="13000" />
       <workItem from="1724931252333" duration="5954000" />
-      <workItem from="1725276324064" duration="2554000" />
+      <workItem from="1725276324064" duration="5055000" />
+      <workItem from="1725428178272" duration="17675000" />
+      <workItem from="1725512001627" duration="7645000" />
+      <workItem from="1725519714383" duration="9890000" />
     </task>
     <servers />
   </component>

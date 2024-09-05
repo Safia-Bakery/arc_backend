@@ -10,3 +10,6 @@ psycopg2-binary
 fastapi-pagination
 pandas
 openpyxl
+requests
+pydantic_settings
+apscheduler
