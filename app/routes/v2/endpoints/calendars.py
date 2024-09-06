@@ -43,12 +43,13 @@ def update_calendar(form_data:calendar_sch.UpdateCalendars,
     return calendar_crud.update_calendar(db,form_data)
 
 
-@calendar_router.get('/calendar',response_model=Page[calendar_sch.GetCalendars])
-def get_calendar(id:Optional[int]=None,
+@calendar_router.get('/calendar',response_model=list[calendar_sch.GetCalendars])
+def get_calendar(current_date:datetime,
+        id:Optional[int]=None,
                 db: Session = Depends(get_db),
                 current_user = Depends(get_current_user)):
 
-    return paginate(calendar_crud.get_calendars(db=db,id=id))
+    return calendar_crud.get_calendars(db=db,id=id,current_date=current_date)
 
 
 

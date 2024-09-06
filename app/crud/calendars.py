@@ -35,10 +35,12 @@ def update_calendar(db:Session,form_data:UpdateCalendars):
     db.refresh(query)
     return query
 
-def get_calendars(db:Session,id:Optional[int]=None):
+def get_calendars(db:Session,id:Optional[int]=None,current_date:Optional[datetime]=None):
     query = db.query(Calendars).filter(Calendars.is_active == 1)
     if id is not None:
         query = query.filter(Calendars.id == id)
+    if current_date is not None:
+        query = query.filter(Calendars.date == current_date)
     return query.order_by(Calendars.created_at.desc()).all()
 
 def get_one_calendar(db:Session,id:int):
