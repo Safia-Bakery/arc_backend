@@ -35,7 +35,7 @@ def update_calendar(db:Session,form_data:UpdateCalendars):
     db.refresh(query)
     return query
 
-def get_calendars(db:Session,id:Optional[int]=None,current_date:Optional[datetime]=None):
+def get_calendars(db:Session,id:Optional[int]=None,current_date:Optional[date]=None):
     query = db.query(Calendars).filter(Calendars.is_active == 1)
     if id is not None:
         query = query.filter(Calendars.id == id)

@@ -44,7 +44,7 @@ def update_calendar(form_data:calendar_sch.UpdateCalendars,
 
 
 @calendar_router.get('/calendar',response_model=list[calendar_sch.GetCalendars])
-def get_calendar(current_date:datetime,
+def get_calendar(current_date:date,
         id:Optional[int]=None,
                 db: Session = Depends(get_db),
                 current_user = Depends(get_current_user)):
