@@ -7,7 +7,7 @@ from sqlalchemy.sql import func
 from datetime import datetime,timedelta
 from sqlalchemy import or_, and_, Date, cast,String
 from uuid import UUID
-from models import Users
+from app.models.users_model import Users
 
 
 def get_user_by_username(db:Session,username:str):

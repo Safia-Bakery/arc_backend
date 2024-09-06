@@ -33,7 +33,7 @@ from jose import jwt
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
-from app.db.session import SessionLocal
+from database import SessionLocal
 from app.schemas.users import GetUserFullData
 from app.crud.users import get_user_by_username
 from app.core.config import settings
