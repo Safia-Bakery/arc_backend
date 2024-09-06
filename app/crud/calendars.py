@@ -5,7 +5,7 @@ import bcrypt
 import pytz
 from sqlalchemy.sql import func
 from datetime import datetime,timedelta
-from sqlalchemy import or_, and_, Date, cast,String
+from sqlalchemy import or_, and_, Date, cast,String,extract
 from uuid import UUID
 
 from app.models.calendars import Calendars
@@ -40,7 +40,11 @@ def get_calendars(db:Session,id:Optional[int]=None,current_date:Optional[datetim
     if id is not None:
         query = query.filter(Calendars.id == id)
     if current_date is not None:
-        query = query.filter(Calendars.date == current_date)
+        query = query.filter(
+            extract('year', Calendars.date) == current_date.year,
+            extract('month', Calendars.date) == current_date.month
+        )
+
     return query.order_by(Calendars.created_at.desc()).all()
 
 def get_one_calendar(db:Session,id:int):
