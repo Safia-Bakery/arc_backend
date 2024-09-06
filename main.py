@@ -70,8 +70,9 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from routes.inv_routes import inv_router
 from routes.it_routes import it_router
 from routes.arc_routes import arc_routes
-
+from app.db.base import Base
 models.Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 load_dotenv()
 
 
