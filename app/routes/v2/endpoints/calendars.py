@@ -31,9 +31,11 @@ def arc_auto_request(db:Session):
     # Create a new session each time the job is triggered
     current_date = datetime.now(tz=timezone_tash).date()
     calendars_list = calendar_crud.current_date_calendars(db=db, current_date=current_date)
-    current_datetime = datetime.now(tz=timezone_tash).strftime('%Y-%m-%d %H:%M:%S')
 
+    current_datetime = datetime.now(tz=timezone_tash).strftime('%Y-%m-%d %H:%M:%S')
+    print(calendars_list)
     for item in calendars_list:
+        print(item)
         branch_id = get_child_branch(db=db, id=item.branch_id).id
         request_create = create_arc_auto_reqeust(
             db=db,
@@ -51,6 +53,7 @@ def arc_auto_request(db:Session):
                f"🔰Категория проблемы: {request_create.category.name}\n" \
                f"⚙️Название оборудования: {request_create.product}\n" \
                f"💬Комментарии: {request_create.description}"
+        print(request_create.id)
         send_inlinekeyboard_text(bot_token=settings.BOT_TOKEN,
                                  chat_id=-1001920671327,
                                  message_text=text)
@@ -63,7 +66,7 @@ def startup_event():
                           timezone=timezone_tash)  # Set the desired time for the function to run (here, 12:10 PM)
 
     # Check if the job already exists
-    scheduler.add_job(arc_auto_request, trigger=trigger, args=[next(get_db())],executor='processpool')
+    scheduler.add_job(arc_auto_request, trigger=trigger, args=[next(get_db())])
 
 
     scheduler.start()
