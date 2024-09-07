@@ -54,15 +54,15 @@ def arc_auto_request(db:Session):
                f"⚙️Название оборудования: {request_create.product}\n" \
                f"💬Комментарии: {request_create.description}"
         print(request_create.id)
-        send_inlinekeyboard_text(bot_token=settings.BOT_TOKEN,
-                                 chat_id=-1001920671327,
+        send_inlinekeyboard_text(bot_token=settings.bottoken,
+                                 chat_id="-1001920671327",
                                  message_text=text)
 
 
 @calendar_router.on_event('startup')
 def startup_event():
     scheduler = BackgroundScheduler()
-    trigger = CronTrigger(hour=18, minute=56, second=0,
+    trigger = CronTrigger(hour=18, minute=58, second=0,
                           timezone=timezone_tash)  # Set the desired time for the function to run (here, 12:10 PM)
 
     # Check if the job already exists
