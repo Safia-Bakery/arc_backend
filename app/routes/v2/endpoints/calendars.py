@@ -33,9 +33,7 @@ def arc_auto_request(db:Session):
     calendars_list = calendar_crud.current_date_calendars(db=db, current_date=current_date)
 
     current_datetime = datetime.now(tz=timezone_tash).strftime('%Y-%m-%d %H:%M:%S')
-    print(calendars_list)
     for item in calendars_list:
-        print(item)
         branch_id = get_child_branch(db=db, id=item.branch_id).id
         request_create = create_arc_auto_reqeust(
             db=db,
@@ -53,7 +51,6 @@ def arc_auto_request(db:Session):
                f"🔰Категория проблемы: {request_create.category.name}\n" \
                f"⚙️Название оборудования: {request_create.product}\n" \
                f"💬Комментарии: {request_create.description}"
-        print(request_create.id)
         send_inlinekeyboard_text(bot_token=settings.bottoken,
                                  chat_id="-1001920671327",
                                  message_text=text)
