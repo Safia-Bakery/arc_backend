@@ -59,7 +59,7 @@ def arc_auto_request(db:Session):
 @calendar_router.on_event('startup')
 def startup_event():
     scheduler = BackgroundScheduler()
-    trigger = CronTrigger(hour=8, minute=0, second=0,
+    trigger = CronTrigger(hour=18, minute=49, second=0,
                           timezone=timezone_tash)  # Set the desired time for the function to run (here, 12:10 PM)
 
     # Check if the job already exists
