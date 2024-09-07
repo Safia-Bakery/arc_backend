@@ -33,8 +33,6 @@ from jose import jwt
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.jobstores.redis import RedisJobStore
-import redis
 
 from database import SessionLocal
 from app.schemas.users import GetUserFullData
