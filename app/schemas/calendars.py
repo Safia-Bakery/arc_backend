@@ -5,6 +5,7 @@ from datetime import datetime, time,date
 from fastapi import Form
 from uuid import UUID
 from app.schemas.branchs import GetBranchs
+from app.schemas.arc_requests import GetRequestStatus
 
 
 class CreateCalendars(BaseModel):
@@ -43,6 +44,7 @@ class GetOneCalendar(BaseModel):
     branch: Optional[GetBranchs]=None
     created_at: Optional[datetime]=None
     updated_at: Optional[datetime]=None
+
     class Config:
         orm_mode = True
 

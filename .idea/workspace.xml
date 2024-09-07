@@ -5,7 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1f1f0639-c1d9-4344-9867-ccfba30c4f64" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/app/crud/arc_requests.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/crud/departments.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/schemas/arc_requests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/crud/calendars.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/crud/calendars.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/calendars.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/calendars.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/requests.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/requests.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/routes/depth.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes/depth.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/routes/v2/endpoints/calendars.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes/v2/endpoints/calendars.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/schemas/calendars.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/calendars.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/utils/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/utils/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -143,7 +155,11 @@
       <workItem from="1725428178272" duration="17675000" />
       <workItem from="1725512001627" duration="7645000" />
       <workItem from="1725519714383" duration="12838000" />
-      <workItem from="1725598379533" duration="2680000" />
+      <workItem from="1725598379533" duration="4699000" />
+      <workItem from="1725603410864" duration="16794000" />
+      <workItem from="1725702918002" duration="599000" />
+      <workItem from="1725703947009" duration="447000" />
+      <workItem from="1725716494859" duration="123000" />
     </task>
     <servers />
   </component>

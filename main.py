@@ -70,9 +70,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from routes.inv_routes import inv_router
 from routes.it_routes import it_router
 from routes.arc_routes import arc_routes
-from app.db.base import Base
 models.Base.metadata.create_all(bind=engine)
-Base.metadata.create_all(bind=engine)
 load_dotenv()
 
 
@@ -449,7 +447,7 @@ async def create_store(
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
-    query =crud.add_store(db=db,data=form_data)
+    query =crud.add_store(db=db,form_data=form_data)
     return query
 
 
@@ -457,4 +455,6 @@ async def create_store(
 add_pagination(app)
 add_pagination(router)
 add_pagination(urls)
+
+
 

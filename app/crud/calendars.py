@@ -56,3 +56,21 @@ def delete_calendar(db:Session,id:int):
         query.is_active = 0
     db.commit()
     return query
+
+
+
+def current_date_calendars(db:Session,current_date:Optional[date]=None):
+    query = db.query(Calendars).filter(Calendars.is_active == 1)
+    if current_date is not None:
+        query = query.filter(Calendars.date==current_date)
+    return query.order_by(Calendars.created_at.desc()).all()
+
+
+
+def update_calendar_request_id(db:Session,calendar_id:int,request_id:int):
+    query = db.query(Calendars).filter(Calendars.id == calendar_id).first()
+    if query:
+        query.request_id = request_id
+    db.commit()
+    db.refresh(query)
+    return query

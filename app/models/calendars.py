@@ -29,6 +29,8 @@ class Calendars(Base):
     branch_id = Column(UUID(as_uuid=True), ForeignKey('parentfillials.id'))
     branch = relationship('ParentFillials', back_populates='calendar')
     date = Column(Date)
+    request_id = Column(Integer, ForeignKey('requests.id'))
+    request = relationship('Requests', back_populates='calendar')
     is_active = Column(Integer, default=1)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
