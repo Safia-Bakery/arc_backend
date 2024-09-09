@@ -31,6 +31,7 @@ class GetCalendars(BaseModel):
     branch_id: UUID
     date: date
     branch: Optional[GetBranchs]=None
+    request : Optional[GetRequestStatus]=None
     is_active: Optional[int]=None
     class Config:
         orm_mode = True
@@ -42,6 +43,7 @@ class GetOneCalendar(BaseModel):
     date: date
     is_active: Optional[int]=None
     branch: Optional[GetBranchs]=None
+    request : Optional[GetRequestStatus]=None
     created_at: Optional[datetime]=None
     updated_at: Optional[datetime]=None
 
