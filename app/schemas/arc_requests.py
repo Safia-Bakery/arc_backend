@@ -7,6 +7,6 @@ from uuid import UUID
 
 
 class GetRequestStatus(BaseModel):
-    status: Optional[str]=None
+    status: Optional[int]=None
     class Config:
         orm_mode = True
