@@ -683,10 +683,12 @@ def filter_request_brigada(
     started_at,
     finished_at
 ):
-    query = db.query(models.Requests).join(models.Category).join(models.Comments).join(models.Fillials)
-    query.options(joinedload(models.Requests.request_orpr)  # Load OrderProducts related to Requests
-                  .joinedload(models.OrderProducts.orpr_product)  # Load Product related to OrderProducts
-                  .joinedload(models.Products.prod_cat))
+    query = db.query(models.Requests).join(models.Category)
+    query.options(
+        joinedload(models.Requests.request_orpr)
+        .joinedload(models.OrderProducts.orpr_product)
+        .joinedload(models.Products.prod_cat)
+    )
 
 
     if id is not None:
