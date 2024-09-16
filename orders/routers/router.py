@@ -525,8 +525,7 @@ async def put_request_id(
         )
     elif form_data.status == 6:
         if request_list.category.department == 4:
-            request_text = f"""Уважаемый {request_list.user.full_name}, Ваша заявка #{request_list.id}s решена.\n
-В течение 3-х дней вы можете сказать "Спасибо" или пожаловаться на выполнение. Поставьте, пожалуйста, рейтинг решения вашей заявки от 1 до 5.""",
+            request_text = f"Уважаемый {request_list.user.full_name} , Ваша заявка #{request_list.id}s ИТ решена. Пожалуйста, подтвердите, что она выполнена в соответствии с вашим запросом."
 
 
 
