@@ -7,10 +7,10 @@ from sqlalchemy.sql import func
 from datetime import datetime,timedelta
 from sqlalchemy import or_, and_, Date, cast,String
 from uuid import UUID
-from app.models.users_model import Users
+from app.models.expanditure import Expanditure
 
 
-def get_user_by_username(db:Session,username:str):
-    query = db.query(Users).filter(Users.username==username).first()
+def update_status(db:Session,expanditure_id):
+    query = db.query(Expanditure).filter(Expanditure.id==expanditure_id).update({Expanditure.status:1})
+    db.commit()
     return query
-

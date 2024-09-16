@@ -70,6 +70,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from routes.inv_routes import inv_router
 from routes.it_routes import it_router
 from routes.arc_routes import arc_routes
+from app.routes.v2.endpoints.iikotransfers import iiko_transfer_router
 models.Base.metadata.create_all(bind=engine)
 load_dotenv()
 
@@ -87,6 +88,7 @@ reuseable_oauth = OAuth2PasswordBearer(tokenUrl="/login", scheme_name="JWT")
 # database connection
 app = FastAPI()
 app.include_router(calendar_router,tags=["calendars"])
+app.include_router(iiko_transfer_router,prefix="/api/v2",tags=["iiko"])
 app.include_router(router)
 app.include_router(urls)
 app.include_router(hrrouter)

@@ -22,6 +22,8 @@ class Settings(BaseSettings):
     login_iiko: Optional[str] = os.getenv("LOGIN_IIKO")
     password_iiko: Optional[str] = os.getenv("PASSWORD_IIKO")
     database_url: str = os.getenv("DATABASE_URL", "sqlite:///./sql_app.db")
+    backend_pass: Optional[str] = os.getenv("BACKEND_PASS")
+    front_url: Optional[str] = os.getenv("FRONT_URL")
 
     # Security settings
 

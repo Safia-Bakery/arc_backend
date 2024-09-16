@@ -17,7 +17,7 @@ from microservices import (
 )
 from typing import Optional
 import crud
-from microservices import get_current_user, get_db
+from microservices import get_current_user, get_db,confirmation_request
 from database import engine, SessionLocal
 from fastapi_pagination import paginate, Page, add_pagination
 from dotenv import load_dotenv
@@ -524,16 +524,29 @@ async def put_request_id(
             message_text=f"Уважаемый {request_list.user.full_name}, ваша заявка #{request_list.id}s временно приостановлена по причине: {request_list.pause_reason}",
         )
     elif form_data.status == 6:
-
-        url = f"{FRONT_URL}tg/order-rating/{request_list.id}?user_id={request_list.user.id}&department={request_list.category.department}&sub_id={request_list.category.sub_id}"
-
-        inlinewebapp(
-                    bot_token=bot_token,
-                    chat_id=request_list.user.telegram_id,
-                    message_text=f"""Уважаемый {request_list.user.full_name}, Ваша заявка #{request_list.id}s решена.\n
+        if request_list.category.department == 4:
+            request_text = f"""Уважаемый {request_list.user.full_name}, Ваша заявка #{request_list.id}s решена.\n
 В течение 3-х дней вы можете сказать "Спасибо" или пожаловаться на выполнение. Поставьте, пожалуйста, рейтинг решения вашей заявки от 1 до 5.""",
-                    url=url,
-                )
+
+
+
+            confirmation_request(bot_token=bot_token, chat_id=request_list.user.telegram_id, message_text=request_text,)
+
+        if request_list.category.department == 1:
+
+            text_request = f"Ваша заявка #{request_list.id}s по АРС была обработана. Пожалуйста, подтвердите, что она выполнена в соответствии с вашим запросом."
+            confirmation_request(bot_token=bot_token, chat_id=request_list.user.telegram_id, message_text=text_request)
+
+        if request_list.category.department==2:
+            text_request = f"Ваша заявка #{request_list.id}s по Инвентарю была обработана. "
+            for i in request_list.expanditure:
+
+                    text_request += f"\n{i.tool.name} - {i.amount} шт. "
+            text_request += "Инвентарь отправлен вам на филиал, прибудет через 12 часов. Как привезут просим вас Подтвердить заявку. \nЕсли вам не привезут их в течении выше указанного времени, можете нажать кнопку “Не сделано”"
+                    # edit_expenditure = crud.synch_expanditure_crud(db, id=i.id)
+                    # send_document_iiko(key=authiiko(), data=edit_expenditure)
+            confirmation_request(bot_token=bot_token, chat_id=request_list.user.telegram_id, message_text=text_request)
+
     elif form_data.status == 7:
        sendtotelegramchannel(
                 bot_token=bot_token,
