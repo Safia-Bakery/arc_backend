@@ -49,7 +49,7 @@ def self_closing_requests(db:Session):
                 expanditure_crud.update_status(db=db,expanditure_id=product.id)
 
 
-        elif request.category.department==1 and request.category.sphere_status:
+        elif request.category.department==1 and request.category.sphere_status == 1:
             message_text = f"Уважаемый {request.user.full_name}, статус вашей заявки #{request.id}s по APC: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
 
             for i in request.expanditure:
@@ -62,6 +62,14 @@ def self_closing_requests(db:Session):
         rating_request_telegram(bot_token=settings.bottoken, chat_id=request.user.telegram_id,
                                 message_text=message_text, url=url)
     return True
+
+
+# @iiko_transfer_router.on_event("startup")
+# def it_query_checker():
+#     scheduler = BackgroundScheduler()
+#     trigger = CronTrigger(minute="*/30")  # Trigger every half hour
+#     scheduler.add_job(self_closing_requests, trigger=trigger, args=[next(get_db())])
+#     scheduler.start()
 
 
 @iiko_transfer_router.post("/iiko_transfer")
