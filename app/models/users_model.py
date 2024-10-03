@@ -46,6 +46,6 @@ class Users(Base):
     toolor = relationship("ToolsOrder", back_populates="user")
     communication = relationship("Communication", back_populates="user")
     arcexpense = relationship("ArcExpense", back_populates="user")
-    branch = relationship("Branch", back_populates="user")
+    branch = relationship("Fillials", back_populates="user")
     branch_id = Column(UUID, ForeignKey("fillials.id"), nullable=True)
     finished_task = relationship("KruFinishedTasks", back_populates="user")
