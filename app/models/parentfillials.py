@@ -37,3 +37,5 @@ class ParentFillials(Base):
     fillial_department = relationship("Fillials", back_populates="parentfillial")
     is_fabrica = Column(Integer, nullable=True)
     calendar = relationship('Calendars', back_populates='branch')
+    kru_finished_task = relationship("KruFinishedTasks", back_populates="branch")
+    branch = relationship("ParentFillials", back_populates="user")

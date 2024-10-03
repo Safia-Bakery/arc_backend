@@ -35,5 +35,5 @@ class Fillials(Base):
     origin = Column(Integer, default=0)
     status = Column(Integer, default=0)
     supplier = relationship("Suppliers", back_populates="store")
-    user = relationship("Users", back_populates="branch")
-    kru_finished_task = relationship("KruFinishedTasks", back_populates="branch")
+
+
