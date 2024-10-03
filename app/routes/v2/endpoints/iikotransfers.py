@@ -28,7 +28,7 @@ def self_closing_requests(db:Session):
 
     key = authiiko()
     for request in requests:
-        url = f"{settings.front_url}tg/order-rating/{request.id}?user_id={request.user.id}&department={request.category.department}&sub_id={request.category.sub_id}"
+        url = f"{settings.front_url}/tg/order-rating/{request.id}?user_id={request.user.id}&department={request.category.department}&sub_id={request.category.sub_id}"
 
         iiko_transfers.update_status_request(db=db,id=request.id,status=3)
         if request.category.department==2:
