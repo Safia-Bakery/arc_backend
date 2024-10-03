@@ -32,7 +32,7 @@ def self_closing_requests(db:Session):
 
         iiko_transfers.update_status_request(db=db,id=request.id,status=3)
         if request.category.department==2:
-            message_text = f"Уважаемый {request.user.full_name}, статус вашей заявки #{request.id}s по инвентарь: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявку",
+            message_text = f'Уважаемый {request.user.full_name}, статус вашей заявки #{request.id}s по инвентарь: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявку',
 
             for product in request.expanditure:
                 send_inventory_document_iiko(key= key, data=product)
