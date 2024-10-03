@@ -75,6 +75,7 @@ from app.routes.v2.endpoints.kru_categories import kru_categories
 from app.routes.v2.endpoints.kru_tasks_finished import kru_tasks_finished
 from app.routes.v2.endpoints.kru_tasks import kru_tasks_router
 from app.routes.v2.endpoints.files import file_router
+from app.routes.v2.endpoints.branchs import branchs_router
 
 
 from app.routes.v2.endpoints.iikotransfers import iiko_transfer_router
@@ -108,6 +109,7 @@ app.include_router(kru_categories, tags=["KRU"])
 app.include_router(kru_tasks_finished, tags=["KRU"])
 app.include_router(kru_tasks_router, tags=["KRU"])
 app.include_router(file_router, tags=["Files"])
+app.include_router(branchs_router, tags=["Branchs"])
 app.mount("/files", StaticFiles(directory="files"), name="files")
 
 timezonetash = pytz.timezone("Asia/Tashkent")
