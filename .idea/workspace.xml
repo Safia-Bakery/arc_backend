@@ -7,6 +7,7 @@
     <list default="true" id="1f1f0639-c1d9-4344-9867-ccfba30c4f64" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/crud/iiko_transfers.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/crud/iiko_transfers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/routes/v2/endpoints/iikotransfers.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes/v2/endpoints/iikotransfers.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -163,7 +164,7 @@
       <workItem from="1727706909511" duration="92000" />
       <workItem from="1727854703750" duration="599000" />
       <workItem from="1727868184654" duration="3849000" />
-      <workItem from="1727931959570" duration="26327000" />
+      <workItem from="1727931959570" duration="26475000" />
     </task>
     <servers />
   </component>

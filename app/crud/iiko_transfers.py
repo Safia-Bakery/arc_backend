@@ -30,9 +30,9 @@ def update_status_request(db:Session,id,status):
     return query
 
 
-def get_requests_by_status(db:Session,status):
+def get_requests_by_status(db: Session, status):
     one_day_before = datetime.now(timezone_tash) - timedelta(days=1)
-    query = db.query(Requests).filter(Requests.status == status).filter(Requests.finished_at >= one_day_before).all()
+    query = db.query(Requests).filter(Requests.status == status).filter(Requests.finished_at <= one_day_before).all()
     return query
 
 
