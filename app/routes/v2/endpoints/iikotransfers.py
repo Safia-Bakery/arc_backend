@@ -34,7 +34,6 @@ def self_closing_requests(db:Session):
         if request.category.department==2:
             message_text = f"Уважаемый {request.user.full_name}, статус вашей заявки #{request.id}s по инвентарь: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявку",
 
-            rating_request_telegram(request.user.telegram_id,request.id, message_text, url)
             for product in request.expanditure:
                 send_inventory_document_iiko(key= key, data=product)
                 expanditure_crud.update_status(db=db,expanditure_id=product.id)
