@@ -30,7 +30,7 @@ class KruFinishedTasks(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship("Users", back_populates="finished_task")
     branch_id = Column(UUID, ForeignKey("fillials.id"))
-    branch = relationship("Branch", back_populates="kru_finished_task")
+    branch = relationship("Fillials", back_populates="kru_finished_task")
     comment = Column(String, nullable=True)
     file = relationship("Files", back_populates="kru_finished_task")
     created_at = Column(DateTime(timezone=True), default=func.now())
