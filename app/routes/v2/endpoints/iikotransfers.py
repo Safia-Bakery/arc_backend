@@ -22,35 +22,40 @@ iiko_transfer_router = APIRouter()
 timezone_tash = pytz.timezone('Asia/Tashkent')
 
 
-
-def self_closing_requests(db:Session):
-    requests = iiko_transfers.get_requests_by_status(db=db,status=6)
+def self_closing_requests(db: Session):
+    requests = iiko_transfers.get_requests_by_status(db=db, status=6)
 
     key = authiiko()
     for request in requests:
         url = f"{settings.front_url}/tg/order-rating/{request.id}?user_id={request.user.id}&department={request.category.department}&sub_id={request.category.sub_id}"
 
-        iiko_transfers.update_status_request(db=db,id=request.id,status=3)
-        if request.category.department==2:
-            message_text = f'Уважаемый {request.user.full_name}, статус вашей заявки #{request.id}s по инвентарь: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявку',
+        # Update the status of the request
+        iiko_transfers.update_status_request(db=db, id=request.id, status=3)
 
+        # Check the department and construct the message accordingly
+        if request.category.department == 2:
+            message_text = f'Уважаемый {request.user.full_name}, статус вашей заявки #{request.id}s по инвентарь: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟 и оцените заявку'
+
+            # Send the inventory document
             for product in request.expanditure:
-                send_inventory_document_iiko(key= key, data=product)
-                expanditure_crud.update_status(db=db,expanditure_id=product.id)
+                send_inventory_document_iiko(key=key, data=product)
+                expanditure_crud.update_status(db=db, expanditure_id=product.id)
 
+        elif request.category.department == 1 and request.category.sphere_status == 1:
+            message_text = f"Уважаемый {request.user.full_name}, статус вашей заявки #{request.id}s по APC: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟 и оцените заявку"
 
-        elif request.category.department==1 and request.category.sphere_status == 1:
-            message_text = f"Уважаемый {request.user.full_name}, статус вашей заявки #{request.id}s по APC: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
-
+            # Send ARC document
             for i in request.expanditure:
+                send_arc_document_iiko(key=authiiko(), data=i)
+                expanditure_crud.update_status(db=db, expanditure_id=i.id)
 
-                send_arc_document_iiko(key=authiiko(),data=i)
-                expanditure_crud.update_status(db=db,expanditure_id=i.id)
         else:
-            message_text = f"Уважаемый {request.user.full_name}, статус вашей заявки #{request.id}s по IT: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявку",
+            message_text = f"Уважаемый {request.user.full_name}, статус вашей заявки #{request.id}s по IT: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟 и оцените заявку"
 
+        # Send the message via Telegram
         rating_request_telegram(bot_token=settings.bottoken, chat_id=request.user.telegram_id,
                                 message_text=message_text, url=url)
+
     return True
 
 
