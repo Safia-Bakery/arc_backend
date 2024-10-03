@@ -185,12 +185,12 @@ def startup_event():
 
 
 
-@app.on_event("startup")
-def it_query_checker():
-    scheduler = BackgroundScheduler()
-    trigger = CronTrigger(minute="*/30")  # Trigger every half hour
-    scheduler.add_job(it_close_request, trigger=trigger, args=[next(get_db())])
-    scheduler.start()
+# @app.on_event("startup")
+# def it_query_checker():
+#     scheduler = BackgroundScheduler()
+#     trigger = CronTrigger(minute="*/30")  # Trigger every half hour
+#     scheduler.add_job(it_close_request, trigger=trigger, args=[next(get_db())])
+#     scheduler.start()
 
 
 @app.post("/user/group/permission")
