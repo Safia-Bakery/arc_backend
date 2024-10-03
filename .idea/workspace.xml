@@ -5,33 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1f1f0639-c1d9-4344-9867-ccfba30c4f64" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/crud/files.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/crud/kru_category.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/crud/kru_tasks.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/crud/kru_tasks_finished.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/crud/kru_users.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/models/kru_categories.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/models/kru_finished_tasks.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/models/kru_tasks.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/routes/v2/endpoints/files.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/routes/v2/endpoints/kru_categories.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/routes/v2/endpoints/kru_tasks.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/routes/v2/endpoints/kru_tasks_finished.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/routes/v2/endpoints/kru_users.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/schemas/files.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/schemas/kru_categories.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/schemas/kru_finished_tasks.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/schemas/kru_tasks.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/schemas/kru_users.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/files.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/files.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/fillials.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/fillials.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/users_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/users_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes/v2/endpoints/iikotransfers.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes/v2/endpoints/iikotransfers.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/schemas/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/users.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/utils/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/utils/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/schemas/kru_users.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/kru_users.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -188,7 +163,7 @@
       <workItem from="1727706909511" duration="92000" />
       <workItem from="1727854703750" duration="599000" />
       <workItem from="1727868184654" duration="3849000" />
-      <workItem from="1727931959570" duration="15675000" />
+      <workItem from="1727931959570" duration="16322000" />
     </task>
     <servers />
   </component>

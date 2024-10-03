@@ -4,7 +4,7 @@ from typing import Optional, Annotated, Dict
 from datetime import datetime, time,date
 from fastapi import Form
 from uuid import UUID
-from branchs import GetBranchs
+from app.schemas.branchs import GetBranchs
 
 
 class CreateUser(BaseModel):
