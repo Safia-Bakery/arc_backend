@@ -6,15 +6,8 @@ from fastapi import Form
 from uuid import UUID
 
 
-
-class GetUserFullData(BaseModel):
+class FilesGet(BaseModel):
     id:int
-    username:str
-    full_name:Optional[str]=None
-    telegram_id:Optional[int]=None
-    branch_id:Optional[int]=None
-
+    url : Optional[str]=None
     class Config:
         orm_mode = True
-
-

@@ -15,7 +15,6 @@ from app.models.requests import Requests
 from app.models.communication import Communication
 from app.models.orderproducts import OrderProducts
 from app.models.comments import Comments
-from app.models.files import Files
 from app.models.toolparents import ToolParents
 from app.models.tools import Tools
 from app.models.working import Working
@@ -28,3 +27,8 @@ from app.models.hrquestions import HrQuestions
 from app.models.arcexpensetype import ArcExpenseType
 from app.models.arcexpense import ArcExpense
 from app.models.calendars import Calendars
+from app.models.kru_categories import KruCategories
+from app.models.kru_tasks import KruTasks
+from app.models.kru_finished_tasks import KruFinishedTasks
+from app.models.files import Files
+

@@ -22,15 +22,14 @@ from app.db.base import Base
 import pytz
 import uuid
 
-
-
-class Files(Base):
-    __tablename__ = "files"
+class KruTasks(Base):
+    __tablename__ = "kru_tasks"
     id = Column(Integer, primary_key=True, index=True)
-    url = Column(String)
-    request = relationship("Requests", back_populates="file")
-    request_id = Column(Integer, ForeignKey("requests.id"))
-    status = Column(Integer, default=0)
-    kru_finished_task_id = Column(Integer, ForeignKey("kru_finished_tasks.id"))
-    kru_finished_task = relationship("KruFinishedTasks", back_populates="file")
+    name = Column(String)
+    status = Column(Integer, default=1)
+    kru_category_id = Column(Integer, ForeignKey("kru_categories.id"))
+    kru_category = relationship("KruCategories", back_populates="kru_task")
+    finished_task = relationship("KruFinishedTasks", back_populates="task")
+    created_at = Column(DateTime(timezone=True), default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 

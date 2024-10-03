@@ -1,31 +1,22 @@
-from datetime import date
-from datetime import datetime
-from typing import Optional
 import pytz
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
 from fastapi import APIRouter
 from fastapi import Depends
 from sqlalchemy.orm import Session
-from app.crud import calendars as calendar_crud
-from app.crud.arc_requests import create_arc_auto_reqeust
-from app.routes.depth import get_db, get_current_user
-from app.schemas import calendars as calendar_sch
-from app.crud.departments import get_child_branch
-from app.utils.utils import send_inlinekeyboard_text
+
 from app.core.config import settings
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.triggers.cron import CronTrigger
-from app.crud.users import get_user_by_username
-from app.schemas.users import GetUserFullData
-from app.models.users_model import Users
+from app.crud import expanditure as expanditure_crud
+from app.crud import iiko_transfers
+from app.routes.depth import get_db, get_current_user
 from app.schemas.iiko_transfers import IikoTransfer
+from app.schemas.users import GetUserFullData
 from app.utils.iiko_tranfers import (
     send_inventory_document_iiko,
-    send_arc_document_iiko,authiiko,
+    send_arc_document_iiko, authiiko,
 
-                                     )
-from app.crud import expanditure as expanditure_crud
-from app.utils.utils import  rating_request_telegram
-from app.crud import iiko_transfers
+)
+from app.utils.utils import rating_request_telegram
 
 iiko_transfer_router = APIRouter()
 timezone_tash = pytz.timezone('Asia/Tashkent')
@@ -43,7 +34,7 @@ def self_closing_requests(db:Session):
         if request.category.department==2:
             message_text = f"Уважаемый {request.user.full_name}, статус вашей заявки #{request.id}s по инвентарь: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявку",
 
-            rating_request_telegram(request.user.telegram_id,request.id,url)
+            rating_request_telegram(request.user.telegram_id,request.id, message_text, url)
             for product in request.expanditure:
                 send_inventory_document_iiko(key= key, data=product)
                 expanditure_crud.update_status(db=db,expanditure_id=product.id)

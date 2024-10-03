@@ -6,14 +6,12 @@ from fastapi import Form
 from uuid import UUID
 
 
-
-class GetUserFullData(BaseModel):
-    id:int
-    username:str
-    full_name:Optional[str]=None
-    telegram_id:Optional[int]=None
-    branch_id:Optional[int]=None
-
+class KruFinishedTasksCreate(BaseModel):
+    task_id: int
+    user_id: int
+    file : Optional[str]=None
+    branch_id: Optional[UUID]=None
+    comment : Optional[str]=None
     class Config:
         orm_mode = True
 

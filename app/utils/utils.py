@@ -1,5 +1,6 @@
 import requests
-
+import string
+import random
 
 def send_inlinekeyboard_text(bot_token, chat_id, message_text):
     keyboard = {
@@ -53,6 +54,12 @@ def rating_request_telegram(bot_token, chat_id, message_text, url):
         return response
     else:
         return False
+
+
+def generate_random_string(length=10):
+    characters = string.ascii_letters + string.digits
+    random_string = ''.join(random.choice(characters) for _ in range(length))
+    return random_string
 
 
 

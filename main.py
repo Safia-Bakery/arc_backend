@@ -70,6 +70,13 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from routes.inv_routes import inv_router
 from routes.it_routes import it_router
 from routes.arc_routes import arc_routes
+from app.routes.v2.endpoints.kru_users import kru_users_router
+from app.routes.v2.endpoints.kru_categories import kru_categories
+from app.routes.v2.endpoints.kru_tasks_finished import kru_tasks_finished
+from app.routes.v2.endpoints.kru_tasks import kru_tasks_router
+from app.routes.v2.endpoints.files import file_router
+
+
 from app.routes.v2.endpoints.iikotransfers import iiko_transfer_router
 models.Base.metadata.create_all(bind=engine)
 load_dotenv()
@@ -96,6 +103,11 @@ app.include_router(user_router)
 app.include_router(inv_router)
 app.include_router(it_router)
 app.include_router(arc_routes)
+app.include_router(kru_users_router)
+app.include_router(kru_categories)
+app.include_router(kru_tasks_finished)
+app.include_router(kru_tasks_router)
+app.include_router(file_router)
 app.mount("/files", StaticFiles(directory="files"), name="files")
 
 timezonetash = pytz.timezone("Asia/Tashkent")
