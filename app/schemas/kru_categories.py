@@ -22,5 +22,7 @@ class KruCategoriesUpdate(BaseModel):
 class KruCategoriesGet(BaseModel):
     id : int
     name : Optional[str]=None
+    status : Optional[int]=None
+    sub_tasks   : Optional[int]=None
     class Config:
         orm_mode = True

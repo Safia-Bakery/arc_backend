@@ -38,7 +38,12 @@ async def get_kru_categories_api(
     """
     Get categories
     """
-    return paginate(get_kru_categories(db=db,id=id,name=name))
+    query_data = get_kru_categories(db=db,id=id,name=name)
+    # index of query_data
+    for index, item in enumerate(query_data):
+        query_data[index].sub_tasks = len(query_data[index].kru_task)
+
+    return paginate(    query_data)
 
 
 
