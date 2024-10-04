@@ -56,7 +56,6 @@ async def get_one_kru_category_api(
 
 @kru_categories.put("/kru_categories/",response_model=KruCategoriesGet)
 async def update_kru_category_api(
-    id:int,
     form_data: KruCategoriesUpdate,
     db: Session = Depends(get_db),
     current_user: GetUserFullData = Depends(get_current_user),
