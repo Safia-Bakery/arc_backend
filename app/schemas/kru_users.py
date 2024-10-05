@@ -17,7 +17,6 @@ class CreateUser(BaseModel):
 
 class UpdateUser(BaseModel):
     full_name: Optional[str]=None
-    telegram_id: Optional[int]=None
     branch_id: Optional[int]=None
     id : int
     class Config:
