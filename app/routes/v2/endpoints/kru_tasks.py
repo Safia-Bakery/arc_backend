@@ -4,6 +4,7 @@ import pytz
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi_pagination import Page, paginate
+from uuid import UUID
 from sqlalchemy.orm import Session
 
 from app.crud.kru_tasks import create_kru_task, get_kru_tasks, get_one_kru_task, update_kru_task,delete_kru_task,get_todays_tasks
@@ -81,12 +82,15 @@ async def delete_kru_task_api(
 
 @kru_tasks_router.get("/kru_tasks/today",response_model=list[KruTasksGet])
 async def get_todays_tasks_api(
+    category_id:int,
+    branch_id:UUID,
+
     db: Session = Depends(get_db),
     current_user: GetUserFullData = Depends(get_current_user),
 ):
     """
     Get todays tasks
     """
-    return get_todays_tasks(db=db)
+    return get_todays_tasks(db=db,branch_id=branch_id,category_id=category_id)
 
 

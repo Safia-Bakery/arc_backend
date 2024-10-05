@@ -6,10 +6,10 @@ from fastapi import Depends
 from fastapi_pagination import Page
 from sqlalchemy.orm import Session
 
-from app.crud.kru_users import create_user, get_by_telegram_id
+from app.crud.kru_users import create_user, get_by_telegram_id,update_user
 from app.models.users_model import Users
 from app.routes.depth import get_db, get_current_user
-from app.schemas.kru_users import CreateUser
+from app.schemas.kru_users import CreateUser,UpdateUser
 from app.schemas.users import GetUserFullData
 
 kru_users_router = APIRouter()
@@ -39,3 +39,15 @@ async def get_kru_users_api(
     Get users
     """
     return get_by_telegram_id(db=db,telegram_id=telegram_id)
+
+
+@kru_users_router.put("/kru_users/",response_model=GetUserFullData)
+async def update_kru_user(
+    form_data: UpdateUser,
+    db: Session = Depends(get_db),
+    current_user: GetUserFullData = Depends(get_current_user),
+):
+    """
+    Update user
+    """
+    return  update_user(db=db,form_data=form_data)

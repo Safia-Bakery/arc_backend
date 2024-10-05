@@ -20,6 +20,7 @@ def create_kru_task(db:Session,form_data:KruTasksCreate):
     query = KruTasks(
         name=form_data.name,
         kru_category_id=form_data.kru_category_id,
+        description=form_data.description,
     )
     db.add(query)
     db.commit()
@@ -47,6 +48,9 @@ def update_kru_task(db:Session,form_data:KruTasksUpdate):
     query = db.query(KruTasks).filter(KruTasks.id==form_data.id).first()
     if form_data.name is not None:
         query.name = form_data.name
+    if form_data.description is not None:
+        query.description = form_data.description
+
     db.commit()
     db.refresh(query)
     return query
@@ -62,7 +66,7 @@ def delete_kru_task(db:Session,id:int):
 
 # get todays tasks which are not in finished tasks list i mean which are not in KruFinishedTasks table
 
-def get_todays_tasks(db: Session):
+def get_todays_tasks(db: Session,branch_id,category_id):
     today = datetime.now().date()
 
     # Alias for finished tasks to filter out tasks finished today
@@ -70,13 +74,15 @@ def get_todays_tasks(db: Session):
 
     # Subquery to get task_ids that were finished today
     finished_today_subquery = db.query(finished_task_alias.task_id).filter(
-        finished_task_alias.created_at >= today
+        finished_task_alias.created_at >= today,
+        finished_task_alias.branch_id ==branch_id
     )
 
     # Main query: get tasks that are not finished today
     query = db.query(KruTasks).filter(
         KruTasks.status == 1,  # Only tasks with status 1 (active)
-        ~KruTasks.id.in_(finished_today_subquery)  # Exclude tasks finished today
+        ~KruTasks.id.in_(finished_today_subquery),  # Exclude tasks finished today
+        KruTasks.kru_category_id == category_id
     )
 
     return query.all()

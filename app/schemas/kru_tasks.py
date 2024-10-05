@@ -10,11 +10,15 @@ from .kru_categories import KruCategoriesGet
 class KruTasksCreate(BaseModel):
     name: str
     category_id: int
+    description : Optional[str]=None
+
     class Config:
         orm_mode = True
 
 class KruTasksUpdate(BaseModel):
     name: Optional[str]=None
+    description : Optional[str]=None
+
     category_id: Optional[int]=None
     id : int
     class Config:
@@ -23,6 +27,7 @@ class KruTasksUpdate(BaseModel):
 class KruTasksGet(BaseModel):
     id : int
     name : Optional[str]=None
+    description : Optional[str]=None
     category_id : Optional[int]=None
     status : Optional[int]=None
     class Config:

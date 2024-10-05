@@ -26,6 +26,7 @@ class KruTasks(Base):
     __tablename__ = "kru_tasks"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
+    description = Column(String,nullable=True)
     status = Column(Integer, default=1)
     kru_category_id = Column(Integer, ForeignKey("kru_categories.id"))
     kru_category = relationship("KruCategories", back_populates="kru_task")

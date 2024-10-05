@@ -9,7 +9,7 @@ from sqlalchemy import or_, and_, Date, cast,String
 from uuid import UUID
 from app.utils.utils import generate_random_string
 from app.models.users_model import Users
-from app.schemas.kru_users import CreateUser
+from app.schemas.kru_users import CreateUser,UpdateUser
 
 
 
@@ -29,4 +29,18 @@ def create_user(db:Session,form_data:CreateUser):
     db.refresh(query)
     return query
 
+
+def update_user(db:Session,form_data:UpdateUser):
+    query = db.query(Users).filter(Users.telegram_id==form_data.telegram_id).first()
+    if form_data.branch_id is not None:
+        query.branch_id = form_data.branch_id
+    if form_data.full_name is not None:
+        query.full_name = form_data.full_name
+
+
+
+
+    db.commit()
+    db.refresh(query)
+    return query
 
