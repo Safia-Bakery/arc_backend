@@ -31,7 +31,7 @@ def create_user(db:Session,form_data:CreateUser):
 
 
 def update_user(db:Session,form_data:UpdateUser):
-    query = db.query(Users).filter(Users.telegram_id==form_data.telegram_id).first()
+    query = db.query(Users).filter(Users.id==form_data.id).first()
     if form_data.branch_id is not None:
         query.branch_id = form_data.branch_id
     if form_data.full_name is not None:
