@@ -80,13 +80,11 @@ async def delete_kru_task_api(
     return delete_kru_task(db=db,id=id)
 
 
-@kru_tasks_router.get("/kru_tasks/today",response_model=list[KruTasksGet])
+@kru_tasks_router.get("/kru_tasks/todays/",response_model=list[KruTasksGet])
 async def get_todays_tasks_api(
     branch_id:UUID,
-        category_id: Optional[int] = None,
-
+    category_id: Optional[int] = None,
     category_name:Optional[str]=None,
-
     db: Session = Depends(get_db),
     current_user: GetUserFullData = Depends(get_current_user),
 ):
