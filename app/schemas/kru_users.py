@@ -17,7 +17,7 @@ class CreateUser(BaseModel):
 
 class UpdateUser(BaseModel):
     full_name: Optional[str]=None
-    branch_id: Optional[int]=None
+    branch_id: Optional[UUID]=None
     id : int
     class Config:
         orm_mode = True
