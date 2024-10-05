@@ -29,7 +29,7 @@ async def create_kru_user(
 
 
 
-@kru_users_router.get("/kru_users/",response_model=Page[ GetUserFullData])
+@kru_users_router.get("/kru_users/",response_model=GetUserFullData)
 async def get_kru_users_api(
     telegram_id:Optional[int]=None,
     db: Session = Depends(get_db),
