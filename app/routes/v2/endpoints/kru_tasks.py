@@ -33,14 +33,14 @@ async def get_kru_tasks_api(
     id:Optional[int]=None,
     name:Optional[str]=None,
     category_name:Optional[str]=None,
-    category_id:Optional[int]=None,
+    kru_category_id:Optional[int]=None,
     db: Session = Depends(get_db),
     current_user: GetUserFullData = Depends(get_current_user),
 ):
     """
     Get tasks
     """
-    return paginate(get_kru_tasks(db=db,id=id,name=name,category_name=category_name,category_id=category_id))
+    return paginate(get_kru_tasks(db=db,id=id,name=name,category_name=category_name,category_id=kru_category_id))
 
 
 
