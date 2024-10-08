@@ -77,6 +77,11 @@ def get_todays_tasks(db: Session,branch_id,category_id,category_name):
         finished_task_alias.created_at >= today,
         finished_task_alias.branch_id ==branch_id
     )
+    if category_id is not None:
+        finished_today_subquery = finished_today_subquery.filter(finished_task_alias.kru_category_id == category_id)
+
+    if category_name is not None:
+        finished_today_subquery = finished_today_subquery.filter(KruCategories.name.ilike(f'%{category_name}%'))
 
     # Main query: get tasks that are not finished today
     query = db.query(KruTasks).filter(
