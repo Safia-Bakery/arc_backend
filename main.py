@@ -76,6 +76,8 @@ from app.routes.v2.endpoints.kru_tasks_finished import kru_tasks_finished
 from app.routes.v2.endpoints.kru_tasks import kru_tasks_router
 from app.routes.v2.endpoints.files import file_router
 from app.routes.v2.endpoints.branchs import branchs_router
+from app.routes.v2.endpoints.it_extra import it_extra_router
+from app.routes.v2.endpoints.it_requests import it_requests_router
 
 
 from app.routes.v2.endpoints.iikotransfers import iiko_transfer_router
@@ -95,8 +97,10 @@ origins = ["*"]
 reuseable_oauth = OAuth2PasswordBearer(tokenUrl="/login", scheme_name="JWT")
 # database connection
 app = FastAPI()
-app.include_router(calendar_router,tags=["calendars"])
-app.include_router(iiko_transfer_router,prefix="/api/v2",tags=["iiko"])
+app.include_router(calendar_router, tags=["calendars"])
+app.include_router(iiko_transfer_router, prefix="/api/v2", tags=["iiko"])
+app.include_router(it_extra_router, prefix="/api/v2", tags=["IT"])
+app.include_router(it_requests_router, prefix="/api/v2", tags=["IT"])
 app.include_router(router)
 app.include_router(urls)
 app.include_router(hrrouter)

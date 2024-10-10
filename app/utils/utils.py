@@ -28,7 +28,6 @@ def send_inlinekeyboard_text(bot_token, chat_id, message_text):
         return False
 
 
-
 def rating_request_telegram(bot_token, chat_id, message_text, url):
     keyboard = {
         "inline_keyboard": [
@@ -60,6 +59,4 @@ def generate_random_string(length=10):
     characters = string.ascii_letters + string.digits
     random_string = ''.join(random.choice(characters) for _ in range(length))
     return random_string
-
-
 
