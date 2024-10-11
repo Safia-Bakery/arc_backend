@@ -8,7 +8,7 @@ from orders.schema import schema_router
 from app.schemas.telegrams import TelegramsGet
 
 
-class GetCategorySch(BaseModel):
+class GetCategory(BaseModel):
     name: str
     description: Optional[str] = None
     status: int

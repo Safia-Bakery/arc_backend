@@ -16,14 +16,10 @@ from typing import Optional
 from app.schemas.it_extra import *
 from app.routes.depth import get_db, get_current_user
 from app.schemas.users import UserFullBack
-from app.schemas.requests import GetRequest
-from app.crud import it_extra, it_requests
-from app.utils.it_utils import excell_generate_it, uniform_excell_generate
+from app.schemas.it_requests import GetRequest
+from app.crud import it_requests
 from app.models.category import Category
 from datetime import datetime, date
-import subprocess
-
-
 
 
 it_requests_router = APIRouter()
