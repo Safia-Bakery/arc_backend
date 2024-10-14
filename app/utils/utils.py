@@ -28,7 +28,6 @@ def send_inlinekeyboard_text(bot_token, chat_id, message_text):
         return False
 
 
-
 def rating_request_telegram(bot_token, chat_id, message_text, url):
     keyboard = {
         "inline_keyboard": [
@@ -62,4 +61,11 @@ def generate_random_string(length=10):
     return random_string
 
 
+def generate_random_filename(length=30):
+    # Define the characters you want to use in the random filename
+    characters = string.ascii_letters + string.digits
 
+    # Generate a random filename of the specified length
+    random_filename = "".join(random.choice(characters) for _ in range(length))
+
+    return random_filename

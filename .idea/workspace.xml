@@ -5,12 +5,40 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1f1f0639-c1d9-4344-9867-ccfba30c4f64" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/app/crud/category.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/crud/it_extra.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/crud/it_requests.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/routes/v2/endpoints/category.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/routes/v2/endpoints/it_extra.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/routes/v2/endpoints/it_requests.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/schemas/category.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/schemas/expanditure.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/schemas/fillials.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/schemas/it_extra.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/schemas/it_requests.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/schemas/orders.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/schemas/telegrams.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/utils/it_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/arc_backend.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/arc_backend.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/core/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/core/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/schemas/files.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/files.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/schemas/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/users.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/utils/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/utils/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -44,7 +72,6 @@
   <component name="ProjectViewState">
     <option name="autoscrollToSource" value="true" />
     <option name="hideEmptyMiddlePackages" value="true" />
-    <option name="openDirectoriesWithSingleClick" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">{
@@ -53,8 +80,8 @@
     &quot;Python.it_query.executor&quot;: &quot;Debug&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/gayratbekakhmedov/projects/backend/arc_backend&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Merging main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/bbc43/Desktop/Жесткий диск - D/PROJECTS/Safia/arc_backend/app/schemas&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -66,13 +93,14 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\bbc43\Desktop\Жесткий диск - D\PROJECTS\Safia\arc_backend\app\schemas" />
       <recent name="$PROJECT_DIR$/app/routes/v2/endpoints" />
       <recent name="$PROJECT_DIR$/app/routes/v2" />
       <recent name="$PROJECT_DIR$/app/db" />
       <recent name="$PROJECT_DIR$/app" />
-      <recent name="$PROJECT_DIR$/app/crud" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\bbc43\Desktop\Жесткий диск - D\PROJECTS\Safia\arc_backend\app\schemas" />
       <recent name="$PROJECT_DIR$/app/routes/v2/endpoints" />
     </key>
   </component>
@@ -166,9 +194,8 @@
       <workItem from="1728038859790" duration="21499000" />
       <workItem from="1728141311402" duration="1255000" />
       <workItem from="1728309827673" duration="3789000" />
-      <workItem from="1728368569564" duration="6821000" />
-      <workItem from="1728449864209" duration="8037000" />
-      <workItem from="1728621069969" duration="1833000" />
+      <workItem from="1728368569564" duration="2461000" />
+      <workItem from="1728882654572" duration="597000" />
     </task>
     <servers />
   </component>

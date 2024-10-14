@@ -24,6 +24,17 @@ class Settings(BaseSettings):
     database_url: str = os.getenv("DATABASE_URL", "sqlite:///./sql_app.db")
     backend_pass: Optional[str] = os.getenv("BACKEND_PASS")
     front_url: Optional[str] = os.getenv("FRONT_URL")
+    INTERNAL_BASE_URL = "https://api.service.safiabakery.uz/"
+    INTERNAL_FRONT_URL = "https://admin.service.safiabakery.uz/"
+    sizes = [
+        'XS (42 - 44)',
+        'S (46 - 48)',
+        'M (50 - 52)',
+        'L (54 - 56)',
+        'XL (58 - 60)',
+        'XXL (62 - 64)',
+        'XXXL (66 - 68)'
+    ]
 
     # Security settings
 
