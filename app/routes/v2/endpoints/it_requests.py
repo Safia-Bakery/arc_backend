@@ -16,7 +16,7 @@ from typing import Optional
 from app.schemas.it_extra import *
 from app.routes.depth import get_db, get_current_user
 from app.schemas.users import UserFullBack
-from app.schemas.it_requests import GetRequest
+from app.schemas.it_requests import GetRequest, GetOneRequest
 from app.crud import it_requests
 from app.models.category import Category
 from datetime import datetime, date
@@ -34,7 +34,7 @@ def get_children(category_id, db: Session):
 
 
 @it_requests_router.get("/it/requests", response_model=Page[GetRequest])
-async def filter_request(
+async def filter_requests(
         id: Optional[int] = None,
         category_id: Optional[int] = None,
         fillial_id: Optional[UUID] = None,
@@ -75,3 +75,16 @@ async def filter_request(
     )
 
     return paginate(request_list)
+
+
+@it_requests_router.get("/it/requests/{id}", response_model=GetOneRequest)
+async def get_request(
+    id: int,
+    db: Session = Depends(get_db),
+    request_user: UserFullBack = Depends(get_current_user),
+):
+    try:
+        request_list = it_requests.get_request_id(db, id)
+        return request_list
+    except:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="not fund")

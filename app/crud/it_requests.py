@@ -120,3 +120,7 @@ def filter_requests_all(
 
     results = query.order_by(Requests.id.desc()).all()
     return results
+
+
+def get_request_id(db: Session, id):
+    return db.query(models.Requests).filter(Requests.id == id).first()

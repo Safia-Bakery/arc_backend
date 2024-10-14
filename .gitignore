@@ -30,7 +30,8 @@ share/python-wheels/
 *.egg
 MANIFEST
 *.id_rsa.pub 
-*.id_rsa 
+*.id_rsa
+.idea/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

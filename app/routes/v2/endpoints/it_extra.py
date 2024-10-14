@@ -57,7 +57,7 @@ async def restart_arcbot(request_user: UserFullBack = Depends(get_current_user))
         raise HTTPException(status_code=500, detail=f"Failed to restart Arcbot service: {e.stderr}")
 
 
-@it_extra_router.post("/v1/telegrams", tags=["IT"], response_model=GetTelegram)
+@it_extra_router.post("/it/telegrams", tags=["IT"], response_model=GetTelegram)
 async def send_telegram_message(
         form_data: CreateTelegram,
         request_user: UserFullBack = Depends(get_current_user),
@@ -66,7 +66,7 @@ async def send_telegram_message(
     return it_extra.create_telegram(db=db,form_data=form_data)
 
 
-@it_extra_router.put("/v1/telegrams", tags=["IT"], response_model=GetTelegram)
+@it_extra_router.put("/it/telegrams", tags=["IT"], response_model=GetTelegram)
 async def update_telegram_message(
         form_data: UpdateTelegram,
         db: Session = Depends(get_db),
@@ -74,7 +74,7 @@ async def update_telegram_message(
     return it_extra.update_telegram(db=db, form_data=form_data)
 
 
-@it_extra_router.get("/v1/telegrams", tags=["IT"], response_model=Page[GetTelegram])
+@it_extra_router.get("/it/telegrams", tags=["IT"], response_model=Page[GetTelegram])
 async def get_telegram_messages(
         id:Optional[int]=None,
         db: Session = Depends(get_db),
@@ -83,7 +83,7 @@ async def get_telegram_messages(
     return paginate(it_extra.get_telegram(db=db, id=id))
 
 
-@it_extra_router.post('/v1/excell/uniforms', tags=["Uniforms"])
+@it_extra_router.post('/excell/uniforms', tags=["Uniforms"])
 async def get_uniforms(
         form_data: Uniformexcellgeneration,
         db: Session = Depends(get_db),
