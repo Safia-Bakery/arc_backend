@@ -61,7 +61,24 @@ async def filter_requests(
     else:
         cat_list = None
 
-
+    if request_user.brigada_id:
+        requestdata = it_requests.filter_request_brigada(
+            db,
+            id=id,
+            category_id=cat_list,
+            fillial_id=fillial_id,
+            request_status=request_status,
+            created_at=created_at,
+            user=user,
+            brigada_id=request_user.brigada_id,
+            sphere_status=sphere_status,
+            arrival_date=arrival_date,
+            rate=rate,
+            urgent=urgent,
+            started_at=started_at,
+            finished_at=finished_at
+        )
+        return paginate(requestdata)
 
     request_list = it_requests.filter_requests_all(
         db,
