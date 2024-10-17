@@ -52,11 +52,16 @@ async def filter_requests(
 ):
     # if user input data it filter all child categories
     # so in this case get child function gets all child categories
-    cat_list = []
-    cat_list.append(category_id)
+    if category_id is not None:
+        cat_list = []
+        cat_list.append(category_id)
 
-    for i in get_children(category_id=category_id, db=db):
-        cat_list.append(i.id)
+        for i in get_children(category_id=category_id, db=db):
+            cat_list.append(i.id)
+    else:
+        cat_list = None
+
+
 
     request_list = it_requests.filter_requests_all(
         db,
