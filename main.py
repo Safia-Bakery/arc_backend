@@ -79,6 +79,7 @@ from app.routes.v2.endpoints.branchs import branchs_router
 from app.routes.v2.endpoints.it_extra import it_extra_router
 from app.routes.v2.endpoints.it_requests import it_requests_router
 from app.routes.v2.endpoints.category import category_router
+from app.routes.v2.endpoints.inventory_requests import inv_requests_router
 
 
 from app.routes.v2.endpoints.iikotransfers import iiko_transfer_router
@@ -103,6 +104,7 @@ app.include_router(iiko_transfer_router, prefix="/api/v2", tags=["iiko"])
 app.include_router(it_extra_router, prefix="/api/v2", tags=["IT"])
 app.include_router(it_requests_router, prefix="/api/v2", tags=["IT"])
 app.include_router(category_router, prefix="/api/v2", tags=["Category"])
+app.include_router(inv_requests_router, prefix="/api/v2", tags=["Inventory"])
 app.include_router(router)
 app.include_router(urls)
 app.include_router(hrrouter)

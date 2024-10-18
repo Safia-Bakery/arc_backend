@@ -23,7 +23,6 @@ import pytz
 import uuid
 
 
-
 class Requests(Base):
     __tablename__ = "requests"
     id = Column(Integer, primary_key=True, index=True)

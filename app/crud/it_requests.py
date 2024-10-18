@@ -23,7 +23,6 @@ def filter_request_brigada(
     created_at,
     request_status,
     user,
-    sphere_status,
     arrival_date,
     rate,
     urgent,
@@ -50,8 +49,6 @@ def filter_request_brigada(
         query = query.filter(Requests.status.in_(request_status))
     if user is not None:
         query = query.filter(Users.full_name.ilike(f"%{user}/%"))
-    if sphere_status is not None:
-        query = query.filter(Category.sphere_status == sphere_status)
     if arrival_date is not None:
         query = query.filter(cast(Requests.arrival_date, Date) == arrival_date)
     if rate ==True:
