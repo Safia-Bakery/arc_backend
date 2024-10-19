@@ -24,9 +24,10 @@ class Settings(BaseSettings):
     database_url: str = os.getenv("DATABASE_URL", "sqlite:///./sql_app.db")
     backend_pass: Optional[str] = os.getenv("BACKEND_PASS")
     front_url: Optional[str] = os.getenv("FRONT_URL")
-    INTERNAL_BASE_URL:str = "https://api.service.safiabakery.uz/"
-    INTERNAL_FRONT_URL:str = "https://admin.service.safiabakery.uz/"
-    sizes:list = [
+    MICROSERVICE_BASE_URL: str = os.getenv("MICROSERVICE_BASE_URL")
+    MICROSERVICE_USERNAME: str = os.getenv("MICROSERVICE_USERNAME")
+    MICROSERVICE_PASSWORD: str = os.getenv("MICROSERVICE_PASSWORD")
+    sizes: list = [
         'XS (42 - 44)',
         'S (46 - 48)',
         'M (50 - 52)',

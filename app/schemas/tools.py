@@ -23,3 +23,19 @@ class ToolsSearch(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class GetTool(BaseModel):
+    id: int
+    name: Optional[str] = None
+    code: Optional[str] = None
+    mainunit: Optional[str] = None
+    producttype: Optional[str] = None
+    iikoid: Optional[UUID] = None
+    ftime: Optional[float] = None
+    status: Optional[int] = None
+    image: Optional[str] = None
+    category_id: Optional[int] = None
+
+    class Config:
+        orm_mode = True
