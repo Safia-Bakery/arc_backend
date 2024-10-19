@@ -35,5 +35,6 @@ class Fillials(Base):
     origin = Column(Integer, default=0)
     status = Column(Integer, default=0)
     supplier = relationship("Suppliers", back_populates="store")
+    tool_balance = relationship("ToolBalance", back_populates="store")
 
 

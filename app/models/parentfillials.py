@@ -39,3 +39,4 @@ class ParentFillials(Base):
     calendar = relationship('Calendars', back_populates='branch')
     kru_finished_task = relationship("KruFinishedTasks", back_populates="branch")
     user = relationship("Users", back_populates="branch")
+    tool_balance = relationship("ToolBalance", back_populates="branch")

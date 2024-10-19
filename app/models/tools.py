@@ -24,7 +24,6 @@ import uuid
 
 
 
-
 class Tools(Base):
     __tablename__ = "tools"
     id = Column(Integer, primary_key=True, index=True)
@@ -50,4 +49,5 @@ class Tools(Base):
     status= Column(Integer, default=1)
     category_id = Column(Integer, ForeignKey("category.id"))
     categories = relationship("Category", back_populates="tool")
+    tool_balance = relationship("ToolBalance", back_populates="tool")
 

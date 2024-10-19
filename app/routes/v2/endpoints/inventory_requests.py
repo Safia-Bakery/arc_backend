@@ -19,7 +19,7 @@ inv_requests_router = APIRouter()
 
 
 @inv_requests_router.get("inv/factory/requests", response_model=Page[GetRequest])
-async def filter_request(
+async def filter_factory_requests(
         id: Optional[int] = None,
         user: Optional[str] = None,
         fillial_id: Optional[UUID] = None,
@@ -43,7 +43,7 @@ async def filter_request(
 
 
 @inv_requests_router.get("inv/retail/requests", response_model=Page[GetRequest])
-async def filter_request(
+async def filter_retail_requests(
         id: Optional[int] = None,
         user: Optional[str] = None,
         fillial_id: Optional[UUID] = None,
