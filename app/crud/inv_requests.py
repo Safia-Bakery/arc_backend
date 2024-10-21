@@ -12,6 +12,8 @@ from app.models.products import Products
 from app.models.orderproducts import OrderProducts
 from app.models.comments import Comments
 from app.models.fillials import Fillials
+from app.schemas.inventory_requests import CreateInventoryRequest
+
 
 
 def filter_requests_all(
@@ -49,3 +51,23 @@ def filter_requests_all(
 
 def get_request_id(db: Session, id):
     return db.query(models.Requests).filter(Requests.id == id).first()
+
+
+
+def create_request(db: Session, request: CreateInventoryRequest,user_id):
+    query = Requests(
+        user_id=user_id,
+        fillial_id=request.fillial_id,
+        status=0,
+        description=request.description,
+        product=request.product,
+        category_id=request.category_id,
+    )
+    db.add(query)
+    db.commit()
+    db.refresh(query)
+    return query
+
+
+
+

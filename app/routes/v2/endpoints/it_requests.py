@@ -33,7 +33,7 @@ def get_children(category_id, db: Session):
         yield from get_children(child.id, db=db)
 
 
-@it_requests_router.get("/it/requests", response_model=Page[GetRequest])
+@it_requests_router.get("/requests/it", response_model=Page[GetRequest])
 async def filter_requests(
         id: Optional[int] = None,
         category_id: Optional[int] = None,
@@ -98,7 +98,7 @@ async def filter_requests(
     return paginate(request_list)
 
 
-@it_requests_router.get("/it/requests/{id}", response_model=GetOneRequest)
+@it_requests_router.get("/requests/it/{id}", response_model=GetOneRequest)
 async def get_request(
     id: int,
     db: Session = Depends(get_db),

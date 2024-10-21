@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from pydantic import BaseModel
 from typing import Optional, Dict
 from datetime import datetime
@@ -27,11 +29,11 @@ class GetRequest(BaseModel):
 class GetOneRequest(BaseModel):
     id: int
     user: Optional[UserGetlist] = None
-    # product: Optional[str] = None
+    product: Optional[str] = None
     description: Optional[str] = None
-    # deny_reason: Optional[str] = None
+    deny_reason: Optional[str] = None
     # pause_reason: Optional[str] = None
-    # rating: Optional[int] = None
+    rating: Optional[int] = None
     created_at: datetime
     status: int
     # brigada: Optional[GetBrigadaList] = None
@@ -43,21 +45,57 @@ class GetOneRequest(BaseModel):
     user_manager: Optional[str] = None
     expanditure: list[GetExpanditure]
     # comments: list[GetComments]
-    # is_bot: Optional[bool] = None
+    is_bot: Optional[bool] = None
     # size: Optional[str] = None
     # arrival_date: Optional[datetime] = None
     # bread_size: Optional[str] = None
     # location: Optional[Dict[str, str]] = None
-    # update_time: Optional[Dict[str, str]] = None
-    # finishing_time: Optional[datetime] = None
+    update_time: Optional[Dict[str, str]] = None
+    finishing_time: Optional[datetime] = None
     # is_redirected: Optional[bool] = None
     # old_cat_id: Optional[int] = None
     # request_orpr: Optional[list[OrderProductsGet]] = None
     # cars: Optional[CarsGet] = None
     # communication: Optional[list[MessageRequest]] = None
     # price: Optional[float] = None
-    # phone_number: Optional[str] = None
+    phone_number: Optional[str] = None
 
     class Config:
         orm_mode = True
+
+
+class RequestExpenditureCreate(BaseModel):
+    amount: int
+    tool_id: int
+
+
+class CreateInventoryRequest(BaseModel):
+    fillial_id:  UUID
+    category_id: int
+    description: Optional[str] = None
+    product: Optional[str] = None
+    expenditure : list[RequestExpenditureCreate] = None
+
+
+
+class UpdateInventoryExpenditure(BaseModel):
+    id: int
+    status: Optional[int] = None
+    amount: Optional[int] = None
+    comment: Optional[str] = None
+    class Config:
+        orm_mode = True
+
+
+
+class UpdateRequest(BaseModel):
+    id : int
+    deny_reason: Optional[str] = None
+    pause_reason: Optional[str] = None
+    status: Optional[int] = None
+
+
+
+
+
 
