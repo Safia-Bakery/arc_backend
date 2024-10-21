@@ -1,10 +1,6 @@
 from sqlalchemy.orm import Session,joinedload
 from sqlalchemy import or_, and_, Date, cast
 import re
-from uuid import UUID
-from sqlalchemy.sql import func
-
-import models
 from app.models.requests import Requests
 from app.models.category import Category
 from app.models.users_model import Users
@@ -12,6 +8,7 @@ from app.models.products import Products
 from app.models.orderproducts import OrderProducts
 from app.models.comments import Comments
 from app.models.fillials import Fillials
+from app.schemas.it_requests import PutRequest
 
 
 def filter_request_brigada(
@@ -120,4 +117,19 @@ def filter_requests_all(
 
 
 def get_request_id(db: Session, id):
-    return db.query(models.Requests).filter(Requests.id == id).first()
+    return db.query(Requests).filter(Requests.id == id).first()
+
+
+def edit_request(db: Session, request: PutRequest):
+    query = db.query(Requests).filter(Requests.id == request.id).first()
+    if request.finishing_time is not None:
+        query.finishing_time = request.finishing_time
+    if request.brigada_id is not None:
+        query.brigada_id = request.brigada_id
+    if request.status is not None:
+        query.status = request.status
+
+    db.commit()
+    db.refresh(query)
+    return query
+

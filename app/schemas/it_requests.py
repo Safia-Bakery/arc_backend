@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional, Dict
 from datetime import datetime
-from .users import GetBrigadaList, UserGetlist
+from .users import GetBrigada, UserGetlist, GetUserFullData
 from .category import GetCategory
 from .fillials import GetFillialChild
 from .files import FileSch
@@ -25,7 +25,7 @@ class GetRequest(BaseModel):
     description: Optional[str] = None
     created_at: datetime
     status: int
-    brigada: Optional[GetBrigadaList] = None
+    brigada: Optional[GetBrigada] = None
     file: list[FileSch]
     category: Optional[GetCategory] = None
     fillial: Optional[GetFillialChild] = None
@@ -53,7 +53,7 @@ class GetOneRequest(BaseModel):
     rating: Optional[int] = None
     created_at: datetime
     status: int
-    brigada: Optional[GetBrigadaList] = None
+    brigada: Optional[GetBrigada] = None
     file: list[FileSch]
     category: Optional[GetCategory] = None
     fillial: Optional[GetFillialChild] = None
@@ -80,3 +80,23 @@ class GetOneRequest(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class PutRequest(BaseModel):
+    id: int
+    user: Optional[GetUserFullData] = None
+    fillial: Optional[GetFillialChild] = None
+    brigada: Optional[GetBrigada] = None
+    status: Optional[int] = None
+    category: Optional[GetCategory] = None
+    finishing_time: Optional[datetime] = None
+    deny_reason: Optional[str] = None
+
+    class Config:
+        orm_mode = True
+
+
+class MessageRequestCreate(BaseModel):
+    request_id: int
+    message: str
+    status: Optional[int] = 0

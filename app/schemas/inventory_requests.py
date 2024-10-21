@@ -3,7 +3,7 @@ from uuid import UUID
 from pydantic import BaseModel
 from typing import Optional, Dict
 from datetime import datetime
-from .users import GetBrigadaList, UserGetlist
+from .users import GetBrigada, UserGetlist
 from .category import GetCategory
 from .fillials import GetFillialChild
 from .files import FileSch
