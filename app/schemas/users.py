@@ -58,7 +58,7 @@ class UserGetlist(BaseModel):
         orm_mode = True
 
 
-class GetBrigadaList(BaseModel):
+class GetBrigada(BaseModel):
     id: int
     name: str
     description: Optional[str] = None
