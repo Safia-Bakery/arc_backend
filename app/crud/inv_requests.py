@@ -12,7 +12,7 @@ from app.models.products import Products
 from app.models.orderproducts import OrderProducts
 from app.models.comments import Comments
 from app.models.fillials import Fillials
-from app.schemas.inventory_requests import CreateInventoryRequest
+from app.schemas.inventory_requests import CreateInventoryRequest,UpdateRequest
 
 
 
@@ -71,3 +71,18 @@ def create_request(db: Session, request: CreateInventoryRequest,user_id):
 
 
 
+def update_request(db: Session, request: UpdateRequest):
+    query = db.query(Requests).filter(Requests.id == request.id).first()
+    if request.status is not None:
+        query.status = request.status
+    if request.description is not None:
+        query.description = request.description
+    if request.product is not None:
+        query.product = request.product
+    if request.category_id is not None:
+        query.category_id = request.category_id
+    if request.deny_reason is not None:
+        query.deny_reason = request.deny_reason
+
+    db.commit()
+    return query
