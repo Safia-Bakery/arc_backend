@@ -21,7 +21,7 @@ from datetime import datetime, date
 from app.crud.expanditure import create_expanditure
 from app.utils.utils import( send_simple_text_message,
                              rating_request_telegram,
-                             confirmation_request_telegram
+                             confirmation_request
                              )
 
 from app.core.config import settings
@@ -134,15 +134,13 @@ async def update_request(
                     chat_id=request_list.user.telegram_id,
                     message_text=f"Ваша заявка #{request_list.id}s была отменена по причине: {request_list.deny_reason}",
                     url =f"{settings.frontend_url}/rating/{request_list.id}"
-
                 )
             elif   request.status==6:
                 text_request = f"Ваша заявка #{request_list.id}s по Инвентарю была обработана. "
                 for i in request_list.expanditure:
                     text_request += f"\n{i.tool.name} - {i.amount} шт. "
                 text_request += "Инвентарь отправлен вам на филиал, прибудет через 12 часов. Как привезут просим вас Подтвердить заявку. \nЕсли вам не привезут их в течении выше указанного времени, можете нажать кнопку “Не сделано”"
-                confirmation_request_telegram(
-                    bot_token=settings.bottoken,
+                confirmation_request(
                     chat_id=request_list.user.telegram_id,
                     message_text=text_request,
                 )
