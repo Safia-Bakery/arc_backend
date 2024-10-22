@@ -18,6 +18,7 @@ class UserFullBack(BaseModel):
     brigada_id: Optional[object] = None
     group_id: Optional[int] = None
     group: Optional[object] = None
+    telegram_id: Optional[int] = None
 
     class Config:
         orm_mode = True

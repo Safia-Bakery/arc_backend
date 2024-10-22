@@ -28,3 +28,35 @@ class GetCategory(BaseModel):
     class Config:
         orm_mode = True
         from_attributes = True
+
+
+class CreateCategory(BaseModel):
+    name: str
+    description: Optional[str] = None
+    status: int
+    urgent: bool
+    sub_id: Optional[int] = None
+    file: Optional[str] = None
+    ftime: Optional[float] = None
+    parent_id:Optional[int] = None
+    is_child:Optional[bool]=None
+    telegram_id:Optional[int]=None
+    price:Optional[float]=None
+
+    class Config:
+        orm_mode = True
+        from_attributes = True
+
+class UpdateCategory(BaseModel):
+    id : int
+    name: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[int] = None
+    urgent: Optional[bool] = None
+    sub_id: Optional[int] = None
+    file: Optional[str] = None
+    ftime: Optional[float] = None
+    parent_id:Optional[int] = None
+    is_child:Optional[bool]=None
+    telegram_id:Optional[int]=None
+    price:Optional[float]=None

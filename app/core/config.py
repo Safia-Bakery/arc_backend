@@ -27,8 +27,8 @@ class Settings(BaseSettings):
     MICROSERVICE_BASE_URL: str = os.getenv("MICROSERVICE_BASE_URL")
     MICROSERVICE_USERNAME: str = os.getenv("MICROSERVICE_USERNAME")
     MICROSERVICE_PASSWORD: str = os.getenv("MICROSERVICE_PASSWORD")
-    BASE_URL = "https://api.service.safiabakery.uz/"
-    FRONT_URL = "https://admin.service.safiabakery.uz/"
+    BASE_URL:str = "https://api.service.safiabakery.uz/"
+    FRONT_URL:str = "https://admin.service.safiabakery.uz/"
     sizes: list = [
         'XS (42 - 44)',
         'S (46 - 48)',

@@ -639,7 +639,7 @@ async def get_category(
     # parsed_datetime = datetime.strptime(responserq.created_at,"%Y-%m-%dT%H:%M:%S.%f")
     formatted_datetime_str = responserq.created_at.strftime("%d.%m.%Y %H:%M")
     text = (
-        f"📑Заявка № {responserq.id}\n\n📍Филиал: {responserq.fillial.fillial.name}\n"
+        f"📑Заявка № {responserq.id}\n\n📍Филиал: {responserq.fillial.parentfillial.name}\n"
         f"🕘Дата поступления заявки: {formatted_datetime_str}\n\n"
         f"🔰Категория проблемы: {responserq.category.name}\n"
         f"⚙️ Название оборудования: {responserq.product}\n"
@@ -683,7 +683,7 @@ async def get_category(
         sendtotelegramchannel(
             bot_token=bot_token,
             chat_id="-1002124172379",
-            message_text="📑Заявка № " + str(responserq.id) +"\n\n📍Филиал: " + str(responserq.fillial.fillial.name) + "\n🕘Дата поступления заявки: " + str(formatted_datetime_str) + "\n\n🏳️Дата и время начало события: " + responserq.update_time['vidfrom'] + "\n🏁Дата и время конца события: " + responserq.update_time['vidto'] + "\n\n💬Комментарии: " + str(responserq.description),
+            message_text="📑Заявка № " + str(responserq.id) +"\n\n📍Филиал: " + str(responserq.fillial.parentfillial.name) + "\n🕘Дата поступления заявки: " + str(formatted_datetime_str) + "\n\n🏳️Дата и время начало события: " + responserq.update_time['vidfrom'] + "\n🏁Дата и время конца события: " + responserq.update_time['vidto'] + "\n\n💬Комментарии: " + str(responserq.description),
         )
 
     return {"success": True, "message": "everything is saved", "id": responserq.id}
