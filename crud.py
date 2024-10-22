@@ -83,7 +83,6 @@ def create_group(db: Session, group: schema.CreateGroupSch):
     return group_user
 
 
-
 def update_group(db: Session, group: schemas.UpdateGroupSch):
     db_group_obj = db.query(models.Groups).filter(models.Groups.id == group.id).first()
     if db_group_obj:
@@ -1248,10 +1247,15 @@ def add_store(db:Session,form_data:schemas.AddStoreSh):
     return query
 
 
-
-
-
-
-
+def create_log(db: Session, form_data: schemas.AcceptRejectRequest, user):
+    query = models.Logs(
+        request_id=form_data.request_id,
+        user_id=user.id,
+        status=form_data.status
+    )
+    db.add(query)
+    db.commit()
+    db.refresh(query)
+    return query
 
 

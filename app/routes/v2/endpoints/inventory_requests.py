@@ -11,11 +11,11 @@ from app.schemas.it_extra import *
 from app.routes.depth import get_db, get_current_user
 from app.schemas.users import UserFullBack
 from app.schemas.inventory_requests import (GetRequest,
-                                            GetOneRequest,
                                             CreateInventoryRequest,
                                             UpdateRequest,
                                             UpdateInventoryExpenditure
                                             )
+from app.schemas.requests import GetOneRequest
 from app.crud import inv_requests
 from datetime import datetime, date
 from app.crud.expanditure import create_expanditure

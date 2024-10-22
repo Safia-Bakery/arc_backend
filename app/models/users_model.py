@@ -49,3 +49,4 @@ class Users(Base):
     branch = relationship("ParentFillials", back_populates="user")
     branch_id = Column(UUID, ForeignKey("parentfillials.id"), nullable=True)
     finished_task = relationship("KruFinishedTasks", back_populates="user")
+    log = relationship("Logs", back_populates="user")

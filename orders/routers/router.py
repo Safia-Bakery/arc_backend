@@ -309,258 +309,260 @@ async def put_request_id(
         db, form_data=form_data, user=request_user.full_name
     )
 
-    if form_data.status == 1:
-        try:
-            brigada_id = request_list.brigada.id
-            brigader_telid = crud.get_user_brig_id(db, brigada_id).telegram_id
-            sendtotelegramchannel(
-                bot_token=bot_token,
-                chat_id=brigader_telid,
-                message_text=f"{request_list.brigada.name} вам назначена заявка, #{request_list.id}s {request_list.fillial.fillial.name}",
-            )
-        except:
-            pass
-        if request_list.category.department == 1:
+    if form_data.status is not None:
+        crud.create_log(db, form_data, request_user)
+        if form_data.status == 1:
             try:
+                brigada_id = request_list.brigada.id
+                brigader_telid = crud.get_user_brig_id(db, brigada_id).telegram_id
                 sendtotelegramchannel(
                     bot_token=bot_token,
-                    chat_id=request_list.user.telegram_id,
-                    message_text=f"Уважаемый {request_list.user.full_name}, на вашу заявку #{request_list.id}s назначена команда🚙: {request_list.brigada.name}",
+                    chat_id=brigader_telid,
+                    message_text=f"{request_list.brigada.name} вам назначена заявка, #{request_list.id}s {request_list.fillial.fillial.name}",
                 )
             except:
                 pass
-        if request_list.category.department == 5:
-            try:
-                sendtotelegramchannel(
-                    bot_token=bot_token,
-                    chat_id=request_list.user.telegram_id,
-                    message_text=f"Уважаемый {request_list.user.full_name}, на вашу заявку #{request_list.id}s по Запросу машины🚛: В процессе.",
-                )
-            except:
-                pass
-        if request_list.category.department == 3:
-            try:
-                finishing_time = request_list.finishing_time
-                sendtotelegramchannel(
-                    bot_token=bot_token,
-                    chat_id=request_list.user.telegram_id,
-                    message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по Маркетингу: В процессе.\n\n⏳Примерный срок завершения: {finishing_time}",
-                )
-            except:
-                pass
-        if request_list.category.department==2:
-            try:
-                sendtotelegramchannel(
-                    bot_token=bot_token,
-                    chat_id=request_list.user.telegram_id,
-                    message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по Inventary: В процессе.",
-                )
-                
-            except:
-                pass
-        if request_list.category.department==4:
+            if request_list.category.department == 1:
+                try:
+                    sendtotelegramchannel(
+                        bot_token=bot_token,
+                        chat_id=request_list.user.telegram_id,
+                        message_text=f"Уважаемый {request_list.user.full_name}, на вашу заявку #{request_list.id}s назначена команда🚙: {request_list.brigada.name}",
+                    )
+                except:
+                    pass
+            if request_list.category.department == 5:
+                try:
+                    sendtotelegramchannel(
+                        bot_token=bot_token,
+                        chat_id=request_list.user.telegram_id,
+                        message_text=f"Уважаемый {request_list.user.full_name}, на вашу заявку #{request_list.id}s по Запросу машины🚛: В процессе.",
+                    )
+                except:
+                    pass
+            if request_list.category.department == 3:
+                try:
+                    finishing_time = request_list.finishing_time
+                    sendtotelegramchannel(
+                        bot_token=bot_token,
+                        chat_id=request_list.user.telegram_id,
+                        message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по Маркетингу: В процессе.\n\n⏳Примерный срок завершения: {finishing_time}",
+                    )
+                except:
+                    pass
+            if request_list.category.department==2:
+                try:
+                    sendtotelegramchannel(
+                        bot_token=bot_token,
+                        chat_id=request_list.user.telegram_id,
+                        message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по Inventary: В процессе.",
+                    )
 
-            try:
-                sendtotelegramchannel(
-                    bot_token=bot_token,
-                    chat_id=request_list.user.telegram_id,
-                    message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s назначен специалист👨‍💻: {request_list.brigada.name}\nВремя выполнения: {int(request_list.category.ftime)} часов",
-                )
-            except:
-                pass
-        if request_list.category.department==9:
-            try:
-                text = f"Ваша заявка #{request_list.id}s на форму принята.\n\nКак ваша форма будет готова, мы вам сообщим"
+                except:
+                    pass
+            if request_list.category.department==4:
 
-                sendtotelegramchannel(
-                    bot_token=bot_token,
-                    chat_id=request_list.user.telegram_id,
-                    message_text=text
-                )
-            except:
-                pass
-    elif form_data.status == 2:
-        if request_list.category.department == 5:
-            try:
-                sendtotelegramchannel(
-                    bot_token=bot_token,
-                    chat_id=request_list.user.telegram_id,
-                    message_text=f"Уважаемый {request_list.user.full_name}, мы отправили транспорт по вашему запросу #{request_list.id}s Ожидайте его прибытия. \n🚛Грузовик: {request_list.cars.name} {request_list.cars.number}")
-            except:
-                pass
-    elif form_data.status == 3:
-        url = f"{FRONT_URL}tg/order-rating/{request_list.id}?user_id={request_list.user.id}&department={request_list.category.department}&sub_id={request_list.category.sub_id}"
-        if request_list.category.department == 3:
-            try:
-                inlinewebapp(
-                    bot_token=bot_token,
-                    chat_id=request_list.user.telegram_id,
-                    message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по Маркетингу: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
-                    url=url,
-                )
-            except:
-                pass
-        if request_list.category.department == 5:
-            try:
-                inlinewebapp(
-                    bot_token=bot_token,
-                    chat_id=request_list.user.telegram_id,
-                    message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по Запросу машины🚛: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
-                    url=url,
-                )
-            except:
-                pass
-        if request_list.category.department == 1:
-            try:
-                inlinewebapp(
-                    bot_token=bot_token,
-                    chat_id=request_list.user.telegram_id,
-                    message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по APC: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
-                    url=url,
-                )
-            except:
-                pass
-        if request_list.category.department == 6:
-            try:
-                inlinewebapp(
-                    bot_token=bot_token,
-                    chat_id=request_list.user.telegram_id,
-                    message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
-                    url=url,
-                )
-            except:
-                pass
-        if request_list.category.department == 4:
-            try:
-                inlinewebapp(
-                    bot_token=bot_token,
-                    chat_id=request_list.user.telegram_id,
-                    message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по IT: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
-                    url=url,
-                )
-            except:
-                pass
-        if request_list.category.department == 2:
-            # message_ready  is for sending product to user
-            message_ready = f"""Уважаемый {request_list.user.full_name}, инвентарь по вашей заявке #{request_list.id}s """
-            new_neq = []
-            for i in request_list.expanditure:
-                if i.status==0:
-                    new_neq.append(i)
-                else:
-                    message_ready += f"\n{i.tool.name} - {i.amount} шт. "
-                    edit_expenditure = crud.synch_expanditure_crud(db, id=i.id)
-                    send_document_iiko(key=authiiko(), data=edit_expenditure)
+                try:
+                    sendtotelegramchannel(
+                        bot_token=bot_token,
+                        chat_id=request_list.user.telegram_id,
+                        message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s назначен специалист👨‍💻: {request_list.brigada.name}\nВремя выполнения: {int(request_list.category.ftime)} часов",
+                    )
+                except:
+                    pass
+            if request_list.category.department==9:
+                try:
+                    text = f"Ваша заявка #{request_list.id}s на форму принята.\n\nКак ваша форма будет готова, мы вам сообщим"
 
-            message_ready += "\nГотов и отправлен вам на филиал, прибудет через 12 часов."
-
-            if new_neq:
-
-                message_ready+=f"\n\n♻️Инвентарь в обработке:"
-
-                new_request = crud.add_request(db=db,
-                                 category_id=request_list.category_id,
-                                 fillial_id=request_list.fillial_id,
-                                 description=request_list.description,
-                                 product=request_list.product,
-                                 user_id=request_list.user_id,
-                                 is_bot=0,
-                                 size=request_list.size,
-                                 bread_size=request_list.bread_size,
-                                 location=request_list.location,
-                                 arrival_date=request_list.arrival_date,
-                                vidfrom=None,
-                                vidto=None,
-                                finishing_time=None
-                                 )
-                for i in new_neq:
-                    message_ready+=f"\n{i.tool.name} - {i.amount} шт. "
-                    query.add_expenditure(db=db,
-                                         request_id=new_request.id,
-                                         tool_id=i.tool_id,
-                                         amount=i.amount,
-                                         comment=i.comment,
-                                         status=0
-                                         )
-                message_ready +="\nПри первой возможности будет отправлено"
-            try:
-                inlinewebapp(
-                    bot_token=bot_token,
-                    chat_id=request_list.user.telegram_id,
-                    message_text=message_ready,
-                    url=url,
-                )
-            except:
-                pass
-        if request_list.category.department == 9:
-            try:
-                sendtotelegramchannel(
-                    bot_token=bot_token,
-                    chat_id=request_list.user.telegram_id,
-                    message_text=f"Ваша форма по заявке #{request_list.id}s готова.\n\nМожете приехать в головной офис и забрать",
-                )
-            except:
-                pass
-
-    elif form_data.status == 4:
-        if request_list.category.department == 4:
+                    sendtotelegramchannel(
+                        bot_token=bot_token,
+                        chat_id=request_list.user.telegram_id,
+                        message_text=text
+                    )
+                except:
+                    pass
+        elif form_data.status == 2:
+            if request_list.category.department == 5:
+                try:
+                    sendtotelegramchannel(
+                        bot_token=bot_token,
+                        chat_id=request_list.user.telegram_id,
+                        message_text=f"Уважаемый {request_list.user.full_name}, мы отправили транспорт по вашему запросу #{request_list.id}s Ожидайте его прибытия. \n🚛Грузовик: {request_list.cars.name} {request_list.cars.number}")
+                except:
+                    pass
+        elif form_data.status == 3:
             url = f"{FRONT_URL}tg/order-rating/{request_list.id}?user_id={request_list.user.id}&department={request_list.category.department}&sub_id={request_list.category.sub_id}"
-            inlinewebapp(
+            if request_list.category.department == 3:
+                try:
+                    inlinewebapp(
+                        bot_token=bot_token,
+                        chat_id=request_list.user.telegram_id,
+                        message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по Маркетингу: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
+                        url=url,
+                    )
+                except:
+                    pass
+            if request_list.category.department == 5:
+                try:
+                    inlinewebapp(
+                        bot_token=bot_token,
+                        chat_id=request_list.user.telegram_id,
+                        message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по Запросу машины🚛: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
+                        url=url,
+                    )
+                except:
+                    pass
+            if request_list.category.department == 1:
+                try:
+                    inlinewebapp(
+                        bot_token=bot_token,
+                        chat_id=request_list.user.telegram_id,
+                        message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по APC: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
+                        url=url,
+                    )
+                except:
+                    pass
+            if request_list.category.department == 6:
+                try:
+                    inlinewebapp(
+                        bot_token=bot_token,
+                        chat_id=request_list.user.telegram_id,
+                        message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
+                        url=url,
+                    )
+                except:
+                    pass
+            if request_list.category.department == 4:
+                try:
+                    inlinewebapp(
+                        bot_token=bot_token,
+                        chat_id=request_list.user.telegram_id,
+                        message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по IT: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
+                        url=url,
+                    )
+                except:
+                    pass
+            if request_list.category.department == 2:
+                # message_ready  is for sending product to user
+                message_ready = f"""Уважаемый {request_list.user.full_name}, инвентарь по вашей заявке #{request_list.id}s """
+                new_neq = []
+                for i in request_list.expanditure:
+                    if i.status==0:
+                        new_neq.append(i)
+                    else:
+                        message_ready += f"\n{i.tool.name} - {i.amount} шт. "
+                        edit_expenditure = crud.synch_expanditure_crud(db, id=i.id)
+                        send_document_iiko(key=authiiko(), data=edit_expenditure)
+
+                message_ready += "\nГотов и отправлен вам на филиал, прибудет через 12 часов."
+
+                if new_neq:
+
+                    message_ready+=f"\n\n♻️Инвентарь в обработке:"
+
+                    new_request = crud.add_request(db=db,
+                                     category_id=request_list.category_id,
+                                     fillial_id=request_list.fillial_id,
+                                     description=request_list.description,
+                                     product=request_list.product,
+                                     user_id=request_list.user_id,
+                                     is_bot=0,
+                                     size=request_list.size,
+                                     bread_size=request_list.bread_size,
+                                     location=request_list.location,
+                                     arrival_date=request_list.arrival_date,
+                                    vidfrom=None,
+                                    vidto=None,
+                                    finishing_time=None
+                                     )
+                    for i in new_neq:
+                        message_ready+=f"\n{i.tool.name} - {i.amount} шт. "
+                        query.add_expenditure(db=db,
+                                             request_id=new_request.id,
+                                             tool_id=i.tool_id,
+                                             amount=i.amount,
+                                             comment=i.comment,
+                                             status=0
+                                             )
+                    message_ready +="\nПри первой возможности будет отправлено"
+                try:
+                    inlinewebapp(
+                        bot_token=bot_token,
+                        chat_id=request_list.user.telegram_id,
+                        message_text=message_ready,
+                        url=url,
+                    )
+                except:
+                    pass
+            if request_list.category.department == 9:
+                try:
+                    sendtotelegramchannel(
+                        bot_token=bot_token,
+                        chat_id=request_list.user.telegram_id,
+                        message_text=f"Ваша форма по заявке #{request_list.id}s готова.\n\nМожете приехать в головной офис и забрать",
+                    )
+                except:
+                    pass
+
+        elif form_data.status == 4:
+            if request_list.category.department == 4:
+                url = f"{FRONT_URL}tg/order-rating/{request_list.id}?user_id={request_list.user.id}&department={request_list.category.department}&sub_id={request_list.category.sub_id}"
+                inlinewebapp(
+                        bot_token=bot_token,
+                        chat_id=request_list.user.telegram_id,
+                        message_text=f"""❌Ваша заявка #{request_list.id}s по IT👨🏻‍💻 отменена по причине: {request_list.deny_reason}\n\nЕсли Вы с этим не согласны, поставьте, пожалуйста, рейтинг нашему решению по Вашей заявке от 1 до 5, и напишите свои комментарий.""",
+                        url=url,
+                    )
+            else:
+                sendtotelegramchannel(
                     bot_token=bot_token,
                     chat_id=request_list.user.telegram_id,
-                    message_text=f"""❌Ваша заявка #{request_list.id}s по IT👨🏻‍💻 отменена по причине: {request_list.deny_reason}\n\nЕсли Вы с этим не согласны, поставьте, пожалуйста, рейтинг нашему решению по Вашей заявке от 1 до 5, и напишите свои комментарий.""",
-                    url=url,
+                    message_text=f"Ваша заявка #{request_list.id}s была отменена по причине: {request_list.deny_reason}",
                 )
-        else:
+        elif form_data.status == 5:
             sendtotelegramchannel(
                 bot_token=bot_token,
                 chat_id=request_list.user.telegram_id,
-                message_text=f"Ваша заявка #{request_list.id}s была отменена по причине: {request_list.deny_reason}",
+                message_text=f"Уважаемый {request_list.user.full_name}, ваша заявка #{request_list.id}s временно приостановлена по причине: {request_list.pause_reason}",
             )
-    elif form_data.status == 5:
-        sendtotelegramchannel(
-            bot_token=bot_token,
-            chat_id=request_list.user.telegram_id,
-            message_text=f"Уважаемый {request_list.user.full_name}, ваша заявка #{request_list.id}s временно приостановлена по причине: {request_list.pause_reason}",
-        )
-    elif form_data.status == 6:
-        if request_list.category.department == 4:
-            request_text = f"Уважаемый {request_list.user.full_name} , Ваша заявка #{request_list.id}s ИТ решена. Пожалуйста, подтвердите, что она выполнена в соответствии с вашим запросом."
+        elif form_data.status == 6:
+            if request_list.category.department == 4:
+                request_text = f"Уважаемый {request_list.user.full_name} , Ваша заявка #{request_list.id}s ИТ решена. Пожалуйста, подтвердите, что она выполнена в соответствии с вашим запросом."
 
 
 
-            confirmation_request(bot_token=bot_token, chat_id=request_list.user.telegram_id, message_text=request_text,)
+                confirmation_request(bot_token=bot_token, chat_id=request_list.user.telegram_id, message_text=request_text,)
 
-        if request_list.category.department == 1:
+            if request_list.category.department == 1:
 
-            text_request = f"Ваша заявка #{request_list.id}s по АРС была обработана. Пожалуйста, подтвердите, что она выполнена в соответствии с вашим запросом."
-            confirmation_request(bot_token=bot_token, chat_id=request_list.user.telegram_id, message_text=text_request)
+                text_request = f"Ваша заявка #{request_list.id}s по АРС была обработана. Пожалуйста, подтвердите, что она выполнена в соответствии с вашим запросом."
+                confirmation_request(bot_token=bot_token, chat_id=request_list.user.telegram_id, message_text=text_request)
 
-        if request_list.category.department==2:
-            text_request = f"Ваша заявка #{request_list.id}s по Инвентарю была обработана. "
-            for i in request_list.expanditure:
+            if request_list.category.department==2:
+                text_request = f"Ваша заявка #{request_list.id}s по Инвентарю была обработана. "
+                for i in request_list.expanditure:
 
-                    text_request += f"\n{i.tool.name} - {i.amount} шт. "
-            text_request += "Инвентарь отправлен вам на филиал, прибудет через 12 часов. Как привезут просим вас Подтвердить заявку. \nЕсли вам не привезут их в течении выше указанного времени, можете нажать кнопку “Не сделано”"
-                    # edit_expenditure = crud.synch_expanditure_crud(db, id=i.id)
-                    # send_document_iiko(key=authiiko(), data=edit_expenditure)
-            confirmation_request(bot_token=bot_token, chat_id=request_list.user.telegram_id, message_text=text_request)
+                        text_request += f"\n{i.tool.name} - {i.amount} шт. "
+                text_request += "Инвентарь отправлен вам на филиал, прибудет через 12 часов. Как привезут просим вас Подтвердить заявку. \nЕсли вам не привезут их в течении выше указанного времени, можете нажать кнопку “Не сделано”"
+                        # edit_expenditure = crud.synch_expanditure_crud(db, id=i.id)
+                        # send_document_iiko(key=authiiko(), data=edit_expenditure)
+                confirmation_request(bot_token=bot_token, chat_id=request_list.user.telegram_id, message_text=text_request)
 
-    elif form_data.status == 7:
-       sendtotelegramchannel(
-                bot_token=bot_token,
-                chat_id=request_list.user.telegram_id,
-                message_text=f"Ваша заявка #{request_list.id}s возобновлено",
-            ) 
-    elif form_data.status == 8:
-        if request_list.category.department == 4:
-            url = f"{FRONT_URL}tg/order-rating/{request_list.id}?user_id={request_list.user.id}&department={request_list.category.department}&sub_id={request_list.category.sub_id}"
-            inlinewebapp(
+        elif form_data.status == 7:
+           sendtotelegramchannel(
                     bot_token=bot_token,
                     chat_id=request_list.user.telegram_id,
-                    message_text=f"""❌Ваша заявка #{request_list.id}s по IT👨🏻‍💻 отменена по причине: {request_list.deny_reason}\n\nЕсли Вы с этим не согласны, поставьте, пожалуйста, рейтинг нашему решению по Вашей заявке от 1 до 5, и напишите свои комментарий.""",
-                    url=url,
+                    message_text=f"Ваша заявка #{request_list.id}s возобновлено",
                 )
+        elif form_data.status == 8:
+            if request_list.category.department == 4:
+                url = f"{FRONT_URL}tg/order-rating/{request_list.id}?user_id={request_list.user.id}&department={request_list.category.department}&sub_id={request_list.category.sub_id}"
+                inlinewebapp(
+                        bot_token=bot_token,
+                        chat_id=request_list.user.telegram_id,
+                        message_text=f"""❌Ваша заявка #{request_list.id}s по IT👨🏻‍💻 отменена по причине: {request_list.deny_reason}\n\nЕсли Вы с этим не согласны, поставьте, пожалуйста, рейтинг нашему решению по Вашей заявке от 1 до 5, и напишите свои комментарий.""",
+                        url=url,
+                    )
     return request_list
 
 
