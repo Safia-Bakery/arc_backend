@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     jwt_secret_key: Optional[str] = os.getenv("JWT_SECRET_KEY")
     base_url: Optional[str] = os.getenv("BASE_URL")
     jwt_refresh_secret_key: Optional[str] = os.getenv("JWT_REFRESH_SECRET_KEY")
-    jwt_algorithm: str = os.getenv("ALGORITHM", "HS256")
+    jwt_algorithm: str = os.getenv("ALGORITHM")
     bottoken: Optional[str] = os.getenv("BOT_TOKEN")
     hrbot_token: Optional[str] = os.getenv("HRBOT_TOKEN")
     login_iiko: Optional[str] = os.getenv("LOGIN_IIKO")
@@ -27,8 +27,9 @@ class Settings(BaseSettings):
     MICROSERVICE_BASE_URL: str = os.getenv("MICROSERVICE_BASE_URL")
     MICROSERVICE_USERNAME: str = os.getenv("MICROSERVICE_USERNAME")
     MICROSERVICE_PASSWORD: str = os.getenv("MICROSERVICE_PASSWORD")
-    BASE_URL:str = "https://api.service.safiabakery.uz/"
-    FRONT_URL:str = "https://admin.service.safiabakery.uz/"
+    # BASE_URL:str = "https://api.service.safiabakery.uz/"
+    BASE_URL: str = "localhost"
+    FRONT_URL: str = "https://admin.service.safiabakery.uz/"
     sizes: list = [
         'XS (42 - 44)',
         'S (46 - 48)',
@@ -39,8 +40,8 @@ class Settings(BaseSettings):
         'XXXL (66 - 68)'
     ]
 
-    # Security settings
-
+    class Config:
+        env_file = ".env"  # Specify the environment file to load
 
 
 # Initialize settings
