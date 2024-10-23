@@ -27,11 +27,6 @@ def filter_requests_all(
 ):
     query = db.query(Requests).filter(Category.department == department)
 
-    query.options(
-        joinedload(Requests.request_orpr)
-        .joinedload(OrderProducts.orpr_product)
-        .joinedload(Products.prod_cat)
-    )
 
     if id is not None:
         query = query.filter(Requests.id == id)

@@ -48,7 +48,7 @@ async def filter_factory_requests(
         fillial_id=fillial_id,
         created_at=created_at,
         request_status=request_status,
-        department=9
+        department=10
     )
 
     return paginate(request_list)
