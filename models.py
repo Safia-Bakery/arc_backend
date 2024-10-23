@@ -50,6 +50,8 @@ class Pages(Base):
     parentpage = relationship("ParentPage", back_populates="actions")
 
 
+
+
 #groups a group of permissions that are attached to users
 class Groups(Base):
     __tablename__ = "groups"
@@ -106,6 +108,7 @@ class ParentFillials(Base):
     status = Column(Integer, default=0)
     fillial_department = relationship("Fillials", back_populates="parentfillial")
     is_fabrica = Column(Integer, nullable=True)
+    calendar = relationship("Calendars", back_populates="branch")
 
 #fillial is departments of fillial bar, arc, etc
 class Fillials(Base):
@@ -243,6 +246,21 @@ class Requests(Base):
     communication = relationship("Communication", back_populates="requestc")
     price = Column(Float, nullable=True)
     phone_number = Column(String, nullable=True)
+    calendar = relationship("Calendars", back_populates="request")
+    log = relationship("Logs", back_populates="request")
+
+
+class Calendars(Base):
+    __tablename__ = 'calendars'
+    id = Column(Integer, primary_key=True, index=True)
+    branch_id = Column(UUID(as_uuid=True), ForeignKey('parentfillials.id'))
+    branch = relationship('ParentFillials', back_populates='calendar')
+    date = Column(Date)
+    request_id = Column(Integer, ForeignKey('requests.id'))
+    request = relationship('Requests', back_populates='calendar')
+    is_active = Column(Integer, default=1)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
 
 class Communication(Base):
