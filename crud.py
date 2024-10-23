@@ -204,6 +204,10 @@ def update_fillial_cr(db: Session, form_data: schemas.UpdateFillialSch):
             db_fillial_update.status = form_data.status
         if form_data.is_fabrica is not None:
             db_fillial_update.is_fabrica = form_data.is_fabrica
+        if form_data.country is not None:
+            db_fillial_update.country = form_data.country
+        if form_data.name is not None:
+            db_fillial_update.name = form_data.name
         db.commit()
         db.refresh(db_fillial_update)
         return db_fillial_update
