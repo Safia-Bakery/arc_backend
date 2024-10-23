@@ -61,5 +61,6 @@ class Requests(Base):
     communication = relationship("Communication", back_populates="requestc")
     price = Column(Float, nullable=True)
     phone_number = Column(String, nullable=True)
+    tg_message_id = Column(Integer, nullable=True, default=None)
     calendar = relationship("Calendars", back_populates="request")
     log = relationship("Logs", back_populates="request")

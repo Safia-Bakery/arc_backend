@@ -15,7 +15,7 @@ from app.schemas.it_extra import *
 from app.schemas.it_requests import GetRequest, PutRequest, MessageRequestCreate
 from app.schemas.requests import GetOneRequest
 from app.schemas.users import UserFullBack
-from app.utils.utils import sendtotelegramchannel, inlinewebapp, confirmation_request, generate_random_filename
+from app.utils.utils import sendtotelegramchannel, sendtotelegramtopic, inlinewebapp, confirmation_request, generate_random_filename
 
 it_requests_router = APIRouter()
 
@@ -111,19 +111,18 @@ async def put_request_id(
         request: PutRequest,
         db: Session = Depends(get_db),
         request_user: UserFullBack = Depends(get_current_user)):
-    edited_request = it_requests.edit_request(db=db, request=request)
 
+    message_id = ''
     if request.status is not None:
         logs.create_log(db=db, data=request, user=request_user)
         if request.status == 1:
-            brigader = users.get_user_brig_id(db, request.brigada.id)
-            brigader_name = request.brigada.name
-            if brigader:
-                brigader_telid = brigader.telegram_id
-                sendtotelegramchannel(
-                    chat_id=brigader_telid,
-                    message_text=f"{brigader_name} вам назначена заявка, #{request.id}s {request.fillial.parentfillial.name}"
+            if request.brigada.topic_id:
+                response = sendtotelegramtopic(
+                    chat_id=request.brigada.chat_id,
+                    message_text=f"{request.brigada.name} вам назначена заявка, #{request.id}s {request.fillial.parentfillial.name}",
+                    thread_id=request.brigada.topic_id
                 )
+                message_id = response.json()['result']['message_id']
 
             try:
                 sendtotelegramchannel(
@@ -168,6 +167,8 @@ async def put_request_id(
                 message_text=f"""❌Ваша заявка #{request.id}s по IT👨🏻‍💻 отменена по причине: {request.deny_reason}\n\nЕсли Вы с этим не согласны, поставьте, пожалуйста, рейтинг нашему решению по Вашей заявке от 1 до 5, и напишите свои комментарий.""",
                 url=url,
             )
+
+    edited_request = it_requests.edit_request(db=db, request=request, message_id=message_id)
 
     return edited_request
 

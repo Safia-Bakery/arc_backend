@@ -107,6 +107,22 @@ def sendtotelegramchannel(chat_id, message_text):
         return False
 
 
+def sendtotelegramtopic(chat_id, message_text, thread_id):
+    # Create the request payload
+    payload = {"chat_id": chat_id, "message_thread_id": thread_id, "text": message_text, "parse_mode": "HTML"}
+
+    # Send the request to send the inline keyboard message
+    response = requests.post(
+        f"https://api.telegram.org/bot{settings.bottoken}/sendMessage",
+        json=payload,
+    )
+    # Check the response status
+    if response.status_code == 200:
+        return response
+    else:
+        return False
+
+
 def inlinewebapp(chat_id, message_text, url):
     keyboard = {
         "inline_keyboard": [

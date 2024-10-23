@@ -23,8 +23,6 @@ import pytz
 import uuid
 
 
-
-
 class Brigada(Base):
     __tablename__ = "brigada"
     id = Column(Integer, primary_key=True, index=True)
@@ -37,3 +35,5 @@ class Brigada(Base):
     sphere_status = Column(Integer, default=1)
     department = Column(Integer, nullable=True)
     is_outsource = Column(Boolean, default=False)
+    chat_id = Column(BIGINT, nullable=True, default=None)
+    topic_id = Column(Integer, nullable=True, default=None)

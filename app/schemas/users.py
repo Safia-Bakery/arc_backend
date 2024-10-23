@@ -67,6 +67,8 @@ class GetBrigada(BaseModel):
     sphere_status: int
     department: int
     is_outsource: Optional[bool] = None
+    chat_id: Optional[int] = None
+    topic_id: Optional[int] = None
 
     class Config:
         orm_mode = True

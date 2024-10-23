@@ -120,7 +120,7 @@ def get_request_id(db: Session, id):
     return db.query(Requests).filter(Requests.id == id).first()
 
 
-def edit_request(db: Session, request: PutRequest):
+def edit_request(db: Session, request: PutRequest, message_id):
     query = db.query(Requests).filter(Requests.id == request.id).first()
     if request.finishing_time is not None:
         query.finishing_time = request.finishing_time
@@ -128,6 +128,8 @@ def edit_request(db: Session, request: PutRequest):
         query.brigada_id = request.brigada_id
     if request.status is not None:
         query.status = request.status
+
+    query.tg_message_id = message_id
 
     db.commit()
     db.refresh(query)
