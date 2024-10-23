@@ -25,7 +25,7 @@ def filter_requests_all(
         request_status,
         department
 ):
-    query = db.query(Requests).filter(Category.department == department)
+    query = db.query(Requests).join(Category).filter(Category.department == department)
 
 
     if id is not None:
