@@ -92,6 +92,8 @@ class Users(Base):
     toolor = relationship("ToolsOrder", back_populates="user")
     communication = relationship("Communication", back_populates="user")
     arcexpense = relationship("ArcExpense", back_populates="user")
+    log = relationship("Logs", back_populates="user")
+
 
 #there are 2 types of fillials there is parent fillial that show which fillial is 
 class ParentFillials(Base):
@@ -432,10 +434,12 @@ class ArcExpense(Base):
     expensetype = relationship("ArcExpenseType", back_populates="expense")
 
 
-
-
-
-
-
-
-
+class Logs(Base):
+    __tablename__ = "logs"
+    id = Column(Integer, primary_key=True, index=True)
+    request_id = Column(Integer, ForeignKey("requests.id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
+    created_at = Column(DateTime(timezone=True), default=func.now())
+    status = Column(Integer, nullable=True)
+    request = relationship("Requests", back_populates="log")
+    user = relationship("Users", back_populates="log")

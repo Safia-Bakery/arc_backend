@@ -5,20 +5,19 @@ from .users import GetBrigada, UserGetlist, GetUserFullData
 from .category import GetCategory
 from .fillials import GetFillialChild
 from .files import FileSch
+from .comments import GetComments
+from .communication import MessageRequest
+from .expanditure import GetExpanditure
+from .orders import OrderProductsGet, CarsGet
 
 
-class RatingNumber(BaseModel):
+class GetOneRequest(BaseModel):
     id: int
-    rating: Optional[int] = None
-
-    class Config:
-        orm_mode = True
-
-
-class GetRequest(BaseModel):
-    id: int
-    rating: Optional[int] = None
+    product: Optional[str] = None
     description: Optional[str] = None
+    deny_reason: Optional[str] = None
+    pause_reason: Optional[str] = None
+    rating: Optional[int] = None
     created_at: datetime
     status: int
     brigada: Optional[GetBrigada] = None
@@ -28,33 +27,23 @@ class GetRequest(BaseModel):
     started_at: Optional[datetime] = None
     finished_at: Optional[datetime] = None
     user: Optional[UserGetlist] = None
+    user_manager: Optional[str] = None
+    expanditure: list[GetExpanditure]
+    comments: list[GetComments]
     is_bot: Optional[bool] = None
+    size: Optional[str] = None
+    arrival_date: Optional[datetime] = None
+    bread_size: Optional[str] = None
     location: Optional[Dict[str, str]] = None
     update_time: Optional[Dict[str, str]] = None
-    comments: Optional[list[RatingNumber]] = None
-    pause_reason: Optional[str] = None
+    finishing_time: Optional[datetime] = None
+    is_redirected: Optional[bool] = None
+    old_cat_id: Optional[int] = None
+    request_orpr: Optional[list[OrderProductsGet]] = None
+    cars: Optional[CarsGet] = None
+    communication: Optional[list[MessageRequest]] = None
     price: Optional[float] = None
     phone_number: Optional[str] = None
 
     class Config:
         orm_mode = True
-
-
-class PutRequest(BaseModel):
-    id: int
-    user: Optional[GetUserFullData] = None
-    fillial: Optional[GetFillialChild] = None
-    brigada: Optional[GetBrigada] = None
-    status: Optional[int] = None
-    category: Optional[GetCategory] = None
-    finishing_time: Optional[datetime] = None
-    deny_reason: Optional[str] = None
-
-    class Config:
-        orm_mode = True
-
-
-class MessageRequestCreate(BaseModel):
-    request_id: int
-    message: str
-    status: Optional[int] = 0

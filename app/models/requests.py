@@ -62,3 +62,4 @@ class Requests(Base):
     price = Column(Float, nullable=True)
     phone_number = Column(String, nullable=True)
     calendar = relationship("Calendars", back_populates="request")
+    log = relationship("Logs", back_populates="request")

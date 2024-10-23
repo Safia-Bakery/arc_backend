@@ -1,28 +1,21 @@
-from sqlalchemy.orm import Session
 from fastapi import (
     Depends,
-    FastAPI,
     HTTPException,
-    UploadFile,
-    File,
-    Form,
-    Header,
-    Request,
     status,
     APIRouter
 )
 from fastapi_pagination import paginate, Page
-from typing import Optional
-from datetime import datetime, date
+from sqlalchemy.orm import Session
+
+from app.core.config import settings
+from app.crud import it_requests, users, communication, logs
+from app.models.category import Category
 from app.routes.depth import get_db, get_current_user
 from app.schemas.it_extra import *
-from app.schemas.users import UserFullBack, GetBrigada, GetUserFullData
-from app.schemas.it_requests import GetRequest, GetOneRequest, PutRequest, MessageRequestCreate
-from app.schemas.category import GetCategory
-from app.crud import it_requests, users, communication
-from app.models.category import Category
+from app.schemas.it_requests import GetRequest, PutRequest, MessageRequestCreate
+from app.schemas.requests import GetOneRequest
+from app.schemas.users import UserFullBack
 from app.utils.utils import sendtotelegramchannel, inlinewebapp, confirmation_request, generate_random_filename
-from app.core.config import settings
 
 it_requests_router = APIRouter()
 
@@ -121,7 +114,7 @@ async def put_request_id(
     edited_request = it_requests.edit_request(db=db, request=request)
 
     if request.status is not None:
-
+        logs.create_log(db=db, data=request, user=request_user)
         if request.status == 1:
             brigader = users.get_user_brig_id(db, request.brigada.id)
             brigader_name = request.brigada.name

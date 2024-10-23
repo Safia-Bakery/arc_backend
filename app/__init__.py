@@ -32,4 +32,4 @@ from app.models.kru_tasks import KruTasks
 from app.models.kru_finished_tasks import KruFinishedTasks
 from app.models.files import Files
 from app.models.tool_balance import ToolBalance
-
+from app.models.logs import Logs
