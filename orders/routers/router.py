@@ -320,8 +320,8 @@ async def put_request_id(
                     chat_id=brigader_telid,
                     message_text=f"{request_list.brigada.name} вам назначена заявка, #{request_list.id}s {request_list.fillial.fillial.name}",
                 )
-            except:
-                pass
+            except Exception as e:
+                print(e)
             if request_list.category.department == 1:
                 try:
                     sendtotelegramchannel(

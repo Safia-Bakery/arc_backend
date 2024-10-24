@@ -140,7 +140,7 @@ async def update_request(
                     bot_token=settings.bottoken,
                     chat_id=request_list.user.telegram_id,
                     message_text=f"Ваша заявка #{request_list.id}s была отменена по причине: {request_list.deny_reason}",
-                    url =f"{settings.frontend_url}/rating/{request_list.id}"
+                    url =f"{settings.frontend_url}/rating/{request_list.sdid}"
                 )
             elif   request.status==6:
                 text_request = f"Ваша заявка #{request_list.id}s по Инвентарю была обработана. "
