@@ -10,6 +10,7 @@ from uuid import UUID
 
 from app.models.requests import Requests
 from app.models.parentfillials import ParentFillials
+from app.models.fillials import Fillials
 from app.models.files import Files
 
 timezone_tash = pytz.timezone('Asia/Tashkent')
@@ -22,3 +23,11 @@ def get_branchs(db:Session,id:Optional[int]=None,branch_name:Optional[str]=None)
     if branch_name is not None:
         query = query.filter(ParentFillials.name.ilike(f'%{branch_name}%'))
     return query.all()
+
+
+def get_child_branchs(db:Session,parent_fillial):
+    query = db.query(Fillials).filter(Fillials.parentfillial_id==parent_fillial).filter(Fillials.origin==2)
+    return query.first()
+
+
+

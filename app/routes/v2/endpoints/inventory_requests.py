@@ -23,6 +23,7 @@ from app.utils.utils import( send_simple_text_message,
                              rating_request_telegram,
                              confirmation_request
                              )
+from app.crud.branchs import get_child_branchs
 
 from app.core.config import settings
 
@@ -97,8 +98,14 @@ async def create_request(
     db: Session = Depends(get_db),
     request_user: UserFullBack = Depends(get_current_user),
 ):
+
     try:
+        get_child_branch = get_child_branchs(db, request.fillial_id)
+        if not get_child_branch:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Branch not found")
+        request.fillial_id=get_child_branch.id
         request_list = inv_requests.create_request(db, request,user_id=request_user.id)
+
         for  item in request.expenditure:
             create_expanditure(db, amount=item.amount,tool_id=item.tool_id,request_id=request_list.id)
         send_simple_text_message(
@@ -151,8 +158,8 @@ async def update_request(
                     message_text=f"Ваша заявка #{request_list.id}s возобновлено",
                 )
         return request_list
-    except:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="not fund")
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
 
 
