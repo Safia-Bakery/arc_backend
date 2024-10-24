@@ -107,8 +107,8 @@ async def create_request(
             message_text=f"Уважаемый {request_user.full_name}, ваша заявка #{request_list.id} по Inventary: Создана."
         )
         return {'id':request_list.id,'status':request_list.status,'success':True}
-    except:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="not fund")
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
 
 
