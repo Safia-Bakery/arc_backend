@@ -1197,7 +1197,8 @@ def get_comment(db: Session, request_id):
     query = db.query(models.Comments)
     if request_id is not None:
         query = query.filter(models.Comments.request_id == request_id)
-    return query.all()
+
+    return query.order_by(models.Comments.id.desc()).all()
 
 
 def filterbranchchildid(db: Session, parent_id, origin: Optional[int] = None):
