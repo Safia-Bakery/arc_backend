@@ -318,7 +318,7 @@ async def put_request_id(
                 sendtotelegramchannel(
                     bot_token=bot_token,
                     chat_id=brigader_telid,
-                    message_text=f"{request_list.brigada.name} вам назначена заявка, #{request_list.id}s {request_list.fillial.fillial.name}",
+                    message_text=f"{request_list.brigada.name} вам назначена заявка, #{request_list.id}s {request_list.fillial.parentfillial.name}",
                 )
             except Exception as e:
                 print(e)
