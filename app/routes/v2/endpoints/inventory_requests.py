@@ -91,7 +91,7 @@ async def get_request(
 
 
 
-@inv_requests_router.post("/requests/inv", response_model=GetOneRequest)
+@inv_requests_router.post("/requests/inv")
 async def create_request(
     request: CreateInventoryRequest,
     db: Session = Depends(get_db),
@@ -106,7 +106,7 @@ async def create_request(
             chat_id=request_user.telegram_id,
             message_text=f"Уважаемый {request_user.full_name}, ваша заявка #{request_list.id} по Inventary: Создана."
         )
-        return request_list
+        return {'id':request_list.id,'status':request_list.status,'success':True}
     except:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="not fund")
 
