@@ -46,7 +46,8 @@ def arc_auto_request(db:Session):
 
         calendar_crud.update_calendar_request_id(db=db, calendar_id=item.id, request_id=request_create.id)
 
-        text = f"📑Заявка № {request_create.id}\n\n📍Филиал: {request_create.fillial.fillial.name}\n" \
+        text = f"📑Заявка № {request_create.id}\n\n📍Филиал: {request_create.
+        fillial.parentfillial.name}\n" \
                f"🕘Дата поступления заявки: {current_datetime}\n\n" \
                f"🔰Категория проблемы: {request_create.category.name}\n" \
                f"⚙️Название оборудования: {request_create.product}\n" \
