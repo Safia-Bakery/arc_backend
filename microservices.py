@@ -424,7 +424,7 @@ def file_generator(data,file):
     for row in data:
         inserting_data['Номер заявки'].append(row.id)
         inserting_data['Клиент'].append(row.user.full_name)
-        inserting_data['Филиал'].append(row.fillial.fillial.name)
+        inserting_data['Филиал'].append(row.fillial.parentfillial.name)
         inserting_data['Порция еды'].append(int(row.size))
         inserting_data['Порции хлеба'].append(int(row.bread_size))
         finish_time = row.arrival_date.strftime("%d-%m-%Y")
@@ -456,7 +456,7 @@ def Excell_generate_it(data):
         inserting_data['Номер заявки'].append(row.id)
         inserting_data['Клиент'].append(row.user.full_name)
         
-        inserting_data['Филиал'].append(row.fillial.fillial.name)
+        inserting_data['Филиал'].append(row.fillial.parentfillial.name)
         inserting_data['Категория'].append(row.category.name)
         inserting_data['Комментарий'].append(row.description)
         inserting_data['Статус'].append(statusdata[str(row.status)])
@@ -576,7 +576,7 @@ def uniform_excell_generate(data):
         forma_list = ''
         total_sum = 0
         inserting_data['Номер заявки'].append(row.id)
-        inserting_data['Филиал'].append(row.fillial.fillial.name)
+        inserting_data['Филиал'].append(row.fillial.parentfillial.name)
         for product in row.request_orpr:
             forma_list += f"{product.orpr_product.prod_cat.name} {product.orpr_product.name} x {product.amount}\n"
             if product.orpr_product.prod_cat.price:
