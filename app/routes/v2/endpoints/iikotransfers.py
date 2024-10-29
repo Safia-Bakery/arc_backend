@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytz
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -16,7 +18,7 @@ from app.utils.iiko_tranfers import (
     send_arc_document_iiko, authiiko,
 
 )
-from app.utils.utils import rating_request_telegram
+from app.utils.utils import rating_request_telegram, edit_topic_message
 
 iiko_transfer_router = APIRouter()
 timezone_tash = pytz.timezone('Asia/Tashkent')
@@ -30,7 +32,13 @@ def self_closing_requests(db: Session):
         url = f"{settings.front_url}/tg/order-rating/{request.id}?user_id={request.user.id}&department={request.category.department}&sub_id={request.category.sub_id}"
 
         # Update the status of the request
-        iiko_transfers.update_status_request(db=db, id=request.id, status=3)
+        updated_request = iiko_transfers.update_status_request(db=db, id=request.id, status=3)
+        edit_topic_message(chat_id=settings.IT_SUPERGROUP,
+                           thread_id=request.brigada.topic_id,
+                           message_text=f"~{request.brigada.name} вам назначена заявка, #{request.id}s {request.fillial.parentfillial.name}\n~"
+                                        f"Завершен в течении: {datetime.strptime(updated_request.update_time['3'], '%Y-%m-%d %H:%M:%S') - datetime.strptime(updated_request.update_time['0'], '%Y-%m-%d %H:%M:%S')}",
+                           message_id=request.tg_message_id
+                           )
 
         # Check the department and construct the message accordingly
         if request.category.department == 2:

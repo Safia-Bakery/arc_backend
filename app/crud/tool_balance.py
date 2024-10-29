@@ -48,17 +48,17 @@ def get_department_product_balances(db: Session, department_id, store_id, tool_i
 
 
 def get_product_balance(db: Session, department_id, store_id, product_id):
-    query = db.query(ToolBalance).filter(and_(ToolBalance.departmentId == department_id,
-                                              ToolBalance.storeId == store_id,
-                                              ToolBalance.productId == product_id)
+    query = db.query(ToolBalance).filter(and_(ToolBalance.department_id == department_id,
+                                              ToolBalance.store_id == store_id,
+                                              ToolBalance.tool_id == product_id)
                                          ).first()
     return query
 
 
 def update_product_balance(db: Session, product_balance, department):
-    query = db.query(ToolBalance).filter(and_(ToolBalance.departmentId == department,
-                                              ToolBalance.storeId == product_balance['store'],
-                                              ToolBalance.productId == product_balance['product'])
+    query = db.query(ToolBalance).filter(and_(ToolBalance.department_id == department,
+                                              ToolBalance.store_id == product_balance['storeId'],
+                                              ToolBalance.tool_id == product_balance['productId'])
                                          ).first()
     query.departmentId = department
     query.storeId = product_balance['store'] if 'store' in product_balance else None
@@ -92,7 +92,7 @@ def create_product_balance(db: Session, product_balance, department):
 
 def create_update_tool_balance(db: Session, data, department):
     for product_balance in data:
-        is_product_exists = get_product_balance(db, department, product_balance['store'], product_balance['product'])
+        is_product_exists = get_product_balance(db, department, product_balance['storeId'], product_balance['productId'])
         if is_product_exists:
             update_product_balance(db, product_balance, department)
         else:

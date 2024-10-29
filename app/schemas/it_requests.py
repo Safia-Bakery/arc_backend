@@ -49,6 +49,7 @@ class PutRequest(BaseModel):
     category: Optional[GetCategory] = None
     finishing_time: Optional[datetime] = None
     deny_reason: Optional[str] = None
+    update_time: Optional[dict] = None
     tg_message_id: Optional[int] = None
 
     class Config:

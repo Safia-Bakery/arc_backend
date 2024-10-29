@@ -128,8 +128,8 @@ def edit_request(db: Session, request: PutRequest, message_id):
         query.brigada_id = request.brigada_id
     if request.status is not None:
         query.status = request.status
-
-    query.tg_message_id = message_id
+    if message_id is not None:
+        query.tg_message_id = message_id
 
     db.commit()
     db.refresh(query)
