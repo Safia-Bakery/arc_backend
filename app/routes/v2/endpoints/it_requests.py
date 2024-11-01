@@ -103,7 +103,7 @@ async def get_request(
     try:
         request_list = it_requests.get_request_id(db, id)
         return request_list
-    except:
+    except :
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="not fund")
 
 
