@@ -15,7 +15,8 @@ from app.schemas.it_extra import *
 from app.schemas.it_requests import GetRequest, PutRequest, MessageRequestCreate
 from app.schemas.requests import GetOneRequest
 from app.schemas.users import UserFullBack
-from app.utils.utils import sendtotelegramchannel, sendtotelegramtopic, inlinewebapp, confirmation_request, generate_random_filename
+from app.utils.utils import sendtotelegramchannel, sendtotelegramtopic, delete_from_chat, edit_topic_message, \
+    inlinewebapp, confirmation_request, generate_random_filename
 
 it_requests_router = APIRouter()
 
@@ -116,6 +117,7 @@ async def put_request_id(
     if request.status is not None:
         logs.create_log(db=db, data=request, user=request_user)
         if request.status == 1:
+            delete_from_chat(chat_id=settings.IT_SUPERGROUP, message_id=request.tg_message_id)
             if request.brigada.topic_id:
                 response = sendtotelegramtopic(
                     chat_id=request.brigada.chat_id,
@@ -133,6 +135,12 @@ async def put_request_id(
                 pass
 
         elif request.status == 3:
+            edit_topic_message(chat_id=settings.IT_SUPERGROUP,
+                               thread_id=request.brigada.topic_id,
+                               message_text=f"~{request.brigada.name} вам назначена заявка, #{request.id}s {request.fillial.parentfillial.name}\n~"
+                                            f"Завершен в течении: {datetime.strptime(request.update_time['3'], '%Y-%m-%d %H:%M:%S') - datetime.strptime(request.update_time['0'], '%Y-%m-%d %H:%M:%S')}",
+                               message_id=request.tg_message_id
+                               )
             url = f"{settings.FRONT_URL}tg/order-rating/{request.id}?user_id={request.user.id}&department={request.category.department}&sub_id={request.category.sub_id}"
             try:
                 inlinewebapp(

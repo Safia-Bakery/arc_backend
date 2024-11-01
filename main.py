@@ -85,7 +85,7 @@ from app.routes.v2.endpoints.tool_balance import tool_balance_router
 
 
 from app.routes.v2.endpoints.iikotransfers import iiko_transfer_router
-models.Base.metadata.create_all(bind=engine)
+# models.Base.metadata.create_all(bind=engine)
 load_dotenv()
 
 

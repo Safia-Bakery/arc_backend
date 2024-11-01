@@ -19,7 +19,7 @@ class ToolBalance(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     department_id = Column(UUID(as_uuid=True), ForeignKey("parentfillials.id"), nullable=True)
     store_id = Column(UUID(as_uuid=True), ForeignKey("fillials.id"))
-    tool_id = Column(Integer, ForeignKey("tools.id"))
+    tool_id = Column(UUID(as_uuid=True), ForeignKey("tools.id"))
     amount = Column(DECIMAL, nullable=True)
     sum = Column(DECIMAL, nullable=True)
     price = Column(DECIMAL, nullable=True)

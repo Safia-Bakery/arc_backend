@@ -18,7 +18,7 @@ from datetime import datetime, date
 tool_balance_router = APIRouter()
 
 
-@tool_balance_router.get("tools/balances", response_model=Page[GetBalances])
+@tool_balance_router.get("/tools/balances", response_model=Page[GetBalances])
 async def store_balance(
         store_id: str,
         department_id: Optional[str] = None,

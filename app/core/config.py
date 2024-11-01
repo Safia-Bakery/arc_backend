@@ -16,19 +16,20 @@ class Settings(BaseSettings):
     jwt_secret_key: Optional[str] = os.getenv("JWT_SECRET_KEY")
     base_url: Optional[str] = os.getenv("BASE_URL")
     jwt_refresh_secret_key: Optional[str] = os.getenv("JWT_REFRESH_SECRET_KEY")
-    jwt_algorithm: str = os.getenv("ALGORITHM", "HS256")
+    jwt_algorithm: Optional[str] = os.getenv("ALGORITHM")
     bottoken: Optional[str] = os.getenv("BOT_TOKEN")
     hrbot_token: Optional[str] = os.getenv("HRBOT_TOKEN")
     login_iiko: Optional[str] = os.getenv("LOGIN_IIKO")
     password_iiko: Optional[str] = os.getenv("PASSWORD_IIKO")
-    database_url: str = os.getenv("DATABASE_URL", "sqlite:///./sql_app.db")
+    database_url: Optional[str] = os.getenv("DATABASE_URL")
     backend_pass: Optional[str] = os.getenv("BACKEND_PASS")
     front_url: Optional[str] = os.getenv("FRONT_URL")
-    MICROSERVICE_BASE_URL: str = os.getenv("MICROSERVICE_BASE_URL")
-    MICROSERVICE_USERNAME: str = os.getenv("MICROSERVICE_USERNAME")
-    MICROSERVICE_PASSWORD: str = os.getenv("MICROSERVICE_PASSWORD")
-    BASE_URL:str = "https://api.service.safiabakery.uz/"
-    FRONT_URL:str = "https://admin.service.safiabakery.uz/"
+    MICROSERVICE_BASE_URL: Optional[str] = os.getenv("MICROSERVICE_BASE_URL")
+    MICROSERVICE_USERNAME: Optional[str]= os.getenv("MICROSERVICE_USERNAME")
+    MICROSERVICE_PASSWORD: Optional[str] = os.getenv("MICROSERVICE_PASSWORD")
+    BASE_URL: Optional[str] = "https://api.service.safiabakery.uz/"
+    FRONT_URL: Optional[str] = "https://admin.service.safiabakery.uz/"
+    IT_SUPERGROUP: int = os.getenv("IT_SUPERGROUP")
     sizes: list = [
         'XS (42 - 44)',
         'S (46 - 48)',
@@ -40,7 +41,9 @@ class Settings(BaseSettings):
     ]
 
     # Security settings
-
+    class Config:
+        env_file = '.env'
+        extra = 'allow'
 
 
 # Initialize settings
