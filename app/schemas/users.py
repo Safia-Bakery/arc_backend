@@ -70,6 +70,7 @@ class UserGetJustNames(BaseModel):
     class Config:
         orm_mode = True
 
+
 class GetBrigada(BaseModel):
     id: int
     name: str

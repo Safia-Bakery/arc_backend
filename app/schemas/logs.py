@@ -3,7 +3,7 @@ from typing import Optional, Dict
 from datetime import datetime
 from .fillials import GetFillialChild, GetParentFill
 from .tools import GetTool
-from .users import UserFullBack,UserGetlist
+from .users import UserFullBack,UserGetlist,UserGetJustNames
 
 
 class CreateLogs(BaseModel):
