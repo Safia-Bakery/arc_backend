@@ -166,7 +166,6 @@ def edit_request(db: Session,
     db.refresh(query)
     return query
 
-
 def add_request(
         db: Session,
         data: Optional[CreateRequest] = None,
