@@ -1,7 +1,9 @@
+from fastapi import UploadFile
 from pydantic import BaseModel
 from typing import Optional, Dict
 from datetime import datetime
-from .users import GetBrigada, UserGetlist, GetUserFullData,UserGetJustNames
+from uuid import UUID
+from .users import GetBrigada, UserGetJustNames
 from .category import GetCategory
 from .fillials import GetFillialChild
 from .files import FileSch
@@ -43,10 +45,20 @@ class GetRequest(BaseModel):
 
 class PutRequest(BaseModel):
     category_id: Optional[int] = None
-    parentfillial_id: Optional[int] = None
+    parentfillial_id: Optional[UUID] = None
     finishing_time: Optional[datetime] = None
     brigada_id: Optional[int] = None
     status: Optional[int] = None
+
+    class Config:
+        orm_mode = True
+
+
+class CreateRequest(BaseModel):
+    parentfillial_id: UUID
+    category_id: Optional[int] = None
+    description: Optional[str] = None
+    files: Optional[list[UploadFile]] = None
 
     class Config:
         orm_mode = True

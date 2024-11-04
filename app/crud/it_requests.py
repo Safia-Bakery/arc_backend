@@ -1,18 +1,18 @@
 import datetime
-from typing import Optional
-
-import pytz
-from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import or_, and_, Date, cast
 import re
-from app.models.requests import Requests
+from typing import Optional
+import pytz
+from sqlalchemy import Date, cast
+from sqlalchemy.orm import Session
 from app.models.category import Category
-from app.models.users_model import Users
-from app.models.products import Products
-from app.models.orderproducts import OrderProducts
 from app.models.comments import Comments
 from app.models.fillials import Fillials
-from app.schemas.it_requests import PutRequest
+from app.models.requests import Requests
+from app.models.users_model import Users
+from app.models.files import Files
+from app.schemas.it_requests import PutRequest, CreateRequest
+
+
 
 timezonetash = pytz.timezone("Asia/Tashkent")
 
@@ -164,4 +164,48 @@ def edit_request(db: Session,
 
     db.commit()
     db.refresh(query)
+    return query
+
+
+def add_request(
+        db: Session,
+        data: Optional[CreateRequest] = None,
+        tg_message_id: Optional[int] = None
+):
+    fillial_id = filterbranchchildid(db, data.parentfillial_id).id
+    now = datetime.datetime.now(tz=timezonetash)
+    update_time = {"0": str(now)}
+    sla = 0
+    finishing_time = now + datetime.timedelta(hours=sla)
+    query = Requests(
+        fillial_id=fillial_id,
+        category_id=data.category_id,
+        description=data.description,
+        update_time=update_time,
+        tg_message_id=tg_message_id
+    )
+    db.add(query)
+    db.commit()
+    db.refresh(query)
+
+    file_obj_list = []
+    if data.files:
+        for file in data.files:
+            file_path = f"files/{file.filename}"
+            with open(file_path, "wb") as buffer:
+                while True:
+                    chunk = await file.read(1024)
+                    if not chunk:
+                        break
+                    buffer.write(chunk)
+            file_obj_list.append(
+                Files(
+                    request_id=query.id,
+                    url=file_path
+                )
+            )
+
+    db.bulk_save_objects(file_obj_list)
+    db.commit()
+
     return query

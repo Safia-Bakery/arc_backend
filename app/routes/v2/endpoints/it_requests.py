@@ -15,7 +15,7 @@ from app.crud import it_requests, users, communication, logs
 from app.models.category import Category
 from app.routes.depth import get_db, get_current_user
 from app.schemas.it_extra import *
-from app.schemas.it_requests import GetRequest, PutRequest, MessageRequestCreate
+from app.schemas.it_requests import GetRequest, PutRequest, MessageRequestCreate, CreateRequest
 from app.schemas.requests import GetOneRequest
 from app.schemas.users import UserFullBack
 from app.utils.utils import sendtotelegramchat, sendtotelegramtopic, delete_from_chat, edit_topic_message, \
@@ -195,12 +195,12 @@ async def put_request_id(
             url = f"{settings.FRONT_URL}tg/order-rating/{request.id}?user_id={request.user.id}&department={request.category.department}&sub_id={request.category.sub_id}"
             try:
                 inlinewebapp(
-                    chat_id=request.user.id,
-                    message_text=f"Уважаемый {request.user.fullname}, статус вашей заявки #{request.id}s по IT: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
+                    chat_id=request.user.telegram_id,
+                    message_text=f"Уважаемый {request.user.full_name}, статус вашей заявки #{request.id}s по IT: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
                     url=url,
                 )
-            except:
-                pass
+            except Exception as e:
+                print(e)
 
         elif request.status == 4:
             url = f"{settings.FRONT_URL}tg/order-rating/{request.id}?user_id={request.user.id}&department={request.category.department}&sub_id={request.category.sub_id}"
@@ -270,6 +270,42 @@ async def put_request_id(
             )
 
     return request
+
+
+@it_requests_router.get("/requests/it", response_model=GetOneRequest)
+async def create_request(
+        data: CreateRequest,
+        db: Session = Depends(get_db),
+        request_user: UserFullBack = Depends(get_current_user)
+):
+    try:
+        request = it_requests.add_request(db, data)
+
+        logs.create_log(db=db, request_id=id, status=request.status, user_id=request_user.id)
+
+        now = datetime.now(tz=timezonetash)
+        sla = request.category.ftime
+        formatted_created_time = request.created_at.strftime("%d.%m.%Y %H:%M")
+        formatted_finishing_time = request.finishing_time.strftime("%d.%m.%Y %H:%M")
+        finishing_time = request.finishing_time
+        phone_number = request.phone_number if request.phone_number.startswith('+') else f"+{request.phone_number}"
+        request_text = f"📑Заявка № {request.id}\n\n" \
+                       f"📍Филиал: {request.fillial.parentfillial.name}\n" \
+                       f"👨‍💼Сотрудник: {request.user.full_name}\n" \
+                       f"📱Номер телефона: {phone_number}\n" \
+                       f"🔰Категория проблемы: {request.category.name}\n" \
+                       f"🕘Дата поступления заявки: {formatted_created_time}\n" \
+                       f"🕘Дата дедлайна заявки: {formatted_finishing_time}\n" \
+                       f"❗️SLA: {sla} часов\n" \
+                       f"💬Комментарии: {request.description}"
+
+        tg_message_id = 0
+
+
+        return request
+    except:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="not fund")
+
 
 
 @it_requests_router.post("/requests/it/message", response_model=MessageRequestCreate, tags=["Message"])
