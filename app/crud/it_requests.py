@@ -26,7 +26,7 @@ def filter_request_brigada(
     started_at,
     finished_at
 ):
-    query = db.query(Requests).filter(Category.department == 4)
+    query = db.query(Requests).join(Category).filter(Category.department == 4)
 
 
     if id is not None:
@@ -74,7 +74,7 @@ def filter_requests_all(
     finished_at
 ):
     # categories = db.query(Category).with_entities(Category.id).filter(Category.department == 4).all()
-    query = db.query(Requests).filter(Category.department == 4)
+    query = db.query(Requests).join(Category).filter(Category.department == 4)
 
 
 
