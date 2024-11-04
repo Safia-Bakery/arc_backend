@@ -38,8 +38,8 @@ class GetUserFullData(BaseModel):
 
 
 class UpdateGroupSch(BaseModel):
-    name: str
     id: int
+    name: str
     status: int
 
     class Config:

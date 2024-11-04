@@ -107,7 +107,7 @@ async def filter_requests(
 async def get_request(
         id: int,
         db: Session = Depends(get_db),
-        request_user: UserFullBack = Depends(get_current_user),
+        request_user: UserFullBack = Depends(get_current_user)
 ):
     try:
         request_list = it_requests.get_request_id(db, id)
