@@ -1,10 +1,11 @@
 from pydantic import BaseModel
 from typing import Optional, Dict
 from datetime import datetime
-from .users import GetBrigada, UserGetlist, GetUserFullData
+from .users import GetBrigada, UserGetlist, GetUserFullData,UserGetJustNames
 from .category import GetCategory
 from .fillials import GetFillialChild
 from .files import FileSch
+
 
 
 class RatingNumber(BaseModel):
@@ -27,7 +28,7 @@ class GetRequest(BaseModel):
     fillial: Optional[GetFillialChild] = None
     started_at: Optional[datetime] = None
     finished_at: Optional[datetime] = None
-    user: Optional[UserGetlist] = None
+    user: Optional[UserGetJustNames] = None
     is_bot: Optional[bool] = None
     location: Optional[Dict[str, str]] = None
     update_time: Optional[Dict[str, str]] = None
