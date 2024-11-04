@@ -272,7 +272,7 @@ async def put_request_id(
     return request
 
 
-@it_requests_router.get("/requests/it", response_model=GetOneRequest)
+@it_requests_router.post("/requests/it", response_model=GetOneRequest)
 async def create_request(
         data: CreateRequest,
         db: Session = Depends(get_db),
