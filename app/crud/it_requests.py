@@ -187,7 +187,4 @@ def add_request(
     db.commit()
     db.refresh(query)
 
-    db.bulk_save_objects(file_obj_list)
-    db.commit()
-
     return query
