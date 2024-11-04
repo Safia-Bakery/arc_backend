@@ -72,3 +72,16 @@ class GetBrigada(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class UserGetJustNames(BaseModel):
+    id: int
+    username: Optional[str] = None
+    full_name: Optional[str] = None
+    email: Optional[str] = None
+    phone_number: Optional[str] = None
+    group: Optional[UpdateGroupSch] = None
+    status: int
+
+    class Config:
+        orm_mode = True

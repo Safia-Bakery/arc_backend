@@ -9,6 +9,7 @@ from .comments import GetComments
 from .communication import MessageRequest
 from .expanditure import GetExpanditure
 from .orders import OrderProductsGet, CarsGet
+from .logs import GetLogs
 
 
 class GetOneRequest(BaseModel):
@@ -44,6 +45,8 @@ class GetOneRequest(BaseModel):
     communication: Optional[list[MessageRequest]] = None
     price: Optional[float] = None
     phone_number: Optional[str] = None
+    log : Optional[list[GetLogs]] = None
+
 
     class Config:
         orm_mode = True
