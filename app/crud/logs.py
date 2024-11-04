@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 from app.models.logs import Logs
-from app.schemas.logs import CreateLogs
 
 
 def create_log(db: Session, request_id, status, user_id):
