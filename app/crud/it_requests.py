@@ -166,21 +166,27 @@ def edit_request(db: Session,
     db.refresh(query)
     return query
 
+
 def add_request(
         db: Session,
         data: Optional[CreateRequest] = None,
         tg_message_id: Optional[int] = None
 ):
-    fillial_id = filterbranchchildid(db, data.parentfillial_id).id
+    fillial_id = filterbranchchildid(db, data.fillial_id).id
     now = datetime.datetime.now(tz=timezonetash)
     update_time = {"0": str(now)}
-    sla = 0
-    finishing_time = now + datetime.timedelta(hours=sla)
+    category_obj = db.query(Category).filter(Category.id == data.category_id).first()
+    sla = category_obj.ftime
+    if sla:
+        finishing_time = now + datetime.timedelta(hours=sla)
+    else:
+        finishing_time = None
     query = Requests(
         fillial_id=fillial_id,
         category_id=data.category_id,
         description=data.description,
         update_time=update_time,
+        finishing_time=finishing_time,
         tg_message_id=tg_message_id
     )
     db.add(query)

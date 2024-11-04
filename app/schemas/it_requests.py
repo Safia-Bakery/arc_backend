@@ -50,6 +50,7 @@ class PutRequest(BaseModel):
     brigada_id: Optional[int] = None
     status: Optional[int] = None
     deny_reason: Optional[str] = None
+    pause_reason: Optional[str] = None
 
 
     class Config:

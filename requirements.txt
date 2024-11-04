@@ -13,3 +13,4 @@ openpyxl
 requests
 pydantic_settings
 apscheduler
+alembic

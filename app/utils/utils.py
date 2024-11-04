@@ -240,7 +240,6 @@ def inlinewebapp(chat_id, message_text, url):
         f"https://api.telegram.org/bot{settings.bottoken}/sendMessage",
         json=payload,
     )
-    print(response.json())
     # Check the response status
     if response.status_code == 200:
         return response
@@ -291,9 +290,6 @@ def request_notification(db, request_id, message_id, topic_id, text):
              {"text": "Отправить сообщение заказчику", "callback_data": "send_message_to_user"}]
         ]
     }
-    # remaining_time = finishing_time - datetime.now(tz=timezonetash)
-    # text = f"{text}\n\n" \
-    #        f"<b> ‼️ Оставщиеся время:</b>  {str(remaining_time).split('.')[0]}"
 
     send_url = f"{base_url}/sendMessage"
     send_payload = {

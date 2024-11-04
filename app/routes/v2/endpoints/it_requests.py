@@ -132,27 +132,42 @@ async def put_request_id(
         logs.create_log(db=db, request_id=id, status=request.status, user_id=request_user.id)
 
         formatted_created_time = request.created_at.strftime("%d.%m.%Y %H:%M")
-        formatted_finishing_time = request.finishing_time.strftime("%d.%m.%Y %H:%M")
-        finishing_time = request.finishing_time
-        sla = request.category.ftime
-        phone_number = request.phone_number if request.phone_number.startswith('+') else f"+{request.phone_number}"
+        phone_number = (request.phone_number if request.phone_number.startswith('+') else f"+{request.phone_number}") if request.phone_number else None
+        if request.finishing_time:
+            finishing_time = request.finishing_time
+            formatted_finishing_time = finishing_time.strftime("%d.%m.%Y %H:%M")
+        else:
+            finishing_time, formatted_finishing_time = None, None
+        if request.user:
+            user_fullname = request.user.full_name
+            user_id = request.user.id
+            user_telegram_id = request.user.telegram_id
+        else:
+            user_fullname, user_id, user_telegram_id = None, None, None
+        if request.category:
+            sla = request.category.ftime
+            category_name = request.category.name
+            category_department = request.category.department
+            category_sub_id = request.category.sub_id
+        else:
+            sla, category_name, category_department, category_sub_id = None, None, None, None
+
         request_text = f"📑Заявка № {request.id}\n\n" \
                        f"📍Филиал: {request.fillial.parentfillial.name}\n" \
-                       f"👨‍💼Сотрудник: {request.user.full_name}\n" \
+                       f"👨‍💼Сотрудник: {user_fullname}\n" \
                        f"📱Номер телефона: {phone_number}\n" \
-                       f"🔰Категория проблемы: {request.category.name}\n" \
+                       f"🔰Категория проблемы: {category_name}\n" \
                        f"🕘Дата поступления заявки: {formatted_created_time}\n" \
                        f"🕘Дата дедлайна заявки: {formatted_finishing_time}\n" \
                        f"❗️SLA: {sla} часов\n" \
                        f"💬Комментарии: {request.description}"
 
-        delta_minutes = 0
         if sla == 1:
             delta_minutes = 40
         elif sla == 1.5:
             delta_minutes = 60
         elif sla == 2:
-            delta_minutes = 12
+            delta_minutes = 2
         elif sla == 8:
             delta_minutes = 360
         elif sla == 24:
@@ -163,58 +178,69 @@ async def put_request_id(
             delta_minutes = 2880
         elif sla == 96:
             delta_minutes = 4320
+        else:
+            delta_minutes = 0
 
         delay = timedelta(minutes=delta_minutes)
         scheduled_time = request.created_at + delay
-        print("Notification will sent at: ", scheduled_time)
 
         if request.status == 1:
-            remaining_time = finishing_time - datetime.now(tz=timezonetash)
-            text = request_text + f"\n\n<b> ‼️ Оставщиеся время:</b>  {str(remaining_time).split('.')[0]}"
+            remaining_time = (finishing_time - datetime.now(tz=timezonetash)) if finishing_time else None
+            text = (request_text + f"\n\n<b> ‼️ Оставщиеся время:</b>  {str(remaining_time).split('.')[0]}") if remaining_time else request_text
             if brigada_id and topic_id:
                 request_notification(message_id=request.tg_message_id, topic_id=topic_id, text=text, db=db,
                                      request_id=id)
 
                 request = it_requests.get_request_id(db=db, id=id)
-                sendtotelegramchat(
-                    chat_id=request.user.telegram_id,
-                    message_text=f"Уважаемый {request.user.full_name}, статус вашей заявки #{request.id}s "
-                                 f"назначен специалист👨‍💻: {request.brigada.name}\n"
-                                 f"Время выполнения: {sla} часов"
-                )
+                if request.brigada:
+                    brigada_name = request.brigada.name
+                else:
+                    brigada_name = None
+                try:
+                    sendtotelegramchat(
+                        chat_id=user_telegram_id,
+                        message_text=f"Уважаемый {user_fullname}, статус вашей заявки #{request.id}s "
+                                     f"назначен специалист👨‍💻: {brigada_name}\n"
+                                     f"Время выполнения: {sla} часов"
+                    )
+                except:
+                    pass
 
-                job_id = f"{request.tg_message_id}_{scheduled_time.strftime('%d.%m.%Y_%H:%M')}"
-                scheduler.add_job(request_notification, 'date', run_date=scheduled_time,
-                                  args=[db, id, request.tg_message_id, topic_id, text], id=job_id)
+                if delta_minutes > 0:
+                    job_id = f"{request.tg_message_id}_{scheduled_time.strftime('%d.%m.%Y_%H:%M')}"
+                    scheduler.add_job(request_notification, 'date', run_date=scheduled_time,
+                                      args=[db, id, request.tg_message_id, topic_id, text], id=job_id)
 
         elif request.status == 3:
             edit_topic_reply_markup(chat_id=settings.IT_SUPERGROUP,
                                     thread_id=topic_id,
                                     message_id=message_id
                                     )
-            url = f"{settings.FRONT_URL}tg/order-rating/{request.id}?user_id={request.user.id}&department={request.category.department}&sub_id={request.category.sub_id}"
+            url = f"{settings.FRONT_URL}tg/order-rating/{request.id}?user_id={user_id}&department={category_department}&sub_id={category_sub_id}"
             try:
                 inlinewebapp(
                     chat_id=request.user.telegram_id,
-                    message_text=f"Уважаемый {request.user.full_name}, статус вашей заявки #{request.id}s по IT: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
+                    message_text=f"Уважаемый {user_fullname}, статус вашей заявки #{request.id}s по IT: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
                     url=url,
                 )
             except Exception as e:
                 print(e)
 
         elif request.status == 4:
-            url = f"{settings.FRONT_URL}tg/order-rating/{request.id}?user_id={request.user.id}&department={request.category.department}&sub_id={request.category.sub_id}"
-            inlinewebapp(
-                chat_id=request.user.telegram_id,
-                message_text=f"""❌Ваша заявка #{request.id}s по IT👨🏻‍💻 отменена по причине: {request.deny_reason}\n\nЕсли Вы с этим не согласны, поставьте, пожалуйста, рейтинг нашему решению по Вашей заявке от 1 до 5, и напишите свои комментарий.""",
-                url=url,
-            )
+            url = f"{settings.FRONT_URL}tg/order-rating/{request.id}?user_id={user_id}&department={category_department}&sub_id={category_sub_id}"
+            try:
+                inlinewebapp(
+                    chat_id=user_telegram_id,
+                    message_text=f"""❌Ваша заявка #{request.id}s по IT👨🏻‍💻 отменена по причине: {request.deny_reason}\n\nЕсли Вы с этим не согласны, поставьте, пожалуйста, рейтинг нашему решению по Вашей заявке от 1 до 5, и напишите свои комментарий.""",
+                    url=url,
+                )
+            except:
+                pass
         elif request.status == 6:
             for job in scheduler.get_jobs():
                 if job.id.startswith(str(message_id)):
                     try:
                         scheduler.remove_job(job_id=job.id)
-                        print(f"Canceled job for message - {job.id}")
                     except JobLookupError:
                         print(f"Message - {job.id} not found or already has sent !")
 
@@ -238,14 +264,20 @@ async def put_request_id(
                      {"text": "Не выполнен/Не принимаю", "callback_data": "user_not_accept"}]
                 ]
             }
-            sendtotelegramchat(chat_id=request.user.telegram_id, message_text=user_message,
-                               inline_keyboard=inline_keyboard)
+            try:
+                sendtotelegramchat(chat_id=user_telegram_id, message_text=user_message,
+                                   inline_keyboard=inline_keyboard)
+            except:
+                pass
 
         elif request.status == 7:
-            sendtotelegramchat(
-                chat_id=request.user.telegram_id,
-                message_text=f"Ваша заявка #{request.id}s возобновлено"
-            )
+            try:
+                sendtotelegramchat(
+                    chat_id=user_telegram_id,
+                    message_text=f"Ваша заявка #{request.id}s возобновлено"
+                )
+            except:
+                pass
             remaining_time = finishing_time - datetime.now(tz=timezonetash)
             text = request_text + f"\n\n<b> ‼️ Оставщиеся время:</b>  {str(remaining_time).split('.')[0]}"
             # request_notification(message_id=request.tg_message_id, topic_id=topic_id, text=text, db=db, request_id=id)
@@ -257,17 +289,21 @@ async def put_request_id(
             }
             edit_topic_message(chat_id=settings.IT_SUPERGROUP, thread_id=topic_id, message_id=message_id,
                                message_text=text, inline_keyboard=inline_keyboard)
-            job_id = f"{message_id}_{scheduled_time.strftime('%d.%m.%Y_%H:%M')}"
-            scheduler.add_job(request_notification, 'date', run_date=scheduled_time,
-                              args=[db, id, request.tg_message_id, topic_id, text], id=job_id)
+            if delta_minutes > 0:
+                job_id = f"{message_id}_{scheduled_time.strftime('%d.%m.%Y_%H:%M')}"
+                scheduler.add_job(request_notification, 'date', run_date=scheduled_time,
+                                  args=[db, id, request.tg_message_id, topic_id, text], id=job_id)
 
         elif data.status == 8:
-            url = f"{settings.FRONT_URL}tg/order-rating/{request.id}?user_id={request.user.id}&department={request.category.department}&sub_id={request.category.sub_id}"
-            inlinewebapp(
-                chat_id=request.user.telegram_id,
-                message_text=f"""❌Ваша заявка #{request.id}s по IT👨🏻‍💻 отменена по причине: {request.deny_reason}\n\nЕсли Вы с этим не согласны, поставьте, пожалуйста, рейтинг нашему решению по Вашей заявке от 1 до 5, и напишите свои комментарий.""",
-                url=url,
-            )
+            url = f"{settings.FRONT_URL}tg/order-rating/{request.id}?user_id={user_id}&department={category_department}&sub_id={category_sub_id}"
+            try:
+                inlinewebapp(
+                    chat_id=user_telegram_id,
+                    message_text=f"""❌Ваша заявка #{request.id}s по IT👨🏻‍💻 отменена по причине: {request.deny_reason}\n\nЕсли Вы с этим не согласны, поставьте, пожалуйста, рейтинг нашему решению по Вашей заявке от 1 до 5, и напишите свои комментарий.""",
+                    url=url,
+                )
+            except:
+                pass
 
     return request
 
@@ -278,36 +314,55 @@ async def create_request(
         db: Session = Depends(get_db),
         request_user: UserFullBack = Depends(get_current_user)
 ):
-    try:
+    # try:
         request = it_requests.add_request(db, data)
         if data.files:
             for file in data.files:
                 files.create_files_report(db, file, request.id)
 
-        logs.create_log(db=db, request_id=id, status=request.status, user_id=request_user.id)
+        logs.create_log(db=db, request_id=request.id, status=request.status, user_id=request_user.id)
 
-        now = datetime.now(tz=timezonetash)
-        sla = request.category.ftime
         formatted_created_time = request.created_at.strftime("%d.%m.%Y %H:%M")
-        formatted_finishing_time = request.finishing_time.strftime("%d.%m.%Y %H:%M")
-        finishing_time = request.finishing_time
-        phone_number = request.phone_number if request.phone_number.startswith('+') else f"+{request.phone_number}"
+
+        phone_number = (request.phone_number if request.phone_number.startswith('+') else f"+{request.phone_number}") if request.phone_number else None
+        user_fullname = request.user.full_name if request.user else None
+
+        if request.finishing_time:
+            finishing_time = request.finishing_time
+            formatted_finishing_time = finishing_time.strftime("%d.%m.%Y %H:%M")
+        else:
+            finishing_time, formatted_finishing_time = None, None
+
+        if request.category:
+            sla = request.category.ftime
+            category_name = request.category.name
+        else:
+            sla, category_name = None, None
+
         request_text = f"📑Заявка № {request.id}\n\n" \
                        f"📍Филиал: {request.fillial.parentfillial.name}\n" \
-                       f"👨‍💼Сотрудник: {request.user.full_name}\n" \
+                       f"👨‍💼Сотрудник: {user_fullname}\n" \
                        f"📱Номер телефона: {phone_number}\n" \
-                       f"🔰Категория проблемы: {request.category.name}\n" \
+                       f"🔰Категория проблемы: {category_name}\n" \
                        f"🕘Дата поступления заявки: {formatted_created_time}\n" \
                        f"🕘Дата дедлайна заявки: {formatted_finishing_time}\n" \
                        f"❗️SLA: {sla} часов\n" \
                        f"💬Комментарии: {request.description}"
 
-        tg_message_id = 0
-
+        inline_keyboard = {
+            "inline_keyboard": [
+                [{"text": "Принять заявку", "callback_data": "accept_request"}]
+            ]
+        }
+        response = sendtotelegramchat(chat_id=settings.IT_SUPERGROUP, message_text=request_text,
+                                      inline_keyboard=inline_keyboard)
+        response_data = response.json()
+        tg_message_id = response_data["result"]["message_id"]
+        request = it_requests.edit_request(db=db, id=request.id, tg_message_id=tg_message_id)
 
         return request
-    except:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="not fund")
+    # except:
+    #     raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="not fund")
 
 
 
