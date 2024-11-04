@@ -27,7 +27,7 @@ class GetOneRequest(BaseModel):
     fillial: Optional[GetFillialChild] = None
     started_at: Optional[datetime] = None
     finished_at: Optional[datetime] = None
-    user: Optional[GetUserFullData] = None
+    user: Optional[UserGetlist] = None
     user_manager: Optional[str] = None
     expanditure: list[GetExpanditure]
     comments: list[GetComments]
