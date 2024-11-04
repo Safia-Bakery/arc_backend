@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional, Dict
 from datetime import datetime
-from .users import GetBrigada, UserGetlist, GetUserFullData
+from .users import GetBrigada, UserGetJustNames
 from .category import GetCategory
 from .fillials import GetFillialChild
 from .files import FileSch
@@ -27,7 +27,7 @@ class GetOneRequest(BaseModel):
     fillial: Optional[GetFillialChild] = None
     started_at: Optional[datetime] = None
     finished_at: Optional[datetime] = None
-    user: Optional[UserGetlist] = None
+    user: Optional[UserGetJustNames] = None
     user_manager: Optional[str] = None
     expanditure: list[GetExpanditure]
     comments: list[GetComments]
