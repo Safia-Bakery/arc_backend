@@ -153,8 +153,8 @@ def edit_request(db: Session,
 
             db.query(Requests).filter(Requests.id == id).update({"update_time": updated_data})
 
-        if data.parentfillial_id is not None:
-            filliald_od = filterbranchchildid(db, data.parentfillial_id)
+        if data.fillial_id is not None:
+            filliald_od = filterbranchchildid(db, data.fillial_id)
             query.fillial_id = filliald_od.id
         if data.brigada_id is not None:
             query.brigada_id = data.brigada_id

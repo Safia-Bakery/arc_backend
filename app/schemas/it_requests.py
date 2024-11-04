@@ -45,7 +45,7 @@ class GetRequest(BaseModel):
 
 class PutRequest(BaseModel):
     category_id: Optional[int] = None
-    parentfillial_id: Optional[UUID] = None
+    fillial_id: Optional[UUID] = None
     finishing_time: Optional[datetime] = None
     brigada_id: Optional[int] = None
     status: Optional[int] = None
@@ -55,7 +55,7 @@ class PutRequest(BaseModel):
 
 
 class CreateRequest(BaseModel):
-    parentfillial_id: UUID
+    fillial_id: UUID
     category_id: Optional[int] = None
     description: Optional[str] = None
     files: Optional[list[UploadFile]] = None
