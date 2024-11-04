@@ -40,6 +40,7 @@ class GetUserFullData(BaseModel):
 class UpdateGroupSch(BaseModel):
     name: str
     id: int
+    status: int
 
     class Config:
         orm_mode = True
