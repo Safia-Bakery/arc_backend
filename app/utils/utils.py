@@ -1,7 +1,16 @@
+import json
+from typing import Optional
+
 import requests
 import string
 import random
 from app.core.config import settings
+from datetime import datetime
+import pytz
+
+from app.crud import it_requests
+
+timezonetash = pytz.timezone("Asia/Tashkent")
 
 
 def send_simple_text_message(bot_token, chat_id, message_text):
@@ -90,18 +99,26 @@ def generate_random_filename(length=30):
     return random_filename
 
 
-def sendtotelegramchannel(chat_id, message_text):
+def sendtotelegramchat(chat_id, message_text, inline_keyboard: Optional[dict] = None):
     # Create the request payload
-    payload = {"chat_id": chat_id, "text": message_text, "parse_mode": "HTML"}
+    payload = {
+        "chat_id": chat_id,
+        "text": message_text,
+        # "reply_markup": json.dumps(inline_keyboard) or None,
+        "parse_mode": "HTML"
+    }
+
+    # Include reply_markup only if keyboard is provided
+    if inline_keyboard:
+        payload['reply_markup'] = json.dumps(inline_keyboard)
 
     # Send the request to send the inline keyboard message
     response = requests.post(
-        f"https://api.telegram.org/bot{settings.bottoken}/sendMessage",
-        json=payload,
+        url=f"https://api.telegram.org/bot{settings.bottoken}/sendMessage",
+        json=payload
     )
     # Check the response status
     if response.status_code == 200:
-
         return response
     else:
         return False
@@ -109,7 +126,12 @@ def sendtotelegramchannel(chat_id, message_text):
 
 def sendtotelegramtopic(chat_id, message_text, thread_id):
     # Create the request payload
-    payload = {"chat_id": chat_id, "message_thread_id": thread_id, "text": message_text, "parse_mode": "HTML"}
+    payload = {
+        "chat_id": chat_id,
+        "message_thread_id": thread_id,
+        "text": message_text,
+        "parse_mode": "HTML"
+    }
 
     # Send the request to send the inline keyboard message
     response = requests.post(
@@ -123,14 +145,19 @@ def sendtotelegramtopic(chat_id, message_text, thread_id):
         return False
 
 
-def edit_topic_message(chat_id, thread_id, message_text, message_id):
+def edit_topic_message(chat_id, thread_id, message_id,
+                       message_text,
+                       inline_keyboard: Optional[dict] = None
+                       ):
     # Create the request payload
     payload = {
         "chat_id": chat_id,
         "message_thread_id": thread_id,
         "message_id": message_id,
         "text": message_text,
-        "parse_mode": "MarkdownV2"
+        "reply_markup": json.dumps(inline_keyboard),
+        "parse_mode": "HTML"
+
     }
 
     # Send the request to send the inline keyboard message
@@ -145,9 +172,38 @@ def edit_topic_message(chat_id, thread_id, message_text, message_id):
         return False
 
 
+def edit_topic_reply_markup(chat_id, thread_id, message_id,
+                            inline_keyboard: Optional[dict] = None
+                            ):
+    # Create the request payload
+    payload = {
+        "chat_id": chat_id,
+        "message_thread_id": thread_id,
+        "message_id": message_id,
+        "reply_markup": json.dumps(inline_keyboard),
+        "parse_mode": "HTML"
+
+    }
+
+    # Send the request to send the inline keyboard message
+    response = requests.post(
+        f"https://api.telegram.org/bot{settings.bottoken}/editMessageReplyMarkup",
+        json=payload,
+    )
+    # Check the response status
+    if response.status_code == 200:
+        return response
+    else:
+        return False
+
+
 def delete_from_chat(chat_id, message_id):
     # Create the request payload
-    payload = {"chat_id": chat_id, "message_id": message_id, "parse_mode": "HTML"}
+    payload = {
+        "chat_id": chat_id,
+        "message_id": message_id,
+        "parse_mode": "HTML"
+    }
 
     # Send the request to send the inline keyboard message
     response = requests.post(
@@ -205,10 +261,47 @@ def confirmation_request(chat_id, message_text):
     }
 
     # Send the request to send the inline keyboard message
-    response = requests.post(f"https://api.telegram.org/bot{settings.bottoken}/sendMessage", json=payload,)
+    response = requests.post(f"https://api.telegram.org/bot{settings.bottoken}/sendMessage", json=payload, )
 
     # Check the response status
     if response.status_code == 200:
         return response
     else:
         return False
+
+
+def request_notification(db, request_id, message_id, topic_id, text):
+    base_url = f'https://api.telegram.org/bot{settings.bottoken}'
+    delete_url = f"{base_url}/deleteMessage"
+    delete_payload = {
+        'chat_id': settings.IT_SUPERGROUP,
+        'message_thread_id': topic_id,
+        'message_id': message_id
+    }
+    # Send a POST request to the Telegram API to delete the message
+    requests.post(delete_url, data=delete_payload).json()
+
+    inline_keyboard = {
+        "inline_keyboard": [
+            [{"text": "Завершить заявку", "callback_data": "complete_request"},
+             {"text": "Отправить сообщение заказчику", "callback_data": "send_message_to_user"}]
+        ]
+    }
+    # remaining_time = finishing_time - datetime.now(tz=timezonetash)
+    # text = f"{text}\n\n" \
+    #        f"<b> ‼️ Оставщиеся время:</b>  {str(remaining_time).split('.')[0]}"
+
+    send_url = f"{base_url}/sendMessage"
+    send_payload = {
+        'chat_id': settings.IT_SUPERGROUP,
+        'message_id': message_id,
+        'message_thread_id': topic_id,  # Include the thread ID for the specific topic
+        'text': text,
+        'reply_markup': json.dumps(inline_keyboard),
+        'parse_mode': 'HTML'
+    }
+    response = requests.post(send_url, json=send_payload)
+    response_data = response.json()
+    new_message_id = response_data["result"]["message_id"]
+
+    it_requests.edit_request(db=db, id=request_id, tg_message_id=new_message_id)

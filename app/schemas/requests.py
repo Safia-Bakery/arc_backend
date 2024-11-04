@@ -26,7 +26,7 @@ class GetOneRequest(BaseModel):
     fillial: Optional[GetFillialChild] = None
     started_at: Optional[datetime] = None
     finished_at: Optional[datetime] = None
-    user: Optional[UserGetlist] = None
+    user: Optional[GetUserFullData] = None
     user_manager: Optional[str] = None
     expanditure: list[GetExpanditure]
     comments: list[GetComments]
@@ -44,6 +44,7 @@ class GetOneRequest(BaseModel):
     communication: Optional[list[MessageRequest]] = None
     price: Optional[float] = None
     phone_number: Optional[str] = None
+    tg_message_id: Optional[int] = None
 
     class Config:
         orm_mode = True

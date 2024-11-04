@@ -41,16 +41,11 @@ class GetRequest(BaseModel):
 
 
 class PutRequest(BaseModel):
-    id: int
-    user: Optional[GetUserFullData] = None
-    fillial: Optional[GetFillialChild] = None
-    brigada: Optional[GetBrigada] = None
-    status: Optional[int] = None
-    category: Optional[GetCategory] = None
+    category_id: Optional[int] = None
+    parentfillial_id: Optional[int] = None
     finishing_time: Optional[datetime] = None
-    deny_reason: Optional[str] = None
-    update_time: Optional[dict] = None
-    tg_message_id: Optional[int] = None
+    brigada_id: Optional[int] = None
+    status: Optional[int] = None
 
     class Config:
         orm_mode = True

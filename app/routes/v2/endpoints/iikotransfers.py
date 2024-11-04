@@ -18,7 +18,7 @@ from app.utils.iiko_tranfers import (
     send_arc_document_iiko, authiiko,
 
 )
-from app.utils.utils import rating_request_telegram, edit_topic_message
+from app.utils.utils import rating_request_telegram, edit_topic_message, edit_topic_reply_markup
 
 iiko_transfer_router = APIRouter()
 timezone_tash = pytz.timezone('Asia/Tashkent')
@@ -33,12 +33,6 @@ def self_closing_requests(db: Session):
 
         # Update the status of the request
         updated_request = iiko_transfers.update_status_request(db=db, id=request.id, status=3)
-        edit_topic_message(chat_id=settings.IT_SUPERGROUP,
-                           thread_id=request.brigada.topic_id,
-                           message_text=f"~{request.brigada.name} вам назначена заявка, #{request.id}s {request.fillial.parentfillial.name}\n~"
-                                        f"Завершен в течении: {datetime.strptime(updated_request.update_time['3'], '%Y-%m-%d %H:%M:%S') - datetime.strptime(updated_request.update_time['0'], '%Y-%m-%d %H:%M:%S')}",
-                           message_id=request.tg_message_id
-                           )
 
         # Check the department and construct the message accordingly
         if request.category.department == 2:
@@ -56,6 +50,14 @@ def self_closing_requests(db: Session):
             for i in request.expanditure:
                 send_arc_document_iiko(key=authiiko(), data=i)
                 expanditure_crud.update_status(db=db, expanditure_id=i.id)
+
+        elif request.category.department == 4:
+            message_text = f"Уважаемый {request.user.full_name}, статус вашей заявки #{request.id}s по IT: Завершен.\n\n" \
+                           f"Пожалуйста нажмите на кнопку Оставить отзыв🌟 и оцените заявку"
+            edit_topic_reply_markup(chat_id=settings.IT_SUPERGROUP,
+                                    thread_id=request.brigada.topic_id,
+                                    message_id=request.tg_message_id
+                                    )
 
         else:
             message_text = f"Уважаемый {request.user.full_name}, статус вашей заявки #{request.id}s по IT: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟 и оцените заявку"
@@ -75,7 +77,6 @@ def it_query_checker():
     scheduler.start()
 
 
-
 @iiko_transfer_router.post("/iiko_transfer")
 async def iiko_transfer(
         form_data: IikoTransfer,
@@ -85,19 +86,14 @@ async def iiko_transfer(
     key = authiiko()
 
     request = iiko_transfers.get_request_by_id(db=db, request_id=form_data.request_id)
-    if request.category.department==2:
+    if request.category.department == 2:
         for i in request.expanditure:
-            send_inventory_document_iiko(key=key,data=i)
-            expanditure_crud.update_status(db=db,expanditure_id=i.id)
-    if request.category.department==1 and request.category.sphere_status:
+            send_inventory_document_iiko(key=key, data=i)
+            expanditure_crud.update_status(db=db, expanditure_id=i.id)
+    if request.category.department == 1 and request.category.sphere_status:
 
         for i in request.expanditure:
-            send_arc_document_iiko(key=key,data=i)
-            expanditure_crud.update_status(db=db,expanditure_id=i.id)
+            send_arc_document_iiko(key=key, data=i)
+            expanditure_crud.update_status(db=db, expanditure_id=i.id)
 
     return request
-
-
-
-
-

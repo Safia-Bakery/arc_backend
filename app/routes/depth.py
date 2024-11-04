@@ -76,6 +76,7 @@ async def get_current_user(
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
     user: Union[dict[str, Any], None] = get_user_by_username(db=db, username=sub)
 
     if user is None:
