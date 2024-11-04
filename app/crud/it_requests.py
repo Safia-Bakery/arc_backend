@@ -32,12 +32,8 @@ def filter_request_brigada(
         started_at,
         finished_at
 ):
-    query = db.query(Requests).filter(Category.department == 4)
-    query.options(
-        joinedload(Requests.request_orpr)
-        .joinedload(OrderProducts.orpr_product)
-        .joinedload(Products.prod_cat)
-    )
+    query = db.query(Requests).join(Category).filter(Category.department == 4)
+
 
     if id is not None:
         query = query.filter(Requests.id == id)
@@ -84,13 +80,7 @@ def filter_requests_all(
         finished_at
 ):
     # categories = db.query(Category).with_entities(Category.id).filter(Category.department == 4).all()
-    query = db.query(Requests).filter(Category.department == 4)
-
-    query.options(
-        joinedload(Requests.request_orpr)
-        .joinedload(OrderProducts.orpr_product)
-        .joinedload(Products.prod_cat)
-    )
+    query = db.query(Requests).join(Category).filter(Category.department == 4)
 
     if id is not None:
         query = query.filter(Requests.id == id)
