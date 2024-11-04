@@ -28,4 +28,6 @@ from app.models.hrquestions import HrQuestions
 from app.models.arcexpensetype import ArcExpenseType
 from app.models.arcexpense import ArcExpense
 from app.models.calendars import Calendars
+from app.models.logs import Logs
+
 
