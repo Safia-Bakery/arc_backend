@@ -49,6 +49,8 @@ class PutRequest(BaseModel):
     finishing_time: Optional[datetime] = None
     brigada_id: Optional[int] = None
     status: Optional[int] = None
+    deny_reason: Optional[str] = None
+
 
     class Config:
         orm_mode = True
@@ -58,7 +60,7 @@ class CreateRequest(BaseModel):
     fillial_id: UUID
     category_id: Optional[int] = None
     description: Optional[str] = None
-    files: Optional[list[UploadFile]] = None
+    files: Optional[list[str]] = None
 
     class Config:
         orm_mode = True

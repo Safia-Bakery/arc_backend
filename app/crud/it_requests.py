@@ -187,23 +187,6 @@ def add_request(
     db.commit()
     db.refresh(query)
 
-    file_obj_list = []
-    if data.files:
-        for file in data.files:
-            file_path = f"files/{file.filename}"
-            with open(file_path, "wb") as buffer:
-                while True:
-                    chunk = await file.read(1024)
-                    if not chunk:
-                        break
-                    buffer.write(chunk)
-            file_obj_list.append(
-                Files(
-                    request_id=query.id,
-                    url=file_path
-                )
-            )
-
     db.bulk_save_objects(file_obj_list)
     db.commit()
 

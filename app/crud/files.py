@@ -21,3 +21,13 @@ def create_file_tasks(db:Session,url:str,kru_finished_task_id:int):
     db.refresh(query)
     return query
 
+
+def create_files_report(db:Session, url: str, request_id: Optional[int]):
+    query = Files(url=url,request_id=request_id)
+    db.add(query)
+    db.commit()
+    return query
+
+
+
+

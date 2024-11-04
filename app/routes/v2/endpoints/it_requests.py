@@ -11,7 +11,7 @@ from apscheduler.jobstores.base import JobLookupError
 from fastapi_pagination import paginate, Page
 from sqlalchemy.orm import Session
 from app.core.config import settings
-from app.crud import it_requests, users, communication, logs
+from app.crud import it_requests, users, communication, logs, files
 from app.models.category import Category
 from app.routes.depth import get_db, get_current_user
 from app.schemas.it_extra import *
@@ -280,6 +280,9 @@ async def create_request(
 ):
     try:
         request = it_requests.add_request(db, data)
+        if data.files:
+            for file in data.files:
+                files.create_files_report(db, file, request.id)
 
         logs.create_log(db=db, request_id=id, status=request.status, user_id=request_user.id)
 
