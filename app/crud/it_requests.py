@@ -179,9 +179,9 @@ def add_request(
     fillial_id = filterbranchchildid(db, data.fillial_id).id
     now = datetime.datetime.now(tz=timezonetash)
     update_time = {"0": str(now)}
-    category_obj = db.query(Category).filter(Category.id == data.category_id).first()
-    sla = category_obj.ftime
-    if sla:
+    if data.category_id:
+        category_obj = db.query(Category).filter(Category.id == data.category_id).first()
+        sla = category_obj.ftime
         finishing_time = now + datetime.timedelta(hours=sla)
     else:
         finishing_time = None
