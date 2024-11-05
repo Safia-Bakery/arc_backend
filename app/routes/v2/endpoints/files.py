@@ -11,7 +11,7 @@ file_router = APIRouter()
 
 @file_router.post("/file/upload",)
 async def read_files(
-    file: List[UploadFile] = File(...),
+    file: list[UploadFile] = File(...),
     db: Session = Depends(get_db),
     current_user: GetUserFullData = Depends(get_current_user),
 ):
