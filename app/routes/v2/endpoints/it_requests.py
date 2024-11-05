@@ -125,8 +125,8 @@ async def put_request_id(
 ):
     request = it_requests.edit_request(db=db, data=data, id=id, user=request_user)
     message_id = request.tg_message_id
-    topic_id = request.brigada.topic_id
     brigada_id = request.brigada_id
+    topic_id = request.brigada.topic_id if request.brigada_id else None
 
     if request.status is not None:
         logs.create_log(db=db, request_id=id, status=request.status, user_id=request_user.id)
@@ -219,7 +219,7 @@ async def put_request_id(
             url = f"{settings.FRONT_URL}tg/order-rating/{request.id}?user_id={user_id}&department={category_department}&sub_id={category_sub_id}"
             try:
                 inlinewebapp(
-                    chat_id=request.user.telegram_id,
+                    chat_id=user_telegram_id,
                     message_text=f"Уважаемый {user_fullname}, статус вашей заявки #{request.id}s по IT: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟и  оцените заявк",
                     url=url,
                 )
@@ -236,6 +236,10 @@ async def put_request_id(
                 )
             except:
                 pass
+            text = request_text + "\n\n<b>Заявка отменена 🚫</b>"
+            edit_topic_message(chat_id=settings.IT_SUPERGROUP, thread_id=topic_id, message_text=text,
+                               message_id=message_id)
+
         elif request.status == 6:
             for job in scheduler.get_jobs():
                 if job.id.startswith(str(message_id)):
@@ -304,6 +308,9 @@ async def put_request_id(
                 )
             except:
                 pass
+            text = request_text + "\n\n<b>Заявка отменена 🚫</b>"
+            edit_topic_message(chat_id=settings.IT_SUPERGROUP, thread_id=topic_id, message_text=text,
+                               message_id=message_id)
 
     return request
 
@@ -314,55 +321,55 @@ async def create_request(
         db: Session = Depends(get_db),
         request_user: UserFullBack = Depends(get_current_user)
 ):
-    # try:
-        request = it_requests.add_request(db, data)
-        if data.files:
-            for file in data.files:
-                files.create_files_report(db, file, request.id)
+    request = it_requests.add_request(db, request_user, data)
+    if data.files:
+        for file in data.files:
+            files.create_files_report(db, file, request.id)
 
-        logs.create_log(db=db, request_id=request.id, status=request.status, user_id=request_user.id)
+    logs.create_log(db=db, request_id=request.id, status=request.status, user_id=request_user.id)
 
-        formatted_created_time = request.created_at.strftime("%d.%m.%Y %H:%M")
+    formatted_created_time = request.created_at.strftime("%d.%m.%Y %H:%M")
 
-        phone_number = (request.phone_number if request.phone_number.startswith('+') else f"+{request.phone_number}") if request.phone_number else None
-        user_fullname = request.user.full_name if request.user else None
+    phone_number = (request.phone_number if request.phone_number.startswith('+') else f"+{request.phone_number}") if request.phone_number else None
+    user_fullname = request.user.full_name if request.user else None
 
-        if request.finishing_time:
-            finishing_time = request.finishing_time
-            formatted_finishing_time = finishing_time.strftime("%d.%m.%Y %H:%M")
-        else:
-            finishing_time, formatted_finishing_time = None, None
+    if request.finishing_time:
+        finishing_time = request.finishing_time
+        formatted_finishing_time = finishing_time.strftime("%d.%m.%Y %H:%M")
+    else:
+        finishing_time, formatted_finishing_time = None, None
 
-        if request.category:
-            sla = request.category.ftime
-            category_name = request.category.name
-        else:
-            sla, category_name = None, None
+    if request.category:
+        sla = request.category.ftime
+        category_name = request.category.name
+    else:
+        sla, category_name = None, None
 
-        request_text = f"📑Заявка № {request.id}\n\n" \
-                       f"📍Филиал: {request.fillial.parentfillial.name}\n" \
-                       f"👨‍💼Сотрудник: {user_fullname}\n" \
-                       f"📱Номер телефона: {phone_number}\n" \
-                       f"🔰Категория проблемы: {category_name}\n" \
-                       f"🕘Дата поступления заявки: {formatted_created_time}\n" \
-                       f"🕘Дата дедлайна заявки: {formatted_finishing_time}\n" \
-                       f"❗️SLA: {sla} часов\n" \
-                       f"💬Комментарии: {request.description}"
+    request_text = f"📑Заявка № {request.id}\n\n" \
+                   f"📍Филиал: {request.fillial.parentfillial.name}\n" \
+                   f"👨‍💼Сотрудник: {user_fullname}\n" \
+                   f"📱Номер телефона: {phone_number}\n" \
+                   f"🔰Категория проблемы: {category_name}\n" \
+                   f"🕘Дата поступления заявки: {formatted_created_time}\n" \
+                   f"🕘Дата дедлайна заявки: {formatted_finishing_time}\n" \
+                   f"❗️SLA: {sla} часов\n" \
+                   f"💬Комментарии: {request.description}"
 
-        inline_keyboard = {
-            "inline_keyboard": [
-                [{"text": "Принять заявку", "callback_data": "accept_request"}]
-            ]
-        }
+    inline_keyboard = {
+        "inline_keyboard": [
+            [{"text": "Принять заявку", "callback_data": "accept_request"}]
+        ]
+    }
+    try:
         response = sendtotelegramchat(chat_id=settings.IT_SUPERGROUP, message_text=request_text,
                                       inline_keyboard=inline_keyboard)
         response_data = response.json()
         tg_message_id = response_data["result"]["message_id"]
-        request = it_requests.edit_request(db=db, id=request.id, tg_message_id=tg_message_id)
+    except:
+        tg_message_id = None
+    request = it_requests.edit_request(db=db, id=request.id, tg_message_id=tg_message_id)
 
-        return request
-    # except:
-    #     raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="not fund")
+    return request
 
 
 

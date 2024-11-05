@@ -6,9 +6,9 @@ from .tools import GetTool
 
 
 class GetBalances(BaseModel):
-    department_id: Optional[GetParentFill] = None
     store_id: GetFillialChild
     tool_id: GetTool
+    department_id: Optional[GetParentFill] = None
     amount: Optional[float] = None
     sum: Optional[float] = None
     price: Optional[float] = None

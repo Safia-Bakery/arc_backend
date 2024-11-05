@@ -13,7 +13,6 @@ from app.models.files import Files
 from app.schemas.it_requests import PutRequest, CreateRequest
 
 
-
 timezonetash = pytz.timezone("Asia/Tashkent")
 
 
@@ -158,6 +157,10 @@ def edit_request(db: Session,
             query.fillial_id = filliald_od.id
         if data.brigada_id is not None:
             query.brigada_id = data.brigada_id
+        if data.deny_reason is not None:
+            query.deny_reason = data.deny_reason
+        if data.pause_reason is not None:
+            query.pause_reason = data.pause_reason
 
     if tg_message_id is not None:
         query.tg_message_id = tg_message_id
@@ -169,6 +172,7 @@ def edit_request(db: Session,
 
 def add_request(
         db: Session,
+        user,
         data: Optional[CreateRequest] = None,
         tg_message_id: Optional[int] = None
 ):
@@ -187,6 +191,7 @@ def add_request(
         description=data.description,
         update_time=update_time,
         finishing_time=finishing_time,
+        user_id=user.id,
         tg_message_id=tg_message_id
     )
     db.add(query)

@@ -145,26 +145,34 @@ def sendtotelegramtopic(chat_id, message_text, thread_id):
         return False
 
 
-def edit_topic_message(chat_id, thread_id, message_id,
+def edit_topic_message(chat_id,
+                       thread_id,
+                       message_id,
                        message_text,
                        inline_keyboard: Optional[dict] = None
                        ):
     # Create the request payload
     payload = {
         "chat_id": chat_id,
-        "message_thread_id": thread_id,
+        # "message_thread_id": thread_id,
         "message_id": message_id,
         "text": message_text,
-        "reply_markup": json.dumps(inline_keyboard),
+        # "reply_markup": json.dumps(inline_keyboard),
         "parse_mode": "HTML"
 
     }
+
+    if thread_id:
+        payload["message_thread_id"] = thread_id
+    if inline_keyboard:
+        payload["reply_markup"] = json.dumps(inline_keyboard)
 
     # Send the request to send the inline keyboard message
     response = requests.post(
         f"https://api.telegram.org/bot{settings.bottoken}/editMessageText",
         json=payload,
     )
+    print(response.json())
     # Check the response status
     if response.status_code == 200:
         return response
