@@ -84,8 +84,8 @@ def rating_request_telegram(bot_token, chat_id, message_text, url):
 
 
 def generate_random_string(length=10):
-    characters = string.ascii_letters + string.digits
-    random_string = ''.join(random.choice(characters) for _ in range(length))
+    date_time = datetime.now(timezonetash)
+    random_string = date_time.strftime("%Y-%m-%d%H:%M:sd%S")
     return random_string
 
 
