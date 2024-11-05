@@ -59,7 +59,7 @@ class PutRequest(BaseModel):
 
 class CreateRequest(BaseModel):
     fillial_id: UUID
-    category_id: Optional[int] = None
+    category_id: int
     description: Optional[str] = None
     files: Optional[list[str]] = None
 
