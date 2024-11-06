@@ -72,7 +72,6 @@ def update_product_balance(db: Session, obj, amount, sum, price):
     obj.price = price
 
     db.commit()
-    db.refresh(obj)
     return obj
 
 
@@ -111,6 +110,6 @@ def create_update_tool_balance(db: Session, data_list, department):
         if store_product:
             update_product_balance(db, store_product, amount, sum, price)
         else:
-            if store_id and tool_id:
+            if store_id is not None and tool_id:
                 create_product_balance(db, department, store_id, tool_id, amount, sum, price, product_balance['productId'])
 

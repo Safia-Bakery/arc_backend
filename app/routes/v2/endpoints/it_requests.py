@@ -188,7 +188,7 @@ async def put_request_id(
             remaining_time = (finishing_time - datetime.now(tz=timezonetash)) if finishing_time else None
             text = (request_text + f"\n\n<b> ‼️ Оставщиеся время:</b>  {str(remaining_time).split('.')[0]}") if remaining_time else request_text
             if brigada_id:
-                delete_from_chat(message_id=request.tg_message_id)
+                delete_from_chat(message_id=request.tg_message_id, topic_id=topic_id)
                 send_notification(message_id=request.tg_message_id, topic_id=topic_id, text=text, db=db,
                                   request_id=id)
 
