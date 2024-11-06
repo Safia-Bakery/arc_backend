@@ -16,10 +16,9 @@ from app.db.base import Base
 
 class ToolBalance(Base):
     __tablename__ = "tool_balance"
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    department_id = Column(UUID(as_uuid=True), ForeignKey("parentfillials.id"), nullable=True)
-    store_id = Column(UUID(as_uuid=True), ForeignKey("fillials.id"))
-    tool_id = Column(Integer, ForeignKey("tools.id"))
+    department_id = Column(UUID(as_uuid=True), ForeignKey("parentfillials.id"), primary_key=True)
+    store_id = Column(UUID(as_uuid=True), ForeignKey("fillials.id"), primary_key=True)
+    tool_id = Column(Integer, ForeignKey("tools.id"), primary_key=True)
     amount = Column(DECIMAL, nullable=True)
     sum = Column(DECIMAL, nullable=True)
     price = Column(DECIMAL, nullable=True)

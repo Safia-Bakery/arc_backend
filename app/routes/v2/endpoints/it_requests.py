@@ -19,7 +19,7 @@ from app.schemas.it_requests import GetRequest, PutRequest, MessageRequestCreate
 from app.schemas.requests import GetOneRequest
 from app.schemas.users import UserFullBack
 from app.utils.utils import sendtotelegramchat, sendtotelegramtopic, delete_from_chat, edit_topic_message, \
-    inlinewebapp, confirmation_request, generate_random_filename, request_notification, edit_topic_reply_markup
+    inlinewebapp, confirmation_request, generate_random_filename, send_notification, edit_topic_reply_markup
 
 
 it_requests_router = APIRouter()
@@ -167,7 +167,7 @@ async def put_request_id(
         elif sla == 1.5:
             delta_minutes = 60
         elif sla == 2:
-            delta_minutes = 2
+            delta_minutes = 90
         elif sla == 8:
             delta_minutes = 360
         elif sla == 24:
@@ -187,9 +187,10 @@ async def put_request_id(
         if request.status == 1:
             remaining_time = (finishing_time - datetime.now(tz=timezonetash)) if finishing_time else None
             text = (request_text + f"\n\n<b> ‼️ Оставщиеся время:</b>  {str(remaining_time).split('.')[0]}") if remaining_time else request_text
-            if brigada_id and topic_id:
-                request_notification(message_id=request.tg_message_id, topic_id=topic_id, text=text, db=db,
-                                     request_id=id)
+            if brigada_id:
+                delete_from_chat(message_id=request.tg_message_id)
+                send_notification(message_id=request.tg_message_id, topic_id=topic_id, text=text, db=db,
+                                  request_id=id)
 
                 request = it_requests.get_request_id(db=db, id=id)
                 if request.brigada:
@@ -207,9 +208,12 @@ async def put_request_id(
                     pass
 
                 if delta_minutes > 0:
-                    job_id = f"{request.tg_message_id}_{scheduled_time.strftime('%d.%m.%Y_%H:%M')}"
-                    scheduler.add_job(request_notification, 'date', run_date=scheduled_time,
-                                      args=[db, id, request.tg_message_id, topic_id, text], id=job_id)
+                    delete_job_id = f"delete_{request.tg_message_id}_{scheduled_time.strftime('%d.%m.%Y_%H:%M')}"
+                    scheduler.add_job(delete_from_chat, 'date', run_date=scheduled_time,
+                                      args=[db, id, request.tg_message_id, topic_id, text], id=delete_job_id)
+                    send_job_id = f"send_{request.tg_message_id}_{scheduled_time.strftime('%d.%m.%Y_%H:%M')}"
+                    scheduler.add_job(send_notification, 'date', run_date=scheduled_time,
+                                      args=[db, id, request.tg_message_id, topic_id, text], id=send_job_id)
 
         elif request.status == 3:
             edit_topic_reply_markup(chat_id=settings.IT_SUPERGROUP,
@@ -294,9 +298,12 @@ async def put_request_id(
             edit_topic_message(chat_id=settings.IT_SUPERGROUP, thread_id=topic_id, message_id=message_id,
                                message_text=text, inline_keyboard=inline_keyboard)
             if delta_minutes > 0:
-                job_id = f"{message_id}_{scheduled_time.strftime('%d.%m.%Y_%H:%M')}"
-                scheduler.add_job(request_notification, 'date', run_date=scheduled_time,
-                                  args=[db, id, request.tg_message_id, topic_id, text], id=job_id)
+                delete_job_id = f"delete_{request.tg_message_id}_{scheduled_time.strftime('%d.%m.%Y_%H:%M')}"
+                scheduler.add_job(delete_from_chat, 'date', run_date=scheduled_time,
+                                  args=[db, id, request.tg_message_id, topic_id, text], id=delete_job_id)
+                send_job_id = f"send_{request.tg_message_id}_{scheduled_time.strftime('%d.%m.%Y_%H:%M')}"
+                scheduler.add_job(send_notification, 'date', run_date=scheduled_time,
+                                  args=[db, id, request.tg_message_id, topic_id, text], id=send_job_id)
 
         elif data.status == 8:
             url = f"{settings.FRONT_URL}tg/order-rating/{request.id}?user_id={user_id}&department={category_department}&sub_id={category_sub_id}"

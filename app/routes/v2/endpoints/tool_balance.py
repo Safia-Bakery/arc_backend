@@ -27,7 +27,7 @@ async def store_balance(
         request_user: UserFullBack = Depends(get_current_user),
 ):
 
-    request_list = tool_balance.get_department_product_balances(
+    request_list = tool_balance.get_department_store_product_balances(
         db,
         department_id=department_id,
         store_id=store_id,

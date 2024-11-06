@@ -208,26 +208,6 @@ def edit_topic_reply_markup(chat_id, thread_id, message_id,
         return False
 
 
-def delete_from_chat(chat_id, message_id):
-    # Create the request payload
-    payload = {
-        "chat_id": chat_id,
-        "message_id": message_id,
-        "parse_mode": "HTML"
-    }
-
-    # Send the request to send the inline keyboard message
-    response = requests.post(
-        f"https://api.telegram.org/bot{settings.bottoken}/deleteMessage",
-        json=payload,
-    )
-    # Check the response status
-    if response.status_code == 200:
-        return response
-    else:
-        return False
-
-
 def inlinewebapp(chat_id, message_text, url):
     keyboard = {
         "inline_keyboard": [
@@ -281,16 +261,27 @@ def confirmation_request(chat_id, message_text):
         return False
 
 
-def request_notification(db, request_id, message_id, topic_id, text):
+def delete_from_chat(message_id, topic_id: Optional[int] = None):
     base_url = f'https://api.telegram.org/bot{settings.bottoken}'
     delete_url = f"{base_url}/deleteMessage"
     delete_payload = {
         'chat_id': settings.IT_SUPERGROUP,
-        'message_thread_id': topic_id,
         'message_id': message_id
     }
+    if topic_id:
+        delete_payload["message_thread_id"] = topic_id
+
     # Send a POST request to the Telegram API to delete the message
-    requests.post(delete_url, data=delete_payload).json()
+    response = requests.post(delete_url, data=delete_payload).json()
+    # Check the response status
+    if response.status_code == 200:
+        return response
+    else:
+        return False
+
+
+def send_notification(db, request_id, message_id, topic_id, text):
+    base_url = f'https://api.telegram.org/bot{settings.bottoken}'
 
     inline_keyboard = {
         "inline_keyboard": [
@@ -309,7 +300,10 @@ def request_notification(db, request_id, message_id, topic_id, text):
         'parse_mode': 'HTML'
     }
     response = requests.post(send_url, json=send_payload)
-    response_data = response.json()
-    new_message_id = response_data["result"]["message_id"]
+    if response.status_code == 200:
+        response_data = response.json()
+        new_message_id = response_data["result"]["message_id"]
+        it_requests.edit_request(db=db, id=request_id, tg_message_id=new_message_id)
+    else:
+        return False
 
-    it_requests.edit_request(db=db, id=request_id, tg_message_id=new_message_id)
