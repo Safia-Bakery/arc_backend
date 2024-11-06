@@ -272,10 +272,11 @@ def delete_from_chat(message_id, topic_id: Optional[int] = None):
         delete_payload["message_thread_id"] = topic_id
 
     # Send a POST request to the Telegram API to delete the message
-    response = requests.post(delete_url, data=delete_payload).json()
+    response = requests.post(delete_url, data=delete_payload)
+    response_data = response.json()
     # Check the response status
     if response.status_code == 200:
-        return response
+        return response_data
     else:
         return False
 

@@ -210,7 +210,7 @@ async def put_request_id(
                 if delta_minutes > 0:
                     delete_job_id = f"delete_{request.tg_message_id}_{scheduled_time.strftime('%d.%m.%Y_%H:%M')}"
                     scheduler.add_job(delete_from_chat, 'date', run_date=scheduled_time,
-                                      args=[db, id, request.tg_message_id, topic_id, text], id=delete_job_id)
+                                      args=[request.tg_message_id, topic_id], id=delete_job_id)
                     send_job_id = f"send_{request.tg_message_id}_{scheduled_time.strftime('%d.%m.%Y_%H:%M')}"
                     scheduler.add_job(send_notification, 'date', run_date=scheduled_time,
                                       args=[db, id, request.tg_message_id, topic_id, text], id=send_job_id)
@@ -300,7 +300,7 @@ async def put_request_id(
             if delta_minutes > 0:
                 delete_job_id = f"delete_{request.tg_message_id}_{scheduled_time.strftime('%d.%m.%Y_%H:%M')}"
                 scheduler.add_job(delete_from_chat, 'date', run_date=scheduled_time,
-                                  args=[db, id, request.tg_message_id, topic_id, text], id=delete_job_id)
+                                  args=[request.tg_message_id, topic_id], id=delete_job_id)
                 send_job_id = f"send_{request.tg_message_id}_{scheduled_time.strftime('%d.%m.%Y_%H:%M')}"
                 scheduler.add_job(send_notification, 'date', run_date=scheduled_time,
                                   args=[db, id, request.tg_message_id, topic_id, text], id=send_job_id)
