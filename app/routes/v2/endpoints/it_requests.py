@@ -246,11 +246,16 @@ async def put_request_id(
 
         elif request.status == 6:
             for job in scheduler.get_jobs():
-                if job.id.startswith(str(message_id)):
+                if job.id.startswith(f"delete_{str(message_id)}"):
                     try:
                         scheduler.remove_job(job_id=job.id)
                     except JobLookupError:
-                        print(f"Message - {job.id} not found or already has sent !")
+                        print(f"{job.id} not found or already has completed !")
+                if job.id.startswith(f"send_{str(message_id)}"):
+                    try:
+                        scheduler.remove_job(job_id=job.id)
+                    except JobLookupError:
+                        print(f"{job.id} not found or already has completed !")
 
             started_at = request.started_at
             finished_at = request.finished_at
