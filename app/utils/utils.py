@@ -172,7 +172,6 @@ def edit_topic_message(chat_id,
         f"https://api.telegram.org/bot{settings.bottoken}/editMessageText",
         json=payload,
     )
-    print(response.json())
     # Check the response status
     if response.status_code == 200:
         return response
