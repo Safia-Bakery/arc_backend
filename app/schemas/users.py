@@ -85,3 +85,15 @@ class GetBrigada(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class UpdateBrigada(BaseModel):
+    id: int
+    name: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[int] = None
+    users: Optional[list[int]] = None
+    sphere_status: Optional[int] = None
+    department: Optional[int] = None
+    is_outsource: Optional[bool] = None
+    topic_id: Optional[int] = None

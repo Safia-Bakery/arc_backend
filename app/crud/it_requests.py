@@ -128,24 +128,20 @@ def filterbranchchildid(db: Session, parent_id, origin: Optional[int] = None):
 
 def edit_request(db: Session,
                  id: int,
-                 user: Optional[object] = None,
                  data: Optional[PutRequest] = None,
                  tg_message_id: Optional[int] = None
                  ):
     query = db.query(Requests).filter(Requests.id == id).first()
     now = datetime.datetime.now(tz=timezonetash)
     if data is not None:
-        if not user.brigada_id:
-            if data.finishing_time is not None:
-                query.finishing_time = data.finishing_time
-            if data.category_id is not None:
-                query.category_id = data.category_id
-
+        if data.finishing_time is not None:
+            query.finishing_time = data.finishing_time
+        if data.category_id is not None:
+            query.category_id = data.category_id
         if data.status is not None:
             query.status = data.status
             updated_data = query.update_time or {}
             updated_data[str(data.status)] = str(now)
-            # query.update_time = updated_data
             if data.status == 1:
                 query.started_at = now
             elif data.status == 6:

@@ -110,6 +110,6 @@ def create_update_tool_balance(db: Session, data_list, department):
         if store_product:
             update_product_balance(db, store_product, amount, sum, price)
         else:
-            if store_id is not None and tool_id:
+            if store_id is not None and tool_id is not None:
                 create_product_balance(db, department, store_id, tool_id, amount, sum, price, product_balance['productId'])
 

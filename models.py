@@ -191,6 +191,8 @@ class Brigada(Base):
     sphere_status = Column(Integer, default=1)
     department = Column(Integer, nullable=True)
     is_outsource = Column(Boolean, default=False)
+    chat_id = Column(BIGINT, nullable=True, default=None)
+    topic_id = Column(Integer, nullable=True, default=None)
 
 
 class Expanditure(Base):
