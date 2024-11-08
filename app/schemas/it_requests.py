@@ -38,6 +38,7 @@ class GetRequest(BaseModel):
     pause_reason: Optional[str] = None
     price: Optional[float] = None
     phone_number: Optional[str] = None
+    is_expired: Optional[bool] = None
 
     class Config:
         orm_mode = True
