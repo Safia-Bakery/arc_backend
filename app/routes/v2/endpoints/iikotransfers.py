@@ -60,7 +60,7 @@ def self_closing_requests(db: Session):
                                     )
 
         else:
-            message_text = f"Уважаемый {request.user.full_name}, статус вашей заявки #{request.id}s по IT: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟 и оцените заявку"
+            message_text = f"Уважаемый {request.user.full_name}, статус вашей заявки #{request.id}s Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟 и оцените заявку"
 
         # Send the message via Telegram
         rating_request_telegram(bot_token=settings.bottoken, chat_id=request.user.telegram_id,
