@@ -52,6 +52,7 @@ async def filter_requests(
         urgent: Optional[bool] = None,
         started_at: Optional[date] = None,
         finished_at: Optional[date] = None,
+        is_expired: Optional[bool] = None,
         db: Session = Depends(get_db),
         request_user: UserFullBack = Depends(get_current_user)
 ):
@@ -80,7 +81,8 @@ async def filter_requests(
             rate=rate,
             urgent=urgent,
             started_at=started_at,
-            finished_at=finished_at
+            finished_at=finished_at,
+            is_expired=is_expired
         )
         return paginate(requestdata)
 
@@ -97,7 +99,8 @@ async def filter_requests(
         brigada_id=request_user.brigada_id or brigada_id,
         urgent=urgent,
         started_at=started_at,
-        finished_at=finished_at
+        finished_at=finished_at,
+        is_expired=is_expired
     )
 
     return paginate(request_list)
@@ -123,7 +126,7 @@ async def put_request_id(
         db: Session = Depends(get_db),
         request_user: UserFullBack = Depends(get_current_user)
 ):
-    request = it_requests.edit_request(db=db, data=data, id=id, user=request_user)
+    request = it_requests.edit_request(db=db, data=data, id=id)
     message_id = request.tg_message_id
     brigada_id = request.brigada_id
     topic_id = request.brigada.topic_id if request.brigada_id else None

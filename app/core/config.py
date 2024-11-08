@@ -28,7 +28,8 @@ class Settings(BaseSettings):
     MICROSERVICE_USERNAME: Optional[str]= os.getenv("MICROSERVICE_USERNAME")
     MICROSERVICE_PASSWORD: Optional[str] = os.getenv("MICROSERVICE_PASSWORD")
     BASE_URL: Optional[str] = "https://api.service.safiabakery.uz/"
-    FRONT_URL: Optional[str] = "https://admin.service.safiabakery.uz/"
+    # FRONT_URL: Optional[str] = "https://admin.service.safiabakery.uz/"
+    FRONT_URL: Optional[str] = 'https://service.safiabakery.uz/'
     IT_SUPERGROUP: int = os.getenv("IT_SUPERGROUP")
     sizes: list = [
         'XS (42 - 44)',

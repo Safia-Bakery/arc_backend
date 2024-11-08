@@ -30,10 +30,10 @@ def filter_request_brigada(
         rate,
         urgent,
         started_at,
-        finished_at
+        finished_at,
+        is_expired
 ):
     query = db.query(Requests).join(Category).filter(Category.department == 4)
-
 
     if id is not None:
         query = query.filter(Requests.id == id)
@@ -58,8 +58,14 @@ def filter_request_brigada(
         query = query.filter(Requests.created_at.between(started_at, finished_at))
     if created_at is not None and finished_at is not None:
         query = query.filter(Requests.created_at.between(created_at, finished_at))
+    if is_expired is not None:
+        if is_expired:
+            query = query.filter(Requests.finished_at > Requests.finishing_time)
+        if not is_expired:
+            query = query.filter(Requests.finished_at <= Requests.finishing_time)
     # if reopened is not None:
     #    query = query.filter(func.jsonb_object_keys(models.Requests.update_time) == '7')
+
     query = query.filter(Requests.brigada_id == brigada_id)
     return query.order_by(Requests.id.desc()).all()
 
@@ -77,7 +83,8 @@ def filter_requests_all(
         brigada_id,
         urgent,
         started_at,
-        finished_at
+        finished_at,
+        is_expired
 ):
     # categories = db.query(Category).with_entities(Category.id).filter(Category.department == 4).all()
     query = db.query(Requests).join(Category).filter(Category.department == 4)
@@ -107,6 +114,11 @@ def filter_requests_all(
         query = query.filter(Requests.created_at.between(started_at, finished_at))
     if created_at is not None and finished_at is not None:
         query = query.filter(Requests.created_at.between(created_at, finished_at))
+    if is_expired is not None:
+        if is_expired:
+            query = query.filter(Requests.finished_at > Requests.finishing_time)
+        if not is_expired:
+            query = query.filter(Requests.finished_at <= Requests.finishing_time)
 
     results = query.order_by(Requests.id.desc()).all()
     return results
@@ -128,24 +140,20 @@ def filterbranchchildid(db: Session, parent_id, origin: Optional[int] = None):
 
 def edit_request(db: Session,
                  id: int,
-                 user: Optional[object] = None,
                  data: Optional[PutRequest] = None,
                  tg_message_id: Optional[int] = None
                  ):
     query = db.query(Requests).filter(Requests.id == id).first()
     now = datetime.datetime.now(tz=timezonetash)
     if data is not None:
-        if not user.brigada_id:
-            if data.finishing_time is not None:
-                query.finishing_time = data.finishing_time
-            if data.category_id is not None:
-                query.category_id = data.category_id
-
+        if data.finishing_time is not None:
+            query.finishing_time = data.finishing_time
+        if data.category_id is not None:
+            query.category_id = data.category_id
         if data.status is not None:
             query.status = data.status
             updated_data = query.update_time or {}
             updated_data[str(data.status)] = str(now)
-            # query.update_time = updated_data
             if data.status == 1:
                 query.started_at = now
             elif data.status == 6:

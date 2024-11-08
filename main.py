@@ -349,14 +349,14 @@ async def update_brigada(
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
-    brigrada = crud.update_brigada_id(db, form_data=form_data)
+    brigada = crud.update_brigada_id(db, form_data=form_data)
 
     if form_data.users:
         crud.set_null_user_brigada(db, form_data.id)
         crud.attach_user_brigads(db, form_data.users, form_data.id)
     else:
         crud.set_null_user_brigada(db, form_data.id)
-    return {"success": True, "message": "everthing is ok", "brigada": brigrada}
+    return {"success": True, "message": "everthing is ok", "brigada": brigada}
 
 
 @app.post("/expanditure")

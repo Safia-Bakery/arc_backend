@@ -342,6 +342,9 @@ def update_brigada_id(db: Session, form_data: schemas.UpdateBrigadaSch):
             db_update_brigada.department = form_data.department
         if form_data.is_outsource is not None:
             db_update_brigada.is_outsource = form_data.is_outsource
+        if form_data.topic_id is not None:
+            db_update_brigada.topic_id = form_data.topic_id
+
         db.commit()
         db.refresh(db_update_brigada)
         return db_update_brigada
