@@ -7,7 +7,7 @@ from fastapi import (
     APIRouter
 )
 from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.jobstores.base import JobLookupError
+from apscheduler.jobstores.base import JobLookupError, ConflictingIdError
 from fastapi_pagination import paginate, Page
 from sqlalchemy.orm import Session
 from app.core.config import settings
@@ -128,11 +128,12 @@ async def put_request_id(
 ):
     request = it_requests.edit_request(db=db, data=data, id=id)
     message_id = request.tg_message_id
-    brigada_id = request.brigada_id
+    # brigada_id = request.brigada_id
     topic_id = request.brigada.topic_id if request.brigada_id else None
 
-    if request.status is not None:
-        logs.create_log(db=db, request_id=id, status=request.status, user_id=request_user.id)
+    if data.status is not None or data.brigada_id is not None:
+        if data.status is not None:
+            logs.create_log(db=db, request_id=id, status=request.status, user_id=request_user.id)
 
         formatted_created_time = request.created_at.strftime("%d.%m.%Y %H:%M")
         phone_number = (request.phone_number if request.phone_number.startswith('+') else f"+{request.phone_number}") if request.phone_number else None
@@ -171,6 +172,7 @@ async def put_request_id(
             delta_minutes = 60
         elif sla == 2:
             delta_minutes = 90
+            # delta_minutes = 2
         elif sla == 8:
             delta_minutes = 360
         elif sla == 24:
@@ -185,40 +187,45 @@ async def put_request_id(
             delta_minutes = 0
 
         delay = timedelta(minutes=delta_minutes)
-        scheduled_time = request.created_at + delay
+        deleting_scheduled_time = request.created_at + delay - timedelta(seconds=2)
+        sending_scheduled_time = request.created_at + delay
 
-        if request.status == 1:
-            remaining_time = (finishing_time - datetime.now(tz=timezonetash)) if finishing_time else None
-            text = (request_text + f"\n\n<b> ‼️ Оставщиеся время:</b>  {str(remaining_time).split('.')[0]}") if remaining_time else request_text
-            if brigada_id:
-                delete_from_chat(message_id=request.tg_message_id, topic_id=topic_id)
-                send_notification(message_id=request.tg_message_id, topic_id=topic_id, text=text, db=db,
-                                  request_id=id)
+        if data.status == 1 or data.brigada_id is not None:
+            delete_from_chat(message_id=request.tg_message_id, topic_id=topic_id)
+            send_notification(db=db, request_id=id, topic_id=topic_id, text=request_text, finishing_time=finishing_time)
 
-                request = it_requests.get_request_id(db=db, id=id)
-                if request.brigada:
-                    brigada_name = request.brigada.name
-                else:
-                    brigada_name = None
+            request = it_requests.get_request_id(db=db, id=id)
+            if request.brigada:
+                brigada_name = request.brigada.name
+            else:
+                brigada_name = None
+            try:
+                sendtotelegramchat(
+                    chat_id=user_telegram_id,
+                    message_text=f"Уважаемый {user_fullname}, статус вашей заявки #{request.id}s "
+                                 f"назначен специалист👨‍💻: {brigada_name}\n"
+                                 f"Время выполнения: {sla} часов"
+                )
+            except:
+                pass
+
+            if delta_minutes > 0:
+                delete_job_id = "delete_message"
                 try:
-                    sendtotelegramchat(
-                        chat_id=user_telegram_id,
-                        message_text=f"Уважаемый {user_fullname}, статус вашей заявки #{request.id}s "
-                                     f"назначен специалист👨‍💻: {brigada_name}\n"
-                                     f"Время выполнения: {sla} часов"
-                    )
-                except:
-                    pass
+                    scheduler.add_job(delete_from_chat, 'date', run_date=deleting_scheduled_time,
+                                      args=[request.tg_message_id, topic_id], id=delete_job_id, replace_existing=True)
+                except ConflictingIdError:
+                    print(f"Job '{delete_job_id}' already scheduled or was missed by time. Skipping ...")
 
-                if delta_minutes > 0:
-                    delete_job_id = f"delete_{request.tg_message_id}_{scheduled_time.strftime('%d.%m.%Y_%H:%M')}"
-                    scheduler.add_job(delete_from_chat, 'date', run_date=scheduled_time,
-                                      args=[request.tg_message_id, topic_id], id=delete_job_id)
-                    send_job_id = f"send_{request.tg_message_id}_{scheduled_time.strftime('%d.%m.%Y_%H:%M')}"
-                    scheduler.add_job(send_notification, 'date', run_date=scheduled_time,
-                                      args=[db, id, request.tg_message_id, topic_id, text], id=send_job_id)
+                send_job_id = "send_message"
+                try:
+                    scheduler.add_job(send_notification, 'date', run_date=sending_scheduled_time,
+                                      args=[db, request.id, topic_id, request_text, finishing_time], id=send_job_id,
+                                      replace_existing=True)
+                except ConflictingIdError:
+                    print(f"Job '{send_job_id}' already scheduled or was missed by time. Skipping ...")
 
-        elif request.status == 3:
+        elif data.status == 3:
             edit_topic_reply_markup(chat_id=settings.IT_SUPERGROUP,
                                     thread_id=topic_id,
                                     message_id=message_id
@@ -233,7 +240,7 @@ async def put_request_id(
             except Exception as e:
                 print(e)
 
-        elif request.status == 4:
+        elif data.status == 4:
             url = f"{settings.FRONT_URL}tg/order-rating/{request.id}?user_id={user_id}&department={category_department}&sub_id={category_sub_id}"
             try:
                 inlinewebapp(
@@ -243,22 +250,39 @@ async def put_request_id(
                 )
             except:
                 pass
-            text = request_text + "\n\n<b>Заявка отменена 🚫</b>"
+            text = request_text + "\n\n<b>Заявка отменена 🚫</b>" \
+                                  f"\nПричина отмены: {request.deny_reason}"
             edit_topic_message(chat_id=settings.IT_SUPERGROUP, thread_id=topic_id, message_text=text,
                                message_id=message_id)
 
-        elif request.status == 6:
-            for job in scheduler.get_jobs():
-                if job.id.startswith(f"delete_{str(message_id)}"):
-                    try:
-                        scheduler.remove_job(job_id=job.id)
-                    except JobLookupError:
-                        print(f"{job.id} not found or already has completed !")
-                if job.id.startswith(f"send_{str(message_id)}"):
-                    try:
-                        scheduler.remove_job(job_id=job.id)
-                    except JobLookupError:
-                        print(f"{job.id} not found or already has completed !")
+            delete_job_id = "delete_message"
+            try:
+                scheduler.remove_job(job_id=delete_job_id)
+                # print(f"'{delete_job_id}' job was removed before scheduling")
+            except JobLookupError:
+                print(f"'{delete_job_id}' job not found or already has completed !")
+
+            send_job_id = "send_message"
+            try:
+                scheduler.remove_job(job_id=send_job_id)
+                # print(f"'{send_job_id}' job was removed before scheduling")
+            except JobLookupError:
+                print(f"'{send_job_id}' job not found or already has completed !")
+
+        elif data.status == 6:
+            delete_job_id = "delete_message"
+            try:
+                scheduler.remove_job(job_id=delete_job_id)
+                # print(f"'{delete_job_id}' job was removed before scheduling")
+            except JobLookupError:
+                print(f"'{delete_job_id}' job not found or already has completed !")
+
+            send_job_id = "send_message"
+            try:
+                scheduler.remove_job(job_id=send_job_id)
+                # print(f"'{send_job_id}' job was removed before scheduling")
+            except JobLookupError:
+                print(f"'{send_job_id}' job not found or already has completed !")
 
             started_at = request.started_at
             finished_at = request.finished_at
@@ -267,8 +291,9 @@ async def put_request_id(
                             f"<b> ✅ Вы завершили заявку за:</b>  {str(finished_time).split('.')[0]}"
             keyboard = {
                 "inline_keyboard": [
-                    [{"text": "Возобновить", "callback_data": "resume_request"},
-                     {"text": "Отправить сообщение заказчику", "callback_data": "send_message_to_user"}]
+                    [
+                        {"text": "Возобновить", "callback_data": "resume_request"}
+                    ]
                 ]
             }
             edit_topic_message(chat_id=settings.IT_SUPERGROUP, thread_id=topic_id, message_text=topic_message,
@@ -286,7 +311,7 @@ async def put_request_id(
             except:
                 pass
 
-        elif request.status == 7:
+        elif data.status == 7:
             try:
                 sendtotelegramchat(
                     chat_id=user_telegram_id,
@@ -296,22 +321,31 @@ async def put_request_id(
                 pass
             remaining_time = finishing_time - datetime.now(tz=timezonetash)
             text = request_text + f"\n\n<b> ‼️ Оставщиеся время:</b>  {str(remaining_time).split('.')[0]}"
-            # request_notification(message_id=request.tg_message_id, topic_id=topic_id, text=text, db=db, request_id=id)
             inline_keyboard = {
                 "inline_keyboard": [
-                    [{"text": "Завершить заявку", "callback_data": "complete_request"},
-                     {"text": "Отправить сообщение заказчику", "callback_data": "send_message_to_user"}]
+                    [
+                        {"text": "Завершить заявку", "callback_data": "complete_request"},
+                        {"text": "Отменить", "callback_data": "cancel_request"}
+                    ]
                 ]
             }
             edit_topic_message(chat_id=settings.IT_SUPERGROUP, thread_id=topic_id, message_id=message_id,
                                message_text=text, inline_keyboard=inline_keyboard)
             if delta_minutes > 0:
-                delete_job_id = f"delete_{request.tg_message_id}_{scheduled_time.strftime('%d.%m.%Y_%H:%M')}"
-                scheduler.add_job(delete_from_chat, 'date', run_date=scheduled_time,
-                                  args=[request.tg_message_id, topic_id], id=delete_job_id)
-                send_job_id = f"send_{request.tg_message_id}_{scheduled_time.strftime('%d.%m.%Y_%H:%M')}"
-                scheduler.add_job(send_notification, 'date', run_date=scheduled_time,
-                                  args=[db, id, request.tg_message_id, topic_id, text], id=send_job_id)
+                delete_job_id = "delete_message"
+                try:
+                    scheduler.add_job(delete_from_chat, 'date', run_date=deleting_scheduled_time,
+                                      args=[request.tg_message_id, topic_id], id=delete_job_id, replace_existing=True)
+                except ConflictingIdError:
+                    print(f"Job '{delete_job_id}' already scheduled or was missed by time. Skipping ...")
+
+                send_job_id = "send_message"
+                try:
+                    scheduler.add_job(send_notification, 'date', run_date=sending_scheduled_time,
+                                      args=[db, request.id, topic_id, request_text, finishing_time], id=send_job_id,
+                                      replace_existing=True)
+                except ConflictingIdError:
+                    print(f"Job '{send_job_id}' already scheduled or was missed by time. Skipping ...")
 
         elif data.status == 8:
             url = f"{settings.FRONT_URL}tg/order-rating/{request.id}?user_id={user_id}&department={category_department}&sub_id={category_sub_id}"
@@ -372,7 +406,7 @@ async def create_request(
 
     inline_keyboard = {
         "inline_keyboard": [
-            [{"text": "Принять заявку", "callback_data": "accept_request"}]
+            [{"text": "Принять заявку", "callback_data": "accept_action"}]
         ]
     }
     try:

@@ -7,10 +7,15 @@ import random
 from app.core.config import settings
 from datetime import datetime
 import pytz
-
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.base import JobLookupError, ConflictingIdError
 from app.crud import it_requests
 
+
 timezonetash = pytz.timezone("Asia/Tashkent")
+
+scheduler = BackgroundScheduler()
+scheduler.start()
 
 
 def send_simple_text_message(bot_token, chat_id, message_text):
@@ -104,7 +109,6 @@ def sendtotelegramchat(chat_id, message_text, inline_keyboard: Optional[dict] = 
     payload = {
         "chat_id": chat_id,
         "text": message_text,
-        # "reply_markup": json.dumps(inline_keyboard) or None,
         "parse_mode": "HTML"
     }
 
@@ -154,10 +158,8 @@ def edit_topic_message(chat_id,
     # Create the request payload
     payload = {
         "chat_id": chat_id,
-        # "message_thread_id": thread_id,
         "message_id": message_id,
         "text": message_text,
-        # "reply_markup": json.dumps(inline_keyboard),
         "parse_mode": "HTML"
 
     }
@@ -187,7 +189,6 @@ def edit_topic_reply_markup(chat_id, thread_id, message_id,
         "chat_id": chat_id,
         "message_thread_id": thread_id,
         "message_id": message_id,
-        # "reply_markup": json.dumps(inline_keyboard),
         "parse_mode": "HTML"
 
     }
@@ -261,17 +262,16 @@ def confirmation_request(chat_id, message_text):
 
 
 def delete_from_chat(message_id, topic_id: Optional[int] = None):
-    base_url = f'https://api.telegram.org/bot{settings.bottoken}'
-    delete_url = f"{base_url}/deleteMessage"
-    delete_payload = {
+    url = f'https://api.telegram.org/bot{settings.bottoken}/deleteMessage'
+    payload = {
         'chat_id': settings.IT_SUPERGROUP,
         'message_id': message_id
     }
     if topic_id:
-        delete_payload["message_thread_id"] = topic_id
+        payload["message_thread_id"] = topic_id
 
     # Send a POST request to the Telegram API to delete the message
-    response = requests.post(delete_url, data=delete_payload)
+    response = requests.post(url, data=payload)
     response_data = response.json()
     # Check the response status
     if response.status_code == 200:
@@ -280,30 +280,30 @@ def delete_from_chat(message_id, topic_id: Optional[int] = None):
         return False
 
 
-def send_notification(db, request_id, message_id, topic_id, text):
-    base_url = f'https://api.telegram.org/bot{settings.bottoken}'
-
+def send_notification(db, request_id, topic_id, text, finishing_time):
+    url = f'https://api.telegram.org/bot{settings.bottoken}/sendMessage'
     inline_keyboard = {
         "inline_keyboard": [
             [{"text": "Завершить заявку", "callback_data": "complete_request"},
-             {"text": "Отправить сообщение заказчику", "callback_data": "send_message_to_user"}]
+             {"text": "Отменить", "callback_data": "cancel_request"}]
         ]
     }
-
-    send_url = f"{base_url}/sendMessage"
-    send_payload = {
+    remaining_time = finishing_time - datetime.now(tz=timezonetash)
+    text = f"{text}\n\n" \
+           f"<b> ‼️ Оставщиеся время:</b>  {str(remaining_time).split('.')[0]}"
+    payload = {
         'chat_id': settings.IT_SUPERGROUP,
-        'message_id': message_id,
         'message_thread_id': topic_id,  # Include the thread ID for the specific topic
         'text': text,
         'reply_markup': json.dumps(inline_keyboard),
         'parse_mode': 'HTML'
     }
-    response = requests.post(send_url, json=send_payload)
+    response = requests.post(url, json=payload)
     if response.status_code == 200:
         response_data = response.json()
         new_message_id = response_data["result"]["message_id"]
         it_requests.edit_request(db=db, id=request_id, tg_message_id=new_message_id)
+
     else:
         return False
 

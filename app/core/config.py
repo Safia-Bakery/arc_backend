@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     jwt_refresh_secret_key: Optional[str] = os.getenv("JWT_REFRESH_SECRET_KEY")
     jwt_algorithm: Optional[str] = os.getenv("ALGORITHM",'HS256')
     bottoken: Optional[str] = os.getenv("BOT_TOKEN", "6247686133:AAG-7Z9ZMpaEanMd1VlyiKO4S2Xbm_jp8BE")
+    # bottoken: Optional[str] = os.getenv("BOT_TOKEN", "7899102795:AAHp9W4xycI3u_iAZOFLkC4I9Xa9N1aQYaw")
     hrbot_token: Optional[str] = os.getenv("HRBOT_TOKEN")
     login_iiko: Optional[str] = os.getenv("LOGIN_IIKO")
     password_iiko: Optional[str] = os.getenv("PASSWORD_IIKO")

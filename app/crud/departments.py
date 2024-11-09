@@ -10,5 +10,5 @@ def get_child_branch(db:Session,id:int):
 
 
 def get_all_departments(db: Session):
-    query = db.query(ParentFillials).all()
+    query = db.query(ParentFillials).distinct().all()
     return query
