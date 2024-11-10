@@ -210,14 +210,14 @@ async def put_request_id(
                 pass
 
             if delta_minutes > 0:
-                delete_job_id = "delete_message"
+                delete_job_id = f"delete_message_for_{request.id}"
                 try:
                     scheduler.add_job(delete_from_chat, 'date', run_date=deleting_scheduled_time,
                                       args=[request.tg_message_id, topic_id], id=delete_job_id, replace_existing=True)
                 except ConflictingIdError:
                     print(f"Job '{delete_job_id}' already scheduled or was missed by time. Skipping ...")
 
-                send_job_id = "send_message"
+                send_job_id = f"send_message_for_{request.id}"
                 try:
                     scheduler.add_job(send_notification, 'date', run_date=sending_scheduled_time,
                                       args=[db, request.id, topic_id, request_text, finishing_time], id=send_job_id,
@@ -255,14 +255,14 @@ async def put_request_id(
             edit_topic_message(chat_id=settings.IT_SUPERGROUP, thread_id=topic_id, message_text=text,
                                message_id=message_id)
 
-            delete_job_id = "delete_message"
+            delete_job_id = f"delete_message_for_{request.id}"
             try:
                 scheduler.remove_job(job_id=delete_job_id)
                 # print(f"'{delete_job_id}' job was removed before scheduling")
             except JobLookupError:
                 print(f"'{delete_job_id}' job not found or already has completed !")
 
-            send_job_id = "send_message"
+            send_job_id = f"send_message_for_{request.id}"
             try:
                 scheduler.remove_job(job_id=send_job_id)
                 # print(f"'{send_job_id}' job was removed before scheduling")
@@ -270,14 +270,14 @@ async def put_request_id(
                 print(f"'{send_job_id}' job not found or already has completed !")
 
         elif data.status == 6:
-            delete_job_id = "delete_message"
+            delete_job_id = f"delete_message_for_{request.id}"
             try:
                 scheduler.remove_job(job_id=delete_job_id)
                 # print(f"'{delete_job_id}' job was removed before scheduling")
             except JobLookupError:
                 print(f"'{delete_job_id}' job not found or already has completed !")
 
-            send_job_id = "send_message"
+            send_job_id = f"send_message_for_{request.id}"
             try:
                 scheduler.remove_job(job_id=send_job_id)
                 # print(f"'{send_job_id}' job was removed before scheduling")
@@ -332,14 +332,14 @@ async def put_request_id(
             edit_topic_message(chat_id=settings.IT_SUPERGROUP, thread_id=topic_id, message_id=message_id,
                                message_text=text, inline_keyboard=inline_keyboard)
             if delta_minutes > 0:
-                delete_job_id = "delete_message"
+                delete_job_id = f"delete_message_for_{request.id}"
                 try:
                     scheduler.add_job(delete_from_chat, 'date', run_date=deleting_scheduled_time,
                                       args=[request.tg_message_id, topic_id], id=delete_job_id, replace_existing=True)
                 except ConflictingIdError:
                     print(f"Job '{delete_job_id}' already scheduled or was missed by time. Skipping ...")
 
-                send_job_id = "send_message"
+                send_job_id = f"send_message_for_{request.id}"
                 try:
                     scheduler.add_job(send_notification, 'date', run_date=sending_scheduled_time,
                                       args=[db, request.id, topic_id, request_text, finishing_time], id=send_job_id,
