@@ -451,7 +451,7 @@ def file_generator(data,file):
 
 
 def Excell_generate_it(data):
-    inserting_data = {"Номер заявки":[],"Клиент":[],"Исполнитель":[],'Филиал':[],'Дата создания':[],'Дата окончания':[],'Дедлайн':[],'Статус':[],'Категория':[],'Комментарий':[],"Срочно":[],'Дата решения':[],'Дата отмены':[],'Переоткрыта':[]}
+    inserting_data = {"Номер заявки":[],"Клиент":[],"Исполнитель":[],'Филиал':[],'Дата создания':[],'Дата окончания':[],'Дедлайн':[],'Статус':[],'Категория':[],'Комментарий':[],"Срочно":[],'Дата решения':[],'Дата отмены':[],'Переоткрыта':[], 'SLA': []}
     for row in data:
         inserting_data['Номер заявки'].append(row.id)
         inserting_data['Клиент'].append(row.user.full_name)
@@ -463,6 +463,10 @@ def Excell_generate_it(data):
         
         create_time = row.created_at.strftime("%d.%m.%Y %H:%M:%S")
         inserting_data['Дата создания'].append(create_time)
+        if row.category.ftime:
+            inserting_data['SLA'].append(row.category.ftime)
+        else:
+            inserting_data['SLA'].append('')
         if row.finishing_time:
             deadline = row.finishing_time.strftime("%d.%m.%Y %H:%M:%S")
         else:

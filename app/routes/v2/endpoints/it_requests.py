@@ -250,24 +250,28 @@ async def put_request_id(
                 )
             except:
                 pass
-            text = request_text + "\n\n<b>Заявка отменена 🚫</b>" \
-                                  f"\nПричина отмены: {request.deny_reason}"
-            edit_topic_message(chat_id=settings.IT_SUPERGROUP, thread_id=topic_id, message_text=text,
-                               message_id=message_id)
 
-            delete_job_id = f"delete_message_for_{request.id}"
-            try:
-                scheduler.remove_job(job_id=delete_job_id)
-                # print(f"'{delete_job_id}' job was removed before scheduling")
-            except JobLookupError:
-                print(f"'{delete_job_id}' job not found or already has completed !")
+            if request.brigada_id is None:
+                delete_from_chat(message_id=message_id)
+            else:
+                text = request_text + "\n\n<b>Заявка отменена 🚫</b>" \
+                                      f"\nПричина отмены: {request.deny_reason}"
+                edit_topic_message(chat_id=settings.IT_SUPERGROUP, thread_id=topic_id, message_text=text,
+                                   message_id=message_id)
 
-            send_job_id = f"send_message_for_{request.id}"
-            try:
-                scheduler.remove_job(job_id=send_job_id)
-                # print(f"'{send_job_id}' job was removed before scheduling")
-            except JobLookupError:
-                print(f"'{send_job_id}' job not found or already has completed !")
+                delete_job_id = f"delete_message_for_{request.id}"
+                try:
+                    scheduler.remove_job(job_id=delete_job_id)
+                    # print(f"'{delete_job_id}' job was removed before scheduling")
+                except JobLookupError:
+                    print(f"'{delete_job_id}' job not found or already has completed !")
+
+                send_job_id = f"send_message_for_{request.id}"
+                try:
+                    scheduler.remove_job(job_id=send_job_id)
+                    # print(f"'{send_job_id}' job was removed before scheduling")
+                except JobLookupError:
+                    print(f"'{send_job_id}' job not found or already has completed !")
 
         elif data.status == 6:
             delete_job_id = f"delete_message_for_{request.id}"
