@@ -32,16 +32,18 @@ class GetCategory(BaseModel):
 
 class CreateCategory(BaseModel):
     name: str
-    description: Optional[str] = None
-    status: int
-    urgent: bool
-    sub_id: Optional[int] = None
-    file: Optional[str] = None
+    department: int
     ftime: Optional[float] = None
-    parent_id:Optional[int] = None
-    is_child:Optional[bool]=None
-    telegram_id:Optional[int]=None
-    price:Optional[float]=None
+    description: Optional[str] = None
+    status: Optional[int] = 1
+    urgent: Optional[bool] = True
+    sphere_status: Optional[int] = None
+    file: Optional[str] = None
+    sub_id: Optional[int] = None
+    parent_id: Optional[int] = None
+    is_child: Optional[bool] = None
+    telegram_id: Optional[int] = None
+    price: Optional[float] = None
 
     class Config:
         orm_mode = True

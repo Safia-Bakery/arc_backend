@@ -74,7 +74,7 @@ class CreateInventoryRequest(BaseModel):
     category_id: int
     description: Optional[str] = None
     product: Optional[str] = None
-    expenditure : list[RequestExpenditureCreate] = None
+    expenditure: list[RequestExpenditureCreate] = None
 
 
 

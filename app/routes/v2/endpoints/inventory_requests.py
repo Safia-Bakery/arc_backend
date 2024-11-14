@@ -92,8 +92,8 @@ async def get_request(
 
 
 
-@inv_requests_router.post("/requests/inv")
-async def create_request(
+@inv_requests_router.post("/requests/inv/retail")
+async def create_retail_request(
     request: CreateInventoryRequest,
     db: Session = Depends(get_db),
     request_user: UserFullBack = Depends(get_current_user),
@@ -106,7 +106,7 @@ async def create_request(
         request.fillial_id=get_child_branch.id
         request_list = inv_requests.create_request(db, request,user_id=request_user.id)
 
-        for  item in request.expenditure:
+        for item in request.expenditure:
             create_expanditure(db, amount=item.amount,tool_id=item.tool_id,request_id=request_list.id)
         send_simple_text_message(
             bot_token=settings.bottoken,
@@ -117,6 +117,28 @@ async def create_request(
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
+
+
+@inv_requests_router.post("/requests/inv/factory")
+async def create_factory_request(
+    request: CreateInventoryRequest,
+    db: Session = Depends(get_db),
+    request_user: UserFullBack = Depends(get_current_user),
+):
+
+    try:
+        request_list = inv_requests.create_request(db, request,user_id=request_user.id)
+
+        for item in request.expenditure:
+            create_expanditure(db, amount=item.amount,tool_id=item.tool_id,request_id=request_list.id)
+        send_simple_text_message(
+            bot_token=settings.bottoken,
+            chat_id=request_user.telegram_id,
+            message_text=f"Уважаемый {request_user.full_name}, ваша заявка #{request_list.id} по Inventary: Создана."
+        )
+        return {'id':request_list.id,'status':request_list.status,'success':True}
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
 
 @inv_requests_router.put("/requests/inv", response_model=GetOneRequest)

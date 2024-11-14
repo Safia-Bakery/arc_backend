@@ -1,37 +1,26 @@
 from sqlalchemy.orm import Session
 from app.models.category import Category
+from app.schemas.category import CreateCategory
 
 
 def add_category(
         db: Session,
-        name,
-        description,
-        status,
-        urgent,
-        sub_id,
-        department,
-        sphere_status,
-        file,
-        ftime,
-        parent_id,
-        is_child,
-        telegram_id,
-        price
+        data: CreateCategory
 ):
     db_add_category = Category(
-        name=name,
-        description=description,
-        status=status,
-        urgent=urgent,
-        sub_id=sub_id,
-        department=department,
-        sphere_status=sphere_status,
-        file=file,
-        ftime=ftime,
-        parent_id=parent_id,
-        is_child=is_child,
-        telegram_id=telegram_id,
-        price=price
+        name=data.name,
+        description=data.description,
+        status=data.status,
+        urgent=data.urgent,
+        sub_id=data.sub_id,
+        department=data.department,
+        sphere_status=data.sphere_status,
+        file=data.file,
+        ftime=data.ftime,
+        parent_id=data.parent_id,
+        is_child=data.is_child,
+        telegram_id=data.telegram_id,
+        price=data.price
     )
     db.add(db_add_category)
     db.commit()
