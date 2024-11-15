@@ -465,10 +465,17 @@ def Excell_generate_it(data):
 
         now = datetime.now(tz=timezonetash)
         if row.finished_at is None:
-            if now > row.finishing_time:
-                inserting_data['Просрочен'].append('Да')
-            else:
-                inserting_data['Просрочен'].append('Нет')
+            if row.status == 1:
+                if now > row.finishing_time:
+                    inserting_data['Просрочен'].append('Да')
+                else:
+                    inserting_data['Просрочен'].append('Нет')
+            elif row.status == 4:
+                cancel_time = dict(row.update_time).get('4')
+                if cancel_time > row.finishing_time:
+                    inserting_data['Просрочен'].append('Да')
+                else:
+                    inserting_data['Просрочен'].append('Нет')
         else:
             if row.finished_at > row.finishing_time:
                 inserting_data['Просрочен'].append('Да')
