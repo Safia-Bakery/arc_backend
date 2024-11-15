@@ -449,9 +449,8 @@ def file_generator(data,file):
     return [file_name ,total_food,total_bread]
 
 
-
 def Excell_generate_it(data):
-    inserting_data = {"Номер заявки":[],"Клиент":[],"Исполнитель":[],'Филиал':[],'Дата создания':[],'Дата окончания':[],'Дедлайн':[],'Статус':[],'Категория':[],'Комментарий':[],"Срочно":[],'Дата решения':[],'Дата отмены':[],'Переоткрыта':[], 'SLA': []}
+    inserting_data = {"Номер заявки":[],"Клиент":[],"Исполнитель":[],'Филиал':[],'Дата создания':[],'Дата окончания':[],'Дедлайн':[],'Статус':[],'Категория':[],'Комментарий':[],"Срочно":[],'Дата решения':[],'Дата отмены':[],'Переоткрыта':[], 'SLA': [], 'Просрочен': []}
     for row in data:
         inserting_data['Номер заявки'].append(row.id)
         inserting_data['Клиент'].append(row.user.full_name)
@@ -463,6 +462,12 @@ def Excell_generate_it(data):
         
         create_time = row.created_at.strftime("%d.%m.%Y %H:%M:%S")
         inserting_data['Дата создания'].append(create_time)
+
+        now = datetime.now(tz=timezonetash)
+        if now > row.finishing_time:
+            inserting_data['Просрочен'].append('Да')
+        else:
+            inserting_data['Просрочен'].append('Нет')
         if row.category.ftime:
             inserting_data['SLA'].append(row.category.ftime)
         else:
