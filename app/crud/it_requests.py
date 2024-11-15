@@ -58,18 +58,18 @@ def filter_request_brigada(
         query = query.filter(Requests.created_at.between(started_at, finished_at))
     if created_at is not None and finished_at is not None:
         query = query.filter(Requests.created_at.between(created_at, finished_at))
-    if is_expired is not None:
-        now = datetime.datetime.now(tz=timezonetash)
-        if is_expired:
-            expired_finished_requests = query.filter(and_(Requests.finished_at is not None, Requests.finished_at > Requests.finishing_time))
-            expired_confirmed_not_finished_requests = query.filter(and_(Requests.finished_at is None, Requests.status == 1, now > Requests.finishing_time))
-            expired_canceled_not_finished_requests = query.filter(and_(Requests.finished_at is None, Requests.status == 4, now > Requests.finishing_time))
-            query = expired_finished_requests.union(expired_confirmed_not_finished_requests).union(expired_canceled_not_finished_requests)
-        if not is_expired:
-            not_expired_finished_requests = query.filter(and_(Requests.finished_at is not None, Requests.finished_at <= Requests.finishing_time))
-            not_expired_confirmed_not_finished_requests = query.filter(and_(Requests.finished_at is None, Requests.status == 1, now <= Requests.finishing_time))
-            not_expired_canceled_not_finished_requests = query.filter(and_(Requests.finished_at is None, Requests.status == 4, now <= Requests.finishing_time))
-            query = not_expired_finished_requests.union(not_expired_confirmed_not_finished_requests).union(not_expired_canceled_not_finished_requests)
+    # if is_expired is not None:
+    #     now = datetime.datetime.now(tz=timezonetash)
+    #     if is_expired:
+    #         expired_finished_requests = query.filter(and_(Requests.finished_at is not None, Requests.finished_at > Requests.finishing_time))
+    #         expired_confirmed_not_finished_requests = query.filter(and_(Requests.finished_at is None, Requests.status == 1, now > Requests.finishing_time))
+    #         expired_canceled_not_finished_requests = query.filter(and_(Requests.finished_at is None, Requests.status == 4, now > Requests.finishing_time))
+    #         query = expired_finished_requests.union(expired_confirmed_not_finished_requests).union(expired_canceled_not_finished_requests)
+    #     if not is_expired:
+    #         not_expired_finished_requests = query.filter(and_(Requests.finished_at is not None, Requests.finished_at <= Requests.finishing_time))
+    #         not_expired_confirmed_not_finished_requests = query.filter(and_(Requests.finished_at is None, Requests.status == 1, now <= Requests.finishing_time))
+    #         not_expired_canceled_not_finished_requests = query.filter(and_(Requests.finished_at is None, Requests.status == 4, now <= Requests.finishing_time))
+    #         query = not_expired_finished_requests.union(not_expired_confirmed_not_finished_requests).union(not_expired_canceled_not_finished_requests)
 
     # if reopened is not None:
     #    query = query.filter(func.jsonb_object_keys(models.Requests.update_time) == '7')
