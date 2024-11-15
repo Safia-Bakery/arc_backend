@@ -472,6 +472,7 @@ def Excell_generate_it(data):
                     inserting_data['Просрочен'].append('Нет')
             elif row.status == 4:
                 cancel_time = dict(row.update_time).get('4')
+                cancel_time = datetime.fromisoformat(cancel_time)
                 if cancel_time > row.finishing_time:
                     inserting_data['Просрочен'].append('Да')
                 else:
