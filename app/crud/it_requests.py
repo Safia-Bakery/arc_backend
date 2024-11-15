@@ -2,7 +2,7 @@ import datetime
 import re
 from typing import Optional
 import pytz
-from sqlalchemy import Date, cast
+from sqlalchemy import Date, cast,and_
 from sqlalchemy.orm import Session
 from app.models.category import Category
 from app.models.comments import Comments
@@ -61,9 +61,15 @@ def filter_request_brigada(
     if is_expired is not None:
         now = datetime.datetime.now(tz=timezonetash)
         if is_expired:
-            query = query.filter(now > Requests.finishing_time)
+            expired_finished_requests = query.filter(and_(Requests.finished_at is not None, Requests.finished_at > Requests.finishing_time))
+            expired_not_finished_requests = query.filter(and_(Requests.finished_at is None, now > Requests.finishing_time))
+            query = expired_finished_requests.union(expired_not_finished_requests)
         if not is_expired:
             query = query.filter(now <= Requests.finishing_time)
+            not_expired_finished_requests = query.filter(and_(Requests.finished_at is not None, Requests.finished_at <= Requests.finishing_time))
+            not_expired_not_finished_requests = query.filter(and_(Requests.finished_at is None, now <= Requests.finishing_time))
+            query = not_expired_finished_requests.union(not_expired_not_finished_requests)
+
     # if reopened is not None:
     #    query = query.filter(func.jsonb_object_keys(models.Requests.update_time) == '7')
 
@@ -118,9 +124,14 @@ def filter_requests_all(
     if is_expired is not None:
         now = datetime.datetime.now(tz=timezonetash)
         if is_expired:
-            query = query.filter(now > Requests.finishing_time)
+            expired_finished_requests = query.filter(and_(Requests.finished_at is not None, Requests.finished_at > Requests.finishing_time))
+            expired_not_finished_requests = query.filter(and_(Requests.finished_at is None, now > Requests.finishing_time))
+            query = expired_finished_requests.union(expired_not_finished_requests)
         if not is_expired:
             query = query.filter(now <= Requests.finishing_time)
+            not_expired_finished_requests = query.filter(and_(Requests.finished_at is not None, Requests.finished_at <= Requests.finishing_time))
+            not_expired_not_finished_requests = query.filter(and_(Requests.finished_at is None, now <= Requests.finishing_time))
+            query = not_expired_finished_requests.union(not_expired_not_finished_requests)
 
     results = query.order_by(Requests.id.desc()).all()
     return results

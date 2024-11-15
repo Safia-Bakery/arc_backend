@@ -464,10 +464,16 @@ def Excell_generate_it(data):
         inserting_data['Дата создания'].append(create_time)
 
         now = datetime.now(tz=timezonetash)
-        if now > row.finishing_time:
-            inserting_data['Просрочен'].append('Да')
+        if row.finishing_at is None:
+            if now > row.finishing_time:
+                inserting_data['Просрочен'].append('Да')
+            else:
+                inserting_data['Просрочен'].append('Нет')
         else:
-            inserting_data['Просрочен'].append('Нет')
+            if row.finishing_at > row.finishing_time:
+                inserting_data['Просрочен'].append('Да')
+            else:
+                inserting_data['Просрочен'].append('Нет')
         if row.category.ftime:
             inserting_data['SLA'].append(row.category.ftime)
         else:
