@@ -334,7 +334,7 @@ async def put_request_id(
                         {"text": "Завершить заявку", "callback_data": "complete_request"},
                         {"text": "Отменить", "callback_data": "cancel_request"}
                     ],
-                    [{"text": "Посмотреть фото", "url": f"{BASE_URL}{request.file.url}"}]
+                    [{"text": "Посмотреть фото", "url": f"{BASE_URL}{request.file[0].url}"}]
                 ]
             }
             # edit_topic_message(chat_id=settings.IT_SUPERGROUP, thread_id=topic_id, message_id=message_id,
