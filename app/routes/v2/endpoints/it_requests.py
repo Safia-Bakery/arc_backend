@@ -157,7 +157,7 @@ async def put_request_id(
         else:
             sla, category_name, category_department, category_sub_id = None, None, None, None
 
-        request_text = f"📑Заявка № {request.id}\n\n" \
+        request_text = f"📑Заявка #{request.id}s\n\n" \
                        f"📍Филиал: {request.fillial.parentfillial.name}\n" \
                        f"👨‍💼Сотрудник: {user_fullname}\n" \
                        f"📱Номер телефона: {phone_number}\n" \
