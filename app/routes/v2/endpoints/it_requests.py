@@ -405,7 +405,7 @@ async def create_request(
     else:
         sla, category_name = None, None
 
-    request_text = f"📑Заявка № {request.id}\n\n" \
+    request_text = f"📑Заявка #{request.id}s\n\n" \
                    f"📍Филиал: {request.fillial.parentfillial.name}\n" \
                    f"👨‍💼Сотрудник: {user_fullname}\n" \
                    f"📱Номер телефона: {phone_number}\n" \
