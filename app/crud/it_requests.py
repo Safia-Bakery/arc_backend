@@ -186,7 +186,7 @@ def edit_request(db: Session,
             query.pause_reason = data.pause_reason
         if data.category_id is not None:
             query.category_id = data.category_id
-            new_category = get_category_id(db=db , id=data.category_id)
+            new_category = get_category_id(db=db, id=data.category_id)
             query.finishing_time = query.created_at + datetime.timedelta(hours=new_category.ftime)
 
     if tg_message_id is not None:

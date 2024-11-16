@@ -10,7 +10,7 @@ import pytz
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.base import JobLookupError, ConflictingIdError
 from app.crud import it_requests
-
+from app.routes.v2.endpoints.it_requests import BASE_URL
 
 timezonetash = pytz.timezone("Asia/Tashkent")
 
@@ -128,7 +128,7 @@ def sendtotelegramchat(chat_id, message_text, inline_keyboard: Optional[dict] = 
         return False
 
 
-def sendtotelegramtopic(chat_id, message_text, thread_id):
+def sendtotelegramtopic(chat_id, message_text, thread_id, inline_keyboard: Optional[dict] = None):
     # Create the request payload
     payload = {
         "chat_id": chat_id,
@@ -136,7 +136,8 @@ def sendtotelegramtopic(chat_id, message_text, thread_id):
         "text": message_text,
         "parse_mode": "HTML"
     }
-
+    if inline_keyboard:
+        payload['reply_markup'] = json.dumps(inline_keyboard)
     # Send the request to send the inline keyboard message
     response = requests.post(
         f"https://api.telegram.org/bot{settings.bottoken}/sendMessage",
@@ -280,12 +281,15 @@ def delete_from_chat(message_id, topic_id: Optional[int] = None):
         return False
 
 
-def send_notification(db, request_id, topic_id, text, finishing_time):
+def send_notification(db, request_id, topic_id, text, finishing_time, file_url):
     url = f'https://api.telegram.org/bot{settings.bottoken}/sendMessage'
     inline_keyboard = {
         "inline_keyboard": [
-            [{"text": "Завершить заявку", "callback_data": "complete_request"},
-             {"text": "Отменить", "callback_data": "cancel_request"}]
+            [
+                {"text": "Завершить заявку", "callback_data": "complete_request"},
+                {"text": "Отменить", "callback_data": "cancel_request"}
+            ],
+            [{"text": "Посмотреть фото", "url": f"{BASE_URL}{file_url}"}]
         ]
     }
     remaining_time = finishing_time - datetime.now(tz=timezonetash)

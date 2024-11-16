@@ -29,6 +29,7 @@ timezonetash = pytz.timezone("Asia/Tashkent")
 scheduler = BackgroundScheduler()
 scheduler.start()
 
+BASE_URL = 'https://api.service.safiabakery.uz/'
 
 def get_children(category_id, db: Session):
     children = db.query(Category).filter_by(parent_id=category_id).filter(Category.status == 1)
@@ -192,7 +193,8 @@ async def put_request_id(
 
         if data.status == 1 or data.brigada_id is not None:
             delete_from_chat(message_id=request.tg_message_id, topic_id=topic_id)
-            send_notification(db=db, request_id=id, topic_id=topic_id, text=request_text, finishing_time=finishing_time)
+            send_notification(db=db, request_id=id, topic_id=topic_id, text=request_text, finishing_time=finishing_time,
+                              file_url=request.file.url)
 
             request = it_requests.get_request_id(db=db, id=id)
             if request.brigada:
@@ -220,8 +222,8 @@ async def put_request_id(
                 send_job_id = f"send_message_for_{request.id}"
                 try:
                     scheduler.add_job(send_notification, 'date', run_date=sending_scheduled_time,
-                                      args=[db, request.id, topic_id, request_text, finishing_time], id=send_job_id,
-                                      replace_existing=True)
+                                      args=[db, request.id, topic_id, request_text, finishing_time, request.file.url],
+                                      id=send_job_id, replace_existing=True)
                 except ConflictingIdError:
                     print(f"Job '{send_job_id}' already scheduled or was missed by time. Skipping ...")
 
@@ -288,20 +290,21 @@ async def put_request_id(
             except JobLookupError:
                 print(f"'{send_job_id}' job not found or already has completed !")
 
-            started_at = request.started_at
-            finished_at = request.finished_at
-            finished_time = finished_at - started_at
-            topic_message = f"<s>{request_text}</s>\n\n" \
-                            f"<b> ✅ Вы завершили заявку за:</b>  {str(finished_time).split('.')[0]}"
-            keyboard = {
-                "inline_keyboard": [
-                    [
-                        {"text": "Возобновить", "callback_data": "resume_request"}
-                    ]
-                ]
-            }
-            edit_topic_message(chat_id=settings.IT_SUPERGROUP, thread_id=topic_id, message_text=topic_message,
-                               message_id=message_id, inline_keyboard=keyboard)
+            # started_at = request.started_at
+            # finished_at = request.finished_at
+            # finished_time = finished_at - started_at
+            # topic_message = f"<s>{request_text}</s>\n\n" \
+            #                 f"<b> ✅ Вы завершили заявку за:</b>  {str(finished_time).split('.')[0]}"
+            # keyboard = {
+            #     "inline_keyboard": [
+            #         [
+            #             {"text": "Возобновить", "callback_data": "resume_request"}
+            #         ]
+            #     ]
+            # }
+            # edit_topic_message(chat_id=settings.IT_SUPERGROUP, thread_id=topic_id, message_text=topic_message,
+            #                    message_id=message_id, inline_keyboard=keyboard)
+            delete_from_chat(message_id=message_id, topic_id=topic_id)
             user_message = request_text + f"\n\nСтатус вашей заявки:  Завершен ✅"
             inline_keyboard = {
                 "inline_keyboard": [
@@ -330,11 +333,15 @@ async def put_request_id(
                     [
                         {"text": "Завершить заявку", "callback_data": "complete_request"},
                         {"text": "Отменить", "callback_data": "cancel_request"}
-                    ]
+                    ],
+                    [{"text": "Посмотреть фото", "url": f"{BASE_URL}{request.file.url}"}]
                 ]
             }
-            edit_topic_message(chat_id=settings.IT_SUPERGROUP, thread_id=topic_id, message_id=message_id,
-                               message_text=text, inline_keyboard=inline_keyboard)
+            # edit_topic_message(chat_id=settings.IT_SUPERGROUP, thread_id=topic_id, message_id=message_id,
+            #                    message_text=text, inline_keyboard=inline_keyboard)
+            sendtotelegramtopic(chat_id=settings.IT_SUPERGROUP, thread_id=topic_id, message_text=text,
+                                inline_keyboard=inline_keyboard)
+
             if delta_minutes > 0:
                 delete_job_id = f"delete_message_for_{request.id}"
                 try:
@@ -346,8 +353,8 @@ async def put_request_id(
                 send_job_id = f"send_message_for_{request.id}"
                 try:
                     scheduler.add_job(send_notification, 'date', run_date=sending_scheduled_time,
-                                      args=[db, request.id, topic_id, request_text, finishing_time], id=send_job_id,
-                                      replace_existing=True)
+                                      args=[db, request.id, topic_id, request_text, finishing_time, request.file.url],
+                                      id=send_job_id, replace_existing=True)
                 except ConflictingIdError:
                     print(f"Job '{send_job_id}' already scheduled or was missed by time. Skipping ...")
 
