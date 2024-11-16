@@ -10,8 +10,9 @@ import pytz
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.base import JobLookupError, ConflictingIdError
 from app.crud import it_requests
-from app.routes.v2.endpoints.it_requests import BASE_URL
 
+
+BASE_URL = 'https://api.service.safiabakery.uz/'
 timezonetash = pytz.timezone("Asia/Tashkent")
 
 scheduler = BackgroundScheduler()
