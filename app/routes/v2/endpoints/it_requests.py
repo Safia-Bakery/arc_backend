@@ -417,7 +417,8 @@ async def create_request(
 
     inline_keyboard = {
         "inline_keyboard": [
-            [{"text": "Принять заявку", "callback_data": "accept_action"}]
+            [{"text": "Принять заявку", "callback_data": "accept_action"}],
+            [{"text": "Посмотреть фото", "url": f"{BASE_URL}{data.files[0] if data.files is not None else 'None'}"}]
         ]
     }
     try:
