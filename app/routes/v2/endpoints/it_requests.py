@@ -194,7 +194,7 @@ async def put_request_id(
         if data.status == 1 or data.brigada_id is not None:
             delete_from_chat(message_id=request.tg_message_id, topic_id=topic_id)
             send_notification(db=db, request_id=id, topic_id=topic_id, text=request_text, finishing_time=finishing_time,
-                              file_url=request.file.url)
+                              file_url=request.file[0].url)
 
             request = it_requests.get_request_id(db=db, id=id)
             if request.brigada:
@@ -222,7 +222,7 @@ async def put_request_id(
                 send_job_id = f"send_message_for_{request.id}"
                 try:
                     scheduler.add_job(send_notification, 'date', run_date=sending_scheduled_time,
-                                      args=[db, request.id, topic_id, request_text, finishing_time, request.file.url],
+                                      args=[db, request.id, topic_id, request_text, finishing_time, request.file[0].url],
                                       id=send_job_id, replace_existing=True)
                 except ConflictingIdError:
                     print(f"Job '{send_job_id}' already scheduled or was missed by time. Skipping ...")
@@ -353,7 +353,7 @@ async def put_request_id(
                 send_job_id = f"send_message_for_{request.id}"
                 try:
                     scheduler.add_job(send_notification, 'date', run_date=sending_scheduled_time,
-                                      args=[db, request.id, topic_id, request_text, finishing_time, request.file.url],
+                                      args=[db, request.id, topic_id, request_text, finishing_time, request.file[0].url],
                                       id=send_job_id, replace_existing=True)
                 except ConflictingIdError:
                     print(f"Job '{send_job_id}' already scheduled or was missed by time. Skipping ...")
