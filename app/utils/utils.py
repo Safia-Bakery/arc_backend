@@ -293,9 +293,18 @@ def send_notification(db, request_id, topic_id, text, finishing_time, file_url):
             [{"text": "Посмотреть фото", "url": f"{BASE_URL}{file_url}"}]
         ]
     }
-    remaining_time = finishing_time - datetime.now(tz=timezonetash)
-    text = f"{text}\n\n" \
-           f"<b> ‼️ Оставщиеся время:</b>  {str(remaining_time).split('.')[0]}"
+    now = datetime.now(tz=timezonetash)
+    if finishing_time is not None:
+        remaining_time = finishing_time - now
+        late_time = now - finishing_time
+
+        if finishing_time >= now:
+            text = f"{text}\n\n" \
+                   f"<b> ‼️ Оставщиеся время:</b>  {str(remaining_time).split('.')[0]}"
+        else:
+            text = f"{text}\n\n" \
+                   f"<b> ‼️ Просрочен на:</b>  {str(late_time).split('.')[0]}"
+
     payload = {
         'chat_id': settings.IT_SUPERGROUP,
         'message_thread_id': topic_id,  # Include the thread ID for the specific topic

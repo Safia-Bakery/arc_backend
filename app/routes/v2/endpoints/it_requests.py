@@ -7,6 +7,7 @@ from fastapi import (
     APIRouter
 )
 from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.jobstores.base import JobLookupError, ConflictingIdError
 from fastapi_pagination import paginate, Page
 from sqlalchemy.orm import Session
@@ -26,7 +27,13 @@ it_requests_router = APIRouter()
 
 timezonetash = pytz.timezone("Asia/Tashkent")
 
-scheduler = BackgroundScheduler()
+
+# Configure job store
+jobstores = {
+    "default": SQLAlchemyJobStore(url=settings.SCHEDULER_DATABASE_URL)
+}
+
+scheduler = BackgroundScheduler(jobstores=jobstores)
 scheduler.start()
 
 BASE_URL = 'https://api.service.safiabakery.uz/'
