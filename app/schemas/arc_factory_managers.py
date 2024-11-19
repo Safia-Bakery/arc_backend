@@ -14,7 +14,8 @@ class CreateArcFactoryManagers(BaseModel):
 
 
 class GetArcFactoryManagers(BaseModel):
-    name: str
+    id :int
+    name: Optional[str]=None
     description: Optional[str]=None
     class Config:
         orm_mode = True

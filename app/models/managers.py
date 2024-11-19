@@ -16,6 +16,7 @@ class Managers(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String,nullable=True)
     description = Column(String,nullable=True)
+    status = Column(Integer,nullable=True)
     division = relationship("Fillials", back_populates="manager")
     created_at = Column(DateTime(timezone=True), default=func.now())
     updated_at = Column(DateTime(timezone=True), default=func.now())

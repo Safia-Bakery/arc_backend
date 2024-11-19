@@ -30,10 +30,11 @@ class GetArcFactoryDivisions(BaseModel):
 
 
 class GetArcFactoryDivision(BaseModel):
-    name : str
-    manager_id : int
-    status : int
-    manager : GetArcFactoryManagers
+    id : UUID
+    name : Optional[str]=0
+    manager_id : Optional[int]=0
+    status : Optional[int]=0
+    manager : Optional[GetArcFactoryManagers]=None
     class Config:
         orm_mode = True
 
