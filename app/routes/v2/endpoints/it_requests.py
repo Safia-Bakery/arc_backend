@@ -32,8 +32,8 @@ jobstores = {
     "default": SQLAlchemyJobStore(url=settings.SCHEDULER_DATABASE_URL)
 }
 
-scheduler = BackgroundScheduler(jobstores=jobstores)
-# scheduler = BackgroundScheduler()
+# scheduler = BackgroundScheduler(jobstores=jobstores)
+scheduler = BackgroundScheduler()
 scheduler.start()
 
 BASE_URL = 'https://api.service.safiabakery.uz/'
