@@ -41,7 +41,7 @@ class Settings(BaseSettings):
         'XXL (62 - 64)',
         'XXXL (66 - 68)'
     ],
-    # SCHEDULER_DATABASE_URL: Optional[str] = os.getenv("SCHEDULER_DATABASE_URL")
+    SCHEDULER_DATABASE_URL: Optional[str] = os.getenv("SCHEDULER_DATABASE_URL")
 
     # Security settings
     class Config:
