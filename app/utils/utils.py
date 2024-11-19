@@ -1,5 +1,6 @@
 import json
 from typing import Optional
+from app.db.session import SessionLocal
 
 import requests
 import string
@@ -14,9 +15,6 @@ from app.crud import it_requests
 
 BASE_URL = 'https://api.service.safiabakery.uz/'
 timezonetash = pytz.timezone("Asia/Tashkent")
-
-scheduler = BackgroundScheduler()
-scheduler.start()
 
 
 def send_simple_text_message(bot_token, chat_id, message_text):
@@ -282,7 +280,7 @@ def delete_from_chat(message_id, topic_id: Optional[int] = None):
         return False
 
 
-def send_notification(db, request_id, topic_id, text, finishing_time, file_url):
+def send_notification(request_id, topic_id, text, finishing_time, file_url):
     url = f'https://api.telegram.org/bot{settings.bottoken}/sendMessage'
     inline_keyboard = {
         "inline_keyboard": [
@@ -316,7 +314,8 @@ def send_notification(db, request_id, topic_id, text, finishing_time, file_url):
     if response.status_code == 200:
         response_data = response.json()
         new_message_id = response_data["result"]["message_id"]
-        it_requests.edit_request(db=db, id=request_id, tg_message_id=new_message_id)
+        with SessionLocal() as db:
+            it_requests.edit_request(db=db, id=request_id, tg_message_id=new_message_id)
 
     else:
         return False

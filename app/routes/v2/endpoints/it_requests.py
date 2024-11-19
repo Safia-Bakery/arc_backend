@@ -32,8 +32,8 @@ jobstores = {
     "default": SQLAlchemyJobStore(url=settings.SCHEDULER_DATABASE_URL)
 }
 
-# scheduler = BackgroundScheduler(jobstores=jobstores)
-scheduler = BackgroundScheduler()
+scheduler = BackgroundScheduler(jobstores=jobstores)
+# scheduler = BackgroundScheduler()
 scheduler.start()
 
 BASE_URL = 'https://api.service.safiabakery.uz/'
@@ -191,16 +191,17 @@ async def put_request_id(
             delta_minutes = 2880
         elif sla == 96:
             delta_minutes = 4320
+        elif sla == 0.05:
+            delta_minutes = 2
         else:
             delta_minutes = 0
 
         delay = timedelta(minutes=delta_minutes)
         deleting_scheduled_time = request.created_at + delay - timedelta(seconds=2)
         sending_scheduled_time = request.created_at + delay
-
         if data.status == 1 or data.brigada_id is not None:
             delete_from_chat(message_id=request.tg_message_id, topic_id=topic_id)
-            send_notification(db=db, request_id=id, topic_id=topic_id, text=request_text, finishing_time=finishing_time,
+            send_notification(request_id=id, topic_id=topic_id, text=request_text, finishing_time=finishing_time,
                               file_url=request.file[0].url)
 
             request = it_requests.get_request_id(db=db, id=id)
@@ -229,7 +230,7 @@ async def put_request_id(
                 send_job_id = f"send_message_for_{request.id}"
                 try:
                     scheduler.add_job(send_notification, 'date', run_date=sending_scheduled_time,
-                                      args=[db, request.id, topic_id, request_text, finishing_time, request.file[0].url],
+                                      args=[request.id, topic_id, request_text, finishing_time, request.file[0].url],
                                       id=send_job_id, replace_existing=True)
                 except ConflictingIdError:
                     print(f"Job '{send_job_id}' already scheduled or was missed by time. Skipping ...")
@@ -366,7 +367,7 @@ async def put_request_id(
                 send_job_id = f"send_message_for_{request.id}"
                 try:
                     scheduler.add_job(send_notification, 'date', run_date=sending_scheduled_time,
-                                      args=[db, request.id, topic_id, request_text, finishing_time, request.file[0].url],
+                                      args=[request.id, topic_id, request_text, finishing_time, request.file[0].url],
                                       id=send_job_id, replace_existing=True)
                 except ConflictingIdError:
                     print(f"Job '{send_job_id}' already scheduled or was missed by time. Skipping ...")
