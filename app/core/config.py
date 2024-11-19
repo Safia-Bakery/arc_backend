@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 from pydantic import AnyHttpUrl, field_validator
 from typing import Optional
 from pydantic_settings import BaseSettings
@@ -7,6 +8,8 @@ import os
 class Settings(BaseSettings):
     app_name: str = "Staff Eats Project"
     version: str = "1.0.0"
+    load_dotenv()
+    bottoken:str = os.environ.get('BOT_TOKEN')
 
 
     # Token expiration settings
@@ -18,7 +21,7 @@ class Settings(BaseSettings):
     base_url: Optional[str] = os.getenv("BASE_URL")
     jwt_refresh_secret_key: Optional[str] = os.getenv("JWT_REFRESH_SECRET_KEY")
     jwt_algorithm: Optional[str] = os.getenv("ALGORITHM",'HS256')
-    bottoken: Optional[str] = os.getenv("BOT_TOKEN")
+    # bottoken: Optional[str] = os.getenv("BOT_TOKEN")
     hrbot_token: Optional[str] = os.getenv("HRBOT_TOKEN")
     login_iiko: Optional[str] = os.getenv("LOGIN_IIKO")
     password_iiko: Optional[str] = os.getenv("PASSWORD_IIKO")
