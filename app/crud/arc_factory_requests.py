@@ -17,7 +17,7 @@ from app.models.requests import Requests
 
 
 def get_arc_factory_requests(db:Session,user_id,fillial_id,status,id ):
-    query = db.query(Requests).filter(Category.department==1,Category.sphere_status==2)
+    query = db.query(Requests).join(Category).filter(Category.department==1,Category.sphere_status==2)
     if user_id is not None:
         query = query.filter(Requests.user_id==user_id)
     if status is not None:
