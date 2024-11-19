@@ -82,6 +82,8 @@ from app.routes.v2.endpoints.category import category_router
 from app.routes.v2.endpoints.inventory_requests import inv_requests_router
 from app.routes.v2.endpoints.tool_balance_cron import tool_balance_cron_router
 from app.routes.v2.endpoints.tool_balance import tool_balance_router
+from app.routes.v2.endpoints.collector_users import collector_users_router
+from app.routes.v2.endpoints.groups import groups_router
 
 
 from app.routes.v2.endpoints.iikotransfers import iiko_transfer_router
@@ -109,6 +111,8 @@ app.include_router(category_router, prefix="/api/v2", tags=["Category"])
 app.include_router(inv_requests_router, prefix="/api/v2", tags=["Inventory"])
 app.include_router(tool_balance_cron_router, prefix="/api/v2", tags=["Cron tool balances"])
 app.include_router(tool_balance_router, prefix="/api/v2", tags=["Tool balances"])
+app.include_router(collector_users_router, tags=["Collector bot users"])
+app.include_router(groups_router, tags=["Groups"])
 app.include_router(router)
 app.include_router(urls)
 app.include_router(hrrouter)
