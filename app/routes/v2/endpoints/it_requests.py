@@ -199,9 +199,13 @@ async def put_request_id(
         delay = timedelta(minutes=delta_minutes)
         deleting_scheduled_time = request.created_at + delay - timedelta(seconds=2)
         sending_scheduled_time = request.created_at + delay
+        print('before update brigada')
 
         if data.status == 1 or data.brigada_id is not None:
+            print('hello world')
+
             delete_from_chat(message_id=request.tg_message_id, topic_id=topic_id)
+            print('after delete')
             send_notification(request_id=id, topic_id=topic_id, text=request_text, finishing_time=finishing_time,
                               file_url=request.file[0].url)
 
