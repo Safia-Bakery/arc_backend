@@ -27,14 +27,13 @@ it_requests_router = APIRouter()
 
 timezonetash = pytz.timezone("Asia/Tashkent")
 
-print("SCHEDULER_DATABASE_URL: ", settings.SCHEDULER_DATABASE_URL)
 # Configure job store
 jobstores = {
     "default": SQLAlchemyJobStore(url=settings.SCHEDULER_DATABASE_URL)
 }
 
-scheduler = BackgroundScheduler(jobstores=jobstores)
-# scheduler = BackgroundScheduler()
+# scheduler = BackgroundScheduler(jobstores=jobstores)
+scheduler = BackgroundScheduler()
 scheduler.start()
 
 BASE_URL = 'https://api.service.safiabakery.uz/'
