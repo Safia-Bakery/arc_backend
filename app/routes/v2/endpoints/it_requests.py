@@ -134,6 +134,7 @@ async def put_request_id(
         db: Session = Depends(get_db),
         request_user: UserFullBack = Depends(get_current_user)
 ):
+    print('coming to version it request')
     request = it_requests.edit_request(db=db, data=data, id=id)
     message_id = request.tg_message_id
     # brigada_id = request.brigada_id
