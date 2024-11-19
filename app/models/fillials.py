@@ -5,6 +5,7 @@ from sqlalchemy import (
     Integer,
     String,
     ForeignKey,
+    BIGINT
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -24,5 +25,8 @@ class Fillials(Base):
     status = Column(Integer, default=0)
     supplier = relationship("Suppliers", back_populates="store")
     tool_balance = relationship("ToolBalance", back_populates="store")
+    arc = Column(Integer, default=0)
+    manager_id = Column(BIGINT, ForeignKey("managers.id"))
+    manager = relationship("Managers", back_populates="division")
 
 
