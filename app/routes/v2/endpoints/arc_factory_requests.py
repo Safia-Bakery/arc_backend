@@ -12,7 +12,7 @@ from app.utils.utils import generate_random_string, inlinewebapp, confirmation_r
 from app.schemas.branchs import GetBranchs
 from fastapi_pagination import Page,paginate
 from app.crud.branchs import get_branchs
-from app.schemas.arc_factory_requests import GetArcFactoryRequests,UpdateArcFactoryRequests
+from app.schemas.arc_factory_requests import GetArcFactoryRequests,UpdateArcFactoryRequests,GetArcFactoryRequest
 from app.crud.arc_factory_requests import get_arc_factory_requests,get_arc_factory_request,update_arc_factory_request
 from app.crud.logs import create_log
 
@@ -33,7 +33,7 @@ async def get_requests(
     return paginate(get_arc_factory_requests(db=db,user_id=user_id,fillial_id=fillial_id,status=status,id=id))
 
 
-@arc_factory_requests.get("/arc/factory/requests/{request_id}",response_model=GetArcFactoryRequests)
+@arc_factory_requests.get("/arc/factory/requests/{request_id}",response_model=GetArcFactoryRequest)
 async def get_request(
         request_id:int,
         current_user: GetUserFullData = Depends(get_current_user),
@@ -41,7 +41,7 @@ async def get_request(
     return get_arc_factory_request(db=db,request_id=request_id)
 
 
-@arc_factory_requests.put("/arc/factory/requests/{request_id}",response_model=GetArcFactoryRequests)
+@arc_factory_requests.put("/arc/factory/requests/{request_id}",response_model=GetArcFactoryRequest)
 async def update_request(
         request_id:int,
         request:UpdateArcFactoryRequests,
