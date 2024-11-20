@@ -1,4 +1,5 @@
 from typing import Optional
+from uuid import UUID
 
 from fastapi import APIRouter, UploadFile
 from fastapi import Depends, File
@@ -24,7 +25,7 @@ arc_factory_requests = APIRouter()
 @arc_factory_requests.get("/arc/factory/requests",response_model=Page[GetArcFactoryRequests])
 async def get_requests(
         user_id:Optional[int]=None,
-        fillial_id:Optional[int]=None,
+        fillial_id:Optional[UUID]=None,
         status:Optional[int]=None,
         id:Optional[int]=None,
         current_user: GetUserFullData = Depends(get_current_user),
