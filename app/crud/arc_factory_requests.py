@@ -38,6 +38,7 @@ def update_arc_factory_request(db:Session,request_id,request:UpdateArcFactoryReq
     query.status = request.status
     query.brigada_id = request.brigada_id
     query.deny_reason = request.deny_reason
+    query.category_id = request.category_id
     db.commit()
     db.refresh(query)
     return query
