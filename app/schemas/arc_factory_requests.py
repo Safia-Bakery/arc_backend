@@ -24,8 +24,8 @@ class GetArcFactoryRequests(BaseModel):
     user_id : Optional[int]=None
     fillial_id: Optional[UUID] = Field(None, alias="division_id")  # Maps 'division_id' to 'fillial_id'
     status: Optional[int] = None
-    user: Optional["UserGetJustNames"] = None
-    fillial: Optional["GetArcFactoryDivision"] = Field(None, alias="division")  # Maps 'fillial' to 'division'
+    user: Optional[UserGetJustNames] = None
+    fillial: Optional[GetArcFactoryDivision] = Field(None, alias="division")  # Maps 'fillial' to 'division'
     brigada: Optional[GetBrigada] = None
     category : Optional[GetCategory] = None
     is_bot : Optional[int] = 1
@@ -53,8 +53,8 @@ class GetArcFactoryRequest(BaseModel):
     user_id: Optional[int] = None
     fillial_id: Optional[UUID] = Field(None, alias="division_id")  # Maps 'division_id' to 'fillial_id'
     status: Optional[int] = None
-    user: Optional["UserGetJustNames"] = None
-    fillial: Optional["GetArcFactoryDivision"] = Field(None, alias="division")  # Maps 'fillial' to 'division'
+    user: Optional[UserGetJustNames] = None
+    fillial: Optional[GetArcFactoryDivision] = Field(None, alias="division")  # Maps 'fillial' to 'division'
     brigada: Optional[GetBrigada] = None
     category: Optional[GetCategory] = None
     is_bot: Optional[int] = 1
