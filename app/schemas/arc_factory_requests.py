@@ -64,6 +64,7 @@ class GetArcFactoryRequest(BaseModel):
     files: Optional[list[FileSch]] = None
     logs: Optional[list[GetLogs]] = None
     phone_number: Optional[str] = None
+    update_time: Optional[Dict[str, str]] = None
     model_config = ConfigDict(
         populate_by_name=True,
     )
