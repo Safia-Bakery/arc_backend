@@ -999,7 +999,7 @@ def synchgroups(db: Session, groups):
     for line in groups:
         if line['id'] not in group_list[0] or line['id'] not in group_list[1]:
             group_list[2].append(line["id"])
-            item = models.ToolsParents(
+            item = models.ToolParents(
                 id=line["id"],
                 num=line["num"],
                 code=line["code"],
