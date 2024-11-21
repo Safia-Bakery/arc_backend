@@ -5,6 +5,7 @@ from datetime import datetime, time,date
 from fastapi import Form
 from uuid import UUID
 from app.schemas.logs import GetLogs
+from .files import FilesGet
 
 from .users import GetBrigada, UserGetJustNames
 from .comments import GetComments
@@ -70,6 +71,9 @@ class GetArcFactoryRequest(BaseModel):
     started_at: Optional[datetime] = None
     finished_at: Optional[datetime] = None
     deny_reason : Optional[str] = None
+    description: Optional[str] = None
+
+    file : Optional[list[FilesGet]] = None
     model_config = ConfigDict(
         populate_by_name=True,
     )
