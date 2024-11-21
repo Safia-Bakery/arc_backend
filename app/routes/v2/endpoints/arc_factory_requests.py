@@ -22,6 +22,7 @@ from microservices import sendtotelegramchannel
 arc_factory_requests = APIRouter()
 
 
+
 @arc_factory_requests.get("/arc/factory/requests",response_model=Page[GetArcFactoryRequests])
 async def get_requests(
         user_id:Optional[int]=None,
@@ -90,4 +91,4 @@ async def update_request(
             except:
                     pass
 
-    return
+    return updated_request

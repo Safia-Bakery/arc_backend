@@ -31,7 +31,7 @@ def get_arc_factory_requests(db:Session,user_id,fillial_id,status,id ):
         query = query.filter(Requests.fillial_id==fillial_id)
     if id is not None:
         query = query.filter(Requests.id==id)
-    return query.all()
+    return query.order_by(Requests.created_at.desc()).all()
 
 
 def get_arc_factory_request(db:Session,request_id):

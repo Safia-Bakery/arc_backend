@@ -23,5 +23,6 @@ class GetArcFactoryManagers(BaseModel):
 class UpdateArcFactoryManagers(BaseModel):
     name: Optional[str]=None
     description: Optional[str]=None
+    status: Optional[int]=None
     class Config:
         orm_mode = True

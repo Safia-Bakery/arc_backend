@@ -39,7 +39,7 @@ async def get_manager(
         manager_id:int,
         current_user: GetUserFullData = Depends(get_current_user),
         db:Session=Depends(get_db)):
-    return get_arc_factory_manager(db=db,manager_id=manager_id)
+    return get_arc_factory_manager(db=db,manager_id=manager_id,)
 
 
 @arc_factory_managers.put("/arc/factory/managers/{manager_id}",response_model=GetArcFactoryManagers)
@@ -48,4 +48,8 @@ async def update_manager(
         manager:UpdateArcFactoryManagers,
         db:Session=Depends(get_db),
         current_user: GetUserFullData = Depends(get_current_user)):
-    return update_arc_factory_manager(db=db,manager_id=manager_id,manager=manager)
+    try:
+        return update_arc_factory_manager(db=db,manager_id=manager_id,manager=manager)
+    except Exception as e:
+        print(e)
+        raise e
