@@ -13,8 +13,6 @@ class OrderItem(BaseModel):
 
 
 class CreateOrder(BaseModel):
-    branch_id: UUID
-    created_by: int
     products: List[OrderItem]
 
     class Config:
@@ -22,9 +20,8 @@ class CreateOrder(BaseModel):
 
 
 class UpdateOrder(BaseModel):
-    id: int
+
     status: int
-    accepted_by: int
 
     class Config:
         orm_mode = True

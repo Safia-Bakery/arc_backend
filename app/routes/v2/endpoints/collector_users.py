@@ -13,7 +13,7 @@ collector_users_router = APIRouter()
 timezone_tash = pytz.timezone('Asia/Tashkent')
 
 
-@collector_users_router.post("/collector_user/", response_model=GetUser)
+@collector_users_router.post("/collector/user/", response_model=GetUser)
 async def create_collector_user(
     data: CreateUser,
     db: Session = Depends(get_db)
@@ -21,7 +21,7 @@ async def create_collector_user(
     return create_user(db=db, data=data)
 
 
-@collector_users_router.get("/collector_user/", response_model=GetUser)
+@collector_users_router.get("/collector/user/", response_model=GetUser)
 async def get_collector_user(
     telegram_id: int,
     db: Session = Depends(get_db)
@@ -29,7 +29,7 @@ async def get_collector_user(
     return get_by_telegram_id(db=db, telegram_id=telegram_id)
 
 
-@collector_users_router.put("/collector_user/", response_model=GetUser)
+@collector_users_router.put("/collector/user/", response_model=GetUser)
 async def update_collector_user(
     data: UpdateUser,
     db: Session = Depends(get_db)

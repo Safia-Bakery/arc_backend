@@ -45,6 +45,7 @@ class Settings(BaseSettings):
         'XXXL (66 - 68)'
     ],
     SCHEDULER_DATABASE_URL: Optional[str] = os.getenv("SCHEDULER_DATABASE_URL")
+    collector_bottoken: str = os.getenv("COLLECTOR_BOTTOKEN")
 
     # Security settings
     class Config:
