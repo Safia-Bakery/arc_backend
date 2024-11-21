@@ -9,7 +9,8 @@ class Settings(BaseSettings):
     app_name: str = "Staff Eats Project"
     version: str = "1.0.0"
     load_dotenv()
-    bottoken:str = os.environ.get('BOT_TOKEN')
+    bottoken: str = os.environ.get('BOT_TOKEN')
+    collector_bottoken: str = os.environ.get("COLLECTOR_BOTTOKEN")
 
 
     # Token expiration settings
@@ -45,7 +46,6 @@ class Settings(BaseSettings):
         'XXXL (66 - 68)'
     ],
     SCHEDULER_DATABASE_URL: Optional[str] = os.getenv("SCHEDULER_DATABASE_URL")
-    collector_bottoken: str = os.getenv("COLLECTOR_BOTTOKEN")
 
     # Security settings
     class Config:
