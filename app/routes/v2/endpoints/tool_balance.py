@@ -26,7 +26,6 @@ async def store_balance(
         db: Session = Depends(get_db),
         request_user: UserFullBack = Depends(get_current_user),
 ):
-
     request_list = tool_balance.get_department_store_product_balances(
         db,
         department_id=department_id,
@@ -36,3 +35,20 @@ async def store_balance(
 
     return paginate(request_list)
 
+
+# @tool_balance_router.get("/tool_balances", response_model=Page[GetBalances])
+# async def tool_balances(
+#         department_id: str,
+#         category_id: Optional[int] = None,
+#         tool_name: Optional[str] = None,
+#         db: Session = Depends(get_db),
+#         request_user: UserFullBack = Depends(get_current_user)
+# ):
+#     request_list = tool_balance.get_tool_balances(
+#         db,
+#         department_id=department_id,
+#         category_id=category_id,
+#         tool_name=tool_name
+#     )
+#
+#     return paginate(request_list)

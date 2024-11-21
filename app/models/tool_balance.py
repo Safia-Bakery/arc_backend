@@ -1,16 +1,13 @@
 from sqlalchemy import (
     Column,
     Integer,
-    String,
     ForeignKey,
-    Float,
     DateTime,
     DECIMAL
 )
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import UUID, ARRAY, JSONB
-from datetime import datetime
+from sqlalchemy.sql import func
 from app.db.base import Base
 
 
@@ -22,6 +19,7 @@ class ToolBalance(Base):
     amount = Column(DECIMAL, nullable=True)
     sum = Column(DECIMAL, nullable=True)
     price = Column(DECIMAL, nullable=True)
+    updated_at = Column(DateTime, default=func.now())
     branch = relationship("ParentFillials", back_populates="tool_balance")
     store = relationship("Fillials", back_populates="tool_balance")
     tool = relationship("Tools", back_populates="tool_balance")

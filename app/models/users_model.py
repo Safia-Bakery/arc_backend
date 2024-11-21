@@ -50,3 +50,13 @@ class Users(Base):
     branch_id = Column(UUID, ForeignKey("parentfillials.id"), nullable=True)
     finished_task = relationship("KruFinishedTasks", back_populates="user")
     log = relationship("Logs", back_populates="user")
+    created_orders = relationship(
+        "CollectOrders",
+        foreign_keys="CollectOrders.created_by",
+        back_populates="created_user"
+    )
+    accepted_orders = relationship(
+        "CollectOrders",
+        foreign_keys="CollectOrders.accepted_by",
+        back_populates="accepted_user"
+    )
