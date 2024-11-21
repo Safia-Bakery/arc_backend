@@ -69,6 +69,7 @@ class GetArcFactoryRequest(BaseModel):
     update_time: Optional[Dict[str, str]] = None
     started_at: Optional[datetime] = None
     finished_at: Optional[datetime] = None
+    deny_reason : Optional[str] = None
     model_config = ConfigDict(
         populate_by_name=True,
     )
