@@ -116,15 +116,12 @@ app.include_router(category_router, prefix="/api/v2", tags=["Category"])
 app.include_router(inv_requests_router, prefix="/api/v2", tags=["Inventory"])
 app.include_router(tool_balance_cron_router, prefix="/api/v2", tags=["Cron tool balances"])
 app.include_router(tool_balance_router, prefix="/api/v2", tags=["Tool balances"])
-<<<<<<< HEAD
 app.include_router(arc_factory_requests, prefix="/api/v2", tags=["Arc factory"])
 app.include_router(arc_factory_managers, prefix="/api/v2", tags=["Arc factory"])
 app.include_router(arc_factory_divisions, prefix="/api/v2", tags=["Arc factory"])
-=======
 app.include_router(collector_users_router, tags=["Collector project"])
 app.include_router(collector_orders_router, tags=["Collector project"])
 app.include_router(groups_router, tags=["Groups"])
->>>>>>> baxtiyor
 app.include_router(router)
 app.include_router(urls)
 app.include_router(hrrouter)
