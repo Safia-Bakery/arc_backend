@@ -10,7 +10,9 @@ from app.schemas.collector_orders import CreateOrder, UpdateOrder, OrderItem
 
 
 def get_orders(db: Session, branch_id, status):
-    query = db.query(CollectOrders).filter(CollectOrders.branch_id == branch_id)
+    query = db.query(CollectOrders)
+    if branch_id is not None:
+        query = query.filter(CollectOrders.branch_id == branch_id)
     if status is not None:
         query = query.filter(CollectOrders.status == status)
 
@@ -23,9 +25,9 @@ def get_one_order(db: Session, id):
     return query
 
 
-def create_order(db: Session, branch_id: UUID, data: CreateOrder, user):
+def create_order(db: Session, branch_id: UUID, data: CreateOrder, created_by):
     query = CollectOrders(
-        created_by=user.id,
+        created_by=created_by,
         branch_id=branch_id
     )
     db.add(query)

@@ -6,10 +6,9 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from app.crud.collector_orders import create_order, get_orders, update_order, get_one_order
-from app.routes.depth import get_db
+from app.routes.depth import get_db, get_current_user
 from app.schemas.collector_orders import CreateOrder, UpdateOrder, GetOrder, OrderItem
 from app.schemas.users import GetUserFullData
-from microservices import get_current_user
 
 collector_orders_router = APIRouter()
 timezone_tash = pytz.timezone('Asia/Tashkent')
@@ -26,11 +25,12 @@ async def create_collector_order(
 
 @collector_orders_router.get("/collector/order/", response_model=List[GetOrder])
 async def get_collector_orders(
+        branch_id: Optional[str] = None,
         status: Optional[int] = None,
         db: Session = Depends(get_db),
         request_user: GetUserFullData = Depends(get_current_user)
 ):
-    return get_orders(db=db, branch_id=request_user.branch_id, status=status)
+    return get_orders(db=db, branch_id=branch_id or request_user.branch_id, status=status)
 
 
 @collector_orders_router.get("/collector/order/{id}", response_model=List[GetOrder])
