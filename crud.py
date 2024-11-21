@@ -949,10 +949,11 @@ def commitdata(db: Session, item):
 
 def synchgroups(db: Session, groups):
     # here first is arc second is inventory
-    group_list = [[],[]]
+    group_list = [[],[],[]]
     arc_data = find_hierarchy(groups,'1b55d7e1-6946-4bbc-bf93-542bfdb2b584')
     inv_data = find_hierarchy(groups,'09be831f-1201-4b78-9cad-7c94c3363276')
     inv_zenit_data = find_hierarchy(groups,'0bf90521-ccb3-4301-b7bc-08ad74ee188d')
+
     for line in arc_data:
         group_list[0].append(line["id"])
         item = models.ToolParents(
@@ -994,6 +995,21 @@ def synchgroups(db: Session, groups):
             parent_id=line["parent"],
         )
         commitdata(db, item)
+
+    for line in groups:
+        if line['id'] not in group_list[0] or line['id'] not in group_list[1]:
+            group_list[2].append(line["id"])
+            item = models.ToolsParents(
+                id=line["id"],
+                num=line["num"],
+                code=line["code"],
+                name=line["name"],
+                category=line["category"],
+                description=line["description"],
+                parent_id=line["parent"],
+            )
+            commitdata(db, item)
+
     return group_list
 
 def get_or_update(db:Session,price,name,num,id,code,producttype,mainunit,department,parent_id):
@@ -1034,6 +1050,9 @@ def synchproducts(db: Session, grouplist, products):
             get_or_update(db,price,name,num,id,code,producttype,mainunit,1,parentId)
         if parentId in grouplist[1]:
             get_or_update(db,price,name,num,id,code,producttype,mainunit,2,parentId)
+        if parentId in grouplist[2]:
+            get_or_update(db, price, name, num, id, code, producttype, mainunit, 3, parentId)
+
     return True
 def update_products_price(db:Session,prices,store_id_checker:Optional[UUID]=None):
         for i in prices:
