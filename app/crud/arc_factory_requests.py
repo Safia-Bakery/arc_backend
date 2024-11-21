@@ -41,7 +41,7 @@ def get_arc_factory_request(db:Session,request_id):
 def update_arc_factory_request(db:Session,request_id,request:UpdateArcFactoryRequests):
     query = db.query(Requests).filter(Requests.id==request_id).first()
     query.status = request.status
-    query.brigada_id = request.brigada_id
+    query.brigada_id = request.brigada_ids
     query.deny_reason = request.deny_reason
     query.category_id = request.category_id
     updated_data = query.update_time or {}

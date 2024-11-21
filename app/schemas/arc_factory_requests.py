@@ -41,10 +41,10 @@ class GetArcFactoryRequests(BaseModel):
 
 
 class UpdateArcFactoryRequests(BaseModel):
-    status : int
-    brigada_id : Optional[int]
-    deny_reason : Optional[str]
-    category_id : Optional[int]
+    status : Optional[int] = None
+    brigada_id : Optional[int] =None
+    deny_reason : Optional[str]=None
+    category_id : Optional[int] =None
 
     class Config:
         orm_mode = True
