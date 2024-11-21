@@ -34,3 +34,5 @@ from app.models.files import Files
 from app.models.tool_balance import ToolBalance
 from app.models.logs import Logs
 from app.models.managers import Managers
+from app.models.collector_orders import CollectOrders
+from app.models.collector_orders import CollectOrderItems

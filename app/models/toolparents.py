@@ -23,7 +23,6 @@ import pytz
 import uuid
 
 
-
 class ToolParents(Base):
     __tablename__ = "toolparents"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -33,3 +32,4 @@ class ToolParents(Base):
     parent_id = Column(UUID(as_uuid=True), nullable=True)
     category = Column(String, nullable=True)
     description = Column(String, nullable=True)
+

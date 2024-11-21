@@ -85,6 +85,9 @@ from app.routes.v2.endpoints.tool_balance import tool_balance_router
 from app.routes.v2.endpoints.arc_factory_requests import arc_factory_requests
 from app.routes.v2.endpoints.arc_factory_managers import arc_factory_managers
 from app.routes.v2.endpoints.arc_factory_divisions import arc_factory_divisions
+from app.routes.v2.endpoints.collector_users import collector_users_router
+from app.routes.v2.endpoints.groups import groups_router
+from app.routes.v2.endpoints.collector_orders import collector_orders_router
 
 
 
@@ -113,9 +116,15 @@ app.include_router(category_router, prefix="/api/v2", tags=["Category"])
 app.include_router(inv_requests_router, prefix="/api/v2", tags=["Inventory"])
 app.include_router(tool_balance_cron_router, prefix="/api/v2", tags=["Cron tool balances"])
 app.include_router(tool_balance_router, prefix="/api/v2", tags=["Tool balances"])
+<<<<<<< HEAD
 app.include_router(arc_factory_requests, prefix="/api/v2", tags=["Arc factory"])
 app.include_router(arc_factory_managers, prefix="/api/v2", tags=["Arc factory"])
 app.include_router(arc_factory_divisions, prefix="/api/v2", tags=["Arc factory"])
+=======
+app.include_router(collector_users_router, tags=["Collector project"])
+app.include_router(collector_orders_router, tags=["Collector project"])
+app.include_router(groups_router, tags=["Groups"])
+>>>>>>> baxtiyor
 app.include_router(router)
 app.include_router(urls)
 app.include_router(hrrouter)

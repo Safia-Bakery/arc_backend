@@ -50,4 +50,6 @@ class Tools(Base):
     category_id = Column(Integer, ForeignKey("category.id"))
     categories = relationship("Category", back_populates="tool")
     tool_balance = relationship("ToolBalance", back_populates="tool")
+    order_item = relationship("CollectOrderItems", back_populates="product")
+
 

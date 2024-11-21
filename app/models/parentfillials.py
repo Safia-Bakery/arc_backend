@@ -40,3 +40,4 @@ class ParentFillials(Base):
     kru_finished_task = relationship("KruFinishedTasks", back_populates="branch")
     user = relationship("Users", back_populates="branch")
     tool_balance = relationship("ToolBalance", back_populates="branch")
+    collector_order = relationship("CollectOrders", back_populates="branch")

@@ -2,40 +2,19 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from app.models.tool_balance import ToolBalance
 from app.models.tools import Tools
+from app.models.category import Category
 from sqlalchemy import and_
 
 
-# def filter_requests_all(
-#         db: Session,
-#         id,
-#         user,
-#         fillial_id,
-#         created_at,
-#         request_status,
-#         department
-# ):
-#     query = db.query(Requests).filter(Category.department == department)
+# def get_tool_balances(db: Session, department_id, category_id, tool_name):
+#     query = db.query(ToolBalance).filter(ToolBalance.department_id == department_id)
+#     if category_id is not None:
+#         query = query.join(Tools).join(Category).filter(Category.id == category_id)
+#     if tool_name is not None:
+#         query = query.filter(Tools.name.ilike(f"%{tool_name}%"))
 #
-#     query.options(
-#         joinedload(Requests.request_orpr)
-#         .joinedload(OrderProducts.orpr_product)
-#         .joinedload(Products.prod_cat)
-#     )
-#
-#     if id is not None:
-#         query = query.filter(Requests.id == id)
-#     if fillial_id is not None:
-#         query = query.outerjoin(Fillials).filter(Fillials.parentfillial_id == fillial_id)
-#     if created_at is not None:
-#         query = query.filter(cast(Requests.created_at, Date) == created_at)
-#     if request_status is not None:
-#         request_status = [int(i) for i in re.findall(r"\d+", str(request_status))]
-#         query = query.filter(Requests.status.in_(request_status))
-#     if user is not None:
-#         query = query.filter(Users.full_name.ilike(f"%{user}%"))
-#
-#     results = query.order_by(Requests.id.desc()).all()
-#     return results
+#     result = query.order_by(Tools.name.asc()).all()
+#     return result
 
 
 def get_department_store_product_balances(db: Session, department_id, store_id, tool_id):
