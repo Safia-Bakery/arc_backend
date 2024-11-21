@@ -15,16 +15,16 @@ class CreateArcFactoryDivision(BaseModel):
         orm_mode = True
 
 class UpdateArcFactoryDivision(BaseModel):
-    name : int
-    manager_id : int
-    status : int
+    name : Optional[str]=  None
+    manager_id : Optional[int]= None
+    status : Optional[int]= None
     class Config:
         orm_mode = True
 
 class GetArcFactoryDivisions(BaseModel):
-    name : str
-    manager_id : int
-    status : int
+    name : Optional[str]=  None
+    manager_id : Optional[int]= None
+    status : Optional[int]= None
     class Config:
         orm_mode = True
 
