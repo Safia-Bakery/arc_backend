@@ -31,6 +31,8 @@ class GetArcFactoryRequests(BaseModel):
     is_bot : Optional[int] = 1
     created_at : Optional[datetime] = None
     user_manager : Optional[str] = None
+    started_at : Optional[datetime] = None
+    finished_at : Optional[datetime] = None
     comments : Optional[list[GetComments]] = None
     model_config = ConfigDict(
         populate_by_name=True,
