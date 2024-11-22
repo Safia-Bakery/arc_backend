@@ -2,10 +2,12 @@ from sqlalchemy.orm import Session
 from app.models.toolparents import ToolParents
 
 
-def get_toolparents(db: Session, type, parent_id):
+def get_toolparents(db: Session, parent_id, status, name):
     query = db.query(ToolParents)
-    if type is not None:
-        query = query.filter(ToolParents.type == type)
+    if status is not None:
+        query = query.filter(ToolParents.status == status)
+    if name is not None:
+        query = query.filter(ToolParents.name.ilike(f"%{name}%"))
     if parent_id is not None:
         query = query.filter(ToolParents.parent_id == parent_id)
 

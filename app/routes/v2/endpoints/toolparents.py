@@ -20,18 +20,19 @@ toolparents_router = APIRouter()
 
 @toolparents_router.get("/tools/parents", response_model=Page[GetToolParent])
 async def get_toolparents(
-        type: Optional[str] = None,
         parent_id: Optional[str] = None,
+        status: Optional[int] = None,
+        name: Optional[str] = None,
         db: Session = Depends(get_db),
         request_user: UserFullBack = Depends(get_current_user)
 ):
-    tool_parents = toolparents.get_toolparents(db=db, type=type, parent_id=parent_id)
+    tool_parents = toolparents.get_toolparents(db=db, parent_id=parent_id, status=status, name=name)
     return paginate(tool_parents)
 
 
 @toolparents_router.put("/tools/parents", response_model=GetToolParent)
 async def put_toolparent(
-        id: int,
+        id: str,
         status: Optional[int] = None,
         db: Session = Depends(get_db),
         request_user: UserFullBack = Depends(get_current_user)

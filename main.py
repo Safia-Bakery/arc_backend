@@ -88,6 +88,7 @@ from app.routes.v2.endpoints.arc_factory_divisions import arc_factory_divisions
 from app.routes.v2.endpoints.collector_users import collector_users_router
 from app.routes.v2.endpoints.groups import groups_router
 from app.routes.v2.endpoints.collector_orders import collector_orders_router
+from app.routes.v2.endpoints.toolparents import toolparents_router
 
 
 
@@ -122,6 +123,7 @@ app.include_router(arc_factory_divisions, prefix="/api/v2", tags=["Arc factory"]
 app.include_router(collector_users_router, tags=["Collector project"])
 app.include_router(collector_orders_router, tags=["Collector project"])
 app.include_router(groups_router, tags=["Groups"])
+app.include_router(toolparents_router, tags=["Tool Parents"])
 app.include_router(router)
 app.include_router(urls)
 app.include_router(hrrouter)
