@@ -9,6 +9,7 @@ from app.schemas.tools import GetTool
 
 class OrderItem(BaseModel):
     product : Optional[GetTool] =None
+    amount: Optional[int]=None
     class Config:
         orm_mode = True
 
@@ -46,7 +47,7 @@ class GetOrder(BaseModel):
     accepted_by: Optional[int] = None
     created_user: Optional[UserGetlist] = None
     accepted_user: Optional[UserGetlist] = None
-    order_items: Optional[OrderItem] = None
+    order_items: Optional[list[OrderItem]] = None
     created_at : Optional[datetime] =None
 
     class Config:
