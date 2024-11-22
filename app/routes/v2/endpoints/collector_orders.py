@@ -33,7 +33,7 @@ async def get_collector_orders(
     return get_orders(db=db, branch_id=branch_id or request_user.branch_id, status=status)
 
 
-@collector_orders_router.get("/collector/order/{id}", response_model=List[GetOrder])
+@collector_orders_router.get("/collector/order/{id}", response_model=GetOrder)
 async def get_collector_one_order(
         id: int,
         db: Session = Depends(get_db),

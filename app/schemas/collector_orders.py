@@ -1,26 +1,36 @@
+from datetime import datetime
 from typing import Optional, List
 from uuid import UUID
 from pydantic import BaseModel
 from app.schemas.branchs import GetBranchs
 from app.schemas.users import UserGetlist
+from app.schemas.tools import GetTool
 
 
 class OrderItem(BaseModel):
-    product_id: int
-
+    product : Optional[GetTool] =None
     class Config:
         orm_mode = True
 
 
+
+class CreateOrderItem(BaseModel):
+    product_id: UUID
+    amount : int
+
+
+
+
+
+
 class CreateOrder(BaseModel):
-    products: List[OrderItem]
+    products: List[CreateOrderItem]
 
     class Config:
         orm_mode = True
 
 
 class UpdateOrder(BaseModel):
-
     status: int
 
     class Config:
@@ -37,6 +47,7 @@ class GetOrder(BaseModel):
     created_user: Optional[UserGetlist] = None
     accepted_user: Optional[UserGetlist] = None
     order_items: Optional[OrderItem] = None
+    created_at : Optional[datetime] =None
 
     class Config:
         orm_mode = True

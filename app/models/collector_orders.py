@@ -35,8 +35,10 @@ class CollectOrders(Base):
 
 class CollectOrderItems(Base):
     __tablename__ = "collector_order_items"
+    id = Column(Integer, primary_key=True, index=True)
     order_id = Column(Integer, ForeignKey("collector_orders.id"), primary_key=True)
     product_id = Column(Integer, ForeignKey("tools.id"), primary_key=True)
     created_at = Column(DateTime, default=func.now())
+    amount = Column(Integer,nullable=True)
     order = relationship("CollectOrders", back_populates="order_item")
     product = relationship("Tools", back_populates="order_item")
