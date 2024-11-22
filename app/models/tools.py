@@ -44,10 +44,12 @@ class Tools(Base):
     min_amount = Column(Float, nullable=True)
     max_amount = Column(Float, nullable=True)
     image = Column(String, nullable=True)
+    factory_image = Column(String,nullable=True)
     ftime = Column(Float, nullable=True)
     tool_need = relationship("NeededTools", back_populates="need_tool")
     status = Column(Integer, default=1)
     category_id = Column(Integer, ForeignKey("category.id"))
     categories = relationship("Category", back_populates="tool")
     tool_balance = relationship("ToolBalance", back_populates="tool")
+    category_tools = relationship('CategoriesToolsRelations',back_populates='tool')
 

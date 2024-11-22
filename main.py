@@ -82,6 +82,7 @@ from app.routes.v2.endpoints.category import category_router
 from app.routes.v2.endpoints.inventory_requests import inv_requests_router
 from app.routes.v2.endpoints.tool_balance_cron import tool_balance_cron_router
 from app.routes.v2.endpoints.tool_balance import tool_balance_router
+from app.routes.v2.endpoints.inventory_tools import inv_requests_tools_router
 
 
 from app.routes.v2.endpoints.iikotransfers import iiko_transfer_router
@@ -100,7 +101,7 @@ origins = ["*"]
 
 reuseable_oauth = OAuth2PasswordBearer(tokenUrl="/login", scheme_name="JWT")
 # database connection
-app = FastAPI()
+app = FastAPI(swagger_ui_parameters = {"docExpansion":"none"})
 app.include_router(calendar_router, tags=["calendars"])
 app.include_router(iiko_transfer_router, prefix="/api/v2", tags=["iiko"])
 app.include_router(it_extra_router, prefix="/api/v2", tags=["IT"])
@@ -122,6 +123,10 @@ app.include_router(kru_tasks_finished, tags=["KRU"])
 app.include_router(kru_tasks_router, tags=["KRU"])
 app.include_router(file_router, tags=["Files"])
 app.include_router(branchs_router, tags=["Branchs"])
+app.include_router(inv_requests_tools_router,prefix="/api/v2", tags=["Inventory"])
+
+
+
 app.mount("/files", StaticFiles(directory="files"), name="files")
 
 timezonetash = pytz.timezone("Asia/Tashkent")
