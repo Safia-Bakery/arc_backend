@@ -103,7 +103,7 @@ ALGORITHM = os.environ.get("ALGORITHM")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
 
-origins = ["https://service.safiabakery.uz",'https://admin.service.safiabakery.uz']
+origins = ["https://service.safiabakery.uz",'https://admin.service.safiabakery.uz',"http://185.203.238.5"]
 
 reuseable_oauth = OAuth2PasswordBearer(tokenUrl="/login", scheme_name="JWT")
 # database connection
