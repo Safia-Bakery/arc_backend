@@ -16,7 +16,7 @@ class OrderItem(BaseModel):
 
 
 class CreateOrderItem(BaseModel):
-    product_id: UUID
+    product_id: int
     amount : int
 
 
