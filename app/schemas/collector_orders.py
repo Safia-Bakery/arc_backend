@@ -47,8 +47,8 @@ class GetOrder(BaseModel):
     accepted_by: Optional[int] = None
     created_user: Optional[UserGetlist] = None
     accepted_user: Optional[UserGetlist] = None
-    order_items: Optional[list[OrderItem]] = None
-    created_at : Optional[datetime] =None
+    order_item: Optional[list[OrderItem]] = None
+    created_at: Optional[datetime] =None
 
     class Config:
         orm_mode = True

@@ -45,7 +45,10 @@ def create_order(db: Session, branch_id: UUID, data: CreateOrder, created_by):
             'text': f"Поступила новая заявка: № {query.id}",
             'parse_mode': 'HTML'
         }
-        requests.post(url, json=payload)
+        try:
+            requests.post(url, json=payload)
+        except Exception as e:
+            print(e)
 
     return query
 
@@ -64,7 +67,10 @@ def update_order(db: Session, id, status, accepted_by):
         'text': f"Заявка № {query.id} собрана",
         'parse_mode': 'HTML'
     }
-    requests.post(url, json=payload)
+    try:
+        requests.post(url, json=payload)
+    except Exception as e:
+        print(e)
 
     return query
 
