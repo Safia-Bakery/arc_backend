@@ -25,7 +25,10 @@ async  def get_tools_router(
         request_user: UserFullBack = Depends(get_current_user)
 ):
     groups = get_groups(db=db,name=name,parent_id=parent_id)
-    tools = get_tools(db=db,name=name,parent_id=parent_id)
+    if parent_id is not None:
+        tools = get_tools(db=db,name=name,parent_id=parent_id)
+    else:
+        tools = []
     return {"groups":groups,'products':tools}
 
 

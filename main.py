@@ -82,7 +82,6 @@ from app.routes.v2.endpoints.category import category_router
 from app.routes.v2.endpoints.inventory_requests import inv_requests_router
 from app.routes.v2.endpoints.tool_balance_cron import tool_balance_cron_router
 from app.routes.v2.endpoints.tool_balance import tool_balance_router
-<<<<<<< HEAD
 from app.routes.v2.endpoints.arc_factory_requests import arc_factory_requests
 from app.routes.v2.endpoints.arc_factory_managers import arc_factory_managers
 from app.routes.v2.endpoints.arc_factory_divisions import arc_factory_divisions
@@ -91,9 +90,7 @@ from app.routes.v2.endpoints.groups import groups_router
 from app.routes.v2.endpoints.collector_orders import collector_orders_router
 from app.routes.v2.endpoints.toolparents import toolparents_router
 
-=======
 from app.routes.v2.endpoints.inventory_tools import inv_requests_tools_router
->>>>>>> dev
 
 
 from app.routes.v2.endpoints.iikotransfers import iiko_transfer_router

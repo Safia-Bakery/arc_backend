@@ -997,7 +997,7 @@ def synchgroups(db: Session, groups):
         commitdata(db, item)
 
     for line in groups:
-        if line['id'] not in group_list[0] or line['id'] not in group_list[1]:
+        if line['id'] not in group_list[0] and line['id'] not in group_list[1]:
             group_list[2].append(line["id"])
             item = models.ToolParents(
                 id=line["id"],
