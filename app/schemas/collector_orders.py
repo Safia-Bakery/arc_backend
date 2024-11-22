@@ -40,7 +40,7 @@ class UpdateOrder(BaseModel):
 
 class GetOrder(BaseModel):
     id: int
-    branch_id: UUID
+    branch_id: Optional[UUID]
     branch: Optional[GetBranchs] = None
     status: Optional[int]
     created_by: Optional[int] = None
