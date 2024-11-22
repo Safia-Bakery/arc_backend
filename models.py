@@ -316,6 +316,7 @@ class ToolParents(Base):
     parent_id = Column(UUID(as_uuid=True), nullable=True)
     category = Column(String, nullable=True)
     description = Column(String, nullable=True)
+    status = Column(Integer, default=0)
 
 
 

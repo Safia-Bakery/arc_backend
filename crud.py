@@ -1109,8 +1109,13 @@ def synch_suppliers(db: Session, suppliers):
     return True
 
 
-def getarchtools(db: Session,parent_id):
-    query = db.query(models.ToolParents).filter(models.ToolParents.parent_id==parent_id)
+def getarchtools(db: Session, parent_id):
+    query = db.query(models.ToolParents).filter(
+        and_(
+            models.ToolParents.parent_id == parent_id,
+            models.ToolParents.status == 1
+        )
+    )
     return query.all()
 
 

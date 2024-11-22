@@ -114,12 +114,15 @@ async def insert_list_groups(
 
 @urls.get("/tool/iarch")
 async def toolgroups(
-    parent_id: Optional[UUID] = None,
-    name:Optional[str]=None,
-    db: Session = Depends(get_db),
-    request_user: schema.UserFullBack = Depends(get_current_user),
+        parent_id: Optional[UUID] = None,
+        name: Optional[str] = None,
+        db: Session = Depends(get_db),
+        request_user: schema.UserFullBack = Depends(get_current_user),
 ):
-    data = {'folders':crud.getarchtools(db,parent_id),'tools':statisquery.tools_query_iarch(db,parent_id,name)}
+    data = {
+        'folders': crud.getarchtools(db, parent_id),
+        'tools': statisquery.tools_query_iarch(db, parent_id, name)
+    }
     return data
     
 # ---------------------Get all products -----------------------------------
