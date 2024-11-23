@@ -24,6 +24,7 @@ class UpdateUser(BaseModel):
 
 class GetUser(BaseModel):
     id: int
+    username: Optional[str] = None
     full_name: Optional[str] = None
     telegram_id: Optional[int] = None
     branch_id: Optional[UUID] = None
