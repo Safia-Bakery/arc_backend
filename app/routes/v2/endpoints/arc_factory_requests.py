@@ -79,15 +79,14 @@ async def update_request(
                     chat_id=updated_request.user.telegram_id,
                     message_text=f"Уважаемый {updated_request.user.full_name}, ваша заявка #{updated_request.id}s отклонена по причине: {updated_request.deny_reason}",
                 )
-            except:
-                pass
+            except Exception as e:
+                print(e)
 
         elif updated_request.status==6:
             try:
                 text_request = f"Ваша заявка #{updated_request.id}s по АРС была обработана. Пожалуйста, подтвердите, что она выполнена в соответствии с вашим запросом."
                 confirmation_request(chat_id=updated_request.user.telegram_id,
                                      message_text=text_request)
-
             except:
                     pass
 

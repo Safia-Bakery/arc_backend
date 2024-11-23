@@ -623,11 +623,7 @@ def filter_requests_all(
     finished_at
 ):
     query = db.query(models.Requests).join(models.Category)
-    query.options(
-        joinedload(models.Requests.request_orpr)
-        .joinedload(models.OrderProducts.orpr_product)
-        .joinedload(models.Products.prod_cat)
-    )
+
 
     if id is not None:
         query = query.filter(models.Requests.id == id)
