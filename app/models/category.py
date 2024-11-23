@@ -47,3 +47,4 @@ class Category(Base):
     telegram_id = Column(Integer,ForeignKey("telegrams.id"),nullable=True)
     telegram = relationship("Telegrams", back_populates="categories")
     tool = relationship("Tools", back_populates="categories")
+    categories_relations = relationship("CategoriesToolsRelations",back_populates='categories')

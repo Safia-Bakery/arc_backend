@@ -36,3 +36,4 @@ from app.models.logs import Logs
 from app.models.managers import Managers
 from app.models.collector_orders import CollectOrders
 from app.models.collector_orders import CollectOrderItems
+from app.models.CategoriesToolsReleations import CategoriesToolsRelations
