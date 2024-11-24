@@ -8,6 +8,7 @@ from app.schemas.groups import GetGroup
 class CreateUser(BaseModel):
     telegram_id: int
     full_name: Optional[str] = None
+    username: Optional[str] = None
 
     class Config:
         orm_mode = True
