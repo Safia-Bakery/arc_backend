@@ -37,7 +37,7 @@ async  def get_tools_router(
 
 
 @inv_requests_tools_router.get('/inventory/factory/tools/{id}',response_model=InventoryFactoryToolOne)
-async  def get_one_tool_api(
+def get_one_tool_api(
         id:int,
         db: Session = Depends(get_db),
         request_user: UserFullBack = Depends(get_current_user)
