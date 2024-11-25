@@ -28,7 +28,7 @@ def get_groups(db:Session,name,parent_id):
     query = db.query(ToolParents)
     if name is not None:
         query = query.filter(ToolParents.name.ilike(f"%{name}%"))
-    return query.filter(ToolParents.parent_id==parent_id).all()
+    return query.filter(ToolParents.parent_id==parent_id).filter(ToolParents.status==1).all()
 
 
 

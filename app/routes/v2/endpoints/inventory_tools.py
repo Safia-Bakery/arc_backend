@@ -75,6 +75,19 @@ async  def get_inventory_factory_categories(
 
 
 
+@inv_requests_tools_router.get('/inventory/factory/categories/tools',response_model=Page[InventoryFactoryTool])
+async  def get_inventory_factory_categories(
+        category_id:Optional[int]=None,
+        db: Session = Depends(get_db),
+        request_user: UserFullBack = Depends(get_current_user)
+):
+    return paginate(get_inventory_factory_tools(db=db,category_id=category_id))
+
+
+
+
+
+
 
 
 
