@@ -65,7 +65,7 @@ async def update_one_tool_api(
 
     return query
 
-@inv_requests_tools_router.put('/inventory/factory/categories/',response_model=GetCategory)
+@inv_requests_tools_router.get('/inventory/factory/categories/',response_model=list[GetCategory])
 async  def get_inventory_factory_categories(
         status:Optional[int]=None,
         db: Session = Depends(get_db),
