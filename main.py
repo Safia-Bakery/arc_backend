@@ -162,7 +162,7 @@ app.add_middleware(
 
 @app.get("/docs", include_in_schema=False)
 async def custom_swagger_ui(current_user: str = Depends(get_current_user_for_docs)):
-    return get_swagger_ui_html(openapi_url="/openapi.json", title="Custom Swagger UI")
+    return get_swagger_ui_html(openapi_url="/openapi.json", title="Custom Swagger UI",swagger_ui_parameters={"docExpansion": "none"},)
 
 
 @app.get("/openapi.json", include_in_schema=False)
