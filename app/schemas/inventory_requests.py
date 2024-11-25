@@ -9,7 +9,7 @@ from .fillials import GetFillialChild
 from .files import FileSch
 from .comments import GetComments
 from .communication import MessageRequest
-from .expanditure import GetExpanditure
+from .expanditure import GetExpanditure,GetExpanditureFactoryInv
 from .orders import OrderProductsGet, CarsGet
 
 
@@ -18,6 +18,18 @@ class GetRequest(BaseModel):
     user: Optional[UserGetlist] = None
     fillial: Optional[GetFillialChild] = None
     expanditure: list[GetExpanditure]
+    created_at: datetime
+    status: int
+    user_manager: Optional[str] = None
+
+    class Config:
+        orm_mode = True
+
+class GetRequestFactoryInv(BaseModel):
+    id: int
+    user: Optional[UserGetlist] = None
+    fillial: Optional[GetFillialChild] = None
+    expanditure: list[GetExpanditureFactoryInv]
     created_at: datetime
     status: int
     user_manager: Optional[str] = None
