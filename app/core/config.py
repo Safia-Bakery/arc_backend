@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     load_dotenv()
     bottoken: str = os.environ.get('BOT_TOKEN')
     collector_bottoken: str = os.environ.get("COLLECTOR_BOTTOKEN")
+    docs_username:str=os.environ.get('DOCS_USERNAME')
+    docs_password:str=os.environ.get('DOCS_PASSWORD')
 
 
     # Token expiration settings

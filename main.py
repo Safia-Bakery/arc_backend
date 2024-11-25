@@ -1,4 +1,6 @@
 # ----------import packages
+from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.openapi.utils import get_openapi
 from jose import JWTError, jwt
 
 from datetime import datetime, timedelta
@@ -18,6 +20,7 @@ from fastapi import (
     BackgroundTasks,
     Security,
 )
+from app.utils.utils import get_current_user_for_docs
 import time
 from pydantic import ValidationError
 import schemas
@@ -109,7 +112,7 @@ origins = ["https://service.safiabakery.uz",'https://admin.service.safiabakery.u
 
 reuseable_oauth = OAuth2PasswordBearer(tokenUrl="/login", scheme_name="JWT")
 # database connection
-app = FastAPI(swagger_ui_parameters = {"docExpansion":"none"})
+app = FastAPI(swagger_ui_parameters = {"docExpansion":"none"},docs_url=None, redoc_url=None, openapi_url=None)
 app.include_router(calendar_router, tags=["calendars"])
 app.include_router(iiko_transfer_router, prefix="/api/v2", tags=["iiko"])
 app.include_router(it_extra_router, prefix="/api/v2", tags=["IT"])
@@ -153,6 +156,19 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+
+
+@app.get("/docs", include_in_schema=False)
+async def custom_swagger_ui(current_user: str = Depends(get_current_user_for_docs)):
+    return get_swagger_ui_html(openapi_url="/openapi.json", title="Custom Swagger UI")
+
+
+@app.get("/openapi.json", include_in_schema=False)
+async def get_open_api_endpoint(current_user: str = Depends(get_current_user_for_docs)):
+    return get_openapi(title="Custom OpenAPI", version="1.0.0", routes=app.routes)
+
 
 def scheduled_function(db: Session):
     key = authiiko()

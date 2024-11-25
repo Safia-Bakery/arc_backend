@@ -1,5 +1,12 @@
 import json
+from http.client import HTTPException
 from typing import Optional
+
+from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.openapi.utils import get_openapi
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+
 from app.db.session import SessionLocal
 
 import requests
@@ -15,6 +22,7 @@ from app.crud import it_requests
 
 BASE_URL = 'https://api.service.safiabakery.uz/'
 timezonetash = pytz.timezone("Asia/Tashkent")
+security = HTTPBasic()
 
 
 def send_simple_text_message(bot_token, chat_id, message_text):
@@ -320,3 +328,17 @@ def send_notification(request_id, topic_id, text, finishing_time, file_url):
     else:
         return False
 
+
+
+
+
+def get_current_user_for_docs(credentials: HTTPBasicCredentials = Depends(security)):
+    correct_username = settings.docs_username
+    correct_password = settings.docs_password
+    if credentials.username != correct_username or credentials.password != correct_password:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
