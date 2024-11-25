@@ -65,13 +65,13 @@ async def update_one_tool_api(
 
     return query
 
-@inv_requests_tools_router.get('/inventory/factory/categories/',response_model=list[GetCategory])
+@inv_requests_tools_router.get('/inventory/factory/categories/',response_model=Page[GetCategory])
 async  def get_inventory_factory_categories(
         status:Optional[int]=None,
         db: Session = Depends(get_db),
         request_user: UserFullBack = Depends(get_current_user)
 ):
-    return get_inventory_categories(db=db,department=10,status=status)
+    return paginate(get_inventory_categories(db=db,department=10,status=status))
 
 
 
