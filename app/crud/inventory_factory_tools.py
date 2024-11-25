@@ -67,10 +67,7 @@ def CreateOrUpdateToolCategory(db:Session,tool_id,category_id):
 
 
 def get_inventory_categories(db:Session, department,status):
-    query = db.query(Category)
-
-    if department is not None:
-        query.department = department
+    query = db.query(Category).filter(Category.department==department)
     if status is not None:
         query.status=status
 
