@@ -15,12 +15,28 @@ from app.crud.inventory_factory_tools import get_tools, get_groups, get_one_tool
 from app.routes.depth import get_db, get_current_user
 from app.schemas.users import UserFullBack
 from app.schemas.category import GetCategory
-from app.schemas.inventory_tools import ProductsVsGroups,InventoryFactoryTool,UpdateInventoryFactoryTool,InventoryFactoryToolOne
+from app.schemas.inventory_tools import ProductsVsGroups,InventoryFactoryTool,UpdateInventoryFactoryTool,InventoryFactoryToolOne,ProductsVsGroupsRetail
 
 
 inv_requests_tools_router = APIRouter()
 
 @inv_requests_tools_router.get('/inventory/factory/tools',response_model=ProductsVsGroups)
+async  def get_tools_router(
+        name:Optional[str]=None,
+        parent_id : Optional[UUID]=None,
+        db: Session = Depends(get_db),
+        request_user: UserFullBack = Depends(get_current_user)
+):
+    groups = get_groups(db=db,name=name,parent_id=parent_id)
+    if parent_id is not None:
+        tools = get_tools(db=db,name=name,parent_id=parent_id)
+    else:
+        tools = []
+    return {"groups":groups,'products':tools}
+
+
+
+@inv_requests_tools_router.get('/inventory/retail/tools',response_model=ProductsVsGroupsRetail)
 async  def get_tools_router(
         name:Optional[str]=None,
         parent_id : Optional[UUID]=None,
