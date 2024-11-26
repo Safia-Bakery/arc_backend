@@ -16,6 +16,17 @@ class InventoryFactoryTool(BaseModel):
         populate_by_name=True,
     )
 
+class InventoryRetailTool(BaseModel):
+    id: int
+    name: Optional[str] = None
+    status: Optional[int] = None
+    image: Optional[str] = None
+    parentid:Optional[UUID]=None
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
+
 
 class InventoryFactoryToolOne(BaseModel):
     id: int
@@ -57,8 +68,8 @@ class GroupsRetailTool(BaseModel):
 
 
 class ProductsVsGroupsRetail(BaseModel):
-    groups : Optional[list[GroupsFactoryTool]]=None
-    products :Optional[list[InventoryFactoryTool]]= None
+    groups : Optional[list[GroupsRetailTool]]=None
+    products :Optional[list[InventoryRetailTool]]= None
     class Config:
         orm_mode = True
 
