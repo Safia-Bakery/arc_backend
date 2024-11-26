@@ -69,15 +69,22 @@ def CreateOrUpdateToolCategory(db:Session,tool_id,category_id):
 def get_inventory_categories(db:Session, department,status):
     query = db.query(Category).filter(Category.department==department)
     if status is not None:
-        query.status=status
+        query = query.filter(Category.status==status)
 
     return query.all()
 
 
 
 
-def get_inventory_factory_tools(db:Session,category_id):
-    query = db.query(Tools).join(CategoriesToolsRelations).filter(CategoriesToolsRelations.category_id==category_id).all()
-    return query
+def get_inventory_factory_tools(db:Session,category_id,name):
+    query = db.query(Tools).join(CategoriesToolsRelations)
+    if category_id is not None:
+        query = query.filter(CategoriesToolsRelations.category_id==category_id)
+    if name is not None:
+        query = query.filter(Tools.name.ilike(f"%{name}%"))
+    query = query.filter(CategoriesToolsRelations.tool_id == Tools.id)
+
+
+    return query.all()
 
 
