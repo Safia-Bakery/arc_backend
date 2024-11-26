@@ -49,4 +49,9 @@ async def update_collector_order(
         db: Session = Depends(get_db),
         request_user: GetUserFullData = Depends(get_current_user)
 ):
-    return update_order(db=db, id=id, status=status, accepted_by=request_user.id)
+    return update_order(
+        db=db,
+        id=id,
+        status=status,
+        user=request_user
+    )
