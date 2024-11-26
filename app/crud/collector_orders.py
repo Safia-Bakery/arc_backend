@@ -105,8 +105,10 @@ def update_order(db: Session, id, status, message_id, user):
         "reply_markup": keyboard,
         "parse_mode": "HTML"
     }
+    print(edit_url)
     try:
         response = requests.post(edit_url, json=edit_payload).json()
+        print(response)
     except Exception as e:
         print(e)
 
