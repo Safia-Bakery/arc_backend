@@ -46,6 +46,7 @@ async def get_collector_one_order(
 async def update_collector_order(
         id: int,
         status: int,
+        message_id: Optional[int] = None,
         db: Session = Depends(get_db),
         request_user: GetUserFullData = Depends(get_current_user)
 ):
@@ -53,5 +54,6 @@ async def update_collector_order(
         db=db,
         id=id,
         status=status,
+        message_id=message_id,
         user=request_user
     )
