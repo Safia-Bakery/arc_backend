@@ -83,39 +83,53 @@ def update_order(db: Session, id, status, message_id, user):
         'message_id': message_id
     }
     try:
-        requests.post(delete_url, data=delete_payload)
+        requests.post(delete_url, json=delete_payload)
     except Exception as e:
         print(e)
 
     my_orders = get_orders(db=db, branch_id=user.branch_id, status=0)
     access_token = create_access_token(user.username)
     if len(my_orders) > 0:
-        keyboard = {
-            "inline_keyboard": [
-                [
-                    {
-                        "text": "Оставить отзыв🌟",
-                        "web_app": {"url": f"{FRONT_URL}/tg/collector?key={access_token}&order_id={item['id']}"}
-                    } for item in my_orders[i:i + 3]
-                ] for i in range(0, len(my_orders), 3)
-            ]
-        }
         text = "Выберите заявку 👇"
     else:
-        keyboard = [[]]
         text = "Активных заявок нет"
 
     # Create the request payload
     payload = {
         "chat_id": user.telegram_id,
         "text": text,
-        "reply_markup": keyboard,
         "parse_mode": "HTML",
     }
 
     # Send the request to send the inline keyboard message
+    new_message_id = None
     try:
-        requests.post(send_url, json=payload)
+        response = requests.post(send_url, json=payload)
+        response_data = response.json()
+        new_message_id = response_data["result"]["message_id"]
+    except Exception as e:
+        print(e)
+
+    keyboard = {
+        "inline_keyboard": [
+            [
+                {
+                    "text": "Оставить отзыв🌟",
+                    "web_app": {
+                        "url": f"{FRONT_URL}/tg/collector?key={access_token}&order_id={item['id']}&message_id={new_message_id}"}
+                } for item in my_orders[i:i + 3]
+            ] for i in range(0, len(my_orders), 3)
+        ]
+    }
+    edit_url = f"{base_url}/editMessageReplyMarkup"
+    edit_payload = {
+        "chat_id": user.telegram_id,
+        "message_id": new_message_id,
+        "parse_mode": "HTML",
+        "reply_markup": keyboard
+    }
+    try:
+        requests.post(edit_url, json=edit_payload)
     except Exception as e:
         print(e)
 
