@@ -48,7 +48,7 @@ async  def get_tools_router(
         tools = get_tools(db=db,name=name,parent_id=parent_id)
     else:
         tools = []
-    return {"groups":groups,'products':tools}
+    return {"folders":groups,'tools':tools}
 
 
 

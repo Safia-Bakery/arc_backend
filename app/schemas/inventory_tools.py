@@ -68,8 +68,8 @@ class GroupsRetailTool(BaseModel):
 
 
 class ProductsVsGroupsRetail(BaseModel):
-    groups : Optional[list[GroupsRetailTool]]=None
-    products :Optional[list[InventoryRetailTool]]= None
+    folders : Optional[list[GroupsRetailTool]]=None
+    tools :Optional[list[InventoryRetailTool]]= None
     class Config:
         orm_mode = True
 
