@@ -12,6 +12,7 @@ def create_user(db: Session, data: CreateUser):
     query = Users(
         telegram_id=data.telegram_id,
         full_name=data.full_name,
+        username=data.username
     )
     db.add(query)
     db.commit()
