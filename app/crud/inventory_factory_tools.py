@@ -37,7 +37,7 @@ def get_groups(db:Session,name,parent_id):
     if parent_id is not None:
         query = query.filter(ToolParents.parent_id==parent_id)
 
-    return query.filter(ToolParents.status==1).all()
+    return query.all()
 
 
 
