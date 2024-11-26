@@ -78,27 +78,37 @@ def update_order(db: Session, id, status, message_id, user):
         print(e)
 
     my_orders = get_orders(db=db, branch_id=user.branch_id, status=0)
-    access_token = create_access_token(user.username)
-    keyboard = {
-        "inline_keyboard": [
-            [
-                {
-                    "text": f"№ {item['id']}",
-                    "web_app": {
-                        "url": f"{FRONT_URL}/tg/collector?key={access_token}&order_id={item['id']}&message_id={message_id}"}
-                } for item in my_orders[i:i + 3]
-            ] for i in range(0, len(my_orders), 3)
-        ]
-    }
-    edit_url = f"{base_url}/editMessageReplyMarkup"
+    print("my_orders: ", my_orders)
+    if len(my_orders) > 0:
+        access_token = create_access_token(user.username)
+        keyboard = {
+            "inline_keyboard": [
+                [
+                    {
+                        "text": f"№ {item['id']}",
+                        "web_app": {
+                            "url": f"{FRONT_URL}/tg/collector?key={access_token}&order_id={item['id']}&message_id={message_id}"
+                        }
+                    } for item in my_orders[i:i + 3]
+                ] for i in range(0, len(my_orders), 3)
+            ]
+        }
+        text = "Выберите заявку 👇"
+    else:
+        keyboard = [[]]
+        text = "Активных заявок нет"
+
+    edit_url = f"{base_url}/editMessageText"
     edit_payload = {
         "chat_id": user.telegram_id,
         "message_id": message_id,
-        "parse_mode": "HTML",
-        "reply_markup": keyboard
+        "text": text,
+        "reply_markup": keyboard,
+        "parse_mode": "HTML"
     }
     try:
-        requests.post(edit_url, json=edit_payload)
+        response = requests.post(edit_url, json=edit_payload).json()
+        print("edit response: ", response)
     except Exception as e:
         print(e)
 
