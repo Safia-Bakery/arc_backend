@@ -30,9 +30,9 @@ def get_groups(db:Session,name,parent_id):
         query = query.filter(ToolParents.name.ilike(f"%{name}%"))
     if parent_id is None:
         query = query.filter(ToolParents.id.in_(
-            '1b55d7e1-6946-4bbc-bf93-542bfdb2b584',
+           [ '1b55d7e1-6946-4bbc-bf93-542bfdb2b584',
             '09be831f-1201-4b78-9cad-7c94c3363276',
-            '0bf90521-ccb3-4301-b7bc-08ad74ee188d'
+            '0bf90521-ccb3-4301-b7bc-08ad74ee188d']
         ))
     if parent_id is not None:
         query = query.filter(ToolParents.parent_id==parent_id)
