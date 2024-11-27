@@ -116,7 +116,7 @@ def update_order(db: Session, id, status, message_id, user):
         response = requests.post(edit_url, json=edit_payload)
         send_payload = {
             'chat_id': query.accepted_user.telegram_id,
-            'text': f"Error: {response.json()}",
+            'text': f"Message_id: {message_id}\n\nError: {response.json()}",
             'parse_mode': 'HTML'
         }
         requests.post(send_url, json=send_payload)
