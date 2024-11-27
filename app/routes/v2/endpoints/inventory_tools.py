@@ -30,6 +30,8 @@ async  def get_tools_router(
     groups = get_groups(db=db,name=name,parent_id=parent_id)
     if parent_id is not None:
         tools = get_tools(db=db,name=name,parent_id=parent_id)
+    elif name is not None:
+        tools = get_tools(db=db, name=name, parent_id=parent_id)
     else:
         tools = []
     return {"groups":groups,'products':tools}
@@ -45,6 +47,8 @@ async  def get_tools_router(
 ):
     groups = get_groups(db=db,name=name,parent_id=parent_id)
     if parent_id is not None:
+        tools = get_tools(db=db,name=name,parent_id=parent_id)
+    elif name is not None:
         tools = get_tools(db=db,name=name,parent_id=parent_id)
     else:
         tools = []
