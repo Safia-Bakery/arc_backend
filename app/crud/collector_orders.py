@@ -97,13 +97,6 @@ def update_order(db: Session, id, status, message_id, user):
         keyboard = {"inline_keyboard": [[]]}
         text = "Активных заявок нет"
 
-    send_payload = {
-        'chat_id': query.accepted_user.telegram_id,
-        'text': f"my_orders: {my_orders}\n\ntext: {text}",
-        'parse_mode': 'HTML'
-    }
-    requests.post(send_url, json=send_payload)
-
     edit_url = f"{base_url}/editMessageText"
     edit_payload = {
         "chat_id": user.telegram_id,
@@ -113,20 +106,9 @@ def update_order(db: Session, id, status, message_id, user):
         "parse_mode": "HTML"
     }
     try:
-        response = requests.post(edit_url, json=edit_payload)
-        send_payload = {
-            'chat_id': query.accepted_user.telegram_id,
-            'text': f"Message_id: {message_id}\n\nError: {response.json()}",
-            'parse_mode': 'HTML'
-        }
-        requests.post(send_url, json=send_payload)
+        requests.post(edit_url, json=edit_payload)
     except Exception as e:
-        send_payload = {
-            'chat_id': query.accepted_user.telegram_id,
-            'text': f"Error: {e}",
-            'parse_mode': 'HTML'
-        }
-        requests.post(send_url, json=send_payload)
+        print(e)
 
     return query
 
