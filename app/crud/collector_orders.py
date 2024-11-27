@@ -94,7 +94,7 @@ def update_order(db: Session, id, status, message_id, user):
         }
         text = "Выберите заявку 👇"
     else:
-        keyboard = [[]]
+        keyboard = {"inline_keyboard": [[]]}
         text = "Активных заявок нет"
 
     send_payload = {
