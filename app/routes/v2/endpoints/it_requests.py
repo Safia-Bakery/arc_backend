@@ -199,8 +199,9 @@ async def put_request_id(
         delay = timedelta(minutes=delta_minutes)
         deleting_scheduled_time = request.created_at + delay - timedelta(seconds=2)
         sending_scheduled_time = request.created_at + delay
-        if data.status == 1 or data.brigada_id is not None:
-            delete_from_chat(message_id=request.tg_message_id, topic_id=topic_id)
+
+        if data.status == 1:
+            delete_from_chat(message_id=request.tg_message_id)  # topic_id=topic_id
             send_notification(request_id=id, topic_id=topic_id, text=request_text, finishing_time=finishing_time,
                               file_url=request.file[0].url)
 
@@ -223,7 +224,7 @@ async def put_request_id(
                 delete_job_id = f"delete_message_for_{request.id}"
                 try:
                     scheduler.add_job(delete_from_chat, 'date', run_date=deleting_scheduled_time,
-                                      args=[request.tg_message_id, topic_id], id=delete_job_id, replace_existing=True)
+                                      args=[request.tg_message_id], id=delete_job_id, replace_existing=True)
                 except ConflictingIdError:
                     print(f"Job '{delete_job_id}' already scheduled or was missed by time. Skipping ...")
 
@@ -265,7 +266,7 @@ async def put_request_id(
             #                       f"\nПричина отмены: {request.deny_reason}"
             # edit_topic_message(chat_id=settings.IT_SUPERGROUP, thread_id=topic_id, message_text=text,
             #                    message_id=message_id)
-            delete_from_chat(message_id=message_id, topic_id=topic_id)
+            delete_from_chat(message_id=message_id)  # topic_id=topic_id
 
             delete_job_id = f"delete_message_for_{request.id}"
             try:
@@ -310,7 +311,7 @@ async def put_request_id(
             # }
             # edit_topic_message(chat_id=settings.IT_SUPERGROUP, thread_id=topic_id, message_text=topic_message,
             #                    message_id=message_id, inline_keyboard=keyboard)
-            delete_from_chat(message_id=message_id, topic_id=topic_id)
+            delete_from_chat(message_id=message_id)  # topic_id=topic_id
             user_message = request_text + f"\n\nСтатус вашей заявки:  Завершен ✅"
             inline_keyboard = {
                 "inline_keyboard": [
@@ -360,7 +361,7 @@ async def put_request_id(
                 delete_job_id = f"delete_message_for_{request.id}"
                 try:
                     scheduler.add_job(delete_from_chat, 'date', run_date=deleting_scheduled_time,
-                                      args=[request.tg_message_id, topic_id], id=delete_job_id, replace_existing=True)
+                                      args=[request.tg_message_id], id=delete_job_id, replace_existing=True)
                 except ConflictingIdError:
                     print(f"Job '{delete_job_id}' already scheduled or was missed by time. Skipping ...")
 
@@ -385,6 +386,42 @@ async def put_request_id(
             text = request_text + "\n\n<b>Заявка отменена 🚫</b>"
             edit_topic_message(chat_id=settings.IT_SUPERGROUP, thread_id=topic_id, message_text=text,
                                message_id=message_id)
+
+        elif data.brigada_id is not None:
+            delete_from_chat(message_id=request.tg_message_id)  # topic_id=topic_id
+            send_notification(request_id=id, topic_id=topic_id, text=request_text, finishing_time=finishing_time,
+                              file_url=request.file[0].url)
+
+            request = it_requests.get_request_id(db=db, id=id)
+            if request.brigada:
+                brigada_name = request.brigada.name
+            else:
+                brigada_name = None
+            try:
+                sendtotelegramchat(
+                    chat_id=user_telegram_id,
+                    message_text=f"Уважаемый {user_fullname}, статус вашей заявки #{request.id}s "
+                                 f"назначен специалист👨‍💻: {brigada_name}\n"
+                                 f"Время выполнения: {sla} часов"
+                )
+            except:
+                pass
+
+            if delta_minutes > 0:
+                delete_job_id = f"delete_message_for_{request.id}"
+                try:
+                    scheduler.add_job(delete_from_chat, 'date', run_date=deleting_scheduled_time,
+                                      args=[request.tg_message_id], id=delete_job_id, replace_existing=True)
+                except ConflictingIdError:
+                    print(f"Job '{delete_job_id}' already scheduled or was missed by time. Skipping ...")
+
+                send_job_id = f"send_message_for_{request.id}"
+                try:
+                    scheduler.add_job(send_notification, 'date', run_date=sending_scheduled_time,
+                                      args=[request.id, topic_id, request_text, finishing_time, request.file[0].url],
+                                      id=send_job_id, replace_existing=True)
+                except ConflictingIdError:
+                    print(f"Job '{send_job_id}' already scheduled or was missed by time. Skipping ...")
 
     return request
 

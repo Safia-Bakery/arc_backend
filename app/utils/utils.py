@@ -269,14 +269,14 @@ def confirmation_request(chat_id, message_text):
         return False
 
 
-def delete_from_chat(message_id, topic_id: Optional[int] = None):
+def delete_from_chat(message_id):  # topic_id: Optional[int] = None
     url = f'https://api.telegram.org/bot{settings.bottoken}/deleteMessage'
     payload = {
         'chat_id': settings.IT_SUPERGROUP,
         'message_id': message_id
     }
-    if topic_id:
-        payload["message_thread_id"] = topic_id
+    # if topic_id:
+    #     payload["message_thread_id"] = topic_id
 
     # Send a POST request to the Telegram API to delete the message
     response = requests.post(url, data=payload)
