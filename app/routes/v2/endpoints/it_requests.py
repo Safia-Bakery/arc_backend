@@ -6,9 +6,6 @@ from fastapi import (
     status,
     APIRouter
 )
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
-from apscheduler.jobstores.base import JobLookupError, ConflictingIdError
 from fastapi_pagination import paginate, Page
 from sqlalchemy.orm import Session
 from app.core.config import settings
@@ -20,21 +17,14 @@ from app.schemas.it_requests import GetRequest, PutRequest, MessageRequestCreate
 from app.schemas.requests import GetOneRequest
 from app.schemas.users import UserFullBack
 from app.utils.utils import sendtotelegramchat, sendtotelegramtopic, delete_from_chat, edit_topic_message, \
-    inlinewebapp, confirmation_request, generate_random_filename, send_notification, edit_topic_reply_markup
-
+    inlinewebapp, confirmation_request, generate_random_filename, send_notification, edit_topic_reply_markup, \
+    JobScheduler
 
 it_requests_router = APIRouter()
 
 timezonetash = pytz.timezone("Asia/Tashkent")
 
-# Configure job store
-jobstores = {
-    "default": SQLAlchemyJobStore(url=settings.SCHEDULER_DATABASE_URL)
-}
-
-scheduler = BackgroundScheduler(jobstores=jobstores)
-# scheduler = BackgroundScheduler()
-scheduler.start()
+job_scheduler = JobScheduler()
 
 BASE_URL = 'https://api.service.safiabakery.uz/'
 
@@ -222,19 +212,23 @@ async def put_request_id(
 
             if delta_minutes > 0:
                 delete_job_id = f"delete_message_for_{request.id}"
-                try:
-                    scheduler.add_job(delete_from_chat, 'date', run_date=deleting_scheduled_time,
-                                      args=[request.tg_message_id, topic_id], id=delete_job_id, replace_existing=True)
-                except ConflictingIdError:
-                    print(f"Job '{delete_job_id}' already scheduled or was missed by time. Skipping ...")
+                job_scheduler.add_delete_message_job(
+                    job_id=delete_job_id,
+                    scheduled_time=deleting_scheduled_time,
+                    message_id=request.tg_message_id,
+                    topic_id=topic_id
+                )
 
                 send_job_id = f"send_message_for_{request.id}"
-                try:
-                    scheduler.add_job(send_notification, 'date', run_date=sending_scheduled_time,
-                                      args=[request.id, topic_id, request_text, finishing_time, request.file[0].url],
-                                      id=send_job_id, replace_existing=True)
-                except ConflictingIdError:
-                    print(f"Job '{send_job_id}' already scheduled or was missed by time. Skipping ...")
+                job_scheduler.add_send_message_job(
+                    job_id=send_job_id,
+                    scheduled_time=sending_scheduled_time,
+                    topic_id=topic_id,
+                    request_text=request_text,
+                    finishing_time=finishing_time,
+                    request_id=request.id,
+                    request_file=request.file[0].url
+                )
 
         elif data.status == 3:
             edit_topic_reply_markup(chat_id=settings.IT_SUPERGROUP,
@@ -269,33 +263,17 @@ async def put_request_id(
             delete_from_chat(message_id=message_id, topic_id=topic_id)
 
             delete_job_id = f"delete_message_for_{request.id}"
-            try:
-                scheduler.remove_job(job_id=delete_job_id)
-                # print(f"'{delete_job_id}' job was removed before scheduling")
-            except JobLookupError:
-                print(f"'{delete_job_id}' job not found or already has completed !")
+            job_scheduler.remove_job(job_id=delete_job_id)
 
             send_job_id = f"send_message_for_{request.id}"
-            try:
-                scheduler.remove_job(job_id=send_job_id)
-                # print(f"'{send_job_id}' job was removed before scheduling")
-            except JobLookupError:
-                print(f"'{send_job_id}' job not found or already has completed !")
+            job_scheduler.remove_job(job_id=send_job_id)
 
         elif data.status == 6:
             delete_job_id = f"delete_message_for_{request.id}"
-            try:
-                scheduler.remove_job(job_id=delete_job_id)
-                # print(f"'{delete_job_id}' job was removed before scheduling")
-            except JobLookupError:
-                print(f"'{delete_job_id}' job not found or already has completed !")
+            job_scheduler.remove_job(job_id=delete_job_id)
 
             send_job_id = f"send_message_for_{request.id}"
-            try:
-                scheduler.remove_job(job_id=send_job_id)
-                # print(f"'{send_job_id}' job was removed before scheduling")
-            except JobLookupError:
-                print(f"'{send_job_id}' job not found or already has completed !")
+            job_scheduler.remove_job(job_id=send_job_id)
 
             # started_at = request.started_at
             # finished_at = request.finished_at
@@ -359,19 +337,23 @@ async def put_request_id(
 
             if delta_minutes > 0:
                 delete_job_id = f"delete_message_for_{request.id}"
-                try:
-                    scheduler.add_job(delete_from_chat, 'date', run_date=deleting_scheduled_time,
-                                      args=[request.tg_message_id, topic_id], id=delete_job_id, replace_existing=True)
-                except ConflictingIdError:
-                    print(f"Job '{delete_job_id}' already scheduled or was missed by time. Skipping ...")
+                job_scheduler.add_delete_message_job(
+                    job_id=delete_job_id,
+                    scheduled_time=deleting_scheduled_time,
+                    message_id=request.tg_message_id,
+                    topic_id=topic_id
+                )
 
                 send_job_id = f"send_message_for_{request.id}"
-                try:
-                    scheduler.add_job(send_notification, 'date', run_date=sending_scheduled_time,
-                                      args=[request.id, topic_id, request_text, finishing_time, request.file[0].url],
-                                      id=send_job_id, replace_existing=True)
-                except ConflictingIdError:
-                    print(f"Job '{send_job_id}' already scheduled or was missed by time. Skipping ...")
+                job_scheduler.add_send_message_job(
+                    job_id=send_job_id,
+                    scheduled_time=sending_scheduled_time,
+                    topic_id=topic_id,
+                    request_text=request_text,
+                    finishing_time=finishing_time,
+                    request_id=request.id,
+                    request_file=request.file[0].url
+                )
 
         elif data.status == 8:
             url = f"{settings.FRONT_URL}tg/order-rating/{request.id}?user_id={user_id}&department={category_department}&sub_id={category_sub_id}"
@@ -409,19 +391,23 @@ async def put_request_id(
 
             if delta_minutes > 0:
                 delete_job_id = f"delete_message_for_{request.id}"
-                try:
-                    scheduler.add_job(delete_from_chat, 'date', run_date=deleting_scheduled_time,
-                                      args=[request.tg_message_id, topic_id], id=delete_job_id, replace_existing=True)
-                except ConflictingIdError:
-                    print(f"Job '{delete_job_id}' already scheduled or was missed by time. Skipping ...")
+                job_scheduler.add_delete_message_job(
+                    job_id=delete_job_id,
+                    scheduled_time=deleting_scheduled_time,
+                    message_id=request.tg_message_id,
+                    topic_id=topic_id
+                )
 
                 send_job_id = f"send_message_for_{request.id}"
-                try:
-                    scheduler.add_job(send_notification, 'date', run_date=sending_scheduled_time,
-                                      args=[request.id, topic_id, request_text, finishing_time, request.file[0].url],
-                                      id=send_job_id, replace_existing=True)
-                except ConflictingIdError:
-                    print(f"Job '{send_job_id}' already scheduled or was missed by time. Skipping ...")
+                job_scheduler.add_send_message_job(
+                    job_id=send_job_id,
+                    scheduled_time=sending_scheduled_time,
+                    topic_id=topic_id,
+                    request_text=request_text,
+                    finishing_time=finishing_time,
+                    request_id=request.id,
+                    request_file=request.file[0].url
+                )
 
     return request
 

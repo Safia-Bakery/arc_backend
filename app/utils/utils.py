@@ -1,23 +1,19 @@
 import json
+import random
+import string
+from datetime import datetime
 from http.client import HTTPException
 from typing import Optional
-
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.openapi.docs import get_swagger_ui_html
-from fastapi.openapi.utils import get_openapi
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
-
-from app.db.session import SessionLocal
-
-import requests
-import string
-import random
-from app.core.config import settings
-from datetime import datetime
 import pytz
+import requests
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.jobstores.base import JobLookupError, ConflictingIdError
+from app.core.config import settings
 from app.crud import it_requests
+from app.db.session import SessionLocal
 
 
 BASE_URL = 'https://api.service.safiabakery.uz/'
@@ -329,9 +325,6 @@ def send_notification(request_id, topic_id, text, finishing_time, file_url):
         return False
 
 
-
-
-
 def get_current_user_for_docs(credentials: HTTPBasicCredentials = Depends(security)):
     correct_username = settings.docs_username
     correct_password = settings.docs_password
@@ -342,3 +335,34 @@ def get_current_user_for_docs(credentials: HTTPBasicCredentials = Depends(securi
             headers={"WWW-Authenticate": "Basic"},
         )
     return credentials.username
+
+
+class JobScheduler:
+    def __init__(self):
+        # Configure job store
+        jobstores = {
+            "default": SQLAlchemyJobStore(url=settings.SCHEDULER_DATABASE_URL)
+        }
+        self.scheduler = BackgroundScheduler(jobstores=jobstores)
+        self.scheduler.start()
+
+    def add_delete_message_job(self, job_id, scheduled_time, message_id, topic_id):
+        try:
+            self.scheduler.add_job(delete_from_chat, 'date', run_date=scheduled_time,
+                                   args=[message_id, topic_id], id=job_id, replace_existing=True)
+        except ConflictingIdError:
+            print(f"Job '{job_id}' already scheduled or was missed by time. Skipping ...")
+
+    def add_send_message_job(self, job_id, scheduled_time, topic_id, request_text, finishing_time, request_id, request_file):
+        try:
+            self.scheduler.add_job(send_notification, 'date', run_date=scheduled_time,
+                                   args=[topic_id, request_text, finishing_time, request_id, request_file],
+                                   id=job_id, replace_existing=True)
+        except ConflictingIdError:
+            print(f"Job '{job_id}' already scheduled or was missed by time. Skipping ...")
+
+    def remove_job(self, job_id):
+        try:
+            self.scheduler.remove_job(job_id=job_id)
+        except JobLookupError:
+            print(f"'{job_id}' job not found or already has completed !")
