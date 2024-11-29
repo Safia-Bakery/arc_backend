@@ -275,7 +275,7 @@ def delete_from_chat(message_id, topic_id: Optional[int] = None):
         payload["message_thread_id"] = topic_id
 
     # Send a POST request to the Telegram API to delete the message
-    response = requests.post(url, data=payload)
+    response = requests.post(url, json=payload)
     response_data = response.json()
     # Check the response status
     if response.status_code == 200:
@@ -320,7 +320,7 @@ def send_notification(request_id, topic_id, text, finishing_time, file_url):
         new_message_id = response_data["result"]["message_id"]
         with SessionLocal() as db:
             it_requests.edit_request(db=db, id=request_id, tg_message_id=new_message_id)
-
+        return new_message_id
     else:
         return False
 
@@ -348,18 +348,18 @@ class JobScheduler:
 
     def add_delete_message_job(self, job_id, scheduled_time, message_id, topic_id):
         try:
-            self.scheduler.add_job(delete_from_chat, 'date', run_date=scheduled_time,
+            self.scheduler.add_job("scheduler_jobs.jobs:delete_from_chat", 'date', run_date=scheduled_time,
                                    args=[message_id, topic_id], id=job_id, replace_existing=True)
-        except ConflictingIdError:
-            print(f"Job '{job_id}' already scheduled or was missed by time. Skipping ...")
+        except JobLookupError:
+            print(f"'{job_id}' job not found or already has completed !")
 
     def add_send_message_job(self, job_id, scheduled_time, topic_id, request_text, finishing_time, request_id, request_file):
         try:
-            self.scheduler.add_job(send_notification, 'date', run_date=scheduled_time,
-                                   args=[topic_id, request_text, finishing_time, request_id, request_file],
+            self.scheduler.add_job("scheduler_jobs.jobs:send_notification", 'date', run_date=scheduled_time,
+                                   args=[request_id, topic_id, request_text, finishing_time, request_file],
                                    id=job_id, replace_existing=True)
-        except ConflictingIdError:
-            print(f"Job '{job_id}' already scheduled or was missed by time. Skipping ...")
+        except JobLookupError:
+            print(f"'{job_id}' job not found or already has completed !")
 
     def remove_job(self, job_id):
         try:

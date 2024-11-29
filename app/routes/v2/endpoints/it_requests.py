@@ -192,10 +192,15 @@ async def put_request_id(
 
         if data.status == 1:
             delete_from_chat(message_id=request.tg_message_id, topic_id=topic_id)
-            send_notification(request_id=id, topic_id=topic_id, text=request_text, finishing_time=finishing_time,
-                              file_url=request.file[0].url)
+            message_id = send_notification(
+                request_id=id,
+                topic_id=topic_id,
+                text=request_text,
+                finishing_time=finishing_time,
+                file_url=request.file[0].url
+            )
 
-            request = it_requests.get_request_id(db=db, id=id)
+            # request = it_requests.get_request_id(db=db, id=id)
             if request.brigada:
                 brigada_name = request.brigada.name
             else:
@@ -215,7 +220,7 @@ async def put_request_id(
                 job_scheduler.add_delete_message_job(
                     job_id=delete_job_id,
                     scheduled_time=deleting_scheduled_time,
-                    message_id=request.tg_message_id,
+                    message_id=message_id,
                     topic_id=topic_id
                 )
 
@@ -371,10 +376,14 @@ async def put_request_id(
 
         elif data.brigada_id is not None:
             delete_from_chat(message_id=request.tg_message_id, topic_id=topic_id)
-            send_notification(request_id=id, topic_id=topic_id, text=request_text, finishing_time=finishing_time,
-                              file_url=request.file[0].url)
+            message_id = send_notification(
+                request_id=id,
+                topic_id=topic_id,
+                text=request_text,
+                finishing_time=finishing_time,
+                file_url=request.file[0].url
+            )
 
-            request = it_requests.get_request_id(db=db, id=id)
             if request.brigada:
                 brigada_name = request.brigada.name
             else:
@@ -394,7 +403,7 @@ async def put_request_id(
                 job_scheduler.add_delete_message_job(
                     job_id=delete_job_id,
                     scheduled_time=deleting_scheduled_time,
-                    message_id=request.tg_message_id,
+                    message_id=message_id,
                     topic_id=topic_id
                 )
 
