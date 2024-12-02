@@ -47,24 +47,24 @@ async def update_one_request_api(
     current_user: GetUserFullData = Depends(get_current_user)):
     old_request  = get_one_request(db=db,id=coint_id)
     query = update_coin_request(db=db, coin=coint_request, request_id=coint_id, user_manager=current_user.full_name)
-    if old_request.status !=coint_request.status:
-        create_log(db=db,status=coint_request.status,user_id=current_user.id,request_id=coint_id)
-        if query.status==3:
-            try:
-                sendtotelegramchat(
-                    chat_id=query.user.telegram_id,
-                    message_text=f"Уважаемый {query.user.full_name}, ваша заявка #{query.id}s подтверждена.",
-                )
-            except Exception as e:
-                print(e)
-        if query.status==4:
-            try:
-                sendtotelegramchat(
-                    chat_id=query.user.telegram_id,
-                    message_text=f"Уважаемый {query.user.full_name}, ваша заявка #{query.id}s отклонена по причине: {query.deny_reason}",
-                )
-            except Exception as e:
-                print(e)
+    # if old_request.status != coint_request.status:
+    create_log(db=db,status=coint_request.status,user_id=current_user.id,request_id=coint_id)
+    if query.status==3:
+        try:
+            sendtotelegramchat(
+                chat_id=query.user.telegram_id,
+                message_text=f"Уважаемый {query.user.full_name}, ваша заявка #{query.id}s подтверждена.",
+            )
+        except Exception as e:
+            print(e)
+    if query.status==4:
+        try:
+            sendtotelegramchat(
+                chat_id=query.user.telegram_id,
+                message_text=f"Уважаемый {query.user.full_name}, ваша заявка #{query.id}s отклонена по причине: {query.deny_reason}",
+            )
+        except Exception as e:
+            print(e)
 
     return query
 

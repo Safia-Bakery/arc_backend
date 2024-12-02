@@ -124,7 +124,6 @@ def sendtotelegramchat(chat_id, message_text, inline_keyboard: Optional[dict] = 
         url=f"https://api.telegram.org/bot{settings.bottoken}/sendMessage",
         json=payload
     )
-    print(response.json())
     # Check the response status
     if response.status_code == 200:
         return response
