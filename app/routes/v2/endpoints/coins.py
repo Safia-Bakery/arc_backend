@@ -47,7 +47,7 @@ async def update_one_request_api(
     current_user: GetUserFullData = Depends(get_current_user)):
     old_request  = get_one_request(db=db,id=coint_id)
     query = update_coin_request(db=db, coin=coint_request, request_id=coint_id, user_manager=current_user.full_name)
-    if old_request.status !=query.status:
+    if old_request.status !=coint_request.status:
         create_log(db=db,status=coint_request.status,user_id=current_user.id,request_id=coint_id)
         if query.status==3:
             try:
