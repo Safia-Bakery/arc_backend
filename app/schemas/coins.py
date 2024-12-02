@@ -23,6 +23,7 @@ class GetCoinsRequests(BaseModel):
     status: Optional[int] = None
     user: Optional[UserGetJustNames] = None
     fillial: Optional[GetArcFactoryDivision] =None
+    deny_reason:Optional[str]=None
     is_bot: Optional[int] = 1
     created_at: Optional[datetime] = None
     user_manager: Optional[str] = None
