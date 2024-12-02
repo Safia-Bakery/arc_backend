@@ -32,23 +32,23 @@ async def get_coins_requests(
 @coins_router.get("/coins/{coin_id}",response_model=GetCoinsRequests)
 async def get_one_request_api(
 
-    coint_id:int,
+    coin_id:int,
     db:Session=Depends(get_db),
     current_user: GetUserFullData = Depends(get_current_user)):
-    return get_one_request(db=db,id=coint_id)
+    return get_one_request(db=db,id=coin_id)
 
 
 
 @coins_router.put("/coins/{coin_id}",response_model=GetCoinsRequests)
 async def update_one_request_api(
-    coint_id:int,
+    coin_id:int,
     coint_request: UpdateCoinRequest,
     db:Session=Depends(get_db),
     current_user: GetUserFullData = Depends(get_current_user)):
-    old_request  = get_one_request(db=db,id=coint_id)
-    query = update_coin_request(db=db, coin=coint_request, request_id=coint_id, user_manager=current_user.full_name)
+    old_request  = get_one_request(db=db,id=coin_id)
+    query = update_coin_request(db=db, coin=coint_request, request_id=coin_id, user_manager=current_user.full_name)
     # if old_request.status != coint_request.status:
-    create_log(db=db,status=coint_request.status,user_id=current_user.id,request_id=coint_id)
+    create_log(db=db,status=coint_request.status,user_id=current_user.id,request_id=coin_id)
     if query.status==3:
         try:
             sendtotelegramchat(
