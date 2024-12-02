@@ -62,8 +62,9 @@ async def get_tool_balance(
         tool_id=tool_id
     )
     if tool_balance_obj is None:
+        return {}
         # If no balance is found, raise a 404 error
-        raise HTTPException(status_code=404, detail="Tool balance not found")
+        # raise HTTPException(status_code=404, detail="Tool balance not found")
 
     return tool_balance_obj
 
