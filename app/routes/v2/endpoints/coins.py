@@ -39,7 +39,7 @@ async def get_one_request_api(
 
 
 
-@coins_router.get("/coins/{coin_id}",response_model=GetCoinsRequests)
+@coins_router.put("/coins/{coin_id}",response_model=GetCoinsRequests)
 async def update_one_request_api(
     coint_id:int,
     coint_request: UpdateCoinRequest,
