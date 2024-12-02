@@ -51,6 +51,7 @@ async def update_one_request_api(
         create_log(db=db,status=coint_request.status,user_id=current_user.id,request_id=coint_id)
         if query.status==3:
             # try:
+                print('senging')
                 sendtotelegramchat(
                     chat_id=query.user.telegram_id,
                     message_text=f"Уважаемый {query.user.full_name}, ваша заявка #{query.id}s подтверждена.",
