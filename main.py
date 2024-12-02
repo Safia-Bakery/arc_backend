@@ -97,6 +97,7 @@ from app.routes.v2.endpoints.inventory_tools import inv_requests_tools_router
 
 
 from app.routes.v2.endpoints.iikotransfers import iiko_transfer_router
+from app.routes.v2.endpoints.coins import coins_router
 # models.Base.metadata.create_all(bind=engine)
 load_dotenv()
 
@@ -128,6 +129,7 @@ app.include_router(collector_users_router, tags=["Collector project"])
 app.include_router(collector_orders_router, tags=["Collector project"])
 app.include_router(groups_router, tags=["Groups"])
 app.include_router(toolparents_router, tags=["Tool Parents"])
+app.include_router(coins_router,tags=['Coins'])
 app.include_router(router)
 app.include_router(urls)
 app.include_router(hrrouter)
