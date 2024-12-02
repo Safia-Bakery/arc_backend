@@ -24,7 +24,6 @@ class Fillials(Base):
     origin = Column(Integer, default=0)
     status = Column(Integer, default=0)
     supplier = relationship("Suppliers", back_populates="store")
-    tool_balance = relationship("ToolBalance", back_populates="store")
     arc = Column(Integer, default=0)
     manager_id = Column(BIGINT, ForeignKey("managers.id"))
     manager = relationship("Managers", back_populates="division")

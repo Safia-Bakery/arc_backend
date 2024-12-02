@@ -2,19 +2,19 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from app.models.tool_balance import ToolBalance
 from app.models.tools import Tools
-from app.models.category import Category
+from app.models.toolparents import ToolParents
 from sqlalchemy import and_
 
+from app.schemas.tool_balance import UpdateToolBalance
 
-# def get_tool_balances(db: Session, department_id, category_id, tool_name):
-#     query = db.query(ToolBalance).filter(ToolBalance.department_id == department_id)
-#     if category_id is not None:
-#         query = query.join(Tools).join(Category).filter(Category.id == category_id)
-#     if tool_name is not None:
-#         query = query.filter(Tools.name.ilike(f"%{tool_name}%"))
-#
-#     result = query.order_by(Tools.name.asc()).all()
-#     return result
+
+def get_department_product_balances(db: Session, department_id, tool_id):
+    query = db.query(ToolBalance).filter(ToolBalance.department_id == department_id)
+    if tool_id is not None:
+        query = query.filter(ToolBalance.tool_id == tool_id)
+
+    result = query.all()
+    return result
 
 
 def get_department_store_product_balances(db: Session, department_id, store_id, tool_id):
@@ -39,13 +39,6 @@ def get_product_balance(db: Session, store_id, product_id):
 
 
 def update_product_balance(db: Session, obj, amount, sum, price):
-    # query = db.query(ToolBalance).filter(
-    #     and_(
-    #         ToolBalance.store_id == store_id,
-    #         ToolBalance.tool_id == product_id
-    #     )
-    # ).first()
-
     obj.amount = amount
     obj.sum = sum
     obj.price = price
@@ -92,3 +85,75 @@ def create_update_tool_balance(db: Session, data_list, department):
             if store_id is not None and tool_id is not None:
                 create_product_balance(db, department, store_id, tool_id, amount, sum, price, product_balance['productId'])
 
+
+def get_balance(db: Session, department_id, tool_id):
+    query = db.query(ToolBalance).filter(
+        and_(
+            ToolBalance.department_id == department_id,
+            ToolBalance.tool_id == tool_id
+        )
+    ).first()
+    return query
+
+
+def update_balance(db: Session, obj, amount):
+    obj.amount = amount
+    db.commit()
+    db.refresh(obj)
+    return obj
+
+
+def create_balance(db: Session, department, tool_id, amount):
+    query = ToolBalance(
+        department_id=department,
+        tool_id=tool_id,
+        amount=amount
+    )
+    try:
+        db.add(query)
+        db.commit()
+        db.refresh(query)
+    except IntegrityError:
+        print(f"Was canceled due to UniqueError:\n"
+              f"department_id: {query.department_id}\n"
+              f"tool_id: {query.tool_id}\n"
+              )
+        db.rollback()
+
+    return query
+
+
+def create_update_balance(db: Session, data: UpdateToolBalance, department_id):
+    product_obj = get_balance(db, department_id, data.tool_id)
+    if product_obj:
+        product_obj = update_balance(db, product_obj, data.amount)
+    else:
+        product_obj = create_balance(db, department_id, data.tool_id, data.amount)
+
+    return product_obj
+
+
+def getarchtools(db: Session, parent_id):
+    query = db.query(ToolParents).filter(
+        and_(
+            ToolParents.parent_id == parent_id,
+            ToolParents.status == 1
+        )
+    )
+    return query.all()
+
+
+def tools_query_iarch(db: Session, parent_id, name):
+    query = db.query(ToolBalance).join(Tools)
+    # query = db.query(Tools)
+    if parent_id is not None:
+        query = query.filter(Tools.parentid == str(parent_id)).filter(Tools.status == 1)
+        if name is not None:
+            query = query.filter(Tools.name.ilike(f"%{name}%"))
+        query = query.all()
+    else:
+        if name is not None:
+            query = query.filter(Tools.name.ilike(f"%{name}%")).all()
+        else:
+            return []
+    return query

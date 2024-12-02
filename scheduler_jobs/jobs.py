@@ -9,6 +9,7 @@ from app.db.session import SessionLocal
 
 
 timezonetash = pytz.timezone("Asia/Tashkent")
+BASE_URL = "https://api.service.safiabakery.uz/"
 
 
 def delete_from_chat(message_id, topic_id: Optional[int] = None):
@@ -38,7 +39,7 @@ def send_notification(request_id, topic_id, text, finishing_time, file_url):
                 {"text": "Завершить заявку", "callback_data": "complete_request"},
                 {"text": "Отменить", "callback_data": "cancel_request"}
             ],
-            [{"text": "Посмотреть фото", "url": f"{settings.BASE_URL}{file_url}"}]
+            [{"text": "Посмотреть фото", "url": f"{BASE_URL}{file_url}"}]
         ]
     }
     now = datetime.now(tz=timezonetash)

@@ -15,3 +15,20 @@ class GetBalances(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class GetToolBalance(BaseModel):
+    branch: Optional[GetParentFill] = None
+    tool: Optional[GetTool] = None
+    amount: Optional[float] = None
+
+    class Config:
+        orm_mode = True
+
+
+class UpdateToolBalance(BaseModel):
+    tool_id: int
+    amount: float
+
+    class Config:
+        orm_mode = True
