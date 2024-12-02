@@ -19,7 +19,7 @@ category_router = APIRouter()
 sizes = Settings().sizes
 
 
-@category_router.post("/category", response_model=GetCategory)
+@category_router.post("/category",)
 async def add_category_route(
         data: CreateCategory,
         db: Session = Depends(get_db),
