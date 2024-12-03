@@ -34,9 +34,9 @@ class UpdateToolBalance(BaseModel):
         orm_mode = True
 
 
-class GetGroupToolBalances(BaseModel):
-    groups: Optional[list[GetToolParent]] = None
-    products: Optional[list[GetTool]] = None
-
-    class Config:
-        orm_mode = True
+# class GetGroupToolBalances(BaseModel):
+#     groups: Optional[list[GetToolParent]] = None
+#     products: Optional[list[GetTool]] = None
+#
+#     class Config:
+#         orm_mode = True
