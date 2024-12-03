@@ -2,6 +2,7 @@ from typing import List
 from uuid import UUID
 import requests
 from sqlalchemy import and_
+from app.models.tool_balance import ToolBalance
 from app.core.config import settings
 from sqlalchemy.orm import Session
 from app.models.collector_orders import CollectOrders, CollectOrderItems
@@ -39,6 +40,16 @@ def create_order(db: Session, branch_id: UUID, data: CreateOrder, created_by):
 
     for item in data.products:
         create_order_item(db=db, order_id=query.id, product_id=item.product_id,amount=item.amount)
+        product_balance = db.query(ToolBalance).filter(
+            and_(
+                ToolBalance.department_id == branch_id,
+                ToolBalance.tool_id == item.product_id
+            )
+        ).first()
+        if product_balance:
+            product_balance.amount = product_balance.amount - item.amount
+            db.commit()
+            db.refresh(product_balance)
 
     freezers = db.query(Users).filter(and_(Users.branch_id == branch_id, Users.group_id == 35)).all()
     url = f'https://api.telegram.org/bot{settings.collector_bottoken}/sendMessage'
