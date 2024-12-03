@@ -14,7 +14,7 @@ def excell_generate_coins(data):
         inserting_data['Сумма'].append(str(coin.price))
         create_time = coin.created_at.strftime("%d.%m.%Y %H:%M:%S")
         inserting_data['Дата создания'].append(create_time)
-    file_name = f"files/{generate_random_string()}_coins.xlsx"
+    file_name = f"files/{generate_random_string()} Coins.xlsx"
     df = pd.DataFrame(inserting_data)
         # Generate Excel file
     df.to_excel(file_name, index=False)

@@ -36,7 +36,7 @@ def generate_coins_excell_file(db:Session):
 @coins_router.on_event("startup")
 def it_query_checker():
     scheduler = BackgroundScheduler()
-    trigger =  CronTrigger(hour=18, minute=14, second=00,timezone=timezone_tash)  # Set the desired time for the function to run (here, 12:00 PM)
+    trigger =  CronTrigger(hour=18, minute=20, second=00,timezone=timezone_tash)  # Set the desired time for the function to run (here, 12:00 PM)
     scheduler.add_job(generate_coins_excell_file, trigger=trigger, args=[next(get_db())])
     scheduler.start()
 
