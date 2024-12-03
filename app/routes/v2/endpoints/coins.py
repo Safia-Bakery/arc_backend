@@ -1,20 +1,55 @@
 from typing import Optional
 from uuid import UUID
 
+import pytz
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
 from fastapi import APIRouter, UploadFile
 from fastapi import Depends, File
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
+from app.crud.files import timezone_tash
 from app.routes.depth import get_db, get_current_user
 from app.schemas.users import GetUserFullData
 from app.utils.utils import generate_random_string
 from fastapi_pagination import Page,paginate
 from app.schemas.coins import GetCoinsRequests,UpdateCoinRequest
-from app.crud.coins import get_one_request,get_requests,update_coin_request
+from app.crud.coins import get_one_request,get_requests,update_coin_request,get_last24hours_requests
 from app.crud.logs import create_log
 from app.utils.utils import sendtotelegramchat
 
+from app.utils.coins_utils import excell_generate_coins,send_file_to_chat
+
 coins_router = APIRouter()
+timezone_tash = pytz.timezone('Asia/Tashkent')
+
+
+def generate_coins_excell_file(db:Session):
+    data= get_last24hours_requests(db=db)
+    file_url = excell_generate_coins(data=data)
+    send_file_to_chat(bot_token=settings.bottoken,chat_id=-1002439275381,file_path=file_url)
+    return True
+
+
+
+@coins_router.on_event("startup")
+def it_query_checker():
+    scheduler = BackgroundScheduler()
+    trigger =  CronTrigger(hour=17, minute=48, second=00,timezone=timezone_tash)  # Set the desired time for the function to run (here, 12:00 PM)
+    scheduler.add_job(generate_coins_excell_file, trigger=trigger, args=[next(get_db())])
+    scheduler.start()
+
+
+
+
+
+
+
+
+
+
+
 
 
 @coins_router.get("/coins",response_model=Page[GetCoinsRequests])
