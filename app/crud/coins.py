@@ -51,3 +51,25 @@ def update_coin_request(db:Session,coin : UpdateCoinRequest,request_id:int,user_
     return query
 
 
+def get_last24hours_requests(db: Session):
+    """
+    Fetch requests created in the last 24 hours for a specific department.
+
+    Args:
+        db (Session): SQLAlchemy database session.
+
+    Returns:
+        Query result of requests created in the last 24 hours.
+    """
+    # Calculate the timestamp for 24 hours ago
+    last_24_hours = datetime.now(tz=timezonetash) - timedelta(hours=24)
+
+    # Query the database
+    query = db.query(Requests).join(Category).filter(
+        Category.department == 11,  # Filter by department
+        Requests.created_at >= last_24_hours  # Filter by created_at within the last 24 hours
+    )
+
+    return query.all()
+
+
