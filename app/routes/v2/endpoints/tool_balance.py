@@ -10,7 +10,7 @@ from typing import Optional, List
 from app.schemas.it_extra import *
 from app.routes.depth import get_db, get_current_user
 from app.schemas.users import GetUserFullData
-from app.schemas.tool_balance import GetToolBalance, UpdateToolBalance, GetGroupToolBalances
+from app.schemas.tool_balance import GetToolBalance, UpdateToolBalance
 from app.crud import tool_balance
 from datetime import datetime, date
 
