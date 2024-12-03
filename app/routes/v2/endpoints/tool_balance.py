@@ -6,11 +6,11 @@ from fastapi import (
     APIRouter
 )
 from fastapi_pagination import paginate, Page
-from typing import Optional
+from typing import Optional, List
 from app.schemas.it_extra import *
 from app.routes.depth import get_db, get_current_user
-from app.schemas.users import UserFullBack, GetUserFullData
-from app.schemas.tool_balance import GetBalances, GetToolBalance, UpdateToolBalance
+from app.schemas.users import GetUserFullData
+from app.schemas.tool_balance import GetToolBalance, UpdateToolBalance, GetGroupToolBalances
 from app.crud import tool_balance
 from datetime import datetime, date
 
@@ -36,18 +36,19 @@ tool_balance_router = APIRouter()
 #     return paginate(request_list)
 
 
-# @tool_balance_router.get("/tools/balances")
-# async def get_tool_balances(
-#         parent_id: Optional[UUID] = None,
-#         name: Optional[str] = None,
-#         db: Session = Depends(get_db),
-#         request_user: GetUserFullData = Depends(get_current_user)
-# ):
-#     data = {
-#         'folders': tool_balance.getarchtools(db, parent_id),
-#         'tools': tool_balance.tools_query_iarch(db, parent_id, name)
-#     }
-#     return data
+@tool_balance_router.get("/tools/balances", response_model=GetGroupToolBalances)
+async def get_tool_balances(
+        parent_id: Optional[UUID] = None,
+        name: Optional[str] = None,
+        db: Session = Depends(get_db),
+        request_user: GetUserFullData = Depends(get_current_user)
+):
+
+    data = {
+        "groups": tool_balance.getarchtools(db, parent_id),
+        "products": tool_balance.tools_query_iarch(db, parent_id, name)
+    }
+    return data
 
 
 @tool_balance_router.get("/tools/balances/{tool_id}", response_model=GetToolBalance)
