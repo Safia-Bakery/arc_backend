@@ -65,7 +65,7 @@ def get_last24hours_requests(db: Session):
     last_24_hours = datetime.now(tz=timezonetash) - timedelta(hours=24)
 
     # Query the database
-    query = db.query(Requests).filter(
+    query = db.query(Requests).join(Category).filter(
         Category.department == 11,  # Filter by department
         Requests.created_at >= last_24_hours  # Filter by created_at within the last 24 hours
     )
