@@ -39,7 +39,7 @@ class GetTool(BaseModel):
     status: Optional[int] = None
     image: Optional[str] = None
     category_id: Optional[int] = None
-    tool_balance: Optional[GetToolBalance] = None
+    # tool_balance: Optional[GetToolBalance] = None
 
     class Config:
         orm_mode = True
