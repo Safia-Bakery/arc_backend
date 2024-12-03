@@ -11,7 +11,7 @@ from .users import GetBrigada, UserGetJustNames
 from .comments import GetComments
 from .category import GetCategory
 from .files import FileSch
-from .arc_factory_divisions import GetArcFactoryDivision
+from .fillials import GetFillialChild
 
 
 
@@ -22,7 +22,7 @@ class GetCoinsRequests(BaseModel):
     fillial_id: Optional[UUID] = None
     status: Optional[int] = None
     user: Optional[UserGetJustNames] = None
-    fillial: Optional[GetArcFactoryDivision] =None
+    fillial: Optional[GetFillialChild] =None
     deny_reason:Optional[str]=None
     is_bot: Optional[int] = 1
     created_at: Optional[datetime] = None
