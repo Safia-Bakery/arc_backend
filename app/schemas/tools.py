@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import Optional
 from uuid import UUID
 
-from app.schemas.tool_balance import GetToolBalance
+# from app.schemas.tool_balance import GetToolBalance
 
 
 class ToolsSearch(BaseModel):
