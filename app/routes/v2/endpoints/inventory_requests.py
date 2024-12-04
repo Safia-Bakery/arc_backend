@@ -104,8 +104,8 @@ async def get_request_factoty(
     try:
         request_list = inv_requests.get_request_id(db, id)
         return request_list
-    except:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="not fund")
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
 
 @inv_requests_router.post("/requests/inv/retail")
