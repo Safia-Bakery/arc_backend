@@ -2,8 +2,6 @@ from pydantic import BaseModel
 from typing import Optional
 from uuid import UUID
 
-# from app.schemas.tool_balance import GetToolBalance
-
 
 class ToolsSearch(BaseModel):
     id: int
@@ -39,7 +37,6 @@ class GetTool(BaseModel):
     status: Optional[int] = None
     image: Optional[str] = None
     category_id: Optional[int] = None
-    # tool_balance: Optional[GetToolBalance] = None
 
     class Config:
         orm_mode = True
