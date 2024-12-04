@@ -1,7 +1,7 @@
 from uuid import UUID
 
 import pytz
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi import Depends
 from sqlalchemy.orm import Session
 from typing import Optional, List
@@ -20,8 +20,11 @@ async def create_collector_order(
         db: Session = Depends(get_db),
         request_user: GetUserFullData = Depends(get_current_user)
 ):
-    return create_order(db=db, branch_id=request_user.branch_id, data=order, created_by=request_user.id)
+    order = create_order(db=db, branch_id=request_user.branch_id, data=order, created_by=request_user.id)
+    if order is None:
+        raise HTTPException(status_code=400, detail="Не смогли создать заказ. Проверьте остаток товаров на складе !")
 
+    return order
 
 @collector_orders_router.get("/collector/order/", response_model=List[GetOrder])
 async def get_collector_orders(
