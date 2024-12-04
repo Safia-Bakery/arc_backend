@@ -45,7 +45,7 @@ def filter_requests_all(
 
 
 def get_request_id(db: Session, id):
-    return db.query(models.Requests).filter(Requests.id == id).first()
+    return db.query(Requests).filter(Requests.id == id).first()
 
 
 
