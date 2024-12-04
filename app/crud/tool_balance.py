@@ -143,17 +143,26 @@ def getarchtools(db: Session, parent_id):
     return query.all()
 
 
-def tools_query_iarch(db: Session, parent_id, name):
-    query = db.query(ToolBalance).join(Tools)
-    # query = db.query(Tools)
-    if parent_id is not None:
-        query = query.filter(Tools.parentid == str(parent_id)).filter(Tools.status == 1)
+def tools_query_iarch(db: Session, parent_id, name, branch_id):
+    if parent_id is not None or name is not None:
+        query = db.query(Tools, ToolBalance).join(
+            ToolBalance, Tools.id == ToolBalance.tool_id, isouter=True
+        ).filter(
+            (ToolBalance.department_id == branch_id) | (ToolBalance.department_id == None)
+        )
         if name is not None:
             query = query.filter(Tools.name.ilike(f"%{name}%"))
+        if parent_id is not None:
+            query = query.filter(Tools.parentid == str(parent_id)).filter(Tools.status == 1)
+
         query = query.all()
+
+        ready_data = []
+        for tool in query:
+            tool[0].tool_balances = tool[1]
+            ready_data.append(tool[0])
+        return ready_data
     else:
-        if name is not None:
-            query = query.filter(Tools.name.ilike(f"%{name}%")).all()
-        else:
-            return []
+        query = []
+
     return query

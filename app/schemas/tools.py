@@ -29,6 +29,7 @@ class GetTool(BaseModel):
     id: int
     name: Optional[str] = None
     code: Optional[str] = None
+    parentid: Optional[str] = None
     mainunit: Optional[str] = None
     producttype: Optional[str] = None
     iikoid: Optional[UUID] = None
