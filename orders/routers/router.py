@@ -157,10 +157,6 @@ async def update_category(
         telegram_id = telegram_id,
         price=price
     )
-    if response.department==9:
-        query.deletecat_product(db=db,category_id=id)
-        for i in sizes:
-            query.createcat_product(db=db,category_id=id,name=i,description=None,image=None,status=1)
     if response:
         return schemas.GetCategorySch.from_orm(response)
     else:
