@@ -181,7 +181,7 @@ async def update_request_inventory_facatory(
                     bot_token=settings.bottoken,
                     chat_id=request_list.user.telegram_id,
                     message_text=f"Ваша заявка #{request_list.id}s была отменена по причине: {request_list.deny_reason}",
-                    url =f"{settings.frontend_url}/rating/{request_list.sdid}"
+                    url =f"{settings.FRONT_URL}/rating/{request_list.id}"
                 )
             elif   request.status==6:
                 text_request = f"Ваша заявка #{request_list.id}s по Инвентарю была обработана. "
@@ -225,7 +225,7 @@ async def update_request_inventory_facatory(
                     bot_token=settings.bottoken,
                     chat_id=request_list.user.telegram_id,
                     message_text=f"Ваша заявка #{request_list.id}s была отменена по причине: {request_list.deny_reason}",
-                    url =f"{settings.frontend_url}/rating/{request_list.sdid}"
+                    url =f"{settings.FRONT_URL}/rating/{request_list.id}"
                 )
             elif   request.status==6:
                 text_request = f"Ваша заявка #{request_list.id}s по Инвентарю была обработана. "

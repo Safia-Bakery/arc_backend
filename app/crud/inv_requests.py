@@ -70,12 +70,6 @@ def update_request(db: Session, request: UpdateRequest):
     query = db.query(Requests).filter(Requests.id == request.id).first()
     if request.status is not None:
         query.status = request.status
-    if request.description is not None:
-        query.description = request.description
-    if request.product is not None:
-        query.product = request.product
-    if request.category_id is not None:
-        query.category_id = request.category_id
     if request.deny_reason is not None:
         query.deny_reason = request.deny_reason
 
