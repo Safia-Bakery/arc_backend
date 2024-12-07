@@ -36,6 +36,9 @@ class InventoryFactoryToolOne(BaseModel):
     factory_image: Optional[str] = Field(None, alias='file')
     category_id:Optional[int]=None
     category :Optional[GetCategory]=None
+    factory_ftime : Optional[float] = Field(None,alias = 'ftime')
+
+
     model_config = ConfigDict(
         populate_by_name=True,
     )
