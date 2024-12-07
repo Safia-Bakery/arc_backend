@@ -11,7 +11,7 @@ class InventoryFactoryTool(BaseModel):
     status: Optional[int] = None
     factory_image: Optional[str] = Field(None, alias='file')
     parentid:Optional[UUID]=None
-    factory_ftime : Optional[float] = Field(None,alias = 'ftime')
+    factory_ftime : Optional[float] = None
 
     model_config = ConfigDict(
         populate_by_name=True,
