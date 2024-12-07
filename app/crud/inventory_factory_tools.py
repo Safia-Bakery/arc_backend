@@ -52,7 +52,7 @@ def update_one_tool(db:Session, id, data:UpdateInventoryFactoryTool):
         if data.status is not None:
             query.status = data.status
         if data.factory_ftime is not None:
-            query.factory_ftime = data.ftime
+            query.factory_ftime = data.factory_ftime
         query.factory_image = data.file
 
         db.commit()
