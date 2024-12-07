@@ -154,6 +154,7 @@ class Category(Base):
     price = Column(Float,nullable=True)
     is_child = Column(Boolean,default=False)
     telegram_id = Column(Integer,ForeignKey("telegrams.id"),nullable=True)
+    universal_size = Column(Boolean, nullable=True)
     telegram = relationship("Telegrams", back_populates="categories")
     tool = relationship("Tools", back_populates="categories")
 
@@ -283,6 +284,8 @@ class OrderProducts(Base):
     request_id = Column(Integer, ForeignKey("requests.id"))
     product_id = Column(Integer, ForeignKey("products.id"))
     amount = Column(Integer, nullable=True)
+    confirmed = Column(Boolean, default=False)
+    deny_reason = Column(String, nullable=True)
     orpr_product = relationship("Products", back_populates="product_orpr")
     orpr_request = relationship("Requests", back_populates="request_orpr")
 

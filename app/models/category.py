@@ -45,6 +45,7 @@ class Category(Base):
     price = Column(Float,nullable=True)
     is_child = Column(Boolean,default=False)
     telegram_id = Column(Integer,ForeignKey("telegrams.id"),nullable=True)
+    universal_size = Column(Boolean, nullable=True)
     telegram = relationship("Telegrams", back_populates="categories")
     tool = relationship("Tools", back_populates="categories")
     categories_relations = relationship("CategoriesToolsRelations",back_populates='categories')

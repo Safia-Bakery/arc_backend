@@ -83,7 +83,6 @@ from app.routes.v2.endpoints.it_extra import it_extra_router
 from app.routes.v2.endpoints.it_requests import it_requests_router
 from app.routes.v2.endpoints.category import category_router
 from app.routes.v2.endpoints.inventory_requests import inv_requests_router
-# from app.routes.v2.endpoints.tool_balance_cron import tool_balance_cron_router
 from app.routes.v2.endpoints.tool_balance import tool_balance_router
 from app.routes.v2.endpoints.arc_factory_requests import arc_factory_requests
 from app.routes.v2.endpoints.arc_factory_managers import arc_factory_managers
@@ -92,6 +91,8 @@ from app.routes.v2.endpoints.collector_users import collector_users_router
 from app.routes.v2.endpoints.groups import groups_router
 from app.routes.v2.endpoints.collector_orders import collector_orders_router
 from app.routes.v2.endpoints.toolparents import toolparents_router
+from app.routes.v2.endpoints.uniform_category import uniform_category_router
+from app.routes.v2.endpoints.uniform_requests import uniform_requests_router
 
 from app.routes.v2.endpoints.inventory_tools import inv_requests_tools_router
 
@@ -130,6 +131,8 @@ app.include_router(collector_orders_router, tags=["Collector project"])
 app.include_router(groups_router, tags=["Groups"])
 app.include_router(toolparents_router, tags=["Tool Parents"])
 app.include_router(coins_router,tags=['Coins'])
+app.include_router(uniform_category_router, prefix="/api/v2", tags=['UNIFORM'])
+app.include_router(uniform_requests_router, prefix="/api/v2", tags=['UNIFORM'])
 app.include_router(router)
 app.include_router(urls)
 app.include_router(hrrouter)

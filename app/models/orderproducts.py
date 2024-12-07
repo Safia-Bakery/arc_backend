@@ -29,5 +29,7 @@ class OrderProducts(Base):
     request_id = Column(Integer, ForeignKey("requests.id"))
     product_id = Column(Integer, ForeignKey("products.id"))
     amount = Column(Integer, nullable=True)
+    confirmed = Column(Boolean, default=False)
+    deny_reason = Column(String, nullable=True)
     orpr_product = relationship("Products", back_populates="product_orpr")
     orpr_request = relationship("Requests", back_populates="request_orpr")

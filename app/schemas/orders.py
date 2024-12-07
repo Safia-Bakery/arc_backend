@@ -39,22 +39,44 @@ class CategoryNameGet(BaseModel):
 
 class OrderProducts(BaseModel):
     name: str
-    prod_cat : Optional[CategoryNameGet] = None
+    prod_cat: Optional[CategoryNameGet] = None
 
 
     class Config:
         orm_mode = True
 
+
+class CategoryProducts(BaseModel):
+    id: int
+    name: str
+    # prod_cat: Optional[CategoryNameGet] = None
+
+    class Config:
+        orm_mode = True
 
 
 class OrderProductsGet(BaseModel):
     id: int
     amount: Optional[int]=None
     orpr_product: Optional[OrderProducts] = None
+    confirmed: Optional[bool] = None
+    deny_reason: Optional[str] = None
 
 
     class Config:
         orm_mode = True
+
+
+class CreateOrderProducts(BaseModel):
+    category_id: int
+    product_id: int
+    amount: int
+    price: float
+
+
+    class Config:
+        orm_mode = True
+
 
 
 class CarsCreate(BaseModel):
