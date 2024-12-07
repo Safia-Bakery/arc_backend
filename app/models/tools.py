@@ -46,6 +46,7 @@ class Tools(Base):
     image = Column(String, nullable=True)
     factory_image = Column(String,nullable=True)
     ftime = Column(Float, nullable=True)
+    factory_ftime = Column(Float,nullable=True)
     tool_need = relationship("NeededTools", back_populates="need_tool")
     status = Column(Integer, default=1)
     category_id = Column(Integer, ForeignKey("category.id"))
