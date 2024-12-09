@@ -25,7 +25,7 @@ import uuid
 
 class OrderProducts(Base):
     __tablename__ = "orderproducts"
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)  # Add autoincrement=True
     request_id = Column(Integer, ForeignKey("requests.id"))
     product_id = Column(Integer, ForeignKey("products.id"))
     amount = Column(Integer, nullable=True)
