@@ -29,7 +29,7 @@ timezonetash = pytz.timezone("Asia/Tashkent")
 BASE_URL = 'https://api.service.safiabakery.uz/'
 
 
-@uniform_requests_router.get("/requests/uniform", response_model=Page[GetRequestList])
+@uniform_requests_router.get("/requests/uniform/", response_model=Page[GetRequestList])
 async def filter_requests(
         id: Optional[int] = None,
         fillial_id: Optional[UUID] = None,
@@ -49,7 +49,7 @@ async def filter_requests(
     return paginate(request_list)
 
 
-@uniform_requests_router.get("/requests/uniform/{id}", response_model=GetRequest)
+@uniform_requests_router.get("/requests/uniform/{id}/", response_model=GetRequest)
 async def get_request(
         id: int,
         db: Session = Depends(get_db),
@@ -62,7 +62,7 @@ async def get_request(
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="not found")
 
 
-@uniform_requests_router.put("/requests/uniform/{id}", response_model=GetRequest)
+@uniform_requests_router.put("/requests/uniform/{id}/", response_model=GetRequest)
 async def put_request_id(
         data: UpdateRequest,
         db: Session = Depends(get_db),
@@ -110,7 +110,7 @@ async def put_request_id(
     return request
 
 
-@uniform_requests_router.post("/requests/uniform", response_model=GetRequest)
+@uniform_requests_router.post("/requests/uniform/", response_model=GetRequest)
 async def create_request(
         data: CreateRequest,
         db: Session = Depends(get_db),
@@ -124,7 +124,7 @@ async def create_request(
     return request
 
 
-@uniform_requests_router.get("/category/uniform/products", response_model=List[CategoryProducts])
+@uniform_requests_router.get("/category/uniform/products/", response_model=List[CategoryProducts])
 async def get_uniform_products(
         category_id: int,
         db: Session = Depends(get_db),

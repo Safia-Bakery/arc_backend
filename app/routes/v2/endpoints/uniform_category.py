@@ -31,7 +31,7 @@ sizes = [
          ]
 
 
-@uniform_category_router.post("/category/uniform", response_model=CreateCategory)
+@uniform_category_router.post("/category/uniform/", response_model=CreateCategory)
 async def add_category(
         data: CreateCategory,
         db: Session = Depends(get_db),
@@ -62,7 +62,7 @@ async def add_category(
     return category_obj
 
 
-@uniform_category_router.put("/category/uniform", response_model=UpdateCategory)
+@uniform_category_router.put("/category/uniform/", response_model=UpdateCategory)
 async def update_category(
         data: UpdateCategory,
         db: Session = Depends(get_db),
@@ -83,7 +83,7 @@ async def update_category(
     return category_obj
 
 
-@uniform_category_router.get("/category/uniform", response_model=List[GetCategory])
+@uniform_category_router.get("/category/uniform/", response_model=List[GetCategory])
 async def get_categories(
         name: Optional[str] = None,
         db: Session = Depends(get_db),
@@ -93,7 +93,7 @@ async def get_categories(
     return uniform_categories
 
 
-@uniform_category_router.get("/category/uniform/{id}", response_model=GetCategory)
+@uniform_category_router.get("/category/uniform/{id}/", response_model=GetCategory)
 async def get_category(
         id: int,
         db: Session = Depends(get_db),

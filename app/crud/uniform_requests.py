@@ -53,7 +53,7 @@ def edit_request(db: Session, user_manager, data: Optional[UpdateRequest] = None
         updated_data[str(data.status)] = str(now)
         if data.status == 1:
             request_obj.started_at = now
-        elif data.status == 6:
+        elif data.status in [3, 4, 6]:
             request_obj.finished_at = now
 
         db.query(Requests).filter(Requests.id == request_obj.id).update({"update_time": updated_data})

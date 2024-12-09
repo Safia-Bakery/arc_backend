@@ -29,7 +29,7 @@ class UpdateCategory(BaseModel):
 
 
 class GetCategory(BaseModel):
-    id: int
+    id: Optional[int] = None
     name: Optional[str] = None
     price: Optional[float] = None
     description: Optional[str] = None
