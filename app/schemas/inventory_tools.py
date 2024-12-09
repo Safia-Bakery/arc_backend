@@ -12,6 +12,8 @@ class InventoryFactoryTool(BaseModel):
     factory_image: Optional[str] = Field(None, alias='file')
     parentid:Optional[UUID]=None
     factory_ftime : Optional[float] = None
+    factory_min_amount : Optional[float] = None
+    factory_max_amount: Optional[float] = None
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -37,7 +39,8 @@ class InventoryFactoryToolOne(BaseModel):
     category_id:Optional[int]=None
     category :Optional[GetCategory]=None
     factory_ftime : Optional[float] = None
-
+    factory_min_amount : Optional[float] = None
+    factory_max_amount: Optional[float] = None
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -94,5 +97,7 @@ class UpdateInventoryFactoryTool(BaseModel):
     category_id:Optional[int]=None
     file : Optional[str]=None
     factory_ftime : Optional[float]=None
+    factory_min_amount : Optional[float] = None
+    factory_max_amount: Optional[float] = None
 
 

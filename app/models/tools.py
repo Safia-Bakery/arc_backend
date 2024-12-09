@@ -43,6 +43,8 @@ class Tools(Base):
     department = Column(Integer, nullable=True)
     min_amount = Column(Float, nullable=True)
     max_amount = Column(Float, nullable=True)
+    factory_min_amount = Column(Float, nullable=True)
+    factory_max_amount = Column(Float, nullable=True)
     image = Column(String, nullable=True)
     factory_image = Column(String,nullable=True)
     ftime = Column(Float, nullable=True)
