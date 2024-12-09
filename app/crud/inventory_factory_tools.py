@@ -53,6 +53,10 @@ def update_one_tool(db:Session, id, data:UpdateInventoryFactoryTool):
             query.status = data.status
         if data.factory_ftime is not None:
             query.factory_ftime = data.factory_ftime
+        if data.factory_max_amount  is not None:
+            query.factory_max_amount = data.factory_max_amount
+        if data.factory_min_amount is not None:
+            query.factory_min_amount = data.factory_min_amount
         query.factory_image = data.file
 
         db.commit()
