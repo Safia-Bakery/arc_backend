@@ -91,3 +91,13 @@ async def get_categories(
 ):
     uniform_categories = uniform_category.get_categories(db=db, name=name)
     return uniform_categories
+
+
+@uniform_category_router.get("/category/uniform/{id}", response_model=GetCategory)
+async def get_category(
+        id: int,
+        db: Session = Depends(get_db),
+        request_user: UserFullBack = Depends(get_current_user)
+):
+    category = uniform_category.get_category_id(db=db, id=id)
+    return category
