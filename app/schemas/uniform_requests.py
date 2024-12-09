@@ -50,7 +50,7 @@ class UpdateRequest(BaseModel):
     id: int
     status: Optional[int] = None
     deny_reason: Optional[str] = None
-    request_products: Optional[list[OrderProductsGet]] = None
+    request_products: list[OrderProductsGet]
 
     class Config:
         orm_mode = True

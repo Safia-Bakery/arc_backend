@@ -30,6 +30,7 @@ class GetRequest(BaseModel):
     fillial: Optional[GetFillialChild] = None
     started_at: Optional[datetime] = None
     finished_at: Optional[datetime] = None
+    finishing_time: Optional[datetime] = None
     user: Optional[UserGetJustNames] = None
     is_bot: Optional[bool] = None
     location: Optional[Dict[str, str]] = None
