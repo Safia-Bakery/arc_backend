@@ -2,7 +2,7 @@ import datetime
 import re
 from typing import Optional
 import pytz
-from sqlalchemy import Date, cast,and_
+from sqlalchemy import Date, cast, and_, or_, func
 from sqlalchemy.orm import Session
 from app.models.category import Category
 from app.models.comments import Comments
@@ -61,20 +61,31 @@ def filter_request_brigada(
     # if is_expired is not None:
     #     now = datetime.datetime.now(tz=timezonetash)
     #     if is_expired:
-    #         expired_finished_requests = query.filter(and_(Requests.finished_at is not None, Requests.finished_at > Requests.finishing_time))
-    #         expired_confirmed_not_finished_requests = query.filter(and_(Requests.finished_at is None, Requests.status == 1, now > Requests.finishing_time))
-    #         expired_canceled_not_finished_requests = query.filter(and_(Requests.finished_at is None, Requests.status == 4, now > Requests.finishing_time))
-    #         query = expired_finished_requests.union(expired_confirmed_not_finished_requests).union(expired_canceled_not_finished_requests)
+    #         if request_status in (3, 4, 6):
+    #             query = query.filter(
+    #                 or_(
+    #                     Requests.finished_at > Requests.finishing_time,
+    #                     datetime.datetime.strptime(Requests.update_time["4"], '%Y-%m-%d %H:%M:%S.%f%z') > Requests.finishing_time
+    #                 )
+    #             )
+    #         elif request_status in (0, 1):
+    #             query = query.filter(now > Requests.finishing_time)
     #     if not is_expired:
-    #         not_expired_finished_requests = query.filter(and_(Requests.finished_at is not None, Requests.finished_at <= Requests.finishing_time))
-    #         not_expired_confirmed_not_finished_requests = query.filter(and_(Requests.finished_at is None, Requests.status == 1, now <= Requests.finishing_time))
-    #         not_expired_canceled_not_finished_requests = query.filter(and_(Requests.finished_at is None, Requests.status == 4, now <= Requests.finishing_time))
-    #         query = not_expired_finished_requests.union(not_expired_confirmed_not_finished_requests).union(not_expired_canceled_not_finished_requests)
+    #         if request_status in (3, 4, 6):
+    #             query = query.filter(
+    #                 or_(
+    #                     Requests.finished_at <= Requests.finishing_time,
+    #                     datetime.datetime.strptime(Requests.update_time["4"], '%Y-%m-%d %H:%M:%S.%f%z') <= Requests.finishing_time
+    #                 )
+    #             )
+    #         elif request_status in (0, 1):
+    #             query = query.filter(now <= Requests.finishing_time)
 
     # if reopened is not None:
     #    query = query.filter(func.jsonb_object_keys(models.Requests.update_time) == '7')
 
     query = query.filter(Requests.brigada_id == brigada_id)
+    # print("Expired") if datetime.datetime.strptime(query.all()[0].update_time["4"], '%Y-%m-%d %H:%M:%S.%f%z') <= query.all()[0].finishing_time else print("Not expired")
     return query.order_by(Requests.id.desc()).all()
 
 
@@ -122,19 +133,36 @@ def filter_requests_all(
         query = query.filter(Requests.created_at.between(started_at, finished_at))
     if created_at is not None and finished_at is not None:
         query = query.filter(Requests.created_at.between(created_at, finished_at))
-    if is_expired is not None:
-        now = datetime.datetime.now(tz=timezonetash)
-        if is_expired:
-            expired_finished_requests = query.filter(and_(Requests.finished_at is not None, Requests.finished_at > Requests.finishing_time))
-            expired_not_finished_requests = query.filter(and_(Requests.finished_at is None, now > Requests.finishing_time))
-            query = expired_finished_requests.union(expired_not_finished_requests)
-        if not is_expired:
-            query = query.filter(now <= Requests.finishing_time)
-            not_expired_finished_requests = query.filter(and_(Requests.finished_at is not None, Requests.finished_at <= Requests.finishing_time))
-            not_expired_not_finished_requests = query.filter(and_(Requests.finished_at is None, now <= Requests.finishing_time))
-            query = not_expired_finished_requests.union(not_expired_not_finished_requests)
+    # if is_expired is not None:
+    #     now = datetime.datetime.now(tz=timezonetash)
+    #     if is_expired:
+    #         if request_status in (3, 4, 6):
+    #             query = query.filter(
+    #                 or_(
+    #                     Requests.finished_at > Requests.finishing_time,
+    #                     datetime.datetime.strptime(Requests.update_time["4"], '%Y-%m-%d %H:%M:%S.%f%z') > Requests.finishing_time
+    #                 )
+    #             )
+    #         elif request_status in (0, 1):
+    #             query = query.filter(now > Requests.finishing_time)
+    #     if not is_expired:
+    #         if request_status in (3, 4, 6):
+    #             query = query.filter(
+    #                 or_(
+    #                     Requests.finished_at <= Requests.finishing_time,
+    #                     datetime.datetime.strptime(Requests.update_time["4"], '%Y-%m-%d %H:%M:%S.%f%z') <= Requests.finishing_time
+    #                 )
+    #             )
+    #         elif request_status in (0, 1):
+    #             query = query.filter(now <= Requests.finishing_time)
 
     results = query.order_by(Requests.id.desc()).all()
+    # if datetime.datetime.strptime(results[0].update_time["4"], '%Y-%m-%d %H:%M:%S.%f%z') > results[0].finishing_time:
+    #     print("Expired")
+    # else:
+    #     print("Not expired")
+    # print(datetime.datetime.strptime(results[0].update_time["4"], '%Y-%m-%d %H:%M:%S.%f%z'), type(datetime.datetime.strptime(results[0].update_time["4"], '%Y-%m-%d %H:%M:%S.%f%z')))
+
     return results
 
 
@@ -170,7 +198,7 @@ def edit_request(db: Session,
             updated_data[str(data.status)] = str(now)
             if data.status == 1:
                 query.started_at = now
-            elif data.status == 6:
+            elif data.status in [3, 4, 6, 8]:
                 query.finished_at = now
 
             db.query(Requests).filter(Requests.id == id).update({"update_time": updated_data})
