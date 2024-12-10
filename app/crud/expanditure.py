@@ -29,6 +29,7 @@ def create_expanditure(db:Session,amount,tool_id,request_id):
 
 
 def delete_expanditure(db:Session,request_id,tool_id):
-    query = db.query(Expanditure).filter(request_id=request_id,tool_id=tool_id).first()
+    query = db.query(Expanditure).filter(Expanditure.request_id==request_id,Expanditure.tool_id==tool_id).first()
     db.delete(query)
     db.commit()
+    return query
