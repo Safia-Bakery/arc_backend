@@ -58,34 +58,23 @@ def filter_request_brigada(
         query = query.filter(Requests.created_at.between(started_at, finished_at))
     if created_at is not None and finished_at is not None:
         query = query.filter(Requests.created_at.between(created_at, finished_at))
-    # if is_expired is not None:
-    #     now = datetime.datetime.now(tz=timezonetash)
-    #     if is_expired:
-    #         if request_status in (3, 4, 6):
-    #             query = query.filter(
-    #                 or_(
-    #                     Requests.finished_at > Requests.finishing_time,
-    #                     datetime.datetime.strptime(Requests.update_time["4"], '%Y-%m-%d %H:%M:%S.%f%z') > Requests.finishing_time
-    #                 )
-    #             )
-    #         elif request_status in (0, 1):
-    #             query = query.filter(now > Requests.finishing_time)
-    #     if not is_expired:
-    #         if request_status in (3, 4, 6):
-    #             query = query.filter(
-    #                 or_(
-    #                     Requests.finished_at <= Requests.finishing_time,
-    #                     datetime.datetime.strptime(Requests.update_time["4"], '%Y-%m-%d %H:%M:%S.%f%z') <= Requests.finishing_time
-    #                 )
-    #             )
-    #         elif request_status in (0, 1):
-    #             query = query.filter(now <= Requests.finishing_time)
+    if is_expired is not None:
+        now = datetime.datetime.now(tz=timezonetash)
+        if is_expired:
+            if [int(status) for status in request_status if int(status) in [3, 4, 6]]:
+                query = query.filter(Requests.finished_at > Requests.finishing_time)
+            elif [int(status) for status in request_status if int(status) in [0, 1]]:
+                query = query.filter(now > Requests.finishing_time)
+        if not is_expired:
+            if [int(status) for status in request_status if int(status) in [3, 4, 6]]:
+                query = query.filter(Requests.finished_at <= Requests.finishing_time)
+            elif [int(status) for status in request_status if int(status) in [0, 1]]:
+                query = query.filter(now <= Requests.finishing_time)
 
     # if reopened is not None:
     #    query = query.filter(func.jsonb_object_keys(models.Requests.update_time) == '7')
 
     query = query.filter(Requests.brigada_id == brigada_id)
-    # print("Expired") if datetime.datetime.strptime(query.all()[0].update_time["4"], '%Y-%m-%d %H:%M:%S.%f%z') <= query.all()[0].finishing_time else print("Not expired")
     return query.order_by(Requests.id.desc()).all()
 
 
@@ -133,36 +122,20 @@ def filter_requests_all(
         query = query.filter(Requests.created_at.between(started_at, finished_at))
     if created_at is not None and finished_at is not None:
         query = query.filter(Requests.created_at.between(created_at, finished_at))
-    # if is_expired is not None:
-    #     now = datetime.datetime.now(tz=timezonetash)
-    #     if is_expired:
-    #         if request_status in (3, 4, 6):
-    #             query = query.filter(
-    #                 or_(
-    #                     Requests.finished_at > Requests.finishing_time,
-    #                     datetime.datetime.strptime(Requests.update_time["4"], '%Y-%m-%d %H:%M:%S.%f%z') > Requests.finishing_time
-    #                 )
-    #             )
-    #         elif request_status in (0, 1):
-    #             query = query.filter(now > Requests.finishing_time)
-    #     if not is_expired:
-    #         if request_status in (3, 4, 6):
-    #             query = query.filter(
-    #                 or_(
-    #                     Requests.finished_at <= Requests.finishing_time,
-    #                     datetime.datetime.strptime(Requests.update_time["4"], '%Y-%m-%d %H:%M:%S.%f%z') <= Requests.finishing_time
-    #                 )
-    #             )
-    #         elif request_status in (0, 1):
-    #             query = query.filter(now <= Requests.finishing_time)
+    if is_expired is not None:
+        now = datetime.datetime.now(tz=timezonetash)
+        if is_expired:
+            if [int(status) for status in request_status if int(status) in [3, 4, 6]]:
+                query = query.filter(Requests.finished_at > Requests.finishing_time)
+            elif [int(status) for status in request_status if int(status) in [0, 1]]:
+                query = query.filter(now > Requests.finishing_time)
+        if not is_expired:
+            if [int(status) for status in request_status if int(status) in [3, 4, 6]]:
+                query = query.filter(Requests.finished_at <= Requests.finishing_time)
+            elif [int(status) for status in request_status if int(status) in [0, 1]]:
+                query = query.filter(now <= Requests.finishing_time)
 
     results = query.order_by(Requests.id.desc()).all()
-    # if datetime.datetime.strptime(results[0].update_time["4"], '%Y-%m-%d %H:%M:%S.%f%z') > results[0].finishing_time:
-    #     print("Expired")
-    # else:
-    #     print("Not expired")
-    # print(datetime.datetime.strptime(results[0].update_time["4"], '%Y-%m-%d %H:%M:%S.%f%z'), type(datetime.datetime.strptime(results[0].update_time["4"], '%Y-%m-%d %H:%M:%S.%f%z')))
-
     return results
 
 
