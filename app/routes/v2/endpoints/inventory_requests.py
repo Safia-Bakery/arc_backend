@@ -20,7 +20,7 @@ from app.schemas.inventory_requests import (GetRequest,
 from app.schemas.requests import GetOneRequest,GetOneRequestInventoryFactory
 from app.crud import inv_requests
 from datetime import datetime, date
-from app.crud.expanditure import create_expanditure
+from app.crud.expanditure import create_expanditure,delete_expanditure
 from app.utils.utils import( send_simple_text_message,
                              rating_request_telegram,
                              confirmation_request
@@ -185,7 +185,7 @@ async def update_request_inventory_facatory(
                     url =f"{settings.FRONT_URL}/rating/{request_list.id}"
                 )
             elif   request.status==6:
-                text_request = f"Ваша заявка #{request_list.id}s по Инвентарю была обработана. "
+                text_request = f"Ваша заявка #{request_list.id}s по Инвентарю была обработана.\n "
                 new_neq = []
                 for i in request_list.expanditure:
                     if i.status == 0:
@@ -196,26 +196,26 @@ async def update_request_inventory_facatory(
 
                 if new_neq:
 
-                    text_request+=f"\n\n♻️Инвентарь в обработке:"
+                    text_request += f"\n\n♻️Инвентарь в обработке:\n"
 
                     new_request = inv_requests.create_auto_request(
-                                    db=db,
-                                     category_id=request_list.category_id,
-                                     fillial_id=request_list.fillial_id,
-                                     description=request_list.description,
-                                     product=request_list.product,
-                                     user_id=request_list.user_id,
-                                     )
+                        db=db,
+                        category_id=request_list.category_id,
+                        fillial_id=request_list.fillial_id,
+                        description=request_list.description,
+                        product=request_list.product,
+                        user_id=request_list.user_id,
+                    )
                     for i in new_neq:
-                        text_request+=f"\n{i.tool.name} - {i.amount} шт. "
+                        text_request += f"\n{i.tool.name} - {i.amount} шт. "
+                        delete_expanditure(db=db, request_id=request_list.id, tool_id=i.tool_id)
+
                         create_expanditure(db=db,
-                                             request_id=new_request.id,
-                                             tool_id=i.tool_id,
-                                             amount=i.amount,
-                                             )
-                    text_request +="\nПри первой возможности будет отправлено"
-
-
+                                           request_id=new_request.id,
+                                           tool_id=i.tool_id,
+                                           amount=i.amount,
+                                           )
+                    text_request += "\nПри первой возможности будет отправлено.\n"
 
                 text_request += "\nИнвентарь отправлен вам на филиал, прибудет через 12 часов. Как привезут просим вас Подтвердить заявку. \nЕсли вам не привезут их в течении выше указанного времени, можете нажать кнопку “Не сделано”"
                 confirmation_request(
@@ -258,7 +258,7 @@ async def update_request_inventory_facatory(
                     url =f"{settings.FRONT_URL}/rating/{request_list.id}"
                 )
             elif   request.status==6:
-                text_request = f"Ваша заявка #{request_list.id}s по Инвентарю была обработана. "
+                text_request = f"Ваша заявка #{request_list.id}s по Инвентарю была обработана.\n "
                 new_neq = []
                 for i in request_list.expanditure:
                     if i.status == 0:
@@ -269,7 +269,7 @@ async def update_request_inventory_facatory(
 
                 if new_neq:
 
-                    text_request += f"\n\n♻️Инвентарь в обработке:"
+                    text_request += f"\n\n♻️Инвентарь в обработке:\n"
 
                     new_request = inv_requests.create_auto_request(
                         db=db,
@@ -281,12 +281,14 @@ async def update_request_inventory_facatory(
                     )
                     for i in new_neq:
                         text_request += f"\n{i.tool.name} - {i.amount} шт. "
+                        delete_expanditure(db=db,request_id=request_list.id,tool_id=i.tool_id)
+
                         create_expanditure(db=db,
                                            request_id=new_request.id,
                                            tool_id=i.tool_id,
                                            amount=i.amount,
                                            )
-                    text_request += "\nПри первой возможности будет отправлено"
+                    text_request += "\nПри первой возможности будет отправлено.\n"
 
                 text_request += "\nИнвентарь отправлен вам на филиал, прибудет через 12 часов. Как привезут просим вас Подтвердить заявку. \nЕсли вам не привезут их в течении выше указанного времени, можете нажать кнопку “Не сделано”"
                 confirmation_request(
