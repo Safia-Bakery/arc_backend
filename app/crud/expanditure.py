@@ -20,7 +20,8 @@ def create_expanditure(db:Session,amount,tool_id,request_id):
     query = Expanditure(
         amount=amount,
         tool_id=tool_id,
-        request_id=request_id
+        request_id=request_id,
+        status=0
     )
     db.add(query)
     db.commit()

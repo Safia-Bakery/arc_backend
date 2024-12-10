@@ -16,6 +16,7 @@ from app.schemas.inventory_requests import (GetRequest,
                                             UpdateRequest,
                                             UpdateInventoryExpenditure
                                             )
+
 from app.schemas.requests import GetOneRequest,GetOneRequestInventoryFactory
 from app.crud import inv_requests
 from datetime import datetime, date
@@ -185,9 +186,38 @@ async def update_request_inventory_facatory(
                 )
             elif   request.status==6:
                 text_request = f"Ваша заявка #{request_list.id}s по Инвентарю была обработана. "
+                new_neq = []
                 for i in request_list.expanditure:
-                    text_request += f"\n{i.tool.name} - {i.amount} шт. "
-                text_request += "Инвентарь отправлен вам на филиал, прибудет через 12 часов. Как привезут просим вас Подтвердить заявку. \nЕсли вам не привезут их в течении выше указанного времени, можете нажать кнопку “Не сделано”"
+                    if i.status == 0:
+                        new_neq.append(i)
+
+                    else:
+                        text_request += f"\n{i.tool.name} - {i.amount} шт. "
+
+                if new_neq:
+
+                    text_request+=f"\n\n♻️Инвентарь в обработке:"
+
+                    new_request = inv_requests.create_auto_request(
+                                    db=db,
+                                     category_id=request_list.category_id,
+                                     fillial_id=request_list.fillial_id,
+                                     description=request_list.description,
+                                     product=request_list.product,
+                                     user_id=request_list.user_id,
+                                     )
+                    for i in new_neq:
+                        text_request+=f"\n{i.tool.name} - {i.amount} шт. "
+                        create_expanditure(db=db,
+                                             request_id=new_request.id,
+                                             tool_id=i.tool_id,
+                                             amount=i.amount,
+                                             )
+                    text_request +="\nПри первой возможности будет отправлено"
+
+
+
+                text_request += "\nИнвентарь отправлен вам на филиал, прибудет через 12 часов. Как привезут просим вас Подтвердить заявку. \nЕсли вам не привезут их в течении выше указанного времени, можете нажать кнопку “Не сделано”"
                 confirmation_request(
                     chat_id=request_list.user.telegram_id,
                     message_text=text_request,
@@ -229,13 +259,42 @@ async def update_request_inventory_facatory(
                 )
             elif   request.status==6:
                 text_request = f"Ваша заявка #{request_list.id}s по Инвентарю была обработана. "
+                new_neq = []
                 for i in request_list.expanditure:
-                    text_request += f"\n{i.tool.name} - {i.amount} шт. "
-                text_request += "Инвентарь отправлен вам на филиал, прибудет через 12 часов. Как привезут просим вас Подтвердить заявку. \nЕсли вам не привезут их в течении выше указанного времени, можете нажать кнопку “Не сделано”"
+                    if i.status == 0:
+                        new_neq.append(i)
+
+                    else:
+                        text_request += f"\n{i.tool.name} - {i.amount} шт. "
+
+                if new_neq:
+
+                    text_request += f"\n\n♻️Инвентарь в обработке:"
+
+                    new_request = inv_requests.create_auto_request(
+                        db=db,
+                        category_id=request_list.category_id,
+                        fillial_id=request_list.fillial_id,
+                        description=request_list.description,
+                        product=request_list.product,
+                        user_id=request_list.user_id,
+                    )
+                    for i in new_neq:
+                        text_request += f"\n{i.tool.name} - {i.amount} шт. "
+                        create_expanditure(db=db,
+                                           request_id=new_request.id,
+                                           tool_id=i.tool_id,
+                                           amount=i.amount,
+                                           )
+                    text_request += "\nПри первой возможности будет отправлено"
+
+                text_request += "\nИнвентарь отправлен вам на филиал, прибудет через 12 часов. Как привезут просим вас Подтвердить заявку. \nЕсли вам не привезут их в течении выше указанного времени, можете нажать кнопку “Не сделано”"
                 confirmation_request(
                     chat_id=request_list.user.telegram_id,
                     message_text=text_request,
                 )
+
+
             elif request.status==7:
                 send_simple_text_message(
                     bot_token=settings.bottoken,

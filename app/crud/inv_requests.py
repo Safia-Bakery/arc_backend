@@ -64,6 +64,20 @@ def create_request(db: Session, request: CreateInventoryRequest,user_id):
     return query
 
 
+def create_auto_request(db:Session,user_id,fillial_id,description,product,category_id):
+    query = Requests(
+        user_id=user_id,
+        fillial_id=fillial_id,
+        status=0,
+        description=description,
+        product=product,
+        category_id=category_id
+    )
+    db.add(query)
+    db.commit()
+    db.refresh(query)
+    return query
+
 
 
 def update_request(db: Session, request: UpdateRequest):
