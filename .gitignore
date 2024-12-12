@@ -10,6 +10,8 @@ __pycache__/
 .Python
 alembic.ini
 .idea/
+/.idea
+.idea
 alembic/
 build/sudo apt install python3.10-distutils
 

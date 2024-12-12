@@ -1,28 +1,14 @@
+import uuid
+
 from sqlalchemy import (
     Column,
     Integer,
     String,
-    ForeignKey,
     Float,
-    DateTime,
-    Boolean,
-    BIGINT,
-    Table,
-    Time,
-    JSON,
-    VARCHAR,
-    Date,
 )
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
-from sqlalchemy.dialects.postgresql import UUID, ARRAY, JSONB
-from datetime import datetime
 from app.db.base import Base
-import pytz
-import uuid
-
-
 
 
 #there are 2 types of fillials there is parent fillial that show which fillial is
@@ -41,3 +27,4 @@ class ParentFillials(Base):
     user = relationship("Users", back_populates="branch")
     tool_balance = relationship("ToolBalance", back_populates="branch")
     collector_order = relationship("CollectOrders", back_populates="branch")
+    appointments = relationship("Appointments", back_populates="branch")

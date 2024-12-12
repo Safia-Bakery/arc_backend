@@ -93,7 +93,8 @@ from app.routes.v2.endpoints.collector_orders import collector_orders_router
 from app.routes.v2.endpoints.toolparents import toolparents_router
 from app.routes.v2.endpoints.uniform_category import uniform_category_router
 from app.routes.v2.endpoints.uniform_requests import uniform_requests_router
-
+from app.routes.v2.endpoints.appointments import appointments_router
+from app.routes.v2.endpoints.positions import positions_router
 from app.routes.v2.endpoints.inventory_tools import inv_requests_tools_router
 
 
@@ -133,6 +134,8 @@ app.include_router(toolparents_router, tags=["Tool Parents"])
 app.include_router(coins_router,tags=['Coins'])
 app.include_router(uniform_category_router, prefix="/api/v2", tags=['UNIFORM'])
 app.include_router(uniform_requests_router, prefix="/api/v2", tags=['UNIFORM'])
+app.include_router(appointments_router, prefix="/api/v2", tags=['APPOINTMENTS'])
+app.include_router(positions_router, prefix="/api/v2", tags=['Positions'])
 app.include_router(router)
 app.include_router(urls)
 app.include_router(hrrouter)
