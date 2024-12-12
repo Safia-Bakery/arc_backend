@@ -11,10 +11,7 @@ from app.schemas.users import GetUserFullData
 class CreateAppointment(BaseModel):
     employee_name: str
     time_slot: datetime
-    status: Optional[int] = 0
     description: Optional[str] = None
-    department: Optional[int] = None
-    deny_reason: Optional[str] = None
     position_id: int
     branch_id: UUID
 

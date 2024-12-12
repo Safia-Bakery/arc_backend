@@ -21,10 +21,8 @@ def add_appoinment(data: CreateAppointment, user_id, db: Session):
         obj = Appointments(
             employee_name=data.employee_name,
             time_slot=data.time_slot,
-            status=data.status,
             description=data.description,
-            department=data.department,
-            deny_reason=data.deny_reason,
+            department=12,
             position_id=data.position_id,
             user_id=user_id,
             branch_id=data.branch_id

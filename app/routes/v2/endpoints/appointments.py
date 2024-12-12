@@ -3,6 +3,7 @@ import pytz
 import locale
 from datetime import datetime, date
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi_pagination import Page, paginate
 from sqlalchemy.orm import Session
 
 from app.crud import logs
@@ -25,7 +26,11 @@ async def create_appointment(
         db: Session = Depends(get_db),
         request_user: GetUserFullData = Depends(get_current_user)
 ):
-    appointment = add_appoinment(data=data, user_id=request_user.id, db=db)
+    try:
+        appointment = add_appoinment(data=data, user_id=request_user.id, db=db)
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
     if appointment is False:
         raise HTTPException(status_code=400, detail="Не осталось место на данный промежуток времени!")
 
@@ -33,7 +38,7 @@ async def create_appointment(
 
 
 @appointments_router.get("/appointments/my_records", response_model=List[GetAppointment])
-async def get_appointment_list(
+async def get_my_appointments(
         db: Session = Depends(get_db),
         request_user: GetUserFullData = Depends(get_current_user)
 ):
@@ -41,13 +46,13 @@ async def get_appointment_list(
     return appointments
 
 
-@appointments_router.get("/appointments", response_model=List[GetAppointment])
+@appointments_router.get("/appointments", response_model=Page[GetAppointment])
 async def get_appointment_list(
         db: Session = Depends(get_db),
         request_user: GetUserFullData = Depends(get_current_user)
 ):
     appointments = get_appoinments(db=db)
-    return appointments
+    return paginate(appointments)
 
 
 @appointments_router.get("/appointments/{id}", response_model=GetAppointment)

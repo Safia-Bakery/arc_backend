@@ -17,8 +17,7 @@ def get_positions(db: Session, id: Optional[int] = None):
 
 def add_position(data: CreatePosition, db: Session):
     obj = Positions(
-        name=data.name,
-        department=data.department,
+        name=data.name
     )
     db.add(obj)
     db.commit()
