@@ -60,3 +60,6 @@ class Users(Base):
         foreign_keys="CollectOrders.accepted_by",
         back_populates="accepted_user"
     )
+    appointments = relationship("Appointments", back_populates="user")
+    position_id = Column(Integer, ForeignKey("positions.id"))
+    position = relationship("Positions", back_populates="user")
