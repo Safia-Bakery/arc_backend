@@ -449,6 +449,13 @@ def file_generator(data,file):
     return [file_name ,total_food,total_bread]
 
 
+
+def generate_random_string_datetime(length=10):
+    date_time = datetime.now(timezonetash)
+    random_string = date_time.strftime("%d.%m.%Y %H.%M.%S")
+    return random_string
+
+
 def Excell_generate_it(data):
     inserting_data = {"Номер заявки":[],"Клиент":[],"Исполнитель":[],'Филиал':[],'Дата создания':[],'Дата окончания':[],'Дедлайн':[],'Статус':[],'Категория':[],'Комментарий':[],"Срочно":[],'Дата решения':[],'Дата отмены':[],'Переоткрыта':[], 'SLA': [], 'Просрочен': []} # 'Просрочен': []
     for row in data:
@@ -578,7 +585,7 @@ def Excell_generate_it(data):
         
 
     
-    file_name  = f"files/{name_generator()}.xlsx"
+    file_name  = f"files/{generate_random_string_datetime()}.xlsx"
     df = pd.DataFrame(inserting_data)
     # Generate Excel file
     df.to_excel(file_name, index=False)
