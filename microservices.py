@@ -3,6 +3,7 @@ import pytz
 from jose import jwt
 from passlib.context import CryptContext
 import bcrypt
+from app.core.config import settings
 import requests
 import schemas
 from users.schema import schema
@@ -107,7 +108,10 @@ async def get_current_user(
     token: str = Depends(reuseable_oauth), db: Session = Depends(get_db)
 ) -> schema.User:
     try:
-        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
+        if token ==settings.backend_pass:
+            return  crud.get_user(db, username='admin')
+            # return get_user_by_username(db=db, username='admin')
+        payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])
         expire_date = payload.get("exp")
         sub = payload.get("sub")
         if datetime.fromtimestamp(expire_date) < datetime.now():
@@ -122,7 +126,8 @@ async def get_current_user(
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    user: Union[dict[str, Any], None] = crud.get_user(db, sub)
+
+    user: Union[dict[str, Any], None] = crud.get_user(db, username=sub)
 
     if user is None:
         raise HTTPException(
@@ -131,6 +136,36 @@ async def get_current_user(
         )
 
     return user
+
+
+# async def get_current_user(
+#     token: str = Depends(reuseable_oauth), db: Session = Depends(get_db)
+# ) -> schema.User:
+#     try:
+#         payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
+#         expire_date = payload.get("exp")
+#         sub = payload.get("sub")
+#         if datetime.fromtimestamp(expire_date) < datetime.now():
+#             raise HTTPException(
+#                 status_code=status.HTTP_401_UNAUTHORIZED,
+#                 detail="Token expired",
+#                 headers={"WWW-Authenticate": "Bearer"},
+#             )
+#     except (jwt.JWTError, ValidationError):
+#         raise HTTPException(
+#             status_code=status.HTTP_403_FORBIDDEN,
+#             detail="Could not validate credentials",
+#             headers={"WWW-Authenticate": "Bearer"},
+#         )
+#     user: Union[dict[str, Any], None] = crud.get_user(db, sub)
+#
+#     if user is None:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail="Could not find user",
+#         )
+#
+#     return user
 
 
 def sendtotelegramchannel(bot_token, chat_id, message_text):

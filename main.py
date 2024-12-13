@@ -115,7 +115,7 @@ origins = ["https://service.safiabakery.uz",'https://admin.service.safiabakery.u
 
 reuseable_oauth = OAuth2PasswordBearer(tokenUrl="/login", scheme_name="JWT")
 # database connection
-app = FastAPI(swagger_ui_parameters = {"docExpansion":"none"},docs_url=None, redoc_url=None, openapi_url=None)
+app = FastAPI(swagger_ui_parameters = {"docExpansion":"none"},docs_url=None, redoc_url=None, openapi_url=None,)
 app.include_router(calendar_router, tags=["calendars"])
 app.include_router(iiko_transfer_router, prefix="/api/v2", tags=["iiko"])
 app.include_router(it_extra_router, prefix="/api/v2", tags=["IT"])
@@ -166,6 +166,11 @@ app.add_middleware(
 )
 
 
+
+
+@app.get("/")
+async def read_root():
+    return {"message": "Hello, World!"}
 
 
 @app.get("/docs", include_in_schema=False)

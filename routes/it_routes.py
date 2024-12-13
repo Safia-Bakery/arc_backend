@@ -92,7 +92,6 @@ async def send_telegram_message(
 @it_router.put("/v1/telegrams", tags=["IT"],response_model=it_schema.GetTelegram)
 async def update_telegram_message(
         form_data : it_schema.UpdateTelegram,
-
         db: Session = Depends(get_db),
         request_user: schema.UserFullBack = Depends(get_current_user),
 ):
@@ -112,7 +111,7 @@ async def get_telegram_messages(
 async def get_uniforms(
         form_data:it_schema.Uniformexcellgeneration,
         db: Session = Depends(get_db),
-                       request_user: schema.UserFullBack = Depends(get_current_user)):
+        request_user: schema.UserFullBack = Depends(get_current_user)):
     data = it_query.get_uniform_requests(db=db,from_date=form_data.start_date,to_date=form_data.finish_date,status=form_data.status)
     return uniform_excell_generate(data=data)
 
