@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import Optional
 from uuid import UUID
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, ConfigDict
 
 from app.schemas.branchs import GetBranchs
 from app.schemas.positions import GetPosition
-from app.schemas.users import GetUserFullData
+from app.schemas.users import UserGetJustNames
 
 
 class CreateAppointment(BaseModel):
@@ -28,11 +28,28 @@ class GetAppointment(BaseModel):
     department: Optional[int] = None
     deny_reason: Optional[str] = None
     position: Optional[GetPosition] = None
-    user: Optional[GetUserFullData] = None
+    user: Optional[UserGetJustNames] = None
     branch: Optional[GetBranchs] = None
 
     class Config:
         orm_mode = True
+
+
+class GetCalendarAppointment(BaseModel):
+    id: Optional[int] = None
+    employee_name: Optional[str] = Field(None, alias="title")
+    time_slot: Optional[datetime] = Field(None, alias="date")
+    status: Optional[int] = None
+    description: Optional[str] = None
+    department: Optional[int] = None
+    deny_reason: Optional[str] = None
+    position: Optional[GetPosition] = None
+    user: Optional[UserGetJustNames] = None
+    branch: Optional[GetBranchs] = None
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+    )
 
 
 class UpdateAppointment(BaseModel):

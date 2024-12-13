@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.crud.positions import get_positions, add_position, edit_position
 from app.routes.depth import get_db, get_current_user
 from app.schemas.positions import GetPosition, CreatePosition, UpdatePosition
-from app.schemas.users import GetUserFullData
+from app.schemas.users import UserGetJustNames
 
 positions_router = APIRouter()
 timezonetash = pytz.timezone("Asia/Tashkent")
@@ -17,7 +17,7 @@ BASE_URL = 'https://api.service.safiabakery.uz/'
 async def create_appointment(
         data: CreatePosition,
         db: Session = Depends(get_db),
-        request_user: GetUserFullData = Depends(get_current_user)
+        request_user: UserGetJustNames = Depends(get_current_user)
 ):
     position = add_position(data=data, db=db)
     return position
@@ -26,7 +26,7 @@ async def create_appointment(
 @positions_router.get("/positions", response_model=List[GetPosition])
 async def get_position_list(
         db: Session = Depends(get_db),
-        request_user: GetUserFullData = Depends(get_current_user)
+        request_user: UserGetJustNames = Depends(get_current_user)
 ):
     positions = get_positions(db=db)
     return positions
@@ -36,7 +36,7 @@ async def get_position_list(
 async def get_position(
         id: int,
         db: Session = Depends(get_db),
-        request_user: GetUserFullData = Depends(get_current_user)
+        request_user: UserGetJustNames = Depends(get_current_user)
 ):
     position = get_positions(db=db, id=id)
     return position
@@ -46,7 +46,7 @@ async def get_position(
 async def put_position(
         data: UpdatePosition,
         db: Session = Depends(get_db),
-        request_user: GetUserFullData = Depends(get_current_user)
+        request_user: UserGetJustNames = Depends(get_current_user)
 ):
     position = edit_position(db=db, data=data)
     return position
