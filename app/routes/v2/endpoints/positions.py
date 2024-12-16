@@ -42,7 +42,7 @@ async def get_position(
     return position
 
 
-@positions_router.put("/positions/{id}", response_model=GetPosition)
+@positions_router.put("/positions", response_model=GetPosition)
 async def put_position(
         data: UpdatePosition,
         db: Session = Depends(get_db),

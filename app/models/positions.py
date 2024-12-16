@@ -3,7 +3,8 @@ from sqlalchemy import (
     Integer,
     ForeignKey,
     DateTime,
-    String
+    String,
+    Boolean
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -15,6 +16,7 @@ class Positions(Base):
     __tablename__ = 'positions'
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String, nullable=True)
+    status = Column(Integer, default=1, nullable=True)
     department = Column(Integer, nullable=True)
     user = relationship("Users", back_populates="position")
     appointments = relationship("Appointments", back_populates="position")
