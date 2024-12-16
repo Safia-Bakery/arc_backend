@@ -39,7 +39,7 @@ def update_status_it(db:Session,id,status):
 def get_it_excell(db:Session,form_data:it_schema.generate_excell):
     finish_date = form_data.finish_date + timedelta(days=1)
     query = db.query(models.Requests).join(models.Category).join(models.Comments).filter(models.Category.department == 4).filter(models.Requests.created_at.between(form_data.start_date,finish_date))
-    if form_data.status:
+    if form_data.status is not None:
         query = query.filter(models.Requests.status == form_data.status)
     if form_data.category_id is not None:
         query = query.filter(models.Requests.category_id == form_data.category_id)

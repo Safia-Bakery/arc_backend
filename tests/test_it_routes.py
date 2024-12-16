@@ -15,7 +15,7 @@ def test_excell_file():
     # Replace with a valid test token
     headers = {"Authorization": f"Bearer {settings.backend_pass}"}
     payload = {
-        "finish_date": "2023-12-13",
+        "finish_date": "2024-12-13",
         "start_date":"2024-12-11"
     }
     response = client.post("/it/excell", headers=headers,json=payload)
