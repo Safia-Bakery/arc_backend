@@ -516,6 +516,8 @@ def Excell_generate_it(data):
                 inserting_data['Просрочен'].append('Да')
             else:
                 inserting_data['Просрочен'].append('Нет')
+        else:
+            inserting_data['Просрочен'].append('Нет')
 
         if row.category.ftime:
             inserting_data['SLA'].append(row.category.ftime)
