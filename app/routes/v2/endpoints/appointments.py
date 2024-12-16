@@ -72,7 +72,7 @@ async def get_appointment(
     return appointment
 
 
-@appointments_router.put("/appointments/{id}", response_model=GetAppointment)
+@appointments_router.put("/appointments", response_model=GetAppointment)
 async def put_appointment(
         data: UpdateAppointment,
         db: Session = Depends(get_db),
