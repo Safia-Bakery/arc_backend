@@ -15,6 +15,7 @@ class CreatePosition(BaseModel):
 class GetPosition(BaseModel):
     id: Optional[int] = None
     name: Optional[str] = None
+    status: Optional[int] = None
     department: Optional[int] = None
     created_at: Optional[datetime] = None
 
@@ -25,6 +26,7 @@ class GetPosition(BaseModel):
 class UpdatePosition(BaseModel):
     id: int
     name: Optional[str] = None
+    status: Optional[int] = None
     department: Optional[int] = None
 
     class Config:

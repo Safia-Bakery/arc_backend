@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 import pytz
 from sqlalchemy import func, cast, Date, Time, and_
@@ -43,6 +43,17 @@ def get_appoinments(db: Session, user_id: Optional[int] = None, id: Optional[int
     if id is not None:
         obj = obj.get(ident=id)
         return obj
+
+    return obj.order_by(Appointments.id.desc()).all()
+
+
+def get_calendar_appointments(db: Session):
+    now = datetime.now().date()
+    from_date = now - timedelta(days=14)
+    to_date = now + timedelta(days=14)
+    obj = db.query(Appointments).filter(
+        func.date(Appointments.time_slot).between(from_date, to_date)
+    )
 
     return obj.order_by(Appointments.id.desc()).all()
 

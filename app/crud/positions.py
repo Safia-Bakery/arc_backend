@@ -32,6 +32,8 @@ def edit_position(db: Session, data: UpdatePosition):
         obj.name = data.name
     if data.department is not None:
         obj.department = data.department
+    if data.status is not None:
+        obj.status = data.status
 
     db.commit()
     db.refresh(obj)
