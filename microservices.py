@@ -494,6 +494,7 @@ def generate_random_string_datetime(length=10):
 def Excell_generate_it(data):
     inserting_data = {"Номер заявки":[],"Клиент":[],"Исполнитель":[],'Филиал':[],'Дата создания':[],'Дата окончания':[],'Дедлайн':[],'Статус':[],'Категория':[],'Комментарий':[],"Срочно":[],'Дата решения':[],'Дата отмены':[],'Переоткрыта':[], 'SLA': [], 'Просрочен': []} # 'Просрочен': []
     for row in data:
+        print(row.status)
         inserting_data['Номер заявки'].append(row.id)
         inserting_data['Клиент'].append(row.user.full_name)
         
