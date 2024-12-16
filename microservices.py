@@ -520,15 +520,15 @@ def Excell_generate_it(data):
         if row.category.ftime:
             inserting_data['SLA'].append(row.category.ftime)
         else:
-            inserting_data['SLA'].append('')
+            inserting_data['SLA'].append(' ')
         if row.finishing_time:
             deadline = row.finishing_time.strftime("%d.%m.%Y %H:%M:%S")
         else:
-            deadline = ""
+            deadline = " "
         if row.brigada_id is not None:
             inserting_data['Исполнитель'].append(row.brigada.name)
         else:
-            inserting_data['Исполнитель'].append('')
+            inserting_data['Исполнитель'].append(' ')
         
         if row.category.urgent:
             inserting_data['Срочно'].append("Да")
@@ -550,7 +550,7 @@ def Excell_generate_it(data):
             
                 inserting_data['Дата решения'].append(reshen_time)
             else:
-                inserting_data['Дата решения'].append("")
+                inserting_data['Дата решения'].append(" ")
             # delayed = dict(row.update_time).get('5')
             # if delayed:
                 # delayed = datetime.strptime(delayed, "%Y-%m-%d %H:%M:%S.%f%z")
@@ -571,7 +571,7 @@ def Excell_generate_it(data):
                 finish_time = finish_time.strftime("%d.%m.%Y %H:%M:%S")
                 inserting_data['Дата окончания'].append(finish_time)
             else:
-                inserting_data['Дата окончания'].append("")
+                inserting_data['Дата окончания'].append(" ")
             reopened = dict(row.update_time).get('7')
             if reopened:
                 inserting_data['Переоткрыта'].append("Да")
@@ -579,9 +579,9 @@ def Excell_generate_it(data):
                 inserting_data['Переоткрыта'].append("Нет")
 
         else:
-            inserting_data['Дата решения'].append("")
-            inserting_data['Дата окончания'].append("")
-            inserting_data['Переоткрыта'].append("")
+            inserting_data['Дата решения'].append(" ")
+            inserting_data['Дата окончания'].append(" ")
+            inserting_data['Переоткрыта'].append(" ")
 
         
         if row.status==4 or row.status==8:
@@ -608,9 +608,9 @@ def Excell_generate_it(data):
 
                 inserting_data['Дата отмены'].append(cancel_time)
             else:
-                inserting_data['Дата отмены'].append("")
+                inserting_data['Дата отмены'].append(" ")
         else:
-            inserting_data['Дата отмены'].append("")
+            inserting_data['Дата отмены'].append(" ")
         
         #if row.finished_at:
         #    if row.status !=3:
