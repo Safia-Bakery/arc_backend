@@ -507,7 +507,7 @@ def Excell_generate_it(data):
 
         now = datetime.now(tz=timezonetash)
         if row.status in [0, 1]:
-            if row.finishing_time and row.finished_at:
+            if row.finishing_time:
                 if now > row.finishing_time:
                     inserting_data['Просрочен'].append('Да')
                 else:
