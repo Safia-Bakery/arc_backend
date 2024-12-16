@@ -27,6 +27,7 @@ class GetAppointment(BaseModel):
     description: Optional[str] = None
     department: Optional[int] = None
     deny_reason: Optional[str] = None
+    created_at: Optional[datetime] = None
     position: Optional[GetPosition] = None
     user: Optional[UserGetJustNames] = None
     branch: Optional[GetBranchs] = None
@@ -43,6 +44,7 @@ class GetCalendarAppointment(BaseModel):
     description: Optional[str] = None
     department: Optional[int] = None
     deny_reason: Optional[str] = None
+    created_at: Optional[datetime] = None
     position: Optional[GetPosition] = None
     user: Optional[UserGetJustNames] = None
     branch: Optional[GetBranchs] = None
