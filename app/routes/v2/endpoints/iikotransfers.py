@@ -66,6 +66,11 @@ def self_closing_requests(db: Session):
         rating_request_telegram(bot_token=settings.bottoken, chat_id=request.user.telegram_id,
                                 message_text=message_text, url=url)
 
+    requests_list = iiko_transfers.get_requests_by_status(db=db, status=8)
+    for request_list in requests_list:
+        iiko_transfers.update_status_request(db=db, id=request_list.id, status=4)
+
+
     return True
 
 
