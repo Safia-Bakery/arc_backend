@@ -630,7 +630,7 @@ def Excell_generate_it(data):
         
 
     
-    file_name  = f"files/{generate_random_string_datetime()}.xlsx"
+    file_name  = f"files/{generate_random_string_datetime()}_it_excell.xlsx"
     df = pd.DataFrame(inserting_data)
     # Generate Excel file
     df.to_excel(file_name, index=False)
