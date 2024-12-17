@@ -1,19 +1,15 @@
-from sqlalchemy.orm import Session,joinedload
-from sqlalchemy import or_, and_, Date, cast
 import re
-from uuid import UUID
-from sqlalchemy.sql import func
-
-import models
-from app.models.requests import Requests
+from datetime import datetime
+import pytz
+from sqlalchemy import Date, cast
+from sqlalchemy.orm import Session
 from app.models.category import Category
-from app.models.users_model import Users
-from app.models.products import Products
-from app.models.orderproducts import OrderProducts
-from app.models.comments import Comments
 from app.models.fillials import Fillials
-from app.schemas.inventory_requests import CreateInventoryRequest,UpdateRequest
+from app.models.requests import Requests
+from app.models.users_model import Users
+from app.schemas.inventory_requests import CreateInventoryRequest, UpdateRequest
 
+timezonetash = pytz.timezone("Asia/Tashkent")
 
 
 def filter_requests_all(
@@ -82,10 +78,15 @@ def create_auto_request(db:Session,user_id,fillial_id,description,product,catego
 
 def update_request(db: Session, request: UpdateRequest):
     query = db.query(Requests).filter(Requests.id == request.id).first()
+    now = datetime.now(tz=timezonetash)
     if request.status is not None:
         query.status = request.status
     if request.deny_reason is not None:
         query.deny_reason = request.deny_reason
+    if request.status == 1:
+        query.started_at = now
+    elif request.status in [3, 4, 6, 8]:
+        query.finished_at = now
 
     db.commit()
     return query
