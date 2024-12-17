@@ -6,8 +6,10 @@ from app.models.positions import Positions
 from app.schemas.positions import CreatePosition, UpdatePosition
 
 
-def get_positions(db: Session, id: Optional[int] = None):
+def get_positions(db: Session, status, id: Optional[int] = None):
     obj = db.query(Positions)
+    if status is not None:
+        obj = obj.filter(Positions.status == status)
     if id is not None:
         obj = obj.get(ident=id)
         return obj

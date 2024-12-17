@@ -5,6 +5,7 @@ from sqlalchemy import func, cast, Date, Time, and_
 from sqlalchemy.orm import Session
 from app.schemas.appointments import CreateAppointment, UpdateAppointment
 from app.models.appointments import Appointments
+from app.models.users_model import Users
 
 
 timezonetash = pytz.timezone("Asia/Tashkent")
@@ -36,8 +37,30 @@ def add_appoinment(data: CreateAppointment, user_id, db: Session):
     return False
 
 
-def get_appoinments(db: Session, user_id: Optional[int] = None, id: Optional[int] = None):
+def get_appoinments(
+        db: Session,
+        request_id: Optional[int] = None,
+        position_id: Optional[int] = None,
+        created_user: Optional[str] = None,
+        employee_name: Optional[str] = None,
+        branch_id: Optional[int] = None,
+        status: Optional[int] = None,
+        user_id: Optional[int] = None,
+        id: Optional[int] = None
+):
     obj = db.query(Appointments)
+    if request_id is not None:
+        obj = obj.filter(Appointments.id == request_id)
+    if position_id is not None:
+        obj = obj.filter(Appointments.position_id == position_id)
+    if created_user is not None:
+        obj = obj.join(Users).filter(Users.full_name.ilike(f"%{created_user}%"))
+    if employee_name is not None:
+        obj = obj.filter(Appointments.employee_name.ilike(f"%{employee_name}%"))
+    if branch_id is not None:
+        obj = obj.filter(Appointments.branch_id == branch_id)
+    if status is not None:
+        obj = obj.filter(Appointments.status == status)
     if user_id is not None:
         obj = obj.filter(Appointments.user_id == user_id)
     if id is not None:
@@ -52,7 +75,10 @@ def get_calendar_appointments(db: Session):
     from_date = now - timedelta(days=14)
     to_date = now + timedelta(days=14)
     obj = db.query(Appointments).filter(
-        func.date(Appointments.time_slot).between(from_date, to_date)
+        and_(
+            func.date(Appointments.time_slot).between(from_date, to_date),
+            Appointments.status != 4
+        )
     )
 
     return obj.order_by(Appointments.id.desc()).all()

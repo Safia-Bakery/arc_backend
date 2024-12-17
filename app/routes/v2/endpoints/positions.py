@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 import pytz
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
@@ -25,10 +25,11 @@ async def create_appointment(
 
 @positions_router.get("/positions", response_model=List[GetPosition])
 async def get_position_list(
+        status: Optional[int] = None,
         db: Session = Depends(get_db),
         request_user: UserGetJustNames = Depends(get_current_user)
 ):
-    positions = get_positions(db=db)
+    positions = get_positions(db=db, status=status)
     return positions
 
 

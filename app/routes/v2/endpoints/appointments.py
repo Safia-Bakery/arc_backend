@@ -46,10 +46,24 @@ async def get_my_appointments(
 
 @appointments_router.get("/appointments", response_model=Page[GetAppointment])
 async def get_appointment_list(
+        request_id: Optional[int] = None,
+        position_id: Optional[int] = None,
+        created_user: Optional[str] = None,
+        employee_name: Optional[str] = None,
+        branch_id: Optional[int] = None,
+        status: Optional[int] = None,
         db: Session = Depends(get_db),
         request_user: UserGetJustNames = Depends(get_current_user)
 ):
-    appointments = get_appoinments(db=db)
+    appointments = get_appoinments(
+        db=db,
+        request_id=request_id,
+        position_id=position_id,
+        created_user=created_user,
+        employee_name=employee_name,
+        branch_id=branch_id,
+        status=status
+    )
     return paginate(appointments)
 
 
