@@ -487,7 +487,7 @@ def file_generator(data,file):
 
 def generate_random_string_datetime(length=10):
     date_time = datetime.now(timezonetash)
-    random_string = date_time.strftime("%d.%m.%Y %H.%M.%S")
+    random_string = date_time.strftime("%d.%m.%Y_%H.%M.%S")
     return random_string
 
 
