@@ -18,6 +18,7 @@ from app.crud.logs import create_log
 
 from app.models.requests import Requests
 from microservices import sendtotelegramchannel
+from datetime import date
 
 arc_factory_requests = APIRouter()
 
@@ -29,9 +30,21 @@ async def get_requests(
         fillial_id:Optional[UUID]=None,
         status:Optional[int]=None,
         id:Optional[int]=None,
+        category_id:Optional[int]=None,
+        user_name: Optional[str]=None,
+        created_at:Optional[date]=None,
+        brigada_id:Optional[int]=None,
         current_user: GetUserFullData = Depends(get_current_user),
         db:Session=Depends(get_db)):
-    return paginate(get_arc_factory_requests(db=db,user_id=user_id,fillial_id=fillial_id,status=status,id=id))
+    return paginate(get_arc_factory_requests(db=db,user_id=user_id,
+                                             fillial_id=fillial_id,
+                                             status=status,
+                                             id=id,
+                                             brigada_id=brigada_id,
+                                             category_id=category_id,
+                                             user_name=user_name,
+                                             created_at=created_at
+                                             ))
 
 
 @arc_factory_requests.get("/arc/factory/requests/{request_id}",response_model=GetArcFactoryRequest)

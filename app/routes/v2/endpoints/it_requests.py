@@ -370,9 +370,16 @@ async def put_request_id(
                 )
             except:
                 pass
-            text = request_text + "\n\n<b>Заявка отменена 🚫</b>"
-            edit_topic_message(chat_id=settings.IT_SUPERGROUP, thread_id=topic_id, message_text=text,
-                               message_id=message_id)
+            # text = request_text + "\n\n<b>Заявка отменена 🚫</b>"
+            # edit_topic_message(chat_id=settings.IT_SUPERGROUP, thread_id=topic_id, message_text=text,
+            #                    message_id=message_id)
+            delete_from_chat(message_id=message_id, topic_id=topic_id)
+
+            delete_job_id = f"delete_message_for_{request.id}"
+            job_scheduler.remove_job(job_id=delete_job_id)
+
+            send_job_id = f"send_message_for_{request.id}"
+            job_scheduler.remove_job(job_id=send_job_id)
 
         elif data.brigada_id is not None:
             delete_from_chat(message_id=request.tg_message_id, topic_id=topic_id)

@@ -16,13 +16,14 @@ from app.schemas.arc_factory_requests import GetArcFactoryRequests,UpdateArcFact
 
 
 from app.models.requests import Requests
+from app.models.users_model import Users
 from crud import timezonetash
 
 timezonetash = pytz.timezone('Asia/Tashkent')
 
 
-def get_arc_factory_requests(db:Session,user_id,fillial_id,status,id ):
-    query = db.query(Requests).join(Category).filter(Category.department==1,Category.sphere_status==2)
+def get_arc_factory_requests(db:Session,user_id,fillial_id,status,id,brigada_id,user_name,created_at,category_id):
+    query = db.query(Requests).join(Category).join(Users).filter(Category.department==1,Category.sphere_status==2)
     if user_id is not None:
         query = query.filter(Requests.user_id==user_id)
     if status is not None:
@@ -31,6 +32,15 @@ def get_arc_factory_requests(db:Session,user_id,fillial_id,status,id ):
         query = query.filter(Requests.fillial_id==fillial_id)
     if id is not None:
         query = query.filter(Requests.id==id)
+    if brigada_id is not None:
+        query = query.filter(Requests.brigada_id==brigada_id)
+    if user_name is not None:
+        query = query.filter(Users.full_name.ilike(f"%{user_name}%"))
+    if created_at is not None:
+        query = query.filter(cast(Requests.created_at, Date) == created_at)
+    if category_id is not None:
+        query = query.filter(Requests.category_id==category_id)
+
     return query.order_by(Requests.created_at.desc()).all()
 
 

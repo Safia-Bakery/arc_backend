@@ -18,7 +18,7 @@ from app.schemas.inventory_requests import (GetRequest,
                                             )
 
 from app.schemas.requests import GetOneRequest,GetOneRequestInventoryFactory
-from app.crud import inv_requests
+from app.crud import inv_requests, logs
 from datetime import datetime, date
 from app.crud.expanditure import create_expanditure,delete_expanditure
 from app.utils.utils import( send_simple_text_message,
@@ -122,7 +122,7 @@ async def create_retail_request(
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Branch not found")
         request.fillial_id=get_child_branch.id
         request_list = inv_requests.create_request(db, request,user_id=request_user.id)
-
+        logs.create_log(db=db, request_id=request_list.id, status=request_list.status, user_id=request_user.id)
         for item in request.expenditure:
             create_expanditure(db, amount=item.amount,tool_id=item.tool_id,request_id=request_list.id)
         send_simple_text_message(
@@ -145,7 +145,7 @@ async def create_factory_request(
 
     try:
         request_list = inv_requests.create_request(db, request,user_id=request_user.id)
-
+        logs.create_log(db=db, request_id=request_list.id, status=request_list.status, user_id=request_user.id)
         for item in request.expenditure:
             create_expanditure(db, amount=item.amount,tool_id=item.tool_id,request_id=request_list.id)
         send_simple_text_message(
@@ -170,6 +170,7 @@ async def update_request_inventory_facatory(
     try:
         request_list = inv_requests.update_request(db, request)
         if request.status is not None:
+            logs.create_log(db=db, request_id=request_list.id, status=request_list.status, user_id=request_user.id)
             if request.status == 1:
                 send_simple_text_message(
                     bot_token=settings.bottoken,
@@ -177,14 +178,13 @@ async def update_request_inventory_facatory(
                     message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id} по Inventary: В процессе."
                 )
             elif request.status == 4:
-
                 rating_request_telegram(
                     bot_token=settings.bottoken,
                     chat_id=request_list.user.telegram_id,
                     message_text=f"Ваша заявка #{request_list.id}s была отменена по причине: {request_list.deny_reason}",
                     url =f"{settings.FRONT_URL}/rating/{request_list.id}"
                 )
-            elif   request.status==6:
+            elif request.status == 6:
                 text_request = f"Ваша заявка #{request_list.id}s по Инвентарю была обработана.\n "
                 new_neq = []
                 for i in request_list.expanditure:
@@ -243,6 +243,7 @@ async def update_request_inventory_facatory(
     try:
         request_list = inv_requests.update_request(db, request)
         if request.status is not None:
+            logs.create_log(db=db, request_id=request_list.id, status=request_list.status, user_id=request_user.id)
             if request.status == 1:
                 send_simple_text_message(
                     bot_token=settings.bottoken,
@@ -250,14 +251,13 @@ async def update_request_inventory_facatory(
                     message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id} по Inventary: В процессе."
                 )
             elif request.status == 4:
-
                 rating_request_telegram(
                     bot_token=settings.bottoken,
                     chat_id=request_list.user.telegram_id,
                     message_text=f"Ваша заявка #{request_list.id}s была отменена по причине: {request_list.deny_reason}",
                     url =f"{settings.FRONT_URL}/rating/{request_list.id}"
                 )
-            elif   request.status==6:
+            elif request.status==6:
                 text_request = f"Ваша заявка #{request_list.id}s по Инвентарю была обработана.\n "
                 new_neq = []
                 for i in request_list.expanditure:
