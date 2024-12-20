@@ -4,20 +4,24 @@ from uuid import UUID
 from fastapi import APIRouter, UploadFile
 from fastapi import Depends, File
 from sqlalchemy.orm import Session
+from starlette import status
+
 from app.core.config import settings
 
 from app.routes.depth import get_db, get_current_user
-from app.schemas.users import GetUserFullData
+from app.schemas.users import GetUserFullData, UserFullBack
 from app.utils.utils import generate_random_string, inlinewebapp, confirmation_request
 from app.schemas.branchs import GetBranchs
 from fastapi_pagination import Page,paginate
 from app.crud.branchs import get_branchs
-from app.schemas.arc_factory_requests import GetArcFactoryRequests,UpdateArcFactoryRequests,GetArcFactoryRequest
-from app.crud.arc_factory_requests import get_arc_factory_requests,get_arc_factory_request,update_arc_factory_request
+from app.schemas.arc_factory_requests import GetArcFactoryRequests, UpdateArcFactoryRequests, GetArcFactoryRequest, \
+    GenerateExcell
+from app.crud.arc_factory_requests import get_arc_factory_requests, get_arc_factory_request, update_arc_factory_request, \
+    get_arc_excell
 from app.crud.logs import create_log
 
 from app.models.requests import Requests
-from microservices import sendtotelegramchannel
+from microservices import sendtotelegramchannel, excell_generate_arc_factory
 from datetime import date
 
 arc_factory_requests = APIRouter()
@@ -104,3 +108,11 @@ async def update_request(
                     pass
 
     return updated_request
+
+
+
+@arc_factory_requests.post("/arc/factory/excell", status_code=status.HTTP_200_OK)
+def get_excell(form_data : GenerateExcell,db: Session = Depends(get_db), request_user: UserFullBack = Depends(get_current_user)):
+    query = get_arc_excell(db=db, form_data=form_data)
+    file_name = excell_generate_arc_factory(data=query)
+    return {'file_name': file_name}

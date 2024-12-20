@@ -637,6 +637,33 @@ def Excell_generate_it(data):
     return file_name
 
 
+def excell_generate_arc_factory(data):
+    inserting_data = {"Номер заявки": [], "Клиент": [], "Исполнитель": [], 'Отдел': [], 'Категория': [], 'Статус': [], 'Время создания': []}
+    for row in data:
+        inserting_data['Номер заявки'].append(row.id)
+        inserting_data['Клиент'].append(row.user.full_name)
+        if row.brigada_id is not None:
+            inserting_data['Исполнитель'].append(row.brigada.name)
+        else:
+            inserting_data['Исполнитель'].append(' ')
+        if row.fillial_id is not None:
+            inserting_data['Отдел'].append(row.fillial.name)
+        else:
+            inserting_data['Отдел'].append(' ')
+        inserting_data['Категория'].append(row.category.name)
+        inserting_data['Статус'].append(statusdata[str(row.status)])
+
+        created_time = row.created_at.strftime("%d.%m.%Y %H:%M:%S")
+        inserting_data['Время создания'].append(created_time)
+
+    file_name = f"files/{generate_random_string_datetime()}_arc_factory_excell.xlsx"
+    df = pd.DataFrame(inserting_data)
+    # Generate Excel file
+    df.to_excel(file_name, index=False)
+    return file_name
+
+
+
 
 def uniform_excell_generate(data):
     inserting_data = {"Номер заявки":[],"Филиал":[],'Дата поступления':[],"Форма":[],'Общ. сумма':[],'Сотрудник':[],'Статус':[]}

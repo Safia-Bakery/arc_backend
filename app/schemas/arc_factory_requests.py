@@ -81,5 +81,13 @@ class GetArcFactoryRequest(BaseModel):
 
 
 
+class GenerateExcell(BaseModel):
+    start_date: date
+    finish_date: date
+    category_id: Optional[list[int]] = None
+    status: Optional[list[int]] = None
+    class Config:
+        orm_mode = True
+
 
 

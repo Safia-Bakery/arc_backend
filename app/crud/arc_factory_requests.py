@@ -11,9 +11,7 @@ from uuid import UUID
 
 
 from app.models.category import Category
-from app.schemas.arc_factory_requests import GetArcFactoryRequests,UpdateArcFactoryRequests
-
-
+from app.schemas.arc_factory_requests import GetArcFactoryRequests, UpdateArcFactoryRequests, GenerateExcell
 
 from app.models.requests import Requests
 from app.models.users_model import Users
@@ -62,5 +60,16 @@ def update_arc_factory_request(db:Session,request_id,request:UpdateArcFactoryReq
     return query
 
 
+def get_arc_excell(db:Session, form_data: GenerateExcell):
+    finish_date = form_data.finish_date + timedelta(days=1)
+    query = db.query(Requests).join(Category).filter(
+        and_(Category.department == 1, Category.sphere_status==2)
+    ).filter(Requests.created_at.between(form_data.start_date,finish_date))
+    if form_data.status is not None:
+        query = query.filter(Requests.status.in_(form_data.status))
+    if form_data.category_id is not None:
+        query = query.filter(Requests.category_id.in_(form_data.category_id))
+
+    return query.order_by(Requests.id.desc()).all()
 
 
