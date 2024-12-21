@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from typing import Optional
 import pytz
 from sqlalchemy import func, cast, Date, Time, and_
@@ -47,6 +47,7 @@ def get_appoinments(
         branch_id: Optional[int] = None,
         status: Optional[int] = None,
         user_id: Optional[int] = None,
+        reserved_date: Optional[date] = None,
         id: Optional[int] = None
 ):
     obj = db.query(Appointments)
@@ -64,6 +65,8 @@ def get_appoinments(
         obj = obj.filter(Appointments.status == status)
     if user_id is not None:
         obj = obj.filter(Appointments.user_id == user_id)
+    if reserved_date is not None:
+        obj = obj.filter(func.date(Appointments.time_slot) == reserved_date)
     if id is not None:
         obj = obj.get(ident=id)
         return obj

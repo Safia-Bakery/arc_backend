@@ -46,7 +46,7 @@ async def create_appointment(
                            f"ФИО: {appointment.employee_name}\n" \
                            f"Должность: {appointment.position.name}\n" \
                            f"Комментарий: {appointment.description if appointment.description is not None else ''}\n" \
-                           f"Дата: {formatted_date}\n" \
+                           f"Дата оформления: {formatted_date}\n" \
                            f"Время: {appointment.time_slot.time().strftime('%H:%M')}"
         request_text = ""
 
@@ -88,6 +88,7 @@ async def get_appointment_list(
         employee_name: Optional[str] = None,
         branch_id: Optional[int] = None,
         status: Optional[int] = None,
+        reserved_date: Optional[date] = None,
         db: Session = Depends(get_db),
         request_user: UserGetJustNames = Depends(get_current_user)
 ):
@@ -98,7 +99,8 @@ async def get_appointment_list(
         created_user=created_user,
         employee_name=employee_name,
         branch_id=branch_id,
-        status=status
+        status=status,
+        reserved_date=reserved_date
     )
     return paginate(appointments)
 
@@ -153,7 +155,7 @@ async def put_appointment(
                            f"ФИО: {appointment.employee_name}\n" \
                            f"Должность: {appointment.position.name}\n" \
                            f"Комментарий: {appointment.description if appointment.description is not None else ''}\n" \
-                           f"Дата: {formatted_date}\n" \
+                           f"Дата оформления: {formatted_date}\n" \
                            f"Время: {appointment.time_slot.time().strftime('%H:%M')}"
         request_text = ""
 
