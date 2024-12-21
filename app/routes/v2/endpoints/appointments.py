@@ -10,8 +10,7 @@ from app.schemas.appointments import CreateAppointment, GetAppointment, UpdateAp
 from app.schemas.users import UserGetJustNames
 from app.crud.appointments import add_appoinment, get_appoinments, edit_appointment, get_timeslots, \
     get_calendar_appointments
-from app.utils.utils import sendtotelegramchat
-
+from app.utils.utils import sendtotelegramchat, send_media_group
 
 appointments_router = APIRouter()
 timezonetash = pytz.timezone("Asia/Tashkent")
@@ -26,6 +25,43 @@ async def create_appointment(
 ):
     try:
         appointment = add_appoinment(data=data, user_id=request_user.id, db=db)
+        user_telegram_id = appointment.user.telegram_id if appointment.user else None
+        days_of_week = {
+            "Monday": "Понедельник",
+            "Tuesday": "Вторник",
+            "Wednesday": "Среда",
+            "Thursday": "Четверг",
+            "Friday": "Пятница",
+            "Saturday": "Суббота",
+            "Sunday": "Воскресенье",
+        }
+        formatted_date = appointment.time_slot.date().strftime('%A %d.%m.%Y')
+        formatted_date = formatted_date.replace(
+            appointment.time_slot.date().strftime("%A"),
+            days_of_week[appointment.time_slot.date().strftime("%A")]
+        )
+
+        appointment_info = f"<b>Информация записи:</b>\n" \
+                           f"Филиал: {appointment.branch.name}\n" \
+                           f"ФИО: {appointment.employee_name}\n" \
+                           f"Должность: {appointment.position.name}\n" \
+                           f"Комментарий: {appointment.description if appointment.description is not None else ''}\n" \
+                           f"Дата: {formatted_date}\n" \
+                           f"Время: {appointment.time_slot.time().strftime('%H:%M')}"
+        request_text = ""
+
+        request_text = f"Спасибо! Ваша 📑запись #{appointment.id}s на официальное оформление принята.\n\n" \
+                       f"{appointment_info}"
+        try:
+            sendtotelegramchat(chat_id=user_telegram_id, message_text=request_text)
+        except Exception as e:
+            print(e)
+
+        try:
+            send_media_group(chat_id=user_telegram_id)
+        except Exception as e:
+            print(e)
+
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
 

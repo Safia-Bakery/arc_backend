@@ -131,6 +131,41 @@ def sendtotelegramchat(chat_id, message_text, inline_keyboard: Optional[dict] = 
         return False
 
 
+def send_media_group(chat_id):
+    url = f"https://api.telegram.org/bot{settings.bottoken}/sendMediaGroup"
+    media = [
+        {
+            "type": "document",
+            "media": "attach://анкета_рус",
+            "caption": "Анкеты доступны на узбекском и русском языках"
+        },
+        {
+            "type": "document",
+            "media": "attach://анкета_узб"
+        }
+    ]
+    files = {
+        "анкета_рус": open("Анкета_шаблон_Русский.pdf", "rb"),
+        "анкета_узб": open("Анкета_шаблон_Узбекский.pdf", "rb")
+    }
+    data = {
+        "chat_id": chat_id,
+        "media": json.dumps(media)  # Telegram API expects JSON as a string
+    }
+    response = requests.post(
+        url=url,
+        data=data,
+        files=files
+    )
+    # Check the response status
+    if response.status_code == 200:
+        return response
+    else:
+        return False
+
+
+
+
 def sendtotelegramtopic(chat_id, message_text, thread_id, inline_keyboard: Optional[dict] = None):
     # Create the request payload
     payload = {
