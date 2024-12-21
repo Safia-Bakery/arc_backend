@@ -113,14 +113,13 @@ def edit_appointment(db: Session, data: UpdateAppointment):
     return obj
 
 
-def get_timeslots(db: Session, date):
-    obj = db.query(
-        # Appointments
+def get_timeslots(db: Session, query_date):
+    counted_objects = db.query(
         func.cast(Appointments.time_slot, Time).label("time"),
         func.count(Appointments.id).label('count')
     ).filter(
         and_(
-            func.date(Appointments.time_slot) == date,
+            func.date(Appointments.time_slot) == query_date,
             Appointments.status != 4
         )
     ).group_by(
@@ -130,28 +129,22 @@ def get_timeslots(db: Session, date):
     ).all()
     all_slots = ["09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "14:30", "15:00", "15:30",
                  "16:00", "16:30"]
-    all_slots_copy = all_slots.copy()
     reserved = {}
-    free = {}
-    for row in obj:
-        objs = db.query(Appointments).filter(
-            and_(
-                func.date(Appointments.time_slot) == date,
-                func.cast(Appointments.time_slot, Time) == row.time,
-                Appointments.status != 4
-            )
-        ).all()
-        if row.count < 2 and len(objs) < 2:
-            free[row.time.strftime("%H:%M")] = objs
-        else:
+    free = all_slots.copy()
+    for row in counted_objects:
+        if row.count > 1:
+            objs = db.query(Appointments).filter(
+                and_(
+                    func.date(Appointments.time_slot) == query_date,
+                    func.cast(Appointments.time_slot, Time) == row.time
+                )
+            ).all()
             reserved[row.time.strftime("%H:%M")] = objs
+        # else:
+        #     free[row.time.strftime("%H:%M")] = objs
 
-    for item in reserved.keys():
-        if item in all_slots_copy:
-            all_slots_copy.remove(item)
-
-    for item in all_slots_copy:
-        if item not in free.keys():
-            free[item] = []
+    for item in all_slots:
+        if item in reserved.keys():
+            free.remove(item)
 
     return {"all": all_slots, "reserved": reserved, "free": free}

@@ -191,5 +191,5 @@ async def get_time_slots(
         db: Session = Depends(get_db),
         request_user: UserGetJustNames = Depends(get_current_user)
 ):
-    time_slots = get_timeslots(db=db, date=query_date)
+    time_slots = get_timeslots(db=db, query_date=query_date)
     return time_slots
