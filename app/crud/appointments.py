@@ -132,6 +132,7 @@ def get_timeslots(db: Session, query_date):
     all_slots = ["09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "14:30", "15:00", "15:30",
                  "16:00", "16:30"]
     reserved = {}
+    all_slots_copy = all_slots.copy()
     free = all_slots.copy()
     for row in counted_objects:
         if row.count > 1:
@@ -143,10 +144,14 @@ def get_timeslots(db: Session, query_date):
             # ).all()
             reserved[row.time] = True
 
-    now_time = datetime.now().time()
+    now = datetime.now()
     for item in all_slots:
-        item_time = datetime.strptime(item, "%H:%M").time()
-        if item_time < now_time or item in reserved.keys():
+        time_obj = datetime.strptime(item, "%H:%M").time()
+        datetime_obj = datetime.combine(query_date, time_obj)
+        if datetime_obj < now:
+            all_slots_copy.remove(item)
+
+        if datetime_obj < now or item in reserved.keys():
             free.remove(item)
 
-    return {"all": all_slots, "reserved": reserved, "free": free}
+    return {"all": all_slots_copy, "reserved": reserved, "free": free}
