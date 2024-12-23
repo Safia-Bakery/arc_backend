@@ -29,5 +29,9 @@ def create_files_report(db:Session, url: str, request_id: Optional[int]):
     return query
 
 
-
+def create_appointment_files(db:Session, file_url, appointment_id):
+    query = Files(url=file_url, appointment_id=appointment_id)
+    db.add(query)
+    db.commit()
+    return query
 

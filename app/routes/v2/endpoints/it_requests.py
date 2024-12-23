@@ -8,6 +8,8 @@ from fastapi import (
 )
 from fastapi_pagination import paginate, Page
 from sqlalchemy.orm import Session
+from sqlalchemy.util import ellipses_string
+
 from app.core.config import settings
 from app.crud import it_requests, users, communication, logs, files
 from app.models.category import Category
@@ -197,7 +199,7 @@ async def put_request_id(
                 topic_id=topic_id,
                 text=request_text,
                 finishing_time=finishing_time,
-                file_url=request.file[0].url
+                file_url=request.file[0].url if request.file else ""
             )
 
             # request = it_requests.get_request_id(db=db, id=id)
@@ -232,7 +234,7 @@ async def put_request_id(
                     request_text=request_text,
                     finishing_time=finishing_time,
                     request_id=request.id,
-                    request_file=request.file[0].url
+                    request_file=request.file[0].url if request.file else ""
                 )
 
         elif data.status == 3:
@@ -324,7 +326,7 @@ async def put_request_id(
                         {"text": "Завершить заявку", "callback_data": "complete_request"},
                         {"text": "Отменить", "callback_data": "cancel_request"}
                     ],
-                    [{"text": "Посмотреть фото", "url": f"{BASE_URL}{request.file[0].url}"}]
+                    [{"text": "Посмотреть фото", "url": f"{BASE_URL}{request.file[0].url if request.file else ''}"}]
                 ]
             }
             # edit_topic_message(chat_id=settings.IT_SUPERGROUP, thread_id=topic_id, message_id=message_id,
@@ -357,7 +359,7 @@ async def put_request_id(
                     request_text=request_text,
                     finishing_time=finishing_time,
                     request_id=request.id,
-                    request_file=request.file[0].url
+                    request_file=request.file[0].url if request.file else ""
                 )
 
         elif data.status == 8:
@@ -388,7 +390,7 @@ async def put_request_id(
                 topic_id=topic_id,
                 text=request_text,
                 finishing_time=finishing_time,
-                file_url=request.file[0].url
+                file_url=request.file[0].url if request.file else ""
             )
 
             if request.brigada:
@@ -422,7 +424,7 @@ async def put_request_id(
                     request_text=request_text,
                     finishing_time=finishing_time,
                     request_id=request.id,
-                    request_file=request.file[0].url
+                    request_file=request.file[0].url if request.file else ""
                 )
 
     return request
@@ -471,7 +473,7 @@ async def create_request(
     inline_keyboard = {
         "inline_keyboard": [
             [{"text": "Принять заявку", "callback_data": "accept_action"}],
-            [{"text": "Посмотреть фото", "url": f"{BASE_URL}{data.files[0] if data.files is not None else 'None'}"}]
+            [{"text": "Посмотреть фото", "url": f"{BASE_URL}{data.files[0] if data.files else ''}"}]
         ]
     }
     try:

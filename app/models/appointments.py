@@ -27,4 +27,6 @@ class Appointments(Base):
     user = relationship("Users", back_populates="appointments")
     branch_id = Column(UUID(as_uuid=True), ForeignKey('parentfillials.id'))
     branch = relationship('ParentFillials', back_populates='appointments')
+    file = relationship("Files", back_populates="appointment")
     created_at = Column(DateTime(timezone=True), default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())

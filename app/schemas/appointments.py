@@ -4,6 +4,7 @@ from uuid import UUID
 from pydantic import BaseModel, Field, ConfigDict
 
 from app.schemas.branchs import GetBranchs
+from app.schemas.files import FilesGet
 from app.schemas.positions import GetPosition
 from app.schemas.users import UserGetJustNames
 
@@ -31,6 +32,8 @@ class GetAppointment(BaseModel):
     position: Optional[GetPosition] = None
     user: Optional[UserGetJustNames] = None
     branch: Optional[GetBranchs] = None
+    file: Optional[list[FilesGet]] = None
+    updated_at: Optional[datetime] = None
 
     class Config:
         orm_mode = True
@@ -60,6 +63,7 @@ class UpdateAppointment(BaseModel):
     status: Optional[int] = None
     description: Optional[str] = None
     deny_reason: Optional[str] = None
+    files: Optional[list[str]] = None
 
     class Config:
         orm_mode = True

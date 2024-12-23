@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi_pagination import Page, paginate
 from sqlalchemy.orm import Session
 
+from app.crud import files
 from app.routes.depth import get_db, get_current_user
 from app.schemas.appointments import CreateAppointment, GetAppointment, UpdateAppointment, GetCalendarAppointment
 from app.schemas.users import UserGetJustNames
@@ -131,6 +132,9 @@ async def put_appointment(
         request_user: UserGetJustNames = Depends(get_current_user)
 ):
     appointment = edit_appointment(db=db, data=data)
+    if data.files:
+        for file_url in data.files:
+            files.create_appointment_files(db, file_url, appointment.id)
 
     if appointment.status is not None:
         # logs.create_log(db=db, request_id=appointment.id, status=appointment.status, user_id=request_user.id)

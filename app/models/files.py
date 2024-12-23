@@ -30,6 +30,8 @@ class Files(Base):
     url = Column(String)
     request = relationship("Requests", back_populates="file")
     request_id = Column(Integer, ForeignKey("requests.id"))
+    appointment = relationship("Appointments", back_populates="file")
+    appointment_id = Column(Integer, ForeignKey("appointments.id"))
     status = Column(Integer, default=0)
     kru_finished_task_id = Column(Integer, ForeignKey("kru_finished_tasks.id"))
     kru_finished_task = relationship("KruFinishedTasks", back_populates="file")

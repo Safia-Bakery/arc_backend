@@ -108,6 +108,9 @@ def edit_appointment(db: Session, data: UpdateAppointment):
     if data.deny_reason is not None:
         obj.deny_reason = data.deny_reason
 
+    now = datetime.now(tz=timezonetash)
+    obj.updated_at = now
+
     db.commit()
     db.refresh(obj)
     return obj
