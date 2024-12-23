@@ -143,8 +143,10 @@ def get_timeslots(db: Session, query_date):
             # ).all()
             reserved[row.time] = True
 
+    now_time = datetime.now().time()
     for item in all_slots:
-        if item in reserved.keys():
+        item_time = datetime.strptime(item, "%H:%M").time()
+        if item_time < now_time or item in reserved.keys():
             free.remove(item)
 
     return {"all": all_slots, "reserved": reserved, "free": free}
