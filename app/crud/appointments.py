@@ -115,7 +115,8 @@ def edit_appointment(db: Session, data: UpdateAppointment):
 
 def get_timeslots(db: Session, query_date):
     counted_objects = db.query(
-        func.cast(Appointments.time_slot, Time).label("time"),
+        func.to_char(func.cast(Appointments.time_slot, Time), 'HH24:MI').label("time"),
+        # func.cast(Appointments.time_slot, Time).label("time"),
         func.count(Appointments.id).label('count')
     ).filter(
         and_(
@@ -123,9 +124,10 @@ def get_timeslots(db: Session, query_date):
             Appointments.status != 4
         )
     ).group_by(
-        func.cast(Appointments.time_slot, Time)
+        func.to_char(func.cast(Appointments.time_slot, Time), 'HH24:MI')
+        # func.cast(Appointments.time_slot, Time)
     ).order_by(
-        func.cast(Appointments.time_slot, Time)
+        func.to_char(func.cast(Appointments.time_slot, Time), 'HH24:MI')
     ).all()
     all_slots = ["09:30", "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "14:30", "15:00", "15:30",
                  "16:00", "16:30"]
@@ -133,15 +135,13 @@ def get_timeslots(db: Session, query_date):
     free = all_slots.copy()
     for row in counted_objects:
         if row.count > 1:
-            objs = db.query(Appointments).filter(
-                and_(
-                    func.date(Appointments.time_slot) == query_date,
-                    func.cast(Appointments.time_slot, Time) == row.time
-                )
-            ).all()
-            reserved[row.time.strftime("%H:%M")] = objs
-        # else:
-        #     free[row.time.strftime("%H:%M")] = objs
+            # objs = db.query(Appointments).filter(
+            #     and_(
+            #         func.date(Appointments.time_slot) == query_date,
+            #         func.cast(Appointments.time_slot, Time) == row.time
+            #     )
+            # ).all()
+            reserved[row.time] = True
 
     for item in all_slots:
         if item in reserved.keys():
