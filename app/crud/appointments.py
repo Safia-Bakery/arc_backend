@@ -1,5 +1,7 @@
 from datetime import datetime, timedelta, date
 from typing import Optional
+from uuid import UUID
+
 import pytz
 from sqlalchemy import func, cast, Date, Time, and_
 from sqlalchemy.orm import Session
@@ -44,7 +46,7 @@ def get_appoinments(
         position_id: Optional[int] = None,
         created_user: Optional[str] = None,
         employee_name: Optional[str] = None,
-        branch_id: Optional[int] = None,
+        branch_id: Optional[UUID] = None,
         status: Optional[int] = None,
         user_id: Optional[int] = None,
         reserved_date: Optional[date] = None,

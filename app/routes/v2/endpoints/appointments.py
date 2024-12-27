@@ -1,4 +1,6 @@
 from typing import List, Optional
+from uuid import UUID
+
 import pytz
 from datetime import date
 from fastapi import APIRouter, Depends, HTTPException
@@ -87,7 +89,7 @@ async def get_appointment_list(
         position_id: Optional[int] = None,
         created_user: Optional[str] = None,
         employee_name: Optional[str] = None,
-        branch_id: Optional[int] = None,
+        branch_id: Optional[UUID] = None,
         status: Optional[int] = None,
         reserved_date: Optional[date] = None,
         db: Session = Depends(get_db),
