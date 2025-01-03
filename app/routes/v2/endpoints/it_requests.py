@@ -199,7 +199,7 @@ async def put_request_id(
                 topic_id=topic_id,
                 text=request_text,
                 finishing_time=finishing_time,
-                file_url=request.file[0].url if request.file else ""
+                file_url=request.file[0].url if request.file else None
             )
 
             # request = it_requests.get_request_id(db=db, id=id)
@@ -390,7 +390,7 @@ async def put_request_id(
                 topic_id=topic_id,
                 text=request_text,
                 finishing_time=finishing_time,
-                file_url=request.file[0].url if request.file else ""
+                file_url=request.file[0].url if request.file else None
             )
 
             if request.brigada:
