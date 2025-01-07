@@ -80,7 +80,7 @@ async def update_one_tool_api(
     query = update_one_tool(db=db,id=id,data=data)
     if data.category_id is not None:
         category = CreateOrUpdateToolCategory(db=db,category_id=data.category_id,tool_id=id)
-        if category.category_id and category.category:
+        if category.category_id and category.categories:
             query.category_id=category.category_id
             query.category = category.categories
         else:
