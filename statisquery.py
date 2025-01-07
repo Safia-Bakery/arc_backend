@@ -794,10 +794,12 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
         if started_at is not None and finished_at is not None:
             total = total.filter(models.Requests.created_at.between(started_at,finished_at))
         total = total.all()
+        print('total_requests',total)
 
         total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(
             models.Tools.parentid==parent_id.parentid,models.Category.department==department).filter(models.Tools.factory_ftime !=None).filter(
             models.Requests.status.in_([0,1,2,3])).count()
+        print('total_tools',total_tools)
 
         finished_ontime = db.query(
             models.Expanditure
@@ -810,6 +812,7 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
             models.Tools.parentid == parent_id.parentid,
             #models.Requests.finished_at - models.Requests.started_at <= ftime_timedelta
         ).count()
+        print('finished_ontime',finished_ontime)
 
         not_finished_ontime = db.query(
         models.Expanditure
@@ -821,12 +824,14 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
             models.Tools.parentid == parent_id.parentid,
             func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) > models.Tools.ftime * 3600,
         ).count()
+        print('not finished on time',not_finished_ontime)
 
         not_started = db.query(models.Expanditure
                                ).join(models.Requests).join(models.Category).join(models.Tools
                                ).filter(models.Tools.parentid==parent_id.parentid
                                ).filter(models.Tools.factory_ftime!=None,models.Category.department==department
                                ).filter(models.Requests.status.in_([0,1,2])).count()
+        print('not started',not_started)
         if not_finished_ontime == 0:
             not_finished_ontime_percent = 0
         else:
