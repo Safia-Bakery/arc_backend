@@ -66,14 +66,17 @@ def update_one_tool(db:Session, id, data:UpdateInventoryFactoryTool):
 
 def CreateOrUpdateToolCategory(db:Session,tool_id,category_id):
     query = db.query(CategoriesToolsRelations).filter(CategoriesToolsRelations.tool_id==tool_id).first()
-    if query:
+    if query and category_id!=0 :
         query.category_id=category_id
         db.commit()
+    elif query and category_id==0:
+        db.delete(query)
+        db.commit()
+
     else:
         query = CategoriesToolsRelations(category_id=category_id,tool_id=tool_id)
         db.add(query)
         db.commit()
-    db.refresh(query)
     return query
 
 
