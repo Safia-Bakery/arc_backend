@@ -559,5 +559,5 @@ async def get_inventory_factory_stats(
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
-    query = statisquery.inventory_stats(db=db,finished_at=finished_at,started_at=started_at,department=10)
+    query = statisquery.inventory_stats_factory(db=db,finished_at=finished_at,started_at=started_at,department=10)
     return query

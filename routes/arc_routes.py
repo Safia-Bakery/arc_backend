@@ -50,6 +50,13 @@ def get_stats(started_at:Optional[date]=None,finished_at:Optional[date]=None,db:
     return query
 
 
+
+@arc_routes.get('/v1/arc/factory/stats', tags=["ARC"], status_code=status.HTTP_200_OK)
+def get_stats(started_at:Optional[date]=None,finished_at:Optional[date]=None,db: Session = Depends(get_db),request_user: schema.UserFullBack = Depends(get_current_user),):
+    query = arc_query.stats_query_factory(db=db,started_at=started_at,finished_at=finished_at)
+    return query
+
+
 @arc_routes.post('/v1/expense/type', tags=["ARC"], status_code=status.HTTP_200_OK)
 def create_expense_type(form_data:arc_schema.CreateExpensetype,db: Session = Depends(get_db),request_user: schema.UserFullBack = Depends(get_current_user),):
     query = arc_query.create_expense_type(db=db,form_data=form_data)

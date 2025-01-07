@@ -753,3 +753,111 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
                                      }
     return data
 
+
+
+
+
+
+def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=60):
+    parent_ids = db.query(models.Tools).join(models.Expanditure).join(models.Requests).join(models.Category).filter(models.Category.department==department)
+    if started_at is not None and finished_at is not None:
+        parent_ids = parent_ids.filter(models.Requests.created_at.between(started_at,finished_at))
+    parent_ids = parent_ids.distinct(models.Tools.parentid).filter(models.Requests.status==3).filter(models.Tools.factory_ftime!=None).all()
+    data = {}
+
+    ftime_timedelta = timedelta(seconds=48*3600)
+    #ftime_timedelta = 100*3600
+    for parent_id in parent_ids:
+
+        total = (
+        db.query(
+            func.cast(
+                func.avg(
+                    func.extract(
+                        "epoch",
+                        models.Requests.finished_at - models.Requests.started_at,
+                    )
+                )
+                / timer,
+                Integer,
+            ),
+        )
+        .join(models.Expanditure).join(models.Tools).join(models.Category)
+        .filter(
+            models.Requests.status==3,
+            models.Expanditure.status==1,
+            models.Tools.department== department,
+            models.Tools.parentid == parent_id.parentid,
+        )
+        .group_by(models.Tools.parentid)
+        )
+        if started_at is not None and finished_at is not None:
+            total = total.filter(models.Requests.created_at.between(started_at,finished_at))
+        total = total.all()
+
+        total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(
+            models.Tools.parentid==parent_id.parentid,models.Category.department==department).filter(models.Tools.factory_ftime !=None).filter(
+            models.Requests.status.in_([0,1,2,3])).count()
+
+        finished_ontime = db.query(
+            models.Expanditure
+        ).join(models.Requests).join(models.Category).join(models.Tools).filter(
+            models.Requests.status == 3,
+            models.Tools.factory_ftime!=None,
+            #models.Expanditure.status==1,
+            models.Category.department==department,
+            func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= models.Tools.factory_ftime * 3600,
+            models.Tools.parentid == parent_id.parentid,
+            #models.Requests.finished_at - models.Requests.started_at <= ftime_timedelta
+        ).count()
+
+        not_finished_ontime = db.query(
+        models.Expanditure
+            ).join(models.Requests).join(models.Category).join(models.Tools).filter(
+            models.Category.department==department,
+            models.Requests.status == 3,
+            #models.Expanditure.status==1,
+            models.Tools.factory_ftime!=None,
+            models.Tools.parentid == parent_id.parentid,
+            func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) > models.Tools.ftime * 3600,
+        ).count()
+
+        not_started = db.query(models.Expanditure
+                               ).join(models.Requests).join(models.Category).join(models.Tools
+                               ).filter(models.Tools.parentid==parent_id.parentid
+                               ).filter(models.Tools.factory_ftime!=None,models.Category.department==department
+                               ).filter(models.Requests.status.in_([0,1,2])).count()
+        if not_finished_ontime == 0:
+            not_finished_ontime_percent = 0
+        else:
+            not_finished_ontime_percent = (not_finished_ontime/total_tools)*100
+        if finished_ontime == 0:
+            on_time_requests_percent = 0
+        else:
+            on_time_requests_percent = (finished_ontime/total_tools)*100
+        if not_started == 0:
+            not_started_percent = 0
+        else:
+            not_started_percent = (not_started/total_tools)*100
+        # not_finishedon_time_percent = (not_finished_ontime/total_tools)*100
+        # on_time_requests_percent = (finished_ontime/total_tools)*100
+        # not_started_percent = (not_started/total_tools)*100
+
+        parent_id_name = db.query(models.ToolParents).filter(models.ToolParents.id == parent_id.parentid).first()
+        if total:
+            if total[0][0] is not None:
+                avg_finishing = total[0][0]
+
+        else:
+            avg_finishing= 0
+        data[parent_id_name.name] = {'total_tools':total_tools,
+                                     "on_time_requests":finished_ontime,
+                                     'not_finishedontime':not_finished_ontime,
+                                     'not_even_started':not_started,
+                                        'not_finishedon_time_percent':not_finished_ontime_percent,
+                                        'on_time_requests_percent':on_time_requests_percent,
+                                        'not_started_percent':not_started_percent,
+                                        'avg_finishing':avg_finishing
+                                     }
+    return data
+

@@ -165,6 +165,36 @@ def stats_query(db:Session,started_at,finished_at,timer=60):
   
     return data
 
+
+def stats_query_factory(db: Session, started_at, finished_at, timer=60):
+    data = {
+    }
+
+    def get_children(category_id):
+        children = db.query(models.Category).filter_by(parent_id=category_id).filter(models.Category.status == 1)
+        children = children.all()
+        for child in children:
+            yield child
+            yield from get_children(child.id)
+
+    categories = db.query(models.Category).filter(models.Category.parent_id == None, models.Category.department == 1,
+                                                  models.Category.sphere_status == 2)
+    categories = categories.filter(models.Category.status == 1).all()
+    for category in categories:
+        data[category.name] = []
+        all_data = create_data_dict(db=db, category=category, started_at=started_at, finished_at=finished_at,
+                                    timer=timer)
+        if all_data is not None:
+            data[category.name].append(all_data)
+        for child in get_children(category.id):
+            all_data = create_data_dict(db=db, category=child, started_at=started_at, finished_at=finished_at,
+                                        timer=timer)
+            if all_data is not None:
+                data[category.name].append(all_data)
+
+    return data
+
+
 def create_expense_type(db:Session,form_data:arc_schema.CreateExpensetype):
     query = models.ArcExpenseType(name=form_data.name,status=form_data.status)
     db.add(query)
