@@ -72,7 +72,6 @@ def CreateOrUpdateToolCategory(db:Session,tool_id,category_id):
     elif query and category_id==0:
         db.delete(query)
         db.commit()
-
     else:
         query = CategoriesToolsRelations(category_id=category_id,tool_id=tool_id)
         db.add(query)

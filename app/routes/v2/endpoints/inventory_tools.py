@@ -82,6 +82,7 @@ async def update_one_tool_api(
         category = CreateOrUpdateToolCategory(db=db,category_id=data.category_id,tool_id=id)
         query.category_id=category.category_id
         query.category = category.categories
+    query = get_one_tool(db=db,id=id)
 
     return query
 
