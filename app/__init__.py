@@ -38,4 +38,5 @@ from app.models.collector_orders import CollectOrders
 from app.models.collector_orders import CollectOrderItems
 from app.models.CategoriesToolsReleations import CategoriesToolsRelations
 from app.models.positions import Positions
+from app.models.schedules import Schedule
 from app.models.appointments import Appointments

@@ -15,6 +15,7 @@ from app.crud.appointments import add_appoinment, get_appoinments, edit_appointm
     get_calendar_appointments
 from app.utils.utils import sendtotelegramchat, send_media_group
 
+
 appointments_router = APIRouter()
 timezonetash = pytz.timezone("Asia/Tashkent")
 BASE_URL = 'https://api.service.safiabakery.uz/'
@@ -69,17 +70,18 @@ async def create_appointment(
         raise HTTPException(status_code=404, detail=str(e))
 
     if appointment is False:
-        raise HTTPException(status_code=400, detail="Не осталось место на данный промежуток времени!")
+        raise HTTPException(status_code=400, detail="Не осталось мест на данный промежуток времени!")
 
     return appointment
 
 
-@appointments_router.get("/appointments/my_records", response_model=List[GetAppointment])
+@appointments_router.get("/appointments/my_records", response_model=List[GetAppointment])  # MyAppointments
 async def get_my_appointments(
         db: Session = Depends(get_db),
         request_user: UserGetJustNames = Depends(get_current_user)
 ):
     appointments = get_appoinments(db=db, user_id=request_user.id)
+    # appointments = get_my_appointments(db=db, user_id=request_user.id)
     return appointments
 
 

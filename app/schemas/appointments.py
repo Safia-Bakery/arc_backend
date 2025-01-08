@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 from pydantic import BaseModel, Field, ConfigDict
 
@@ -64,6 +64,15 @@ class UpdateAppointment(BaseModel):
     description: Optional[str] = None
     deny_reason: Optional[str] = None
     files: Optional[list[str]] = None
+
+    class Config:
+        orm_mode = True
+
+
+
+class MyAppointments(BaseModel):
+    new: Optional[List[GetAppointment]] = None
+    archive: Optional[List[GetAppointment]] = None
 
     class Config:
         orm_mode = True

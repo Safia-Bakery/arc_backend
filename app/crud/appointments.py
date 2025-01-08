@@ -3,11 +3,12 @@ from typing import Optional
 from uuid import UUID
 
 import pytz
-from sqlalchemy import func, cast, Date, Time, and_
+from sqlalchemy import func, cast, Date, Time, and_, select
 from sqlalchemy.orm import Session
 from app.schemas.appointments import CreateAppointment, UpdateAppointment
 from app.models.appointments import Appointments
 from app.models.users_model import Users
+from app.models.schedules import Schedule
 
 
 timezonetash = pytz.timezone("Asia/Tashkent")
@@ -76,6 +77,18 @@ def get_appoinments(
     return obj.order_by(Appointments.id.desc()).all()
 
 
+def my_appointments(db: Session, user_id):
+    obj = db.query(Appointments).filter(Appointments.user_id == user_id)
+    three_days_ago = datetime.now() - timedelta(days=3)
+    new = obj.filter(Appointments.created_at > three_days_ago).all()
+    archive = obj.filter(Appointments.created_at <= three_days_ago).all()
+    data_dict = {
+        "new": new,
+        "archive": archive
+    }
+    return data_dict
+
+
 def get_calendar_appointments(db: Session):
     now = datetime.now().date()
     from_date = now - timedelta(days=14)
@@ -119,9 +132,14 @@ def edit_appointment(db: Session, data: UpdateAppointment):
 
 
 def get_timeslots(db: Session, query_date):
+    unavailable_times = db.query(
+        func.to_char(Schedule.time, 'HH24:MI')
+    ).filter(
+        Schedule.date == query_date
+    ).all()
+    unavailable_times = [time[0] for time in unavailable_times]
     counted_objects = db.query(
         func.to_char(func.cast(Appointments.time_slot, Time), 'HH24:MI').label("time"),
-        # func.cast(Appointments.time_slot, Time).label("time"),
         func.count(Appointments.id).label('count')
     ).filter(
         and_(
@@ -130,7 +148,6 @@ def get_timeslots(db: Session, query_date):
         )
     ).group_by(
         func.to_char(func.cast(Appointments.time_slot, Time), 'HH24:MI')
-        # func.cast(Appointments.time_slot, Time)
     ).order_by(
         func.to_char(func.cast(Appointments.time_slot, Time), 'HH24:MI')
     ).all()
@@ -141,22 +158,16 @@ def get_timeslots(db: Session, query_date):
     free = all_slots.copy()
     for row in counted_objects:
         if row.count > 1:
-            # objs = db.query(Appointments).filter(
-            #     and_(
-            #         func.date(Appointments.time_slot) == query_date,
-            #         func.cast(Appointments.time_slot, Time) == row.time
-            #     )
-            # ).all()
             reserved[row.time] = True
 
     now = datetime.now()
     for item in all_slots:
         time_obj = datetime.strptime(item, "%H:%M").time()
         datetime_obj = datetime.combine(query_date, time_obj)
-        if datetime_obj < now:
+        if datetime_obj < now or item in unavailable_times:
             all_slots_copy.remove(item)
 
-        if datetime_obj < now or item in reserved.keys():
+        if datetime_obj < now or item in reserved.keys() or item in unavailable_times:
             free.remove(item)
 
     return {"all": all_slots_copy, "reserved": reserved, "free": free}

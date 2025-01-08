@@ -21,6 +21,8 @@ class Appointments(Base):
     description = Column(String, nullable=True)
     department = Column(Integer, nullable=True)
     deny_reason = Column(String, nullable=True)
+    schedule_id = Column(Integer, ForeignKey("schedules.id"))
+    schedule = relationship("Schedule", back_populates="appointments")
     position_id = Column(Integer, ForeignKey("positions.id"))
     position = relationship("Positions", back_populates="appointments")
     user_id = Column(Integer, ForeignKey("users.id"))
