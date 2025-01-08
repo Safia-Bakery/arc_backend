@@ -689,7 +689,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
 
         total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(
             models.Tools.parentid==parent_id.parentid,models.Category.department==department).filter(models.Tools.ftime!=None).filter(
-            models.Requests.status.in_([0,1,2,3])).count()
+            models.Requests.status.in_([0,1,2,3])).filter( models.Requests.created_at.between(started_at,finished_at)).count()
 
         finished_ontime = db.query(
             models.Expanditure
@@ -798,7 +798,7 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
 
         total_tools = db.query(models.Expanditure).join(models.Tools).join(models.Requests).join(models.Category).filter(
             models.Tools.parentid==parent_id.parentid,models.Category.department==department).filter(models.Tools.factory_ftime !=None).filter(
-            models.Requests.status.in_([0,1,2,3])).count()
+            models.Requests.status.in_([0,1,2,3])).filter( models.Requests.created_at.between(started_at,finished_at)).count()
 
 
         finished_ontime = db.query(
