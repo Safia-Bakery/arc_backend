@@ -87,6 +87,7 @@ class CreateInventoryRequest(BaseModel):
     description: Optional[str] = None
     product: Optional[str] = None
     expenditure: list[RequestExpenditureCreate] = None
+    files: Optional[list[str]] = None
 
 
 

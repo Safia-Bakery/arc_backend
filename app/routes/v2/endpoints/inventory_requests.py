@@ -18,7 +18,7 @@ from app.schemas.inventory_requests import (GetRequest,
                                             )
 
 from app.schemas.requests import GetOneRequest,GetOneRequestInventoryFactory
-from app.crud import inv_requests, logs
+from app.crud import inv_requests, logs, files
 from datetime import datetime, date
 from app.crud.expanditure import create_expanditure,delete_expanditure
 from app.utils.utils import( send_simple_text_message,
@@ -144,8 +144,11 @@ async def create_factory_request(
 ):
 
     try:
-        request_list = inv_requests.create_request(db, request,user_id=request_user.id)
+        request_list = inv_requests.create_request(db, request, user_id=request_user.id)
         logs.create_log(db=db, request_id=request_list.id, status=request_list.status, user_id=request_user.id)
+        if request.files:
+            for file_url in request.files:
+                files.create_files_report(db=db, url=file_url, request_id=request_list.id)
         for item in request.expenditure:
             create_expanditure(db, amount=item.amount,tool_id=item.tool_id,request_id=request_list.id)
         send_simple_text_message(
