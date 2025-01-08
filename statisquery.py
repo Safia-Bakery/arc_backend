@@ -689,7 +689,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
 
         total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(
             models.Tools.parentid==parent_id.parentid,models.Category.department==department).filter(models.Tools.ftime!=None).filter(
-            models.Requests.status.in_([0,1,2,3])).count()
+            models.Requests.status.in_([0,1,2,3])).filter( models.Requests.created_at.between(started_at,finished_at)).count()
 
         finished_ontime = db.query(
             models.Expanditure
@@ -796,14 +796,14 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
         total = total.all()
 
 
-        total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(
-            models.Tools.parentid==parent_id.parentid,models.Category.department==department).filter(
-            models.Requests.status.in_([0,1,2,3])).count()
+        total_tools = db.query(models.Expanditure).join(models.Tools).join(models.Requests).join(models.Category).filter(
+            models.Tools.parentid==parent_id.parentid,models.Category.department==department).filter(models.Tools.factory_ftime !=None).filter(
+            models.Requests.status.in_([0,1,2,3])).filter( models.Requests.created_at.between(started_at,finished_at)).count()
 
 
         finished_ontime = db.query(
             models.Expanditure
-        ).join(models.Requests).join(models.Category).join(models.Tools).filter(
+        ).join(models.Tools).join(models.Requests).join(models.Category).filter(
             models.Requests.status == 3,
             models.Tools.factory_ftime!=None,
             #models.Expanditure.status==1,
@@ -816,7 +816,7 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
 
         not_finished_ontime = db.query(
         models.Expanditure
-            ).join(models.Requests).join(models.Category).join(models.Tools).filter(
+            ).join(models.Tools).join(models.Requests).join(models.Category).filter(
             models.Category.department==department,
             models.Requests.status == 3,
             #models.Expanditure.status==1,
@@ -826,8 +826,8 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
         ).count()
 
         not_started = db.query(models.Expanditure
-                               ).join(models.Requests).join(models.Category).join(models.Tools
-                               ).filter(models.Tools.parentid==parent_id.parentid
+                               ).join(models.Tools
+                               ).join(models.Requests).join(models.Category).filter(models.Tools.parentid==parent_id.parentid
                                ).filter(models.Tools.factory_ftime!=None,models.Category.department==department
                                ).filter(models.Requests.status.in_([0,1,2])).count()
         if not_finished_ontime == 0:
