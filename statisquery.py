@@ -768,6 +768,7 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
     ftime_timedelta = timedelta(seconds=48*3600)
     #ftime_timedelta = 100*3600
     for parent_id in parent_ids:
+        print(parent_id)
 
         total = (
         db.query(
@@ -796,8 +797,8 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
         total = total.all()
 
 
-        total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(
-            models.Tools.parentid==parent_id.parentid,models.Category.department==department).filter(
+        total_tools = db.query(models.Expanditure).join(models.Tools).join(models.Requests).join(models.Category).filter(
+            models.Tools.parentid==parent_id.parentid,models.Category.department==department).filter(models.Tools.factory_ftime !=None).filter(
             models.Requests.status.in_([0,1,2,3])).count()
 
 
