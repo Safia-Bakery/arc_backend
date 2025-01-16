@@ -24,7 +24,7 @@ def filter_requests_all(
         department,
         product_name
 ):
-    query = db.query(Requests).join(Requests.id == Expanditure.request_id).join(Users).join(Category).join(Tools).filter(Category.department == department)
+    query = db.query(Requests).join(Requests.expanditure).join(Users).join(Category).join(Tools).filter(Category.department == department)
 
 
     if id is not None:
