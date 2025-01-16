@@ -39,6 +39,7 @@ async def filter_factory_requests(
         fillial_id: Optional[UUID] = None,
         created_at: Optional[date] = None,
         request_status: Optional[str] = None,
+        product:Optional[str]=None,
         db: Session = Depends(get_db),
         request_user: UserFullBack = Depends(get_current_user),
 ):
@@ -51,7 +52,8 @@ async def filter_factory_requests(
         fillial_id=fillial_id,
         created_at=created_at,
         request_status=request_status,
-        department=10
+        department=10,
+        product_name=product
     )
 
     return paginate(request_list)
@@ -64,6 +66,7 @@ async def filter_retail_requests(
         fillial_id: Optional[UUID] = None,
         created_at: Optional[date] = None,
         request_status: Optional[str] = None,
+        product:Optional[str]=None,
         db: Session = Depends(get_db),
         request_user: UserFullBack = Depends(get_current_user),
 ):
@@ -74,7 +77,8 @@ async def filter_retail_requests(
         fillial_id=fillial_id,
         created_at=created_at,
         request_status=request_status,
-        department=2
+        department=2,
+        product_name=product
     )
 
     return paginate(request_list)

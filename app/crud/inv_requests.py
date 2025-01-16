@@ -8,6 +8,8 @@ from app.models.fillials import Fillials
 from app.models.requests import Requests
 from app.models.users_model import Users
 from app.schemas.inventory_requests import CreateInventoryRequest, UpdateRequest
+from app.models.expanditure import Expanditure
+from app.models.tools import Tools
 
 timezonetash = pytz.timezone("Asia/Tashkent")
 
@@ -19,9 +21,10 @@ def filter_requests_all(
         fillial_id,
         created_at,
         request_status,
-        department
+        department,
+        product_name
 ):
-    query = db.query(Requests).join(Category).filter(Category.department == department)
+    query = db.query(Requests).join(Users).join(Category).join(Expanditure).join(Tools).filter(Category.department == department)
 
 
     if id is not None:
@@ -35,6 +38,8 @@ def filter_requests_all(
         query = query.filter(Requests.status.in_(request_status))
     if user is not None:
         query = query.filter(Users.full_name.ilike(f"%{user}%"))
+    if product_name is not None:
+        query = query.filter(Tools.name.ilike(f"%{product_name}%"))
 
     results = query.order_by(Requests.id.desc()).all()
     return results
