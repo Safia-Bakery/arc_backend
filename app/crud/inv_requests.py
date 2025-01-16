@@ -67,6 +67,7 @@ def create_request(db: Session, request: CreateInventoryRequest,user_id):
         description=request.description,
         product=request.product,
         category_id=request.category_id,
+        phone_number=request.phone_number
     )
     db.add(query)
     db.commit()

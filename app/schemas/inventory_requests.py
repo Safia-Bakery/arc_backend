@@ -21,6 +21,7 @@ class GetRequest(BaseModel):
     created_at: datetime
     status: int
     user_manager: Optional[str] = None
+    phone_number: Optional[str] = None
 
     class Config:
         orm_mode = True
@@ -33,6 +34,7 @@ class GetRequestFactoryInv(BaseModel):
     created_at: datetime
     status: int
     user_manager: Optional[str] = None
+    phone_number: Optional[str] = None
 
     class Config:
         orm_mode = True
@@ -88,6 +90,7 @@ class CreateInventoryRequest(BaseModel):
     product: Optional[str] = None
     expenditure: list[RequestExpenditureCreate] = None
     files: Optional[list[str]] = None
+    phone_number:Optional[str]=None
 
 
 
