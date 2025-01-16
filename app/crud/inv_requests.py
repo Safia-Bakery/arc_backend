@@ -24,13 +24,18 @@ def filter_requests_all(
         department,
         product_name
 ):
-    query = db.query(Requests).join(Requests.expanditure).join(Users).join(Category).join(Tools).filter(Category.department == department)
+    # Start with the base query for the Requests table
+    query = db.query(Requests).join(Requests.category).join(Requests.expanditure).join(Requests.user)
 
+    # Apply the department filter if provided
+    if department is not None:
+        query = query.filter(Category.department == department)
 
+    # Apply the other filters if provided
     if id is not None:
         query = query.filter(Requests.id == id)
     if fillial_id is not None:
-        query = query.outerjoin(Fillials).filter(Fillials.parentfillial_id == fillial_id)
+        query = query.filter(Requests.fillial_id == fillial_id)  # Directly filter based on `fillial_id`
     if created_at is not None:
         query = query.filter(cast(Requests.created_at, Date) == created_at)
     if request_status is not None:
@@ -41,7 +46,12 @@ def filter_requests_all(
     if product_name is not None:
         query = query.filter(Tools.name.ilike(f"%{product_name}%"))
 
+    # Order by request ID and execute the query
     results = query.order_by(Requests.id.desc()).all()
+
+    # Debug: Log the number of results
+    print(f"Results count: {len(results)}")
+
     return results
 
 
