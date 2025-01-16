@@ -25,7 +25,7 @@ def filter_requests_all(
         product_name
 ):
     # Start with the base query for the Requests table
-    query = db.query(Requests).join(Requests.category).join(Requests.expanditure).join(Requests.user)
+    query = db.query(Requests).join(Requests.category).join(Requests.expanditure).join(Expanditure.tool).join(Requests.user)
 
     # Apply the department filter if provided
     if department is not None:
@@ -50,7 +50,6 @@ def filter_requests_all(
     results = query.order_by(Requests.id.desc()).all()
 
     # Debug: Log the number of results
-    print(f"Results count: {len(results)}")
 
     return results
 
