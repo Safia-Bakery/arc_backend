@@ -10,6 +10,7 @@ from app.models.users_model import Users
 from app.schemas.inventory_requests import CreateInventoryRequest, UpdateRequest
 from app.models.expanditure import Expanditure
 from app.models.tools import Tools
+from app.models.fillials import Fillials
 
 timezonetash = pytz.timezone("Asia/Tashkent")
 
@@ -25,7 +26,7 @@ def filter_requests_all(
         product_name
 ):
     # Start with the base query for the Requests table
-    query = db.query(Requests).join(Requests.category).join(Requests.expanditure).join(Expanditure.tool).join(Requests.user)
+    query = db.query(Requests).join(Requests.category).join(Requests.expanditure).join(Expanditure.tool).join(Requests.user).join(Requests.fillial)
 
     # Apply the department filter if provided
     if department is not None:
@@ -35,7 +36,7 @@ def filter_requests_all(
     if id is not None:
         query = query.filter(Requests.id == id)
     if fillial_id is not None:
-        query = query.filter(Requests.fillial_id == fillial_id)  # Directly filter based on `fillial_id`
+        query = query.filter(Fillials.parentfillial_id == fillial_id)  # Directly filter based on `fillial_id`
     if created_at is not None:
         query = query.filter(cast(Requests.created_at, Date) == created_at)
     if request_status is not None:
