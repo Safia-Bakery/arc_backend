@@ -622,7 +622,7 @@ def filter_requests_all(
     started_at,
     finished_at
 ):
-    query = db.query(models.Requests).join(models.Category)
+    query = db.query(models.Requests).join(models.Users).join(models.Category)
 
 
     if id is not None:
