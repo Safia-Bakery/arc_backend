@@ -120,7 +120,7 @@ async def create_retail_request(
     request_user: UserFullBack = Depends(get_current_user),
 ):
 
-    try:
+    # try:
         get_child_branch = get_child_branchs(db, request.fillial_id)
         if not get_child_branch:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Branch not found")
@@ -135,8 +135,8 @@ async def create_retail_request(
             message_text=f"Уважаемый {request_user.full_name}, ваша заявка #{request_list.id} по Inventary: Создана."
         )
         return {'id':request_list.id,'status':request_list.status,'success':True}
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+    # except Exception as e:
+    #     raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
 
 
