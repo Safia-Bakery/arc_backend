@@ -136,12 +136,12 @@ def send_media_group(chat_id):
     media = [
         {
             "type": "document",
-            "media": "attach://анкета_рус",
-            "caption": "Анкеты доступны на узбекском и русском языках"
+            "media": "attach://анкета_рус"
         },
         {
             "type": "document",
-            "media": "attach://анкета_узб"
+            "media": "attach://анкета_узб",
+            "caption": "Анкеты доступны на узбекском и русском языках"
         }
     ]
     files = {
@@ -163,6 +163,41 @@ def send_media_group(chat_id):
     else:
         return False
 
+
+def send_files(chat_id, file_urls):
+    """
+    Prepare the media group for the `sendMediaGroup` method.
+    """
+    media_group = []
+    files = {}
+    # Get files from the server
+    for i, file_url in enumerate(file_urls):
+        media_group.append(
+            {
+                "type": "document",  # Adjust type as needed (e.g., "photo", "video")
+                "media": f"attach://{file_url}"
+            }
+        )
+        files[file_url] = open(f"/var/www/arc_backend/{file_url}", 'rb')
+
+    url = f"https://api.telegram.org/bot{settings.bottoken}/sendMediaGroup"
+    data = {
+        "chat_id": chat_id,
+        "media": json.dumps(media_group)  # Telegram API expects JSON as a string
+    }
+    response = requests.post(
+        url=url,
+        data=data,
+        files=files
+    )
+    for file_handle in files.values():
+        file_handle.close()
+
+    # Check the response status
+    if response.status_code == 200:
+        return response
+    else:
+        return False
 
 
 
