@@ -9,10 +9,11 @@ from sqlalchemy.orm import Session
 
 from app.crud import files
 from app.routes.depth import get_db, get_current_user
-from app.schemas.appointments import CreateAppointment, GetAppointment, UpdateAppointment, GetCalendarAppointment
+from app.schemas.appointments import CreateAppointment, GetAppointment, UpdateAppointment, GetCalendarAppointment, \
+    MyAppointments
 from app.schemas.users import UserGetJustNames
 from app.crud.appointments import add_appoinment, get_appoinments, edit_appointment, get_timeslots, \
-    get_calendar_appointments
+    get_calendar_appointments, my_appointments
 from app.utils.utils import sendtotelegramchat, send_media_group
 
 
@@ -75,13 +76,13 @@ async def create_appointment(
     return appointment
 
 
-@appointments_router.get("/appointments/my_records", response_model=List[GetAppointment])  # MyAppointments
-async def get_my_appointments(
+@appointments_router.get("/appointments/my_records", response_model=MyAppointments)
+async def get_my_appointment_list(
         db: Session = Depends(get_db),
         request_user: UserGetJustNames = Depends(get_current_user)
 ):
-    appointments = get_appoinments(db=db, user_id=request_user.id)
-    # appointments = get_my_appointments(db=db, user_id=request_user.id)
+    # appointments = get_appoinments(db=db, user_id=request_user.id)
+    appointments = my_appointments(db=db, user_id=request_user.id)
     return appointments
 
 

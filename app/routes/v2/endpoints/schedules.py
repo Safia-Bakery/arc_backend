@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.crud.schedules import get_all_schedules, add_schedule, edit_schedule, delete_schedule, get_one_schedule
+from app.crud.schedules import get_all_actual_schedules, add_schedule, edit_schedule, delete_schedule, get_one_schedule
 from app.routes.depth import get_db
 from app.schemas.schedules import GetSchedule, CreateSchedule, UpdateSchedule
 
@@ -17,7 +17,7 @@ schedules_router = APIRouter()
 async def get_schedules(
         db: Session = Depends(get_db)
 ):
-    schedules = get_all_schedules(db=db)
+    schedules = get_all_actual_schedules(db=db)
     return schedules
 
 
@@ -37,7 +37,7 @@ async def create_schedules(
 ):
     created_schedule = add_schedule(db=db, data=body)
     if created_schedule is None:
-        raise HTTPException(status_code=400, detail='There are appointments on this date')
+        raise HTTPException(status_code=400, detail='На данной дате назначена встреча !')
 
     return created_schedule
 
