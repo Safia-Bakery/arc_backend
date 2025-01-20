@@ -60,12 +60,17 @@ def edit_request(db: Session, user_manager, data: Optional[UpdateRequest] = None
 
     if data.deny_reason is not None:
         request_obj.deny_reason = data.deny_reason
+    total_price =0
 
     if data.request_products is not None:
         request_products_obj = db.query(OrderProducts).filter(OrderProducts.request_id == request_obj.id).all()
         for i in range(len(request_products_obj)):
+            if  data.request_products[i].confirmed:
+                total_price = total_price + (request_products_obj[i].amount * request_products_obj[i].orpr_product.prod_cat.price)
             request_products_obj[i].confirmed = data.request_products[i].confirmed
             request_products_obj[i].deny_reason = data.request_products[i].deny_reason
+
+    request_obj.price= total_price
 
     db.commit()
     db.refresh(request_obj)
