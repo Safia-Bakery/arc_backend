@@ -1,15 +1,18 @@
 from sqlalchemy import and_, func
 from sqlalchemy.orm import Session
-
+from datetime import datetime
 from app.models.appointments import Appointments
 from app.schemas.schedules import CreateSchedule, UpdateSchedule
 
 from app.models.schedules import Schedule
 
 
-def get_all_schedules(db: Session):
-    schedules = db.query(Schedule).all()
-    return schedules
+def get_all_actual_schedules(db: Session):
+    current_date = datetime.now().date()
+    actual_schedules = db.query(Schedule).filter(
+        Schedule.date >= current_date
+    ).all()
+    return actual_schedules
 
 
 def get_one_schedule(db: Session, id):

@@ -35,3 +35,12 @@ def create_appointment_files(db:Session, file_url, appointment_id):
     db.commit()
     return query
 
+
+def get_files_from_db(db:Session, file_ids):
+    """
+    Retrieve files from the database by their IDs.
+    """
+    file_records = db.query(Files).filter(Files.id.in_(file_ids)).all()
+    if not file_records:
+        raise ValueError("No files found for the provided IDs")
+    return [(file.id, file.url) for file in file_records]

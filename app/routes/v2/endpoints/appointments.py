@@ -7,14 +7,14 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi_pagination import Page, paginate
 from sqlalchemy.orm import Session
 
-from app.crud import files
+from app.crud.files import create_appointment_files
 from app.routes.depth import get_db, get_current_user
-from app.schemas.appointments import CreateAppointment, GetAppointment, UpdateAppointment, GetCalendarAppointment
+from app.schemas.appointments import CreateAppointment, GetAppointment, UpdateAppointment, GetCalendarAppointment, \
+    MyAppointments
 from app.schemas.users import UserGetJustNames
 from app.crud.appointments import add_appoinment, get_appoinments, edit_appointment, get_timeslots, \
-    get_calendar_appointments
-from app.utils.utils import sendtotelegramchat, send_media_group
-
+    get_calendar_appointments, my_appointments
+from app.utils.utils import sendtotelegramchat, send_media_group, send_files
 
 appointments_router = APIRouter()
 timezonetash = pytz.timezone("Asia/Tashkent")
@@ -29,6 +29,9 @@ async def create_appointment(
 ):
     try:
         appointment = add_appoinment(data=data, user_id=request_user.id, db=db)
+        if appointment is False:
+            raise HTTPException(status_code=400, detail="Не осталось мест на данный промежуток времени!")
+
         user_telegram_id = appointment.user.telegram_id if appointment.user else None
         days_of_week = {
             "Monday": "Понедельник",
@@ -69,19 +72,16 @@ async def create_appointment(
     except Exception as e:
         raise HTTPException(status_code=404, detail=str(e))
 
-    if appointment is False:
-        raise HTTPException(status_code=400, detail="Не осталось мест на данный промежуток времени!")
-
     return appointment
 
 
-@appointments_router.get("/appointments/my_records", response_model=List[GetAppointment])  # MyAppointments
-async def get_my_appointments(
+@appointments_router.get("/appointments/my_records", response_model=MyAppointments)
+async def get_my_appointment_list(
         db: Session = Depends(get_db),
         request_user: UserGetJustNames = Depends(get_current_user)
 ):
-    appointments = get_appoinments(db=db, user_id=request_user.id)
-    # appointments = get_my_appointments(db=db, user_id=request_user.id)
+    # appointments = get_appoinments(db=db, user_id=request_user.id)
+    appointments = my_appointments(db=db, user_id=request_user.id)
     return appointments
 
 
@@ -138,7 +138,7 @@ async def put_appointment(
     appointment = edit_appointment(db=db, data=data)
     if data.files:
         for file_url in data.files:
-            files.create_appointment_files(db, file_url, appointment.id)
+            create_appointment_files(db, file_url, appointment.id)
 
     if appointment.status is not None:
         # logs.create_log(db=db, request_id=appointment.id, status=appointment.status, user_id=request_user.id)
@@ -172,6 +172,12 @@ async def put_appointment(
                            f"{appointment_info}"
 
         elif appointment.status == 3:
+            if data.files:
+                try:
+                    send_files(chat_id=user_telegram_id, file_urls=data.files)
+                except Exception as e:
+                    print(e)
+
             request_text = f"Здравствуйте! Ваш сотрудник по записи #{appointment.id}s на официальное оформление успешно оформился.\n\n" \
                            f"{appointment_info}"
 

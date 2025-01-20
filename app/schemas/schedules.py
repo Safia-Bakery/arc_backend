@@ -18,10 +18,10 @@ class GetSchedule(BaseConfig):
     time: Optional[time]
     is_available: Optional[bool]
     description: Optional[str]
-    department: Optional[int]
+    # department: Optional[int]
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
-    appointments: Optional[List[GetAppointment]]
+    # appointments: Optional[List[GetAppointment]]
 
 
 
