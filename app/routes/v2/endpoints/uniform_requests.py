@@ -68,6 +68,8 @@ async def put_request_id(
         db: Session = Depends(get_db),
         request_user: UserFullBack = Depends(get_current_user)
 ):
+
+
     request = uniform_requests.edit_request(db=db, data=data, user_manager=request_user.full_name)
 
     if data.status is not None:
