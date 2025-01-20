@@ -42,19 +42,19 @@ def create_order(db: Session, branch_id: UUID, data: CreateOrder, created_by):
         db.refresh(query)
 
         for item in data.products:
-            product_balance = db.query(ToolBalance).filter(
-                and_(
-                    ToolBalance.department_id == branch_id,
-                    ToolBalance.tool_id == item.product_id
-                )
-            ).first()
-            if product_balance is not None and item.amount <= product_balance.amount:
-                product_balance.amount -= item.amount
-                # db.commit()
-                # db.refresh(product_balance)
-                db.flush()
-            else:
-                raise ValueError(f"Insufficient balance for product {item.product_id}")
+            # product_balance = db.query(ToolBalance).filter(
+            #     and_(
+            #         ToolBalance.department_id == branch_id,
+            #         ToolBalance.tool_id == item.product_id
+            #     )
+            # ).first()
+            # if product_balance is not None and item.amount <= product_balance.amount:
+            #     product_balance.amount -= item.amount
+            #     # db.commit()
+            #     # db.refresh(product_balance)
+            #     db.flush()
+            # else:
+            #     raise ValueError(f"Insufficient balance for product {item.product_id}")
 
             order_item = CollectOrderItems(
                 order_id=query.id,
@@ -89,11 +89,29 @@ def create_order(db: Session, branch_id: UUID, data: CreateOrder, created_by):
 
 def update_order(db: Session, id, status, message_id, user):
     query = db.query(CollectOrders).filter(CollectOrders.id == id).first()
-    query.status = status
-    query.accepted_by = user.id
+    order_items = db.query(CollectOrderItems).filter(CollectOrderItems.order_id == query.id).all()
+    try:
+        for item in order_items:
+            product_balance = db.query(ToolBalance).filter(
+                and_(
+                    ToolBalance.department_id == user.branch_id,
+                    ToolBalance.tool_id == item.product_id
+                )
+            ).first()
+            if product_balance is not None and item.amount <= product_balance.amount:
+                product_balance.amount -= item.amount
+                db.flush()
+            else:
+                raise ValueError(f"Insufficient balance for product {item.product_id}")
 
-    db.commit()
-    db.refresh(query)
+        query.status = status
+        query.accepted_by = user.id
+
+        db.commit()
+        db.refresh(query)
+    except:
+        db.rollback()
+        raise ValueError(f"Insufficient balance for some product !")
 
     base_url = f'https://api.telegram.org/bot{settings.collector_bottoken}'
 

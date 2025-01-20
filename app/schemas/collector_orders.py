@@ -52,3 +52,8 @@ class GetOrder(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class OrdersHistory(BaseModel):
+    active: Optional[List[GetOrder]]
+    closed: Optional[List[GetOrder]]

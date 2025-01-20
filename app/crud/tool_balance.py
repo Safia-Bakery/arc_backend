@@ -140,7 +140,7 @@ def getarchtools(db: Session, parent_id):
             ToolParents.status == 1
         )
     )
-    return query.all()
+    return query.order_by(ToolParents.name.asc()).all()
 
 
 def tools_query_iarch(db: Session, parent_id, name, branch_id):
@@ -155,7 +155,7 @@ def tools_query_iarch(db: Session, parent_id, name, branch_id):
         if parent_id is not None:
             query = query.filter(Tools.parentid == str(parent_id)).filter(Tools.status == 1)
 
-        query = query.all()
+        query = query.order_by(Tools.name.asc()).all()
 
         ready_data = []
         for tool in query:
