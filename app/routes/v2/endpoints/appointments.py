@@ -172,12 +172,6 @@ async def put_appointment(
                            f"{appointment_info}"
 
         elif appointment.status == 3:
-            if data.files:
-                try:
-                    send_files(chat_id=user_telegram_id, file_urls=data.files)
-                except Exception as e:
-                    print(e)
-
             request_text = f"Здравствуйте! Ваш сотрудник по записи #{appointment.id}s на официальное оформление успешно оформился.\n\n" \
                            f"{appointment_info}"
 
@@ -195,6 +189,11 @@ async def put_appointment(
             sendtotelegramchat(chat_id=user_telegram_id, message_text=request_text)
         except Exception as e:
             print(e)
+        if data.files:
+            try:
+                send_files(chat_id=user_telegram_id, file_urls=data.files)
+            except Exception as e:
+                print(e)
 
     return appointment
 
