@@ -22,7 +22,7 @@ def get_orders(db: Session, branch_id, status):
     if status is not None:
         query = query.filter(CollectOrders.status == status)
 
-    query = query.all()
+    query = query.order_by(CollectOrders.id.desc()).all()
     return query
 
 
