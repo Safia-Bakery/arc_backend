@@ -19,7 +19,7 @@ class GetRequest(BaseModel):
     fillial: Optional[GetFillialChild] = None
     expanditure: list[GetExpanditure]
     created_at: datetime
-    status: int
+    status: Optional[int]
     user_manager: Optional[str] = None
     phone_number: Optional[str] = None
 
