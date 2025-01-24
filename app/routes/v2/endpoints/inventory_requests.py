@@ -164,9 +164,13 @@ async def create_retail_request(
             if confirmer not in confirmers:
                 confirmers.append(confirmer)
 
-        message_text = (f"Заявка № {edited_request.id}\n\n"
-                        f"Товары / инструменты:\n\n"
-                        f"{tool_list}")
+        message_text = (
+            f"Заявка #{edited_request.id}s\n\n"
+            f"Филиал: {edited_request.fillial.parentfillial.name}\n"
+            f"Номер для связи: {'+'+edited_request.phone_number if not edited_request.phone_number.startswith('+') else ''}\n\n"
+            f"Товары / инструменты:\n"
+            f"{tool_list}"
+        )
 
         keyboard = {
             'inline_keyboard': [
