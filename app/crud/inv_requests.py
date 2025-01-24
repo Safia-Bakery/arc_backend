@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional
 
 import pytz
-from sqlalchemy import Date, cast, and_
+from sqlalchemy import Date, cast, and_, or_
 from sqlalchemy.orm import Session
 from app.models.category import Category
 from app.models.fillials import Fillials
@@ -29,7 +29,7 @@ def filter_requests_all(
 ):
     # Start with the base query for the Requests table
     query = db.query(Requests).join(Requests.category).join(Requests.expanditure).join(Expanditure.tool).join(Requests.user).join(Requests.fillial)
-
+    query = query.filter(Requests.status.isnot(None))
     # Apply the department filter if provided
     if department is not None:
         query = query.filter(Category.department == department)
@@ -44,10 +44,7 @@ def filter_requests_all(
     if request_status is not None:
         request_status = [int(i) for i in re.findall(r"\d+", str(request_status))]
         query = query.filter(
-            and_(
-                Requests.status is not None,
-                Requests.status.in_(request_status)
-            )
+            Requests.status.in_(request_status)
         )
     if user is not None:
         query = query.filter(Users.full_name.ilike(f"%{user}%"))
