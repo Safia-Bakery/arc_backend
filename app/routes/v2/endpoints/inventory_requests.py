@@ -20,14 +20,16 @@ from app.schemas.inventory_requests import (GetRequest,
 from app.schemas.requests import GetOneRequest,GetOneRequestInventoryFactory
 from app.crud import inv_requests, logs, files
 from datetime import datetime, date
-from app.crud.expanditure import create_expanditure,delete_expanditure
-from app.utils.utils import( send_simple_text_message,
+from app.crud.expanditure import create_expanditure, delete_expanditure, update_expenditure
+from app.utils.utils import (send_simple_text_message,
                              rating_request_telegram,
-                             confirmation_request
+                             confirmation_request, sendtotelegramchat
                              )
 from app.crud.branchs import get_child_branchs
 
 from app.core.config import settings
+from app.models.tools import Tools
+
 
 inv_requests_router = APIRouter()
 
@@ -120,23 +122,64 @@ async def create_retail_request(
     request_user: UserFullBack = Depends(get_current_user),
 ):
 
-    # try:
-        get_child_branch = get_child_branchs(db, request.fillial_id)
-        if not get_child_branch:
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Branch not found")
-        request.fillial_id=get_child_branch.id
-        request_list = inv_requests.create_request(db, request,user_id=request_user.id)
+    get_child_branch = get_child_branchs(db, request.fillial_id)
+    if not get_child_branch:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Branch not found")
+    request.fillial_id=get_child_branch.id
+    expanditures = request.expenditure
+    request_types = {
+        "usual": [],
+        "with_confirmation": []
+    }
+
+    for expanditure in expanditures:
+        tool_obj = db.query(Tools).get(ident=expanditure.tool_id)
+        if tool_obj.confirmation:
+            request_types["with_confirmation"].append(expanditure)
+        else:
+            request_types["usual"].append(expanditure)
+
+    if request_types["usual"]:
+        request_list = inv_requests.create_request(db, request, user_id=request_user.id, status=0)
+        for item in request_types["usual"]:
+            create_expanditure(db, amount=item.amount, tool_id=item.tool_id, request_id=request_list.id)
+
         logs.create_log(db=db, request_id=request_list.id, status=request_list.status, user_id=request_user.id)
-        for item in request.expenditure:
-            create_expanditure(db, amount=item.amount,tool_id=item.tool_id,request_id=request_list.id)
         send_simple_text_message(
             bot_token=settings.bottoken,
             chat_id=request_user.telegram_id,
             message_text=f"Уважаемый {request_user.full_name}, ваша заявка #{request_list.id} по Inventary: Создана."
         )
-        return {'id':request_list.id,'status':request_list.status,'success':True}
-    # except Exception as e:
-    #     raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+
+    if request_types["with_confirmation"]:
+        confirmers = []
+        tool_list = ""
+        new_request = inv_requests.create_request(db, request, user_id=request_user.id, status=0)
+        edited_request = inv_requests.update_request_status(db=db, request_id=new_request.id, status=None)
+        for item in request_types["with_confirmation"]:
+            obj = create_expanditure(db=db, amount=item.amount, tool_id=item.tool_id, request_id=edited_request.id)
+            edited_exp = update_expenditure(db=db, exp_id=obj.id, status=None)
+            tool_list += f"{edited_exp.tool.name}\n"
+            confirmer = edited_exp.tool.confirmer
+            if confirmer not in confirmers:
+                confirmers.append(confirmer)
+
+        message_text = (f"Заявка № {edited_request.id}\n\n"
+                        f"Товары / инструменты:\n\n"
+                        f"{tool_list}")
+
+        keyboard = {
+            'inline_keyboard': [
+                [{'text': 'Подтвердить', 'callback_data': '100'}],
+                [{'text': 'Отклонить', 'callback_data': '101'}],
+            ]
+        }
+        for confirmer in confirmers:
+            sendtotelegramchat(chat_id=confirmer, message_text=message_text, inline_keyboard=keyboard)
+
+        logs.create_log(db=db, request_id=edited_request.id, status=edited_request.status, user_id=request_user.id)
+
+    return {'success':True}
 
 
 
@@ -148,7 +191,7 @@ async def create_factory_request(
 ):
 
     try:
-        request_list = inv_requests.create_request(db, request, user_id=request_user.id)
+        request_list = inv_requests.create_request(db, request, user_id=request_user.id, status=0)
         logs.create_log(db=db, request_id=request_list.id, status=request_list.status, user_id=request_user.id)
         if request.files:
             for file_url in request.files:

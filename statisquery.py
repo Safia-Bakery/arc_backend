@@ -317,8 +317,14 @@ def tools_update(db: Session,form_data:schemas.ToolsUpdate):
             query.ftime = form_data.ftime
         if form_data.status is not None:
             query.status = form_data.status
+        if form_data.confirmation is not None:
+            query.confirmation = form_data.confirmation
+        if form_data.confirmer is not None:
+            query.confirmer = form_data.confirmer
+
         db.commit()
         db.refresh(query)
+
     return query
 
 

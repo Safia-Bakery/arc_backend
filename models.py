@@ -357,6 +357,8 @@ class Tools(Base):
     factory_ftime = Column(Float, nullable=True)
     tool_need = relationship("NeededTools", back_populates="need_tool")
     status= Column(Integer, default=1)
+    confirmation = Column(Boolean, default=False)
+    confirmer = Column(BIGINT)
     category_id = Column(Integer, ForeignKey("category.id"))
     categories = relationship("Category", back_populates="tool")
 

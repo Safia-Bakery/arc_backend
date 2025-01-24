@@ -1,5 +1,7 @@
 import re
 from datetime import datetime
+from typing import Optional
+
 import pytz
 from sqlalchemy import Date, cast
 from sqlalchemy.orm import Session
@@ -60,11 +62,11 @@ def get_request_id(db: Session, id):
 
 
 
-def create_request(db: Session, request: CreateInventoryRequest,user_id):
+def create_request(db: Session, request: CreateInventoryRequest, user_id, status):
     query = Requests(
         user_id=user_id,
         fillial_id=request.fillial_id,
-        status=0,
+        status=status,
         description=request.description,
         product=request.product,
         category_id=request.category_id,
@@ -102,6 +104,19 @@ def update_request(db: Session, request: UpdateRequest):
     if request.status == 1:
         query.started_at = now
     elif request.status in [3, 4, 6, 8]:
+        query.finished_at = now
+
+    db.commit()
+    return query
+
+
+def update_request_status(db: Session, request_id, status):
+    query = db.query(Requests).filter(Requests.id == request_id).first()
+    now = datetime.now(tz=timezonetash)
+    query.status = status
+    if status == 1:
+        query.started_at = now
+    elif status in [3, 4, 6, 8]:
         query.finished_at = now
 
     db.commit()

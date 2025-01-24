@@ -16,20 +16,28 @@ def update_status(db:Session,expanditure_id):
     return query
 
 
-def create_expanditure(db:Session,amount,tool_id,request_id):
+def create_expanditure(db:Session, amount, tool_id, request_id, status: Optional[int] = 0):
     query = Expanditure(
         amount=amount,
         tool_id=tool_id,
         request_id=request_id,
-        status=0
+        status=status
     )
     db.add(query)
     db.commit()
+    db.refresh(query)
     return query
 
 
 def delete_expanditure(db:Session,request_id,tool_id):
     query = db.query(Expanditure).filter(Expanditure.request_id==request_id,Expanditure.tool_id==tool_id).first()
     db.delete(query)
+    db.commit()
+    return query
+
+
+def update_expenditure(db:Session, exp_id, status):
+    query = db.query(Expanditure).get(ident=exp_id)
+    query.status = status
     db.commit()
     return query
