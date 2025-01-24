@@ -21,7 +21,7 @@ class GetOneRequest(BaseModel):
     pause_reason: Optional[str] = None
     rating: Optional[int] = None
     created_at: datetime
-    status: int
+    status: Optional[int]
     brigada: Optional[GetBrigada] = None
     file: list[FileSch]
     category: Optional[GetCategory] = None
