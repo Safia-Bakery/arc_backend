@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional
 
 import pytz
-from sqlalchemy import Date, cast
+from sqlalchemy import Date, cast, and_
 from sqlalchemy.orm import Session
 from app.models.category import Category
 from app.models.fillials import Fillials
@@ -43,7 +43,12 @@ def filter_requests_all(
         query = query.filter(cast(Requests.created_at, Date) == created_at)
     if request_status is not None:
         request_status = [int(i) for i in re.findall(r"\d+", str(request_status))]
-        query = query.filter(Requests.status.in_(request_status))
+        query = query.filter(
+            and_(
+                Requests.status is not None,
+                Requests.status.in_(request_status)
+            )
+        )
     if user is not None:
         query = query.filter(Users.full_name.ilike(f"%{user}%"))
     if product_name is not None:
