@@ -1,3 +1,5 @@
+from typing import List
+
 import pytz
 from fastapi import APIRouter
 from fastapi import Depends
@@ -13,19 +15,18 @@ kru_tasks_finished = APIRouter()
 timezone_tash = pytz.timezone('Asia/Tashkent')
 
 
-@kru_tasks_finished.post("/kru_finished_tasks/")
+@kru_tasks_finished.post("/kru/finished-tasks/")
 async def create_kru_finished_task_api(
-    form_data: KruFinishedTasksCreate,
+    data: List[KruFinishedTasksCreate],
     db: Session = Depends(get_db),
-    current_user: GetUserFullData = Depends(get_current_user),
+    current_user: GetUserFullData = Depends(get_current_user)
 ):
-    """
-    Create new finished task
-    """
-    kru_task = create_kru_finished_task(db=db,form_data=form_data)
+    for task in data:
+        kru_task = create_kru_finished_task(db=db, data=task, user_id=current_user.id, branch_id=current_user.branch_id)
 
-    if form_data.file is not None:
-        create_file_tasks(db=db,kru_finished_task_id=kru_task.id,url=form_data.file)
-    return {"status":"success","message":"Task created successfully"}
+        if task.file is not None:
+            create_file_tasks(db=db, kru_finished_task_id=kru_task.id, url=task.file)
+
+    return {"status":"success", "message":"Finished Tasks created successfully"}
 
 

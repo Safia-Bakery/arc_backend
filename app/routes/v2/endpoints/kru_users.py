@@ -16,7 +16,7 @@ kru_users_router = APIRouter()
 timezone_tash = pytz.timezone('Asia/Tashkent')
 
 
-@kru_users_router.post("/kru_users/",response_model= GetUserFullData)
+@kru_users_router.post("/kru/users/",response_model= GetUserFullData)
 async def create_kru_user(
     form_data: CreateUser,
     db: Session = Depends(get_db),
@@ -29,7 +29,7 @@ async def create_kru_user(
 
 
 
-@kru_users_router.get("/kru_users/",response_model=GetUserFullData)
+@kru_users_router.get("/kru/users/",response_model=GetUserFullData)
 async def get_kru_users_api(
     telegram_id:Optional[int]=None,
     db: Session = Depends(get_db),
@@ -41,7 +41,7 @@ async def get_kru_users_api(
     return get_by_telegram_id(db=db,telegram_id=telegram_id)
 
 
-@kru_users_router.put("/kru_users/",response_model=GetUserFullData)
+@kru_users_router.put("/kru/users/",response_model=GetUserFullData)
 async def update_kru_user(
     form_data: UpdateUser,
     db: Session = Depends(get_db),
@@ -50,4 +50,4 @@ async def update_kru_user(
     """
     Update user
     """
-    return  update_user(db=db,form_data=form_data)
+    return update_user(db=db,form_data=form_data)

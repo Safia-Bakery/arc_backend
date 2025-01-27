@@ -1,17 +1,14 @@
-from pydantic import BaseModel, validator
-from fastapi import Form, UploadFile, File
-from typing import Optional, Annotated, Dict
-from datetime import datetime, time,date
-from fastapi import Form
+from typing import Optional
 from uuid import UUID
+
+from pydantic import BaseModel
 
 
 class KruFinishedTasksCreate(BaseModel):
     task_id: int
-    user_id: int
-    file : Optional[str]=None
-    branch_id: Optional[UUID]=None
-    comment : Optional[str]=None
+    comment: str
+    file : Optional[str] = None
+
     class Config:
         orm_mode = True
 

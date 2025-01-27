@@ -40,3 +40,13 @@ class GetTool(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class KRUTool(BaseModel):
+    id: Optional[int]
+    name: Optional[str]
+    num: Optional[int]
+    code: Optional[str]
+
+    class Config:
+        orm_mode = True

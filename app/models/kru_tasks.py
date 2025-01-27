@@ -22,6 +22,7 @@ from app.db.base import Base
 import pytz
 import uuid
 
+
 class KruTasks(Base):
     __tablename__ = "kru_tasks"
     id = Column(Integer, primary_key=True, index=True)
