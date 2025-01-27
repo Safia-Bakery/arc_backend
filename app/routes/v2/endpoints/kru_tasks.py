@@ -73,11 +73,9 @@ async def delete_kru_task_api(
 
 @kru_tasks_router.get("/kru/tasks/available/",response_model=List[KruTasksGet])
 async def get_available_tasks_api(
-    branch_id: UUID,
     category_id: Optional[int] = None,
-    category_name: Optional[str] = None,
     db: Session = Depends(get_db),
     current_user: GetUserFullData = Depends(get_current_user)
 ):
 
-    return get_today_tasks(db=db, branch_id=branch_id, category_id=category_id, category_name=category_name)
+    return get_today_tasks(db=db, branch_id=current_user.branch_id, category_id=category_id)

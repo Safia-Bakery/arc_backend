@@ -66,7 +66,7 @@ def delete_kru_task(db:Session, id:int):
 
 # get todays tasks which are not in finished tasks list i mean which are not in KruFinishedTasks table
 
-def get_today_tasks(db: Session, branch_id, category_id, category_name):
+def get_today_tasks(db: Session, branch_id, category_id):
     today = datetime.now().date()
 
     # Alias for finished tasks to filter out tasks finished today
