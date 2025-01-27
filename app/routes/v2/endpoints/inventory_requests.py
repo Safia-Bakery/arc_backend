@@ -114,7 +114,6 @@ async def get_request_factoty(
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
-
 @inv_requests_router.post("/requests/inv/retail")
 async def create_retail_request(
     request: CreateInventoryRequest,
