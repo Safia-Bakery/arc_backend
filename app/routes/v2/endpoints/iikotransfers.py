@@ -40,7 +40,7 @@ def self_closing_requests(db: Session):
 
             # Send the inventory document
             for product in request.expanditure:
-                send_inventory_document_iiko(key=key, data=product)
+                # send_inventory_document_iiko(key=key, data=product)
                 expanditure_crud.update_status(db=db, expanditure_id=product.id)
 
         elif request.category.department == 1 and request.category.sphere_status == 1:
@@ -48,7 +48,7 @@ def self_closing_requests(db: Session):
 
             # Send ARC document
             for i in request.expanditure:
-                send_arc_document_iiko(key=authiiko(), data=i)
+                # send_arc_document_iiko(key=authiiko(), data=i)
                 expanditure_crud.update_status(db=db, expanditure_id=i.id)
 
         elif request.category.department == 4:

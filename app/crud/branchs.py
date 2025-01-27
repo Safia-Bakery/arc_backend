@@ -26,7 +26,7 @@ def get_branchs(db:Session,id:Optional[int]=None,branch_name:Optional[str]=None)
 
 
 def get_child_branchs(db:Session,parent_fillial):
-    query = db.query(Fillials).filter(Fillials.parentfillial_id==parent_fillial).filter(Fillials.origin==2)
+    query = db.query(Fillials).filter(Fillials.parentfillial_id==parent_fillial)
     return query.first()
 
 
