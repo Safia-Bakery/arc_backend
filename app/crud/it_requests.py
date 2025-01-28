@@ -171,7 +171,7 @@ def edit_request(db: Session,
             updated_data[str(data.status)] = str(now)
             if data.status == 1:
                 query.started_at = now
-            elif data.status in [3, 4, 6, 8]:
+            elif data.status in [4, 6, 8]:
                 query.finished_at = now
 
             db.query(Requests).filter(Requests.id == id).update({"update_time": updated_data})
