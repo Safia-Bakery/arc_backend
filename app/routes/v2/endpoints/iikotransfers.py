@@ -1,3 +1,4 @@
+import time
 from datetime import datetime
 
 import pytz
@@ -26,15 +27,16 @@ timezone_tash = pytz.timezone('Asia/Tashkent')
 
 def self_closing_requests(db: Session):
     requests = iiko_transfers.get_requests_by_status(db=db, status=6)
+    print('working every minute ')
 
-    key = authiiko()
+
     for request in requests:
+        time.sleep(1)
         url = f"{settings.front_url}/tg/order-rating/{request.id}?user_id={request.user.id}&department={request.category.department}&sub_id={request.category.sub_id}"
 
-        # Update the status of the request
+
         updated_request = iiko_transfers.update_status_request(db=db, id=request.id, status=3)
 
-        # Check the department and construct the message accordingly
         if request.category.department == 2:
             message_text = f'Уважаемый {request.user.full_name}, статус вашей заявки #{request.id}s по инвентарь: Завершен.\n\nПожалуйста нажмите на кнопку Оставить отзыв🌟 и оцените заявку'
 
@@ -77,7 +79,7 @@ def self_closing_requests(db: Session):
 @iiko_transfer_router.on_event("startup")
 def it_query_checker():
     scheduler = BackgroundScheduler()
-    trigger = CronTrigger(minute="*/30")  # Trigger every half hour
+    trigger = CronTrigger(minute="*/3")  # Trigger every half hour
     scheduler.add_job(self_closing_requests, trigger=trigger, args=[next(get_db())])
     scheduler.start()
 

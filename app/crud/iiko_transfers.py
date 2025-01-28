@@ -23,7 +23,7 @@ def get_request_by_id(db:Session,request_id):
 def update_status_request(db:Session,id,status):
     query = db.query(Requests).filter(Requests.id == id).first()
     query.status = status
-    update_time = dict(query.update_time)
+    update_time = dict(query.update_time) if query.update_time else {}
     update_time[str(status)] = datetime.now(timezone_tash).isoformat()
     query.update_time = update_time
     db.commit()
