@@ -31,7 +31,7 @@ def self_closing_requests(db: Session):
 
 
     for request in requests:
-        time.sleep(1)
+        # time.sleep(1)
         url = f"{settings.front_url}/tg/order-rating/{request.id}?user_id={request.user.id}&department={request.category.department}&sub_id={request.category.sub_id}"
 
 
@@ -79,7 +79,7 @@ def self_closing_requests(db: Session):
 @iiko_transfer_router.on_event("startup")
 def it_query_checker():
     scheduler = BackgroundScheduler()
-    trigger = CronTrigger(minute="*/3")  # Trigger every half hour
+    trigger = CronTrigger(minute="*/5")  # Trigger every half hour
     scheduler.add_job(self_closing_requests, trigger=trigger, args=[next(get_db())])
     scheduler.start()
 
