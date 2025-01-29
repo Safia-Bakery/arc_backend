@@ -7,7 +7,7 @@ from fastapi_pagination import Page, paginate, Params
 from sqlalchemy.orm import Session
 
 from app.crud.kru_category import create_kru_category, get_kru_categories, get_one_kru_category, update_kru_category, \
-    delete_kru_category, get_sub_categories
+    delete_kru_category, get_category_products_number
 from app.routes.depth import get_db, get_current_user
 from app.schemas.kru_categories import KruCategoriesCreate, KruCategoriesUpdate, KruCategoriesGet
 from app.schemas.users import GetUserFullData
@@ -32,17 +32,16 @@ async def create_kru_category_api(
 
 @kru_categories.get("/kru/categories/",response_model=Page[KruCategoriesGet])
 async def get_kru_categories_api(
-        parent: Optional[int] = None,
         name: Optional[str] = None,
-        # params: CustomParams = Depends(),
         db: Session = Depends(get_db),
         current_user: GetUserFullData = Depends(get_current_user)
 ):
-    query_data = get_kru_categories(db=db, name=name, parent=parent)
+    # query_data = get_kru_categories(db=db, name=name, parent=parent)
+    query_data = get_kru_categories(db=db, name=name)
     for index, item in enumerate(query_data):
         # query_data[index].tasks = len(query_data[index].kru_task)
-        sub_cat_count = get_sub_categories(db=db, id=item.id)
-        query_data[index].sub_categories = sub_cat_count
+        products_count = get_category_products_number(db=db, category_id=item.id, branch_id=current_user.branch_id)
+        query_data[index].products_count = products_count
 
     return paginate(query_data)
 

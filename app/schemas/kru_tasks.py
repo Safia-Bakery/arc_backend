@@ -1,5 +1,6 @@
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, ConfigDict
+from app.schemas.tools import KRUTool
 
 
 
@@ -23,10 +24,14 @@ class KruTasksUpdate(BaseConfig):
     kru_category_id: Optional[int] = None
 
 
-class KruTasksGet(BaseConfig):
+class Tasks(BaseConfig):
     id: Optional[int]
     name: Optional[str]
     description: Optional[str]
     kru_category_id: Optional[int]
     status: Optional[int]
 
+
+class KruTasksGet(BaseConfig):
+    products: List[KRUTool]
+    tasks: List[Tasks]

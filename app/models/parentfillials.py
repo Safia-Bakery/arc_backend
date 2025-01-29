@@ -28,3 +28,4 @@ class ParentFillials(Base):
     tool_balance = relationship("ToolBalance", back_populates="branch")
     collector_order = relationship("CollectOrders", back_populates="branch")
     appointments = relationship("Appointments", back_populates="branch")
+    branch_tools = relationship("ToolBranchCategoryRelation", back_populates="branch")

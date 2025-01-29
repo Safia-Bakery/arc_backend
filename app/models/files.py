@@ -35,4 +35,5 @@ class Files(Base):
     status = Column(Integer, default=0)
     kru_finished_task_id = Column(Integer, ForeignKey("kru_finished_tasks.id"))
     kru_finished_task = relationship("KruFinishedTasks", back_populates="file")
-
+    kru_category_id = Column(Integer, ForeignKey("kru_categories.id"))
+    kru_category = relationship("KruCategories", back_populates="file")

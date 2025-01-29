@@ -1,20 +1,20 @@
 from typing import Optional
 
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import func
 
 from app.models.kru_categories import KruCategories
+from app.models.tool_branch_relations import ToolBranchCategoryRelation
 from app.schemas.kru_categories import KruCategoriesCreate, KruCategoriesUpdate
 
 
 def create_kru_category(db:Session, data: KruCategoriesCreate):
     query = KruCategories(
         name=data.name,
-        parent=data.parent,
         description=data.description,
         start_time=data.start_time,
-        end_time=data.end_time,
-        tool_id=data.tool_id
+        end_time=data.end_time
     )
     db.add(query)
     db.commit()
@@ -22,14 +22,14 @@ def create_kru_category(db:Session, data: KruCategoriesCreate):
     return query
 
 
-def get_kru_categories(db:Session, name: Optional[str] = None, parent: Optional[int] = None):
+def get_kru_categories(db:Session, name: Optional[str] = None):
     query = db.query(KruCategories).filter(KruCategories.status==1)
     # if id is not None:
     #     query = query.filter(KruCategories.id == id)
-    if parent is not None:
-        query = query.filter(KruCategories.parent == parent)
-    if parent is None:
-        query = query.filter(KruCategories.parent.is_(None))
+    # if parent is not None:
+    #     query = query.filter(KruCategories.parent == parent)
+    # if parent is None:
+    #     query = query.filter(KruCategories.parent.is_(None))
     if name is not None:
         query = query.filter(KruCategories.name.ilike(f'%{name}%'))
     return query.all()
@@ -68,8 +68,15 @@ def delete_kru_category(db:Session,id:int):
     return query
 
 
-def get_sub_categories(db: Session, id):
-    query = db.query(func.count(KruCategories.id)).filter(KruCategories.parent == id).scalar()
+def get_category_products_number(db: Session, category_id, branch_id):
+    query = db.query(
+        func.count(ToolBranchCategoryRelation.id)
+    ).filter(
+        and_(
+            ToolBranchCategoryRelation.kru_category_id == category_id,
+            ToolBranchCategoryRelation.branch_id == branch_id
+        )
+    ).scalar()
     return query
 
 

@@ -1,0 +1,87 @@
+from datetime import timedelta
+
+import pandas as pd
+from sqlalchemy import and_
+from sqlalchemy.orm import Session
+from app.models.kru_finished_tasks import KruFinishedTasks
+from app.models.kru_tasks import KruTasks
+from app.models.kru_categories import KruCategories
+from app.models.tools import Tools
+from app.models.parentfillials import ParentFillials
+from app.schemas.kru_reports import KruReport
+from microservices import name_generator
+
+
+def get_kru_report(db: Session, data: KruReport):
+    finish_date = data.finish_date + timedelta(days=1)
+    query = db.query(
+        KruFinishedTasks
+    ).join(
+        ParentFillials, KruFinishedTasks.branch_id == ParentFillials.id
+    ).join(
+        KruTasks, KruFinishedTasks.task_id == KruTasks.id
+    ).join(
+        KruCategories, KruTasks.kru_category_id == KruCategories.id
+    ).join(
+        Tools, KruCategories.tool_id == Tools.id
+    ).filter(
+        and_(
+            KruTasks.created_at.between(data.start_date, finish_date),
+            KruCategories.id == data.category_id
+        )
+    )
+    # if data.report_type == 1:
+    if data.branch_id is not None:
+        query = query.filter(KruFinishedTasks.branch_id == data.branch_id)
+    if data.product_code is not None:
+        query = query.filter(Tools.code == data.product_code)
+    if data.product_name is not None:
+        query = query.filter(Tools.name == data.product_name)
+    if data.response is not None:
+        query = query.filter(KruFinishedTasks.comment == data.response)
+
+
+    return query.order_by(KruFinishedTasks.id.desc()).all()
+
+
+def excell_generator(data, report_type, start_date, finish_date):
+    inserting_data = {}
+    if report_type == 1:
+        inserting_data = {
+            "Филиал": [],
+            "Артикул": [],
+            "Наименование товара": [],
+            "Причина": [],
+            "Дата": []
+        }
+
+        for row in data:
+            inserting_data['Филиал'].append(row.branch.name)
+            inserting_data['Артикул'].append(row.task.kru_category.tool.code)
+            inserting_data['Наименование товара'].append(row.task.kru_category.tool.name)
+            inserting_data['Причина'].append(row.comment)
+            inserting_data['Дата'].append(row.created_at.strftime('%Y-%m-%d'))
+
+    elif report_type == 2:
+        inserting_data = {
+            "Товар": [],
+            "Артикул": [],
+            "Соблюдено ли правило выкладки?": [],
+            "Имеется ли товар фактически в остатках?": [],
+            "Имеется ли товар в системных остатках?": []
+        }
+    elif report_type == 3:
+        inserting_data = {
+            "Филиал": []
+        }
+        current_date = start_date
+        while current_date <= finish_date:
+            inserting_data[str(current_date)] = []
+            current_date += timedelta(days=1)
+
+
+    file_name = f"files/{name_generator()}.xlsx"
+    df = pd.DataFrame(inserting_data)
+    # Generate Excel file
+    df.to_excel(file_name, index=False)
+    return file_name

@@ -11,6 +11,7 @@ class GetBranchs(BaseModel):
     name: Optional[str]=None
     status: Optional[int]=None
     country: Optional[str]=None
+
     class Config:
         orm_mode = True
 

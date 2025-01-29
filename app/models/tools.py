@@ -58,5 +58,6 @@ class Tools(Base):
     tool_balance = relationship("ToolBalance", back_populates="tool")
     order_item = relationship("CollectOrderItems", back_populates="product")
     category_tools = relationship('CategoriesToolsRelations',back_populates='tool')
-    kru_category = relationship("KruCategories", back_populates="tool")
+    kru_finished_task = relationship("KruFinishedTasks", back_populates="tool")
+    tool_branches = relationship("ToolBranchCategoryRelation", back_populates="tool")
 
