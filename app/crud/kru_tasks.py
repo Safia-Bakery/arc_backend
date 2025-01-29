@@ -5,10 +5,11 @@ from sqlalchemy import and_
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import aliased
 
-from app.models.kru_categories import KruCategories
+from app.models.tool_branch_relations import ToolBranchCategoryRelation
 from app.models.kru_finished_tasks import KruFinishedTasks
 from app.models.kru_tasks import KruTasks
 from app.schemas.kru_tasks import KruTasksCreate, KruTasksUpdate
+from app.models.tools import Tools
 
 
 def create_kru_task(db:Session, data: KruTasksCreate):
@@ -63,39 +64,63 @@ def delete_kru_task(db:Session, id:int):
 # get todays tasks which are not in finished tasks list i mean which are not in KruFinishedTasks table
 
 def get_today_tasks(db: Session, branch_id, category_id):
-    today = datetime.now().date()
+    # today = datetime.now().date()
 
-    # Alias for finished tasks to filter out tasks finished today
-    # finished_task_alias = aliased(KruFinishedTasks)
-
-    # Subquery to get task_ids that were finished today
-    finished_today_subquery = db.query(
-        KruFinishedTasks.task_id
+    finished_today_products = db.query(
+        KruFinishedTasks.tool_id
     ).join(
         KruTasks
     ).filter(
+        KruFinishedTasks.branch_id == branch_id
+    )
+
+    # Subquery to get task_ids that were finished today
+    # finished_today_tasks = db.query(
+    #     KruFinishedTasks.task_id
+    # ).join(
+    #     KruTasks
+    # ).filter(
+    #     and_(
+    #         KruFinishedTasks.created_at >= today,
+    #         KruFinishedTasks.branch_id == branch_id
+    #     )
+    # )
+    if category_id is not None:
+        # finished_today_tasks = finished_today_tasks.filter(KruTasks.kru_category_id == category_id)
+        finished_today_products = finished_today_products.filter(KruTasks.kru_category_id == category_id)
+
+    remaining_products = db.query(
+        Tools
+    ).join(
+        ToolBranchCategoryRelation, Tools.id == ToolBranchCategoryRelation.tool_id
+    ).filter(
         and_(
-            KruFinishedTasks.created_at >= today,
-            KruFinishedTasks.branch_id == branch_id
+            ToolBranchCategoryRelation.branch_id == branch_id,
+            Tools.id.notin_(finished_today_products)
         )
     )
-    if category_id is not None:
-        finished_today_subquery = finished_today_subquery.filter(KruTasks.kru_category_id == category_id)
-
-    # if category_name is not None:
-    #     finished_today_subquery = finished_today_subquery.filter(KruCategories.name.ilike(f'%{category_name}%'))
 
     # Main query: get tasks that are not finished today
-    query = db.query(
+    # available_tasks = db.query(
+    #     KruTasks
+    # ).filter(
+    #     KruTasks.status == 1,  # Only tasks with status 1 (active)
+    #     ~KruTasks.id.in_(finished_today_tasks)  # Exclude tasks finished today
+    # )
+
+    tasks = db.query(
         KruTasks
     ).filter(
-        KruTasks.status == 1,  # Only tasks with status 1 (active)
-        ~KruTasks.id.in_(finished_today_subquery)  # Exclude tasks finished today
+        KruTasks.status == 1
     )
     if category_id is not None:
-        query = query.filter(KruTasks.kru_category_id == category_id)
+        tasks = tasks.filter(KruTasks.kru_category_id == category_id)
+        remaining_products = remaining_products.filter(ToolBranchCategoryRelation.kru_category_id == category_id)
 
-    # if category_name is not None:
-    #     query = query.filter(KruCategories.name.ilike(f'%{category_name}%'))
-
-    return query.all()
+    remaining_products = remaining_products.all()
+    tasks = tasks.all()
+    data_dict = {
+        "products": remaining_products,
+        "tasks": tasks
+    }
+    return data_dict

@@ -45,7 +45,7 @@ class GetTool(BaseModel):
 class KRUTool(BaseModel):
     id: Optional[int]
     name: Optional[str]
-    num: Optional[int]
+    num: Optional[str]
     code: Optional[str]
 
     class Config:

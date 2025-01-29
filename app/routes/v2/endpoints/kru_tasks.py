@@ -76,4 +76,7 @@ async def get_available_tasks_api(
     db: Session = Depends(get_db),
     current_user: GetUserFullData = Depends(get_current_user)
 ):
-    return get_today_tasks(db=db, branch_id=current_user.branch_id, category_id=category_id)
+
+    today_tasks = get_today_tasks(db=db, branch_id=current_user.branch_id, category_id=category_id)
+    return today_tasks
+
