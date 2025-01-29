@@ -24,7 +24,7 @@ def create_kru_task(db:Session, data: KruTasksCreate):
     return query
 
 
-def get_kru_tasks(db:Session, name:Optional[str]=None, category_id: Optional[str]=None):
+def get_kru_tasks(db:Session, name:Optional[str]=None, category_id: Optional[int]=None):
     query = db.query(KruTasks).filter(KruTasks.status==1)
     if name is not None:
         query = query.filter(KruTasks.name.ilike(f'%{name}%'))

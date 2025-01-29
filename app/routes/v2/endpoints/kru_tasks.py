@@ -36,7 +36,7 @@ async def get_kru_tasks_api(
     current_user: GetUserFullData = Depends(get_current_user)
 ):
 
-    return paginate(get_kru_tasks(db=db, name=name))
+    return paginate(get_kru_tasks(db=db, name=name, category_id=category_id))
 
 
 
