@@ -30,10 +30,11 @@ async def create_branch_products(
 
 @branch_tools_router.get('/tools/branch', response_model=List[GetToolBranchCategoryRelation])
 async def get_branch_products(
+        branch_id: UUID,
         db: Session = Depends(get_db),
         request_user: GetUserFullData = Depends(get_current_user)
 ):
-    response = get_branch_tools(db=db, branch_id=request_user.branch_id)
+    response = get_branch_tools(db=db, branch_id=branch_id)
     return response
 
 
