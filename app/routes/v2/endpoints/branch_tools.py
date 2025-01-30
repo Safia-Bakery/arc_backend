@@ -21,7 +21,7 @@ async def create_branch_products(
         db: Session = Depends(get_db),
         request_user: GetUserFullData = Depends(get_current_user)
 ):
-    response = create_branch_tools(db=db, data=body, branch_id=body.branch_id)
+    response = create_branch_tools(db=db, data=body)
     if response is None:
         raise HTTPException(status_code=400, detail="Record exits already")
 

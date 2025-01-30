@@ -23,8 +23,9 @@ class ToolBranchCategoryRelation(BaseConfig):
 
 
 class CreateToolBranch(BaseConfig):
-    tool_ids: List[UUID]
+    tool_ids: List[int]
     branch_id: UUID
+    category_id: Optional[int]
 
 
 class GetToolBranchCategoryRelation(BaseConfig):

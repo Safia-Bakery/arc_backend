@@ -7,20 +7,20 @@ from app.models.tool_branch_relations import ToolBranchCategoryRelation
 
 
 
-def create_branch_tools(db: Session, data: CreateToolBranch, branch_id):
+def create_branch_tools(db: Session, data: CreateToolBranch):
     query = db.query(
         ToolBranchCategoryRelation
     ).filter(
         and_(
             ToolBranchCategoryRelation.tool_id == data.tool_id,
-            ToolBranchCategoryRelation.branch_id == branch_id
+            ToolBranchCategoryRelation.branch_id == data.branch_id
         )
     ).first()
     if not query:
         query = ToolBranchCategoryRelation(
             tool_id=data.tool_id,
-            branch_id=branch_id,
-            kru_category_id=1
+            branch_id=data.branch_id,
+            kru_category_id=data.category_id
         )
         db.add(query)
         db.commit()
