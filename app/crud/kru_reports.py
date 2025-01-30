@@ -1,5 +1,4 @@
 from datetime import timedelta
-
 import pandas as pd
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
@@ -8,8 +7,28 @@ from app.models.kru_tasks import KruTasks
 from app.models.kru_categories import KruCategories
 from app.models.tools import Tools
 from app.models.parentfillials import ParentFillials
+from app.models.tool_branch_relations import ToolBranchCategoryRelation
 from app.schemas.kru_reports import KruReport
-from microservices import name_generator
+from microservices import name_generator, generate_random_string_datetime
+from app.db.session import SessionLocal
+
+
+def get_all_tasks():
+    with SessionLocal() as session:
+        tasks = session.query(KruTasks).all()
+
+    return tasks
+
+
+def get_all_branches_for_category():
+    with SessionLocal() as session:
+        branches = session.query(
+            ParentFillials
+        ).join(
+            ParentFillials, ToolBranchCategoryRelation.branch_id == ParentFillials.id
+        ).all()
+
+    return branches
 
 
 def get_kru_report(db: Session, data: KruReport):
@@ -23,10 +42,10 @@ def get_kru_report(db: Session, data: KruReport):
     ).join(
         KruCategories, KruTasks.kru_category_id == KruCategories.id
     ).join(
-        Tools, KruCategories.tool_id == Tools.id
+        Tools, KruFinishedTasks.tool_id == Tools.id
     ).filter(
         and_(
-            KruTasks.created_at.between(data.start_date, finish_date),
+            KruFinishedTasks.created_at.between(data.start_date, finish_date),
             KruCategories.id == data.category_id
         )
     )
@@ -44,7 +63,7 @@ def get_kru_report(db: Session, data: KruReport):
     return query.order_by(KruFinishedTasks.id.desc()).all()
 
 
-def excell_generator(data, report_type, start_date, finish_date):
+def top50_excell_generator(data, report_type, start_date, finish_date):
     inserting_data = {}
     if report_type == 1:
         inserting_data = {
@@ -65,11 +84,17 @@ def excell_generator(data, report_type, start_date, finish_date):
     elif report_type == 2:
         inserting_data = {
             "Товар": [],
-            "Артикул": [],
-            "Соблюдено ли правило выкладки?": [],
-            "Имеется ли товар фактически в остатках?": [],
-            "Имеется ли товар в системных остатках?": []
+            "Артикул": []
         }
+        tasks = get_all_tasks()
+        for task in tasks:
+            inserting_data[task.name] = []
+
+        for row in data:
+            inserting_data['Товар'].append(row.tool.name)
+            inserting_data['Артикул'].append(row.tool.code)
+            inserting_data[str(row.task.name)].append(row.comment)
+
     elif report_type == 3:
         inserting_data = {
             "Филиал": []
@@ -80,7 +105,7 @@ def excell_generator(data, report_type, start_date, finish_date):
             current_date += timedelta(days=1)
 
 
-    file_name = f"files/{name_generator()}.xlsx"
+    file_name = f"files/top50_{generate_random_string_datetime()}.xlsx"
     df = pd.DataFrame(inserting_data)
     # Generate Excel file
     df.to_excel(file_name, index=False)
