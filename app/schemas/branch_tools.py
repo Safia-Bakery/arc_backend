@@ -14,12 +14,11 @@ class BaseConfig(BaseModel):
 
 
 class ToolBranchCategoryRelation(BaseConfig):
-    id: UUID
+    id: Optional[int]
     tool: Optional[KRUTool]
     branch: Optional[GetBranchs]
-    category: Optional[KruCategoriesGet]
+    category: Optional[KruCategoriesGet] = None
     created_at: Optional[datetime]
-    updated_at: Optional[datetime]
 
 
 class CreateToolBranch(BaseConfig):

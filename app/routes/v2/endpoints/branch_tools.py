@@ -15,15 +15,15 @@ branch_tools_router = APIRouter()
 
 
 
-@branch_tools_router.post('/tools/branch', response_model=ToolBranchCategoryRelation)
+@branch_tools_router.post('/tools/branch', response_model=List[ToolBranchCategoryRelation])
 async def create_branch_products(
         body: CreateToolBranch,
         db: Session = Depends(get_db),
         request_user: GetUserFullData = Depends(get_current_user)
 ):
     response = create_branch_tools(db=db, data=body)
-    if response is None:
-        raise HTTPException(status_code=400, detail="Record exits already")
+    # if response is None:
+    #     raise HTTPException(status_code=400, detail="Record exits already")
 
     return response
 

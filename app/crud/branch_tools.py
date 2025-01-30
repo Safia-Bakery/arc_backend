@@ -1,4 +1,5 @@
 from sqlalchemy import and_
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.models.toolparents import ToolParents
@@ -8,27 +9,28 @@ from app.models.tool_branch_relations import ToolBranchCategoryRelation
 
 
 def create_branch_tools(db: Session, data: CreateToolBranch):
-    query = db.query(
-        ToolBranchCategoryRelation
-    ).filter(
-        and_(
-            ToolBranchCategoryRelation.tool_id == data.tool_id,
-            ToolBranchCategoryRelation.branch_id == data.branch_id
-        )
-    ).first()
-    if not query:
-        query = ToolBranchCategoryRelation(
-            tool_id=data.tool_id,
-            branch_id=data.branch_id,
-            kru_category_id=data.category_id
-        )
-        db.add(query)
-        db.commit()
-        db.refresh(query)
-    else:
-        return None
+    created_objs = []
+    for tool_id in data.tool_ids:
+        query = db.query(
+            ToolBranchCategoryRelation
+        ).filter(
+            and_(
+                ToolBranchCategoryRelation.tool_id == tool_id,
+                ToolBranchCategoryRelation.branch_id == data.branch_id
+            )
+        ).first()
+        if not query:
+            query = ToolBranchCategoryRelation(
+                tool_id=tool_id,
+                branch_id=data.branch_id,
+                kru_category_id=data.category_id
+            )
+            db.add(query)
+            db.commit()
+            db.refresh(query)
+            created_objs.append(query)
 
-    return query
+    return created_objs
 
 
 def get_branch_tools(db: Session, branch_id):
