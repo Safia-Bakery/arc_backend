@@ -14,6 +14,7 @@ class KruTasksCreate(BaseConfig):
     name: str
     kru_category_id: int
     description : Optional[str] = None
+    answers: Optional[List[str]] = None
 
 
 class KruTasksUpdate(BaseConfig):
@@ -22,6 +23,7 @@ class KruTasksUpdate(BaseConfig):
     description: Optional[str] = None
     status: Optional[int] = None
     kru_category_id: Optional[int] = None
+    answers: Optional[List[str]] = None
 
 
 class Tasks(BaseConfig):
@@ -30,6 +32,7 @@ class Tasks(BaseConfig):
     description: Optional[str]
     kru_category_id: Optional[int]
     status: Optional[int]
+    answers: Optional[List[str]]
 
 
 class KruTasksGet(BaseConfig):

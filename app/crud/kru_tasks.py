@@ -16,7 +16,8 @@ def create_kru_task(db:Session, data: KruTasksCreate):
     query = KruTasks(
         name=data.name,
         kru_category_id=data.kru_category_id,
-        description=data.description
+        description=data.description,
+        answers=data.answers
     )
     db.add(query)
     db.commit()
@@ -47,6 +48,8 @@ def update_kru_task(db:Session, data: KruTasksUpdate):
         query.kru_category_id = data.kru_category_id
     if data.status is not None:
         query.status = data.status
+    if data.answers is not None:
+        query.answers = data.answers
 
     db.commit()
     db.refresh(query)

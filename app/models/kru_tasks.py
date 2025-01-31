@@ -29,6 +29,7 @@ class KruTasks(Base):
     name = Column(String)
     description = Column(String,nullable=True)
     status = Column(Integer, default=1)
+    answers = Column(ARRAY(String))
     kru_category_id = Column(Integer, ForeignKey("kru_categories.id"))
     kru_category = relationship("KruCategories", back_populates="kru_task")
     finished_task = relationship("KruFinishedTasks", back_populates="task")

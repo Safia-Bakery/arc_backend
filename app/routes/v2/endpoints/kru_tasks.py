@@ -22,9 +22,6 @@ async def create_kru_task_api(
     db: Session = Depends(get_db),
     current_user: GetUserFullData = Depends(get_current_user),
 ):
-    """
-    Create new task
-    """
     return create_kru_task(db=db, data=form_data)
 
 
