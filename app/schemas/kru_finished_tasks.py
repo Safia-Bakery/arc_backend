@@ -14,6 +14,7 @@ class TaskAnswers(BaseModel):
 
 
 class KruFinishedTasksCreate(BaseModel):
+    tg_id: int
     tool_id: int
     answers: List[TaskAnswers]
 

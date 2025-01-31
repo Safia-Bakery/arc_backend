@@ -144,8 +144,9 @@ def top50_excell_generator(data, report_type, start_date, finish_date):
             inserting_data[str(current_date)] = result_values
             current_date += timedelta(days=1)
 
+    print("INSERTING DATA:\n", inserting_data)
     file_name = f"files/top50_{generate_random_string_datetime()}.xlsx"
-    df = pd.DataFrame(inserting_data)
+    # df = pd.DataFrame(inserting_data)
     # Generate Excel file
-    df.to_excel(file_name, index=False)
+    # df.to_excel(file_name, index=False)
     return file_name

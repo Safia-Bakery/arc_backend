@@ -19,12 +19,11 @@ timezone_tash = pytz.timezone('Asia/Tashkent')
 
 @kru_tasks_finished.post("/kru/finished-tasks/")
 async def create_kru_finished_task_api(
-    tg_id: int,
     data: KruFinishedTasksCreate,
     db: Session = Depends(get_db),
-    current_user: GetUserFullData = Depends(token_checker)
+    # current_user: dict = Depends(token_checker)
 ):
-    user = get_user_by_tg_id(db=db, tg_id=tg_id)
+    user = get_user_by_tg_id(db=db, tg_id=data.tg_id)
     for task_answer in data.answers:
         kru_task = create_kru_finished_task(
             db=db,

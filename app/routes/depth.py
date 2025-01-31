@@ -89,7 +89,7 @@ async def get_current_user(
 
 
 
-async def token_checker(token: str = Depends(reuseable_oauth), db: Session = Depends(get_db)):
+async def token_checker(token: str = Depends(reuseable_oauth)):
     if token == settings.backend_pass:
         return True
     else:
