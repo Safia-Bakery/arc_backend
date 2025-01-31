@@ -21,4 +21,4 @@ class KruReport(BaseConfig):
     branch_id: Optional[UUID] = None
     product_code: Optional[str] = None
     product_name: Optional[str] = None
-    response: Optional[str] = None
+    answer: Optional[str] = None

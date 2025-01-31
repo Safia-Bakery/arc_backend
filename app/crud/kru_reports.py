@@ -22,13 +22,11 @@ def get_all_tasks():
 
 def get_branch_results(branch_id, query_date):
     with SessionLocal() as session:
-        print("branch_id: ", branch_id)
         branch_tools = session.query(
             func.count(ToolBranchCategoryRelation.tool_id)
         ).filter(
             ToolBranchCategoryRelation.branch_id == branch_id
         ).scalar()
-        print("branch_tools: ", branch_tools)
         finished_tools = session.query(
             func.count(distinct(KruFinishedTasks.tool_id))
         ).filter(
@@ -37,7 +35,6 @@ def get_branch_results(branch_id, query_date):
                 func.date(KruFinishedTasks.created_at) == query_date
             )
         ).scalar()
-        print("finished_tools: ", finished_tools)
 
     if branch_tools == 0:
         result = 0
@@ -58,6 +55,15 @@ def get_all_branches_for_category():
         ).all()
 
     return branches
+
+
+def get_max_date_of_finished_tasks():
+    with SessionLocal() as session:
+        max_date = session.query(
+            func.max(func.date(KruFinishedTasks.created_at))
+        ).scalar()
+
+    return max_date
 
 
 def get_kru_report(db: Session, data: KruReport):
@@ -85,8 +91,8 @@ def get_kru_report(db: Session, data: KruReport):
         query = query.filter(Tools.code == data.product_code)
     if data.product_name is not None:
         query = query.filter(Tools.name == data.product_name)
-    if data.response is not None:
-        query = query.filter(KruFinishedTasks.comment == data.response)
+    if data.answer is not None:
+        query = query.filter(KruFinishedTasks.comment == data.answer)
 
 
     return query.order_by(KruFinishedTasks.id.desc()).all()
@@ -105,8 +111,8 @@ def top50_excell_generator(data, report_type, start_date, finish_date):
 
         for row in data:
             inserting_data['Филиал'].append(row.branch.name)
-            inserting_data['Артикул'].append(row.tool.code) if row.tool else inserting_data['Артикул'].append("")
-            inserting_data['Наименование товара'].append(row.tool.name) if row.tool else inserting_data['Наименование товара'].append("")
+            inserting_data['Артикул'].append(row.tool.code) if row.tool else inserting_data['Артикул'].append(" ")
+            inserting_data['Наименование товара'].append(row.tool.name) if row.tool else inserting_data['Наименование товара'].append(" ")
             inserting_data['Причина'].append(row.comment)
             inserting_data['Дата'].append(row.created_at.strftime('%Y-%m-%d'))
 
@@ -121,8 +127,12 @@ def top50_excell_generator(data, report_type, start_date, finish_date):
 
         for row in data:
             inserting_data['Товар'].append(row.tool.name) if row.tool else inserting_data['Товар'].append(" ")
-            inserting_data['Артикул'].append(row.tool.code) if row.tool else inserting_data['Товар'].append(" ")
-            inserting_data[str(row.task.name)].append(row.comment) if row.comment else inserting_data['Товар'].append(" ")
+            inserting_data['Артикул'].append(row.tool.code) if row.tool else inserting_data['Артикул'].append(" ")
+            for task in tasks:
+                if task.name == row.task.name:
+                    inserting_data[row.task.name].append(row.comment) if row.comment else inserting_data[row.task.name].append(" ")
+                else:
+                    inserting_data[task.name].append(" ")
 
     elif report_type == 3:
         inserting_data = {
@@ -130,23 +140,22 @@ def top50_excell_generator(data, report_type, start_date, finish_date):
         }
         all_branches = get_all_branches_for_category()
         all_branches = [branch for branch in all_branches]
-        # print(all_branches)
         for branch in all_branches:
             inserting_data["Филиал"].append(branch.name)
 
         current_date = start_date
+        max_date = get_max_date_of_finished_tasks()
+        if finish_date > max_date:
+            finish_date = max_date
         while current_date <= finish_date:
-            print(current_date, type(current_date))
             result_values = []
             for branch in all_branches:
                 result_values.append(get_branch_results(branch_id=branch.id, query_date=current_date))
-            # print(result_values)
             inserting_data[str(current_date)] = result_values
             current_date += timedelta(days=1)
 
-    print("INSERTING DATA:\n", inserting_data)
     file_name = f"files/top50_{generate_random_string_datetime()}.xlsx"
-    # df = pd.DataFrame(inserting_data)
+    df = pd.DataFrame(inserting_data)
     # Generate Excel file
-    # df.to_excel(file_name, index=False)
+    df.to_excel(file_name, index=False)
     return file_name
