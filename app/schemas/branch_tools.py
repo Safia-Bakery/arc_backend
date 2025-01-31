@@ -24,7 +24,7 @@ class ToolBranchCategoryRelation(BaseConfig):
 class CreateToolBranch(BaseConfig):
     tool_ids: List[int]
     branch_id: UUID
-    category_id: Optional[int] = None
+    category_id: Optional[int] = 26
 
 
 class GetToolBranchCategoryRelation(BaseConfig):
