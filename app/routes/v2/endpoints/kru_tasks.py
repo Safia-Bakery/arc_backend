@@ -1,12 +1,13 @@
 from typing import Optional, List
-
+from datetime import datetime
 import pytz
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi import Depends
 from fastapi_pagination import Page, paginate
 from uuid import UUID
 from sqlalchemy.orm import Session
 
+from app.crud.kru_category import get_one_kru_category
 from app.crud.kru_tasks import create_kru_task, get_kru_tasks, get_one_kru_task, update_kru_task,delete_kru_task,get_today_tasks
 from app.crud.users import get_user_by_tg_id
 from app.routes.depth import get_db, get_current_user, token_checker
@@ -76,6 +77,11 @@ async def get_available_tasks_api(
     # current_user: dict = Depends(token_checker)
 ):
     user = get_user_by_tg_id(db=db, tg_id=tg_id)
+    category = get_one_kru_category(db=db, id=category_id)
+    now = datetime.now().time()
+    if category.start_time > now:
+        raise HTTPException(status_code=400, detail="Время уже прошло!")
+
     today_tasks = get_today_tasks(db=db, branch_id=user.branch_id, category_id=category_id)
     return today_tasks
 
