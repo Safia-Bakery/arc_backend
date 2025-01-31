@@ -126,13 +126,13 @@ def top50_excell_generator(data, report_type, start_date, finish_date):
             inserting_data[task.name] = []
 
         for row in data:
-            inserting_data['Товар'].append(row.tool.name) if row.tool else inserting_data['Товар'].append(" ")
-            inserting_data['Артикул'].append(row.tool.code) if row.tool else inserting_data['Артикул'].append(" ")
             for task in tasks:
                 if task.name == row.task.name:
-                    inserting_data[row.task.name].append(row.comment) if row.comment else inserting_data[row.task.name].append(" ")
-                else:
-                    inserting_data[task.name].append(" ")
+                    inserting_data[task.name].append(row.comment) if row.comment else inserting_data[task.name].append(" ")
+            if row.tool.name not in inserting_data['Товар']:
+                inserting_data['Товар'].append(row.tool.name) if row.tool else inserting_data['Товар'].append(" ")
+            if row.tool.code not in inserting_data['Артикул']:
+                inserting_data['Артикул'].append(row.tool.code) if row.tool else inserting_data['Артикул'].append(" ")
 
     elif report_type == 3:
         inserting_data = {
