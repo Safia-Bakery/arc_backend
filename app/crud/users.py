@@ -18,3 +18,8 @@ def get_user_by_username(db: Session, username: str):
 def get_user_brig_id(db: Session, brigada_id):
     query = db.query(Users).filter(Users.brigada_id == brigada_id).first()
     return query
+
+
+def get_user_by_tg_id(db: Session, tg_id):
+    query = db.query(Users).filter(Users.telegram_id == tg_id).first()
+    return query

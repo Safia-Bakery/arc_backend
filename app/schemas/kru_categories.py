@@ -9,7 +9,7 @@ from app.schemas.tools import KRUTool
 
 class KruCategoriesCreate(BaseModel):
     name: str
-    # parent: Optional[int] = None
+    parent: Optional[int] = None
     description: Optional[str] = None
     start_time: Optional[time] = None
     end_time: Optional[time] = None

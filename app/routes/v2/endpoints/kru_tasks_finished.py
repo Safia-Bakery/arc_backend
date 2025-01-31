@@ -7,9 +7,11 @@ from sqlalchemy.orm import Session
 
 from app.crud.files import create_file_tasks
 from app.crud.kru_tasks_finished import create_kru_finished_task
-from app.routes.depth import get_db, get_current_user
+from app.crud.users import get_user_by_tg_id
+from app.routes.depth import get_db, token_checker
 from app.schemas.kru_finished_tasks import KruFinishedTasksCreate
 from app.schemas.users import GetUserFullData
+
 
 kru_tasks_finished = APIRouter()
 timezone_tash = pytz.timezone('Asia/Tashkent')
@@ -17,16 +19,18 @@ timezone_tash = pytz.timezone('Asia/Tashkent')
 
 @kru_tasks_finished.post("/kru/finished-tasks/")
 async def create_kru_finished_task_api(
+    tg_id: int,
     data: KruFinishedTasksCreate,
     db: Session = Depends(get_db),
-    current_user: GetUserFullData = Depends(get_current_user)
+    current_user: GetUserFullData = Depends(token_checker)
 ):
+    user = get_user_by_tg_id(db=db, tg_id=tg_id)
     for task_answer in data.answers:
         kru_task = create_kru_finished_task(
             db=db,
             data=task_answer,
-            user_id=current_user.id,
-            branch_id=current_user.branch_id,
+            user_id=user.id,
+            branch_id=user.branch_id,
             tool_id=data.tool_id
         )
 

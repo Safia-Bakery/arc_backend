@@ -89,4 +89,12 @@ async def get_current_user(
 
 
 
-
+async def token_checker(token: str = Depends(reuseable_oauth), db: Session = Depends(get_db)):
+    if token == settings.backend_pass:
+        return True
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )

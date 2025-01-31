@@ -8,7 +8,8 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 
 from app.crud.kru_tasks import create_kru_task, get_kru_tasks, get_one_kru_task, update_kru_task,delete_kru_task,get_today_tasks
-from app.routes.depth import get_db, get_current_user
+from app.crud.users import get_user_by_tg_id
+from app.routes.depth import get_db, get_current_user, token_checker
 from app.schemas.kru_tasks import KruTasksCreate, KruTasksUpdate, KruTasksGet, Tasks
 from app.schemas.users import GetUserFullData
 
@@ -69,11 +70,12 @@ async def delete_kru_task_api(
 
 @kru_tasks_router.get("/kru/tasks/available/",response_model=KruTasksGet)
 async def get_available_tasks_api(
+    tg_id: int,
     category_id: Optional[int],
     db: Session = Depends(get_db),
-    current_user: GetUserFullData = Depends(get_current_user)
+    current_user: GetUserFullData = Depends(token_checker)
 ):
-
-    today_tasks = get_today_tasks(db=db, branch_id=current_user.branch_id, category_id=category_id)
+    user = get_user_by_tg_id(db=db, tg_id=tg_id)
+    today_tasks = get_today_tasks(db=db, branch_id=user.branch_id, category_id=category_id)
     return today_tasks
 
