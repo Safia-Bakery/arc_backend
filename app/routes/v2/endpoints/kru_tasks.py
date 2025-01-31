@@ -73,7 +73,7 @@ async def get_available_tasks_api(
     tg_id: int,
     category_id: Optional[int],
     db: Session = Depends(get_db),
-    current_user: dict = Depends(token_checker)
+    # current_user: dict = Depends(token_checker)
 ):
     user = get_user_by_tg_id(db=db, tg_id=tg_id)
     today_tasks = get_today_tasks(db=db, branch_id=user.branch_id, category_id=category_id)

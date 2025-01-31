@@ -74,7 +74,10 @@ def get_today_tasks(db: Session, branch_id, category_id):
     ).join(
         KruTasks
     ).filter(
-        KruFinishedTasks.branch_id == branch_id
+        and_(
+            KruFinishedTasks.branch_id == branch_id,
+            KruTasks.kru_category_id == category_id
+        )
     )
 
     # Subquery to get task_ids that were finished today
@@ -88,9 +91,9 @@ def get_today_tasks(db: Session, branch_id, category_id):
     #         KruFinishedTasks.branch_id == branch_id
     #     )
     # )
-    if category_id is not None:
+    # if category_id is not None:
         # finished_today_tasks = finished_today_tasks.filter(KruTasks.kru_category_id == category_id)
-        finished_today_products = finished_today_products.filter(KruTasks.kru_category_id == category_id)
+        # finished_today_products = finished_today_products.filter(KruTasks.kru_category_id == category_id)
 
     remaining_products = db.query(
         Tools
@@ -99,6 +102,7 @@ def get_today_tasks(db: Session, branch_id, category_id):
     ).filter(
         and_(
             ToolBranchCategoryRelation.branch_id == branch_id,
+            ToolBranchCategoryRelation.kru_category_id == category_id,
             Tools.id.notin_(finished_today_products)
         )
     )
@@ -114,11 +118,14 @@ def get_today_tasks(db: Session, branch_id, category_id):
     tasks = db.query(
         KruTasks
     ).filter(
-        KruTasks.status == 1
+        and_(
+            KruTasks.status == 1,
+            KruTasks.kru_category_id == category_id
+        )
     )
-    if category_id is not None:
-        tasks = tasks.filter(KruTasks.kru_category_id == category_id)
-        remaining_products = remaining_products.filter(ToolBranchCategoryRelation.kru_category_id == category_id)
+    # if category_id is not None:
+    #     tasks = tasks.filter(KruTasks.kru_category_id == category_id)
+    #     remaining_products = remaining_products.filter(ToolBranchCategoryRelation.kru_category_id == category_id)
 
     remaining_products = remaining_products.all()
     tasks = tasks.all()
