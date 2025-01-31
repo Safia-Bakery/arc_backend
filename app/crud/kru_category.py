@@ -1,4 +1,5 @@
 from typing import Optional
+from uuid import UUID
 
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
@@ -22,8 +23,16 @@ def create_kru_category(db:Session, data: KruCategoriesCreate):
     return query
 
 
-def get_kru_categories(db:Session, name: Optional[str] = None):
-    query = db.query(KruCategories).filter(KruCategories.status==1)
+def get_kru_categories(db:Session, name: Optional[str] = None, branch_id: Optional[UUID] = None):
+    query = db.query(
+        KruCategories
+    ).join(
+        ToolBranchCategoryRelation, KruCategories.id == ToolBranchCategoryRelation.kru_category_id
+    ).filter(
+        KruCategories.status==1
+    )
+    if branch_id is not None:
+        query = query.filter(ToolBranchCategoryRelation.branch_id == branch_id)
     # if id is not None:
     #     query = query.filter(KruCategories.id == id)
     # if parent is not None:

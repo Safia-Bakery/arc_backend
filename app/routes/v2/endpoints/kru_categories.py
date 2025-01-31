@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.crud.kru_category import create_kru_category, get_kru_categories, get_one_kru_category, update_kru_category, \
     delete_kru_category, get_category_products_number
+from app.crud.users import get_user_by_tg_id
 from app.routes.depth import get_db, get_current_user
 from app.schemas.kru_categories import KruCategoriesCreate, KruCategoriesUpdate, KruCategoriesGet
 from app.schemas.users import GetUserFullData
@@ -32,16 +33,20 @@ async def create_kru_category_api(
 
 @kru_categories.get("/kru/categories/",response_model=Page[KruCategoriesGet])
 async def get_kru_categories_api(
+        tg_id: Optional[int] = None,
         name: Optional[str] = None,
         db: Session = Depends(get_db),
         current_user: GetUserFullData = Depends(get_current_user)
 ):
     # query_data = get_kru_categories(db=db, name=name, parent=parent)
-    query_data = get_kru_categories(db=db, name=name)
-    for index, item in enumerate(query_data):
-        # query_data[index].tasks = len(query_data[index].kru_task)
-        products_count = get_category_products_number(db=db, category_id=item.id, branch_id=current_user.branch_id)
-        query_data[index].products_count = products_count
+    if tg_id is None:
+        query_data = get_kru_categories(db=db, name=name)
+    else:
+        user = get_user_by_tg_id(db=db, tg_id=tg_id)
+        query_data = get_kru_categories(db=db, name=name, branch_id=user.branch_id)
+        for index, item in enumerate(query_data):
+            products_count = get_category_products_number(db=db, category_id=item.id, branch_id=user.branch_id)
+            query_data[index].products_count = products_count
 
     return paginate(query_data)
 
@@ -50,10 +55,17 @@ async def get_kru_categories_api(
 @kru_categories.get("/kru/categories/{id}",response_model=KruCategoriesGet)
 async def get_one_kru_category_api(
     id:int,
+    tg_id: Optional[int] = None,
     db: Session = Depends(get_db),
     current_user: GetUserFullData = Depends(get_current_user),
 ):
-    return get_one_kru_category(db=db,id=id)
+    query = get_one_kru_category(db=db, id=id)
+    if tg_id is not None:
+        user = get_user_by_tg_id(db=db, tg_id=tg_id)
+        products_count = get_category_products_number(db=db, category_id=id, branch_id=user.branch_id)
+        query.products_count = products_count
+
+    return query
 
 
 @kru_categories.put("/kru/categories/",response_model=KruCategoriesGet)
