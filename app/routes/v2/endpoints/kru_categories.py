@@ -47,7 +47,7 @@ async def get_kru_categories_api(
         query_data = get_kru_categories(db=db, name=name, branch_id=user.branch_id)
         for index, item in enumerate(query_data):
             # products_count = get_category_products_number(db=db, category_id=item.id, branch_id=user.branch_id)
-            products = get_today_tasks(db=db, category_id=id, branch_id=user.branch_id)["products"]
+            products = get_today_tasks(db=db, category_id=item.id, branch_id=user.branch_id)["products"]
             products_count = len(products)
             query_data[index].products_count = products_count
 
