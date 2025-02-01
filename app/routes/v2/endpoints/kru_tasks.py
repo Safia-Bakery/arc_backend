@@ -74,7 +74,7 @@ async def get_available_tasks_api(
     tg_id: int,
     category_id: Optional[int],
     db: Session = Depends(get_db),
-    current_user: dict = Depends(token_checker)
+    # current_user: dict = Depends(token_checker)
 ):
     user = get_user_by_tg_id(db=db, tg_id=tg_id)
     category = get_one_kru_category(db=db, id=category_id)
