@@ -79,8 +79,8 @@ async def get_available_tasks_api(
     user = get_user_by_tg_id(db=db, tg_id=tg_id)
     category = get_one_kru_category(db=db, id=category_id)
     now = datetime.now().time()
-    if now > category.start_time:
-        raise HTTPException(status_code=400, detail="Время уже прошло!")
+    # if now > category.start_time:
+    #     raise HTTPException(status_code=400, detail="Время уже прошло!")
 
     today_tasks = get_today_tasks(db=db, branch_id=user.branch_id, category_id=category_id)
     return today_tasks
