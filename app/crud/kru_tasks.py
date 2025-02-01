@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import and_
+from sqlalchemy import and_, func
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import aliased
 
@@ -67,7 +67,7 @@ def delete_kru_task(db:Session, id:int):
 # get todays tasks which are not in finished tasks list i mean which are not in KruFinishedTasks table
 
 def get_today_tasks(db: Session, branch_id, category_id):
-    # today = datetime.now().date()
+    today = datetime.now().date()
 
     finished_today_products = db.query(
         KruFinishedTasks.tool_id
@@ -76,6 +76,7 @@ def get_today_tasks(db: Session, branch_id, category_id):
     ).filter(
         and_(
             KruFinishedTasks.branch_id == branch_id,
+            func.date(KruFinishedTasks.created_at) == today,
             KruTasks.kru_category_id == category_id
         )
     )
