@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.crud.kru_category import create_kru_category, get_kru_categories, get_one_kru_category, update_kru_category, \
     delete_kru_category, get_category_products_number
+from app.crud.kru_tasks import get_today_tasks
 from app.crud.users import get_user_by_tg_id
 from app.routes.depth import get_db, get_current_user
 from app.schemas.kru_categories import KruCategoriesCreate, KruCategoriesUpdate, KruCategoriesGet
@@ -45,7 +46,9 @@ async def get_kru_categories_api(
         user = get_user_by_tg_id(db=db, tg_id=tg_id)
         query_data = get_kru_categories(db=db, name=name, branch_id=user.branch_id)
         for index, item in enumerate(query_data):
-            products_count = get_category_products_number(db=db, category_id=item.id, branch_id=user.branch_id)
+            # products_count = get_category_products_number(db=db, category_id=item.id, branch_id=user.branch_id)
+            products = get_today_tasks(db=db, category_id=id, branch_id=user.branch_id)["products"]
+            products_count = len(products)
             query_data[index].products_count = products_count
 
     return paginate(query_data)
@@ -62,7 +65,9 @@ async def get_one_kru_category_api(
     query = get_one_kru_category(db=db, id=id)
     if tg_id is not None:
         user = get_user_by_tg_id(db=db, tg_id=tg_id)
-        products_count = get_category_products_number(db=db, category_id=id, branch_id=user.branch_id)
+        # products_count = get_category_products_number(db=db, category_id=id, branch_id=user.branch_id)
+        products = get_today_tasks(db=db, category_id=id, branch_id=user.branch_id)["products"]
+        products_count = len(products)
         query.products_count = products_count
 
     return query
