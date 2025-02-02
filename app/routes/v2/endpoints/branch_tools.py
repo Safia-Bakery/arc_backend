@@ -5,10 +5,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.crud.branch_tools import create_branch_tools, get_branch_tools, delete_branch_tool, get_groups
-from app.crud.inventory_factory_tools import get_tools
+from app.crud.branch_tools import get_tools
 from app.routes.depth import get_db, get_current_user
 from app.schemas.branch_tools import ToolBranchCategoryRelation, CreateToolBranch, GetToolBranchCategoryRelation, DeleteToolBranch
-from app.schemas.inventory_tools import ProductsVsGroupsRetail
+from app.schemas.branch_tools import ProductsGroups
 from app.schemas.users import GetUserFullData, UserFullBack
 
 branch_tools_router = APIRouter()
@@ -52,14 +52,14 @@ async def delete_organization_screen(
     return response
 
 
-@branch_tools_router.get('/kru/tools/',response_model=ProductsVsGroupsRetail)
+@branch_tools_router.get('/kru/tools/', response_model=ProductsGroups)
 async  def get_tools_router(
         tool_name: str,
         db: Session = Depends(get_db),
         request_user: GetUserFullData = Depends(get_current_user)
 ):
     if tool_name is not None:
-        tools = get_tools(db=db,name=tool_name)
+        tools = get_tools(db=db, name=tool_name)
     else:
         tools = []
     return {"folders": [], 'tools':tools}

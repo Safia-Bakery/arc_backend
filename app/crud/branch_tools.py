@@ -1,7 +1,10 @@
-from sqlalchemy import and_
+from typing import Optional
+
+from sqlalchemy import and_, asc
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
+from app.models.tools import Tools
 from app.models.toolparents import ToolParents
 from app.schemas.branch_tools import CreateToolBranch, DeleteToolBranch
 from app.models.tool_branch_relations import ToolBranchCategoryRelation
@@ -68,3 +71,11 @@ def get_groups(db:Session,name,parent_id):
     if parent_id is not None:
         query = query.filter(ToolParents.parent_id==parent_id)
     return query.all()
+
+
+def get_tools(db:Session, name:Optional[str]=None):
+    query = db.query(Tools)
+    if name is not None:
+        query = query.filter(Tools.name.ilike(f"%{name}%"))
+
+    return query.order_by(asc(Tools.name)).limit(50).all()

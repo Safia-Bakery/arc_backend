@@ -33,3 +33,8 @@ class GetToolBranchCategoryRelation(BaseConfig):
 
 class DeleteToolBranch(BaseConfig):
     id: UUID
+
+
+class ProductsGroups(BaseConfig):
+    folders: []
+    tools: Optional[list[KRUTool]]= None
