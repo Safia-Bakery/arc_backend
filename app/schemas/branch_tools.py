@@ -36,5 +36,5 @@ class DeleteToolBranch(BaseConfig):
 
 
 class ProductsGroups(BaseConfig):
-    folders: []
-    tools: Optional[list[KRUTool]]= None
+    folders: Optional[list[str]] = None
+    tools: Optional[list[KRUTool]] = None
