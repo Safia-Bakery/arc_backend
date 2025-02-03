@@ -24,3 +24,14 @@ class GetFillialChild(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+
+class GetFillialChildWithManager(BaseModel):
+    id: UUID
+    name: str
+    origin: int
+    manager:Optional[getManagers]=None
+
+    class Config:
+        orm_mode = True
