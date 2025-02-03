@@ -99,7 +99,7 @@ from app.routes.v2.endpoints.inventory_tools import inv_requests_tools_router
 from app.routes.v2.endpoints.schedules import schedules_router
 from app.routes.v2.endpoints.kru_reports import kru_reports_router
 from app.routes.v2.endpoints.branch_tools import branch_tools_router
-
+from app.routes.v2.endpoints.manager_branchs import factory_branchs_router
 
 from app.routes.v2.endpoints.iikotransfers import iiko_transfer_router
 from app.routes.v2.endpoints.coins import coins_router
@@ -120,6 +120,7 @@ reuseable_oauth = OAuth2PasswordBearer(tokenUrl="/login", scheme_name="JWT")
 # database connection
 app = FastAPI(swagger_ui_parameters = {"docExpansion":"none"},docs_url=None, redoc_url=None, openapi_url=None,)
 app.include_router(calendar_router, tags=["calendars"])
+app.include_router(factory_branchs_router,tags=['Factory Managers'])
 app.include_router(iiko_transfer_router, prefix="/api/v2", tags=["iiko"])
 app.include_router(it_extra_router, prefix="/api/v2", tags=["IT"])
 app.include_router(it_requests_router, prefix="/api/v2", tags=["IT"])

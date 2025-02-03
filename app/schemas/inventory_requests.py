@@ -5,12 +5,13 @@ from typing import Optional, Dict
 from datetime import datetime
 from .users import GetBrigada, UserGetlist
 from .category import GetCategory
-from .fillials import GetFillialChild
+from .fillials import GetFillialChild,GetFillialChildWithManager
 from .files import FileSch
 from .comments import GetComments
 from .communication import MessageRequest
 from .expanditure import GetExpanditure,GetExpanditureFactoryInv
 from .orders import OrderProductsGet, CarsGet
+
 
 
 class GetRequest(BaseModel):
@@ -29,7 +30,7 @@ class GetRequest(BaseModel):
 class GetRequestFactoryInv(BaseModel):
     id: int
     user: Optional[UserGetlist] = None
-    fillial: Optional[GetFillialChild] = None
+    fillial: Optional[GetFillialChildWithManager] = None
     expanditure: list[GetExpanditureFactoryInv]
     created_at: datetime
     status: int
