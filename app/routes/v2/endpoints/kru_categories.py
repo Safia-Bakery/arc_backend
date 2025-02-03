@@ -51,7 +51,7 @@ async def get_kru_categories_api(
                 products = get_today_products(db=db, category_id=item.id, branch_id=user.branch_id)["products"]
                 products_count = len(products)
                 query_data[index].products_count = products_count
-            elif item.id == 27:
+            else:
                 tasks = get_today_tasks(db=db, category_id=item.id, branch_id=user.branch_id)["tasks"]
                 tasks_count = len(tasks)
                 query_data[index].tasks_count = tasks_count
@@ -74,7 +74,7 @@ async def get_one_kru_category_api(
             products = get_today_products(db=db, category_id=id, branch_id=user.branch_id)["products"]
             products_count = len(products)
             query.products_count = products_count
-        elif id == 27:
+        else:
             tasks = get_today_tasks(db=db, category_id=id, branch_id=user.branch_id)["tasks"]
             tasks_count = len(tasks)
             query.tasks_count = tasks_count
