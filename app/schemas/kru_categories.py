@@ -1,10 +1,7 @@
 from datetime import datetime, time
-from typing import Optional, List
+from typing import Optional
 
 from pydantic import BaseModel
-
-from app.schemas.kru_tasks import KruTasksGet, Tasks
-from app.schemas.tools import KRUTool
 
 
 class KruCategoriesCreate(BaseModel):
@@ -14,7 +11,6 @@ class KruCategoriesCreate(BaseModel):
     start_time: Optional[time] = None
     end_time: Optional[time] = None
     file: Optional[str] = None
-    # tool_id: Optional[int] = None
 
     class Config:
         orm_mode = True
@@ -27,7 +23,6 @@ class KruCategoriesUpdate(BaseModel):
     description: Optional[str] = None
     start_time: Optional[time] = None
     end_time: Optional[time] = None
-    # tool_id: Optional[int] = None
 
     class Config:
         orm_mode = True

@@ -66,8 +66,6 @@ def update_kru_category(db:Session, data: KruCategoriesUpdate):
         query.start_time = data.start_time
     if data.end_time is not None:
         query.end_time = data.end_time
-    if data.tool_id is not None:
-        query.tool_id = data.tool_id
 
     db.commit()
     db.refresh(query)
