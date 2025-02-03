@@ -13,9 +13,9 @@ from microservices import name_generator, generate_random_string_datetime
 from app.db.session import SessionLocal
 
 
-def get_all_tasks():
+def get_all_tasks(category_id):
     with SessionLocal() as session:
-        tasks = session.query(KruTasks).all()
+        tasks = session.query(KruTasks).filter(KruTasks.kru_category_id == category_id).all()
 
     return tasks
 
@@ -121,7 +121,7 @@ def top50_excell_generator(data, report_type, start_date, finish_date):
             "Товар": [],
             "Артикул": []
         }
-        tasks = get_all_tasks()
+        tasks = get_all_tasks(category_id=26)
         for task in tasks:
             inserting_data[task.name] = []
 
