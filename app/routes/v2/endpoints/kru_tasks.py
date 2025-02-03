@@ -90,7 +90,7 @@ async def get_available_tasks_api(
     }
     if category_id == 26:
         today_tasks = get_today_products(db=db, branch_id=user.branch_id, category_id=category_id)
-    elif category_id == 27:
+    else:
         today_tasks = get_today_tasks(db=db, branch_id=user.branch_id, category_id=category_id)
 
     return today_tasks
