@@ -66,7 +66,7 @@ def delete_kru_task(db:Session, id:int):
 
 # get todays tasks which are not in finished tasks list i mean which are not in KruFinishedTasks table
 
-def get_today_tasks(db: Session, branch_id, category_id):
+def get_today_products(db: Session, branch_id, category_id):
     today = datetime.now().date()
 
     finished_today_products = db.query(
@@ -81,21 +81,6 @@ def get_today_tasks(db: Session, branch_id, category_id):
         )
     )
 
-    # Subquery to get task_ids that were finished today
-    # finished_today_tasks = db.query(
-    #     KruFinishedTasks.task_id
-    # ).join(
-    #     KruTasks
-    # ).filter(
-    #     and_(
-    #         KruFinishedTasks.created_at >= today,
-    #         KruFinishedTasks.branch_id == branch_id
-    #     )
-    # )
-    # if category_id is not None:
-        # finished_today_tasks = finished_today_tasks.filter(KruTasks.kru_category_id == category_id)
-        # finished_today_products = finished_today_products.filter(KruTasks.kru_category_id == category_id)
-
     remaining_products = db.query(
         Tools
     ).join(
@@ -108,14 +93,6 @@ def get_today_tasks(db: Session, branch_id, category_id):
         )
     )
 
-    # Main query: get tasks that are not finished today
-    # available_tasks = db.query(
-    #     KruTasks
-    # ).filter(
-    #     KruTasks.status == 1,  # Only tasks with status 1 (active)
-    #     ~KruTasks.id.in_(finished_today_tasks)  # Exclude tasks finished today
-    # )
-
     tasks = db.query(
         KruTasks
     ).filter(
@@ -124,14 +101,47 @@ def get_today_tasks(db: Session, branch_id, category_id):
             KruTasks.kru_category_id == category_id
         )
     )
-    # if category_id is not None:
-    #     tasks = tasks.filter(KruTasks.kru_category_id == category_id)
-    #     remaining_products = remaining_products.filter(ToolBranchCategoryRelation.kru_category_id == category_id)
 
     remaining_products = remaining_products.all()
     tasks = tasks.all()
     data_dict = {
         "products": remaining_products,
         "tasks": tasks
+    }
+    return data_dict
+
+
+
+def get_today_tasks(db: Session, branch_id, category_id):
+    today = datetime.now().date()
+    # Subquery to get task_ids that were finished today
+    finished_today_tasks = db.query(
+        KruFinishedTasks.task_id
+    ).join(
+        KruTasks
+    ).filter(
+        and_(
+            KruFinishedTasks.created_at >= today,
+            KruFinishedTasks.branch_id == branch_id
+        )
+    )
+    if category_id is not None:
+        finished_today_tasks = finished_today_tasks.filter(KruTasks.kru_category_id == category_id)
+
+    # Main query: get tasks that are not finished today
+    available_tasks = db.query(
+        KruTasks
+    ).filter(
+        and_(
+            KruTasks.status == 1,
+            KruTasks.id.notin_(finished_today_tasks)
+        )
+    )
+    if category_id is not None:
+        available_tasks = available_tasks.filter(KruTasks.kru_category_id == category_id)
+
+    data_dict = {
+        "products": [],
+        "tasks": available_tasks.all()
     }
     return data_dict

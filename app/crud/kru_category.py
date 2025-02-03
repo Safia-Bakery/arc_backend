@@ -14,6 +14,7 @@ def create_kru_category(db:Session, data: KruCategoriesCreate):
     query = KruCategories(
         name=data.name,
         description=data.description,
+        parent=data.parent,
         start_time=data.start_time,
         end_time=data.end_time
     )
@@ -23,22 +24,26 @@ def create_kru_category(db:Session, data: KruCategoriesCreate):
     return query
 
 
-def get_kru_categories(db:Session, name: Optional[str] = None, branch_id: Optional[UUID] = None):
+def get_kru_categories(db:Session, name: Optional[str] = None, parent: Optional[int] = None):
+    # query = db.query(
+    #     KruCategories
+    # ).join(
+    #     ToolBranchCategoryRelation, KruCategories.id == ToolBranchCategoryRelation.kru_category_id
+    # ).filter(
+    #     KruCategories.status==1
+    # )
     query = db.query(
         KruCategories
-    ).join(
-        ToolBranchCategoryRelation, KruCategories.id == ToolBranchCategoryRelation.kru_category_id
     ).filter(
-        KruCategories.status==1
+        KruCategories.status == 1
     )
-    if branch_id is not None:
-        query = query.filter(ToolBranchCategoryRelation.branch_id == branch_id)
-    # if id is not None:
-    #     query = query.filter(KruCategories.id == id)
-    # if parent is not None:
-    #     query = query.filter(KruCategories.parent == parent)
-    # if parent is None:
-    #     query = query.filter(KruCategories.parent.is_(None))
+
+    # if branch_id is not None:
+    #     query = query.filter(ToolBranchCategoryRelation.branch_id == branch_id)
+    if parent is not None:
+        query = query.filter(KruCategories.parent == parent)
+    if parent is None:
+        query = query.filter(KruCategories.parent.is_(None))
     if name is not None:
         query = query.filter(KruCategories.name.ilike(f'%{name}%'))
     return query.all()

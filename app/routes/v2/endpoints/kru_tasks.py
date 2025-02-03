@@ -8,7 +8,8 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 
 from app.crud.kru_category import get_one_kru_category
-from app.crud.kru_tasks import create_kru_task, get_kru_tasks, get_one_kru_task, update_kru_task,delete_kru_task,get_today_tasks
+from app.crud.kru_tasks import create_kru_task, get_kru_tasks, get_one_kru_task, update_kru_task, delete_kru_task, \
+    get_today_products, get_today_tasks
 from app.crud.users import get_user_by_tg_id
 from app.routes.depth import get_db, get_current_user, token_checker
 from app.schemas.kru_tasks import KruTasksCreate, KruTasksUpdate, KruTasksGet, Tasks
@@ -79,9 +80,18 @@ async def get_available_tasks_api(
     user = get_user_by_tg_id(db=db, tg_id=tg_id)
     category = get_one_kru_category(db=db, id=category_id)
     now = datetime.now().time()
-    # if now > category.start_time:
-    #     raise HTTPException(status_code=400, detail="Время уже прошло!")
+    # if category.start_time is not None and category.end_time is not None:
+        # if now > category.start_time:
+        #     raise HTTPException(status_code=400, detail="Время уже прошло!")
 
-    today_tasks = get_today_tasks(db=db, branch_id=user.branch_id, category_id=category_id)
+    today_tasks = {
+        "products": [],
+        "tasks": []
+    }
+    if category_id == 26:
+        today_tasks = get_today_products(db=db, branch_id=user.branch_id, category_id=category_id)
+    elif category_id == 27:
+        today_tasks = get_today_tasks(db=db, branch_id=user.branch_id, category_id=category_id)
+
     return today_tasks
 

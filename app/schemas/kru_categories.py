@@ -27,7 +27,7 @@ class KruCategoriesUpdate(BaseModel):
     description: Optional[str] = None
     start_time: Optional[time] = None
     end_time: Optional[time] = None
-    tool_id: Optional[int] = None
+    # tool_id: Optional[int] = None
 
     class Config:
         orm_mode = True
@@ -41,9 +41,8 @@ class KruCategoriesGet(BaseModel):
     parent: Optional[int]
     start_time: Optional[time]
     end_time: Optional[time]
-    # kru_task: Optional[List[Tasks]]
-    # tool: Optional[KRUTool]
     products_count: Optional[int] = None
+    tasks_count: Optional[int] = None
     created_at: Optional[datetime]
     updated_at: Optional[datetime]
 
