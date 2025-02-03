@@ -25,12 +25,17 @@ def create_kru_task(db:Session, data: KruTasksCreate):
     return query
 
 
-def get_kru_tasks(db:Session, name:Optional[str]=None, category_id: Optional[int]=None):
-    query = db.query(KruTasks).filter(KruTasks.status==1)
+def get_kru_tasks(db:Session, category_id, name: Optional[str] = None):
+    query = db.query(KruTasks).filter(
+        and_(
+            KruTasks.status == 1,
+            KruTasks.kru_category_id == category_id
+        )
+    )
     if name is not None:
         query = query.filter(KruTasks.name.ilike(f'%{name}%'))
-    if category_id is not None:
-        query = query.filter(KruTasks.kru_category_id == category_id)
+    # if category_id is not None:
+    #     query = query.filter(KruTasks.kru_category_id == category_id)
 
     return query.all()
 
