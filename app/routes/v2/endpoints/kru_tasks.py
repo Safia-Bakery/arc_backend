@@ -31,12 +31,12 @@ async def create_kru_task_api(
 @kru_tasks_router.get("/kru/tasks/",response_model=Page[Tasks])
 async def get_kru_tasks_api(
     name: Optional[str] = None,
-    category_id: Optional[int] = None,
+    kru_category_id: Optional[int] = None,
     db: Session = Depends(get_db),
     current_user: GetUserFullData = Depends(get_current_user)
 ):
 
-    return paginate(get_kru_tasks(db=db, name=name, category_id=category_id))
+    return paginate(get_kru_tasks(db=db, name=name, category_id=kru_category_id))
 
 
 
