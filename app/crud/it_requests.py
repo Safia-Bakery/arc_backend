@@ -33,7 +33,15 @@ def filter_request_brigada(
         finished_at,
         is_expired
 ):
-    query = db.query(Requests).join(Category).filter(Category.department == 4)
+    query = db.query(Requests).join(Category).filter(
+        and_(
+            Category.department == 4,
+            or_(
+                Category.id != 48,
+                Category.parent_id != 48
+            )
+        )
+    )
 
     if id is not None:
         query = query.filter(Requests.id == id)
@@ -95,7 +103,15 @@ def filter_requests_all(
         is_expired
 ):
     # categories = db.query(Category).with_entities(Category.id).filter(Category.department == 4).all()
-    query = db.query(Requests).join(Category).filter(Category.department == 4)
+    query = db.query(Requests).join(Category).filter(
+        and_(
+            Category.department == 4,
+            or_(
+                Category.id != 48,
+                Category.parent_id != 48
+            )
+        )
+    )
 
     if id is not None:
         query = query.filter(Requests.id == id)

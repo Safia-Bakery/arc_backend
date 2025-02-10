@@ -41,7 +41,10 @@ def get_it_excell(db:Session,form_data:it_schema.generate_excell):
     query = db.query(models.Requests).join(models.Category).filter(
         and_(
             models.Category.department == 4,
-            models.Category.id != 48,
+            or_(
+                models.Category.id != 48,
+                models.Category.parent_id != 48
+            ),
             models.Requests.created_at.between(form_data.start_date, finish_date)
         )
     )
