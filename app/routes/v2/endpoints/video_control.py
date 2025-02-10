@@ -24,7 +24,7 @@ async def filter_requests(
         user: Optional[str] = None,
         brigada_id: Optional[int] = None,
         fillial_id: Optional[UUID] = None,
-        status: Optional[str] = None,
+        request_status: Optional[str] = None,
         created_at: Optional[date] = None,
         db: Session = Depends(get_db),
         request_user: UserFullBack = Depends(get_current_user)
@@ -34,7 +34,7 @@ async def filter_requests(
         user=user,
         brigada_id=request_user.brigada_id if request_user.brigada_id else brigada_id,
         fillial_id=fillial_id,
-        request_status=status,
+        request_status=request_status,
         created_at=created_at,
         db=db
     )
