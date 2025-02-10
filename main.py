@@ -100,7 +100,7 @@ from app.routes.v2.endpoints.schedules import schedules_router
 from app.routes.v2.endpoints.kru_reports import kru_reports_router
 from app.routes.v2.endpoints.branch_tools import branch_tools_router
 from app.routes.v2.endpoints.manager_branchs import factory_branchs_router
-
+from app.routes.v2.endpoints.video_control import video_requests_router
 from app.routes.v2.endpoints.iikotransfers import iiko_transfer_router
 from app.routes.v2.endpoints.coins import coins_router
 # models.Base.metadata.create_all(bind=engine)
@@ -124,6 +124,7 @@ app.include_router(factory_branchs_router,tags=['Factory Managers'])
 app.include_router(iiko_transfer_router, prefix="/api/v2", tags=["iiko"])
 app.include_router(it_extra_router, prefix="/api/v2", tags=["IT"])
 app.include_router(it_requests_router, prefix="/api/v2", tags=["IT"])
+app.include_router(video_requests_router, prefix="/api/v2", tags=["VIDEO"])
 app.include_router(category_router, prefix="/api/v2", tags=["Category"])
 app.include_router(inv_requests_router, prefix="/api/v2", tags=["Inventory"])
 # app.include_router(tool_balance_cron_router, prefix="/api/v2", tags=["Cron tool balances"])

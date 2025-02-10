@@ -761,6 +761,8 @@ def filter_category(
         query = query.filter(models.Category.sub_id == sub_id)
     if department is not None:
         query = query.filter(models.Category.department == department)
+        if department == 4:
+            query = query.filter(models.Category.id != 48)
     if sphere_status is not None:
         query = query.filter(models.Category.sphere_status == sphere_status)
     query = query.filter(models.Category.parent_id==parent_id)
