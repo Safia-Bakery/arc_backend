@@ -24,6 +24,8 @@ async def filter_requests(
         user: Optional[str] = None,
         brigada_id: Optional[int] = None,
         fillial_id: Optional[UUID] = None,
+        urgent: Optional[bool] = None,
+        is_expired: Optional[bool] = None,
         request_status: Optional[str] = None,
         created_at: Optional[date] = None,
         db: Session = Depends(get_db),
@@ -34,6 +36,8 @@ async def filter_requests(
         user=user,
         brigada_id=request_user.brigada_id if request_user.brigada_id else brigada_id,
         fillial_id=fillial_id,
+        urgent=urgent,
+        is_expired=is_expired,
         request_status=request_status,
         created_at=created_at,
         db=db
