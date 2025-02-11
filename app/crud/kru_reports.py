@@ -132,6 +132,7 @@ def top50_excell_generator(data, report_type, start_date, finish_date):
 
     elif report_type == 2:
         inserting_data = {
+            "Дата": [],
             "Филиал": [],
             "Товар": [],
             "Артикул": []
@@ -143,6 +144,11 @@ def top50_excell_generator(data, report_type, start_date, finish_date):
         for row in data:
             inserting_data[row.task.name].append(row.comment)
             task_len = len(inserting_data[row.task.name])
+
+            try:
+                inserting_data['Дата'][task_len-1] = row.created_at.strftime('%Y-%m-%d')
+            except IndexError:
+                inserting_data['Дата'].append(row.created_at.strftime('%Y-%m-%d'))
 
             try:
                 inserting_data['Филиал'][task_len-1] = row.branch.name
