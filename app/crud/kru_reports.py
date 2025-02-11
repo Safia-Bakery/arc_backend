@@ -86,7 +86,7 @@ def get_kru_report(db: Session, data: KruReport):
         Tools, KruFinishedTasks.tool_id == Tools.id
     ).filter(
         and_(
-            KruFinishedTasks.created_at.between(data.start_date, finish_date),
+            func.date(KruFinishedTasks.created_at).between(data.start_date, finish_date),
             KruCategories.id == data.category_id
         )
     )
@@ -103,6 +103,7 @@ def get_kru_report(db: Session, data: KruReport):
 
     # return query.order_by(KruFinishedTasks.id.desc()).all()
     query = query.order_by(
+        func.date(KruFinishedTasks.created_at),
         KruFinishedTasks.branch_id,
         KruFinishedTasks.tool_id,
         KruFinishedTasks.task_id
