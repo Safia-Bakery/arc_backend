@@ -750,7 +750,14 @@ def filter_user(
 
 
 def filter_category(
-    db: Session, category_status, name, department, sub_id, sphere_status,parent_id
+        db: Session,
+        category_status,
+        name,
+        department,
+        sub_id,
+        sphere_status,
+        parent_id,
+        page_name
 ):
     query = db.query(models.Category)
     if category_status is not None:
@@ -762,9 +769,17 @@ def filter_category(
     if department is not None:
         query = query.filter(models.Category.department == department)
         if department == 4:
-            query = query.filter(models.Category.id != 48)
+            if page_name != "request_info":
+                query = query.filter(
+                    or_(
+                        models.Category.id != 48,
+                        models.Category.parent_id != 48
+                    )
+                )
+
     if sphere_status is not None:
         query = query.filter(models.Category.sphere_status == sphere_status)
+
     query = query.filter(models.Category.parent_id==parent_id)
     return query.order_by(models.Category.name).all()
 

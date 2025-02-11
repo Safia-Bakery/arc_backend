@@ -170,7 +170,8 @@ async def filter_category(
     department: Optional[int] = None,
     category_status: Optional[int] = None,
     name: Optional[str] = None,
-    parent_id:Optional[int]=None,
+    parent_id: Optional[int] = None,
+    page_name: Optional[str] = None,
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
@@ -181,7 +182,8 @@ async def filter_category(
         sub_id=sub_id,
         department=department,
         sphere_status=sphere_status,
-        parent_id=parent_id
+        parent_id=parent_id,
+        page_name=page_name
     )
     return paginate(response)
 
