@@ -22,6 +22,7 @@ class GetRequests(BaseConfig):
     fillial: Optional[GetFillialChild] = None
     category: Optional[GetCategory] = None
     status: int
+    description: Optional[str] = None
     created_at: datetime
 
 
