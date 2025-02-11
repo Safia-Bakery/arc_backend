@@ -15,7 +15,13 @@ from app.db.session import SessionLocal
 
 def get_all_tasks(category_id):
     with SessionLocal() as session:
-        tasks = session.query(KruTasks).filter(KruTasks.kru_category_id == category_id).all()
+        tasks = session.query(
+            KruTasks
+        ).filter(
+            KruTasks.kru_category_id == category_id
+        ).order_by(
+            KruTasks.id
+        ).all()
 
     return tasks
 
@@ -95,7 +101,15 @@ def get_kru_report(db: Session, data: KruReport):
         query = query.filter(KruFinishedTasks.comment == data.answer)
 
 
-    return query.order_by(KruFinishedTasks.id.desc()).all()
+    # return query.order_by(KruFinishedTasks.id.desc()).all()
+    query = query.order_by(
+        KruFinishedTasks.branch_id,
+        KruFinishedTasks.tool_id,
+        KruFinishedTasks.task_id
+    ).all()
+
+    return query
+
 
 
 def top50_excell_generator(data, report_type, start_date, finish_date):
@@ -118,6 +132,7 @@ def top50_excell_generator(data, report_type, start_date, finish_date):
 
     elif report_type == 2:
         inserting_data = {
+            "Филиал": [],
             "Товар": [],
             "Артикул": []
         }
@@ -126,12 +141,31 @@ def top50_excell_generator(data, report_type, start_date, finish_date):
             inserting_data[task.name] = []
 
         for row in data:
-            if row.tool.name not in inserting_data['Товар']:
+            inserting_data[row.task.name].append(row.comment)
+            task_len = len(inserting_data[row.task.name])
+
+            try:
+                inserting_data['Филиал'][task_len-1] = row.branch.name
+            except IndexError:
+                inserting_data['Филиал'].append(row.branch.name)
+
+            try:
+                inserting_data['Товар'][task_len-1] = row.tool.name
+            except IndexError:
                 inserting_data['Товар'].append(row.tool.name)
-            if row.tool.code not in inserting_data['Артикул']:
+
+            try:
+                inserting_data['Артикул'][task_len-1] = row.tool.code
+            except IndexError:
                 inserting_data['Артикул'].append(row.tool.code)
 
-            inserting_data[row.task.name].append(row.comment)
+            # if row.branch.name not in inserting_data['Филиал']:
+            #     inserting_data['Филиал'].append(row.branch.name)
+            # if row.tool.name not in inserting_data['Товар']:
+            #     inserting_data['Товар'].append(row.tool.name)
+            # if row.tool.code not in inserting_data['Артикул']:
+            #     inserting_data['Артикул'].append(row.tool.code)
+
             # for task in tasks:
             #     if task.name == row.task.name:
             #         inserting_data[task.name].append(row.comment) if row.comment else inserting_data[task.name].append(" ")
