@@ -826,7 +826,7 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
             ).join(models.Tools).join(models.Requests).join(models.Category).filter(
             models.Requests.created_at.between(started_at,finished_at)).filter(
             models.Category.department==department,
-            models.Requests.status == 3,
+            models.Requests.status.in_([6,3]),
             #models.Expanditure.status==1,
             models.Tools.factory_ftime!=None,
             models.Tools.parentid == parent_id.parentid,
