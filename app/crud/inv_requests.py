@@ -28,7 +28,7 @@ def filter_requests_all(
         product_name
 ):
     # Start with the base query for the Requests table
-    query = db.query(Requests).join(Requests.category).join(Requests.expanditure).join(Expanditure.tool).join(Requests.user).join(Requests.fillial)
+    query = db.query(Requests).join(Requests.category).join(Requests.user).join(Requests.fillial)
     query = query.filter(Requests.status.isnot(None))
     # Apply the department filter if provided
     if department is not None:
