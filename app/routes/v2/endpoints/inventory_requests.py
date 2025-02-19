@@ -228,7 +228,7 @@ async def update_request_inventory_facatory(
                 send_simple_text_message(
                     bot_token=settings.bottoken,
                     chat_id=request_list.user.telegram_id,
-                    message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id} по Inventary: В процессе."
+                    message_text=f"Уважаемый {request_list.user.full_name}, статус вашей заявки #{request_list.id}s по Инвентарь Фабрика: <b>В процессе.</b>"
                 )
             elif request.status == 4:
                 rating_request_telegram(
