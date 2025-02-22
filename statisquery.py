@@ -692,9 +692,20 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         )
         total = total.all()
 
-        total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(
-            models.Tools.parentid==parent_id.parentid,models.Category.department==department).filter(models.Tools.ftime!=None).filter(
-            models.Requests.status.in_([0,1,2,3])).filter( models.Requests.created_at.between(started_at,finished_at)).count()
+        total_tools = (
+            db.query(models.Expanditure)
+            .join(models.Requests)
+            .join(models.Category)
+            .join(models.Tools)
+            .filter(
+                models.Tools.parentid == parent_id.parentid,
+                models.Category.department == department,
+                models.Tools.ftime.isnot(None),
+                models.Requests.status.in_([0, 1, 2, 3]),
+                models.Requests.created_at.between(started_at, finished_at)
+            )
+            .count()
+        )
 
         finished_ontime = db.query(
             models.Expanditure
