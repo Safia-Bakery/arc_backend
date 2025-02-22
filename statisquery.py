@@ -703,9 +703,10 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
             models.Tools.ftime!=None,
             #models.Expanditure.status==1,
             models.Category.department==department,
+            models.Requests.created_at.between(started_at, finished_at),
             func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= models.Tools.ftime * 3600,
             models.Tools.parentid == parent_id.parentid,
-            models.Requests.created_at.between(started_at, finished_at)
+
             #models.Requests.finished_at - models.Requests.started_at <= ftime_timedelta
         ).count()
 
@@ -723,9 +724,8 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
 
         not_started = db.query(models.Expanditure
                                ).join(models.Requests).join(models.Category).join(models.Tools
-                               ).filter(models.Tools.parentid==parent_id.parentid.filter(
+                               ).filter(models.Tools.parentid==parent_id.parentid).filter(
                             models.Requests.created_at.between(started_at, finished_at)
-                            )
                                ).filter(models.Tools.ftime!=None,models.Category.department==department
                                ).filter(models.Requests.status.in_([0,1,2])).count()
         if not_finished_ontime == 0:
