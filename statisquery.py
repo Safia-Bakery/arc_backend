@@ -693,7 +693,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         total = total.all()
 
         total_tools = (
-            db.query(models.Expanditure)
+            db.query(models.Expanditure.id)
             .join(models.Requests)
             .join(models.Category)
             .join(models.Tools)
@@ -704,6 +704,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
                 models.Requests.status.in_([0, 1, 2, 3]),
                 models.Requests.created_at.between(started_at, finished_at)
             )
+            .distinct()
             .count()
         )
 
