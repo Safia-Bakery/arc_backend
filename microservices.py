@@ -715,3 +715,47 @@ def confirmation_request(bot_token,chat_id,message_text):
         return response
     else:
         return False
+
+
+def invenory_factory_report(data, report_type):
+    inserting_data = {}
+
+    if report_type == 1:
+        inserting_data = {
+            "Группы": [],
+            "Поступило": [],
+            "Обработанных во время": [],
+            "Обработанных во время, процент": [],
+            "Обработанных не во время": [],
+            "Обработанных не во время, процент": [],
+            "Не обработано": [],
+            "Не обработано, процент": [],
+            "Среднее время обработки (минут)": []
+        }
+        for key, value in data.items():
+            inserting_data['Группы'].append(key)
+            inserting_data['Поступило'].append(value["total_tools"])
+            inserting_data['Обработанных во время'].append(value["on_time_requests"])
+            inserting_data['Обработанных во время, процент'].append(value["on_time_requests_percent"])
+            inserting_data['Обработанных не во время'].append(value["not_finishedontime"])
+            inserting_data['Обработанных не во время, процент'].append(value["not_finishedon_time_percent"])
+            inserting_data['Не обработано'].append(value["not_even_started"])
+            inserting_data['Не обработано, процент'].append(value["not_started_percent"])
+            inserting_data['Среднее время обработки (минут)'].append(value["avg_finishing"])
+
+    elif report_type == 2:
+        inserting_data = {
+            "Категория": [],
+            "Количество поступивших заявок": [],
+            "Среднее время обработки 1 заявки (часы)": []
+        }
+        for row in data:
+            inserting_data['Категория'].append(row.category)
+            inserting_data['Количество поступивших заявок'].append(row.total_requests)
+            inserting_data['Среднее время обработки 1 заявки (часы)'].append(row.avg_processing_time)
+
+    file_name = f"files/inventory_factory_excell.xlsx"
+    df = pd.DataFrame(inserting_data)
+    # Generate Excel file
+    df.to_excel(file_name, index=False)
+    return file_name

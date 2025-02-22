@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.sql.functions import coalesce
 
 import models
 from uuid import UUID
@@ -7,7 +8,7 @@ from typing import Optional
 import bcrypt
 from sqlalchemy.exc import SQLAlchemyError
 import pytz
-from sqlalchemy import distinct,case
+from sqlalchemy import distinct, case, select
 from datetime import datetime, date,timedelta
 from microservices import sendtotelegramchannel
 from sqlalchemy import or_, and_, Date, cast, func, Integer, Numeric,Interval,extract,literal_column
@@ -892,20 +893,51 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
         # not_started_percent = (not_started/total_tools)*100
 
         parent_id_name = db.query(models.ToolParents).filter(models.ToolParents.id == parent_id.parentid).first()
+        avg_finishing = 0
         if total:
             if total[0][0] is not None:
                 avg_finishing = total[0][0]
 
         else:
             avg_finishing= 0
-        data[parent_id_name.name] = {'total_tools':total_tools,
-                                     "on_time_requests":finished_ontime,
-                                     'not_finishedontime':not_finished_ontime,
-                                     'not_even_started':not_started,
-                                        'not_finishedon_time_percent':not_finished_ontime_percent,
-                                        'on_time_requests_percent':on_time_requests_percent,
-                                        'not_started_percent':not_started_percent,
-                                        'avg_finishing':avg_finishing
-                                     }
+        data[parent_id_name.name] = {
+            'total_tools': total_tools,
+            "on_time_requests": finished_ontime,
+            'not_finishedontime': not_finished_ontime,
+            'not_even_started': not_started,
+            'not_finishedon_time_percent': not_finished_ontime_percent,
+            'on_time_requests_percent': on_time_requests_percent,
+            'not_started_percent': not_started_percent,
+            'avg_finishing': avg_finishing
+        }
     return data
+
+
+def inventory_stats_factory2(db:Session, started_at, finished_at, department):
+    query = (
+        select(
+            models.Category.name.label("category"),
+            func.count(models.Requests.id).label("total_requests"),
+            coalesce(
+                func.round(
+                    func.avg(func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) / 3600), 1
+                ),
+                0
+            ).label("avg_processing_time")  # Вычисление разницы в часах
+        )
+        .join(models.Requests, models.Requests.category_id == models.Category.id)
+        .where(
+            and_(
+                models.Requests.created_at.between(started_at, finished_at),
+                models.Category.department == department
+            )
+        )
+        .group_by(models.Category.name)
+        .order_by(models.Category.name)
+    )
+
+    # Выполнение запроса
+    result = db.execute(query).mappings().all()
+
+    return result
 

@@ -18,7 +18,7 @@ from typing import Optional
 from uuid import UUID
 from datetime import datetime, date
 import statisquery
-from microservices import sendtotelegramchannel
+from microservices import sendtotelegramchannel, invenory_factory_report
 import crud
 from microservices import get_current_user, get_db, list_departments, authiiko
 from database import engine, SessionLocal
@@ -555,9 +555,43 @@ async def get_inventory_factory_stats(
     finished_at: Optional[date] = None,
     started_at: Optional[date] = None,
     #department: Optional[int] = None,
-
     db: Session = Depends(get_db),
     request_user: schema.UserFullBack = Depends(get_current_user),
 ):
-    query = statisquery.inventory_stats_factory(db=db,finished_at=finished_at,started_at=started_at,department=10)
-    return query
+    service_level = statisquery.inventory_stats_factory(db=db,finished_at=finished_at,started_at=started_at,department=10)
+    service_efficiency = statisquery.inventory_stats_factory2(db=db, started_at=started_at, finished_at=finished_at, department=10)
+    reports = {
+        "service_level": service_level,
+        "service_efficiency": service_efficiency
+    }
+    return reports
+
+
+
+@urls.post("/v1/stats/inventory/factory/excell", tags=['InventoryStats'])
+async def get_inventory_factory_stats(
+    finished_at: Optional[date] = None,
+    started_at: Optional[date] = None,
+    report_type: Optional[int] = None,
+    db: Session = Depends(get_db),
+    request_user: schema.UserFullBack = Depends(get_current_user),
+):
+    data = []
+    if report_type == 1:
+        data = statisquery.inventory_stats_factory(
+            db=db,
+            finished_at=finished_at,
+            started_at=started_at,
+            department=10
+        )
+    elif report_type == 2:
+        data = statisquery.inventory_stats_factory2(
+            db=db,
+            started_at=started_at,
+            finished_at=finished_at,
+            department=10
+        )
+
+    excell_file = invenory_factory_report(data=data, report_type=report_type)
+    return excell_file
+
