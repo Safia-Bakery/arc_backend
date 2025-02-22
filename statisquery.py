@@ -714,7 +714,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
             .join(models.Category)
             .join(models.Tools)
             .filter(
-                models.Requests.status == 3,
+                models.Requests.status.in_([3,6]),
                 models.Tools.ftime.isnot(None),
                 models.Category.department == department,
                 models.Requests.created_at.between(started_at, finished_at),
@@ -722,6 +722,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
                              models.Requests.finished_at - models.Requests.started_at) <= models.Tools.ftime * 3600,
                 models.Tools.parentid == parent_id.parentid,
             )
+            .distinct()
             .count()
         )
 
@@ -733,13 +734,14 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
             .join(models.Tools)
             .filter(
                 models.Category.department == department,
-                models.Requests.status == 3,
+                models.Requests.status.in_([6,3]),
                 models.Tools.ftime.isnot(None),
                 models.Tools.parentid == parent_id.parentid,
                 models.Requests.created_at.between(started_at, finished_at),
                 func.extract('epoch',
                              models.Requests.finished_at - models.Requests.started_at) > models.Tools.ftime * 3600,
             )
+            .distinct()
             .count()
         )
 
@@ -756,6 +758,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
                 models.Category.department == department,
                 models.Requests.status.in_([0, 1, 2]),
             )
+            .distinct()
             .count()
         )
         if not_finished_ontime == 0:
