@@ -682,15 +682,14 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
         )
         .join(models.Expanditure).join(models.Tools).join(models.Category)
         .filter(
-            models.Requests.status==3,
+            models.Requests.status.in_([3,6]),
             models.Expanditure.status==1,
-            models.Tools.department== department,
+            models.Category.department== department,
             models.Tools.parentid == parent_id.parentid,
+            models.Requests.created_at.between(started_at, finished_at)
         )
         .group_by(models.Tools.parentid)
         )
-        if started_at is not None and finished_at is not None:
-            total = total.filter(models.Requests.created_at.between(started_at,finished_at))
         total = total.all()
 
         total_tools = db.query(models.Expanditure).join(models.Requests).join(models.Category).join(models.Tools).filter(
@@ -706,6 +705,7 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
             models.Category.department==department,
             func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= models.Tools.ftime * 3600,
             models.Tools.parentid == parent_id.parentid,
+            models.Requests.created_at.between(started_at, finished_at)
             #models.Requests.finished_at - models.Requests.started_at <= ftime_timedelta
         ).count()
 
@@ -717,12 +717,15 @@ def inventory_stats(db:Session,started_at,finished_at,department,timer=60):
             #models.Expanditure.status==1,
             models.Tools.ftime!=None,
             models.Tools.parentid == parent_id.parentid,
+            models.Requests.created_at.between(started_at, finished_at),
             func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) > models.Tools.ftime * 3600,
         ).count()
 
         not_started = db.query(models.Expanditure
                                ).join(models.Requests).join(models.Category).join(models.Tools
-                               ).filter(models.Tools.parentid==parent_id.parentid
+                               ).filter(models.Tools.parentid==parent_id.parentid.filter(
+                            models.Requests.created_at.between(started_at, finished_at)
+                            )
                                ).filter(models.Tools.ftime!=None,models.Category.department==department
                                ).filter(models.Requests.status.in_([0,1,2])).count()
         if not_finished_ontime == 0:
