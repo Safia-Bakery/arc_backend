@@ -104,10 +104,11 @@ async  def get_inventory_factory_categories(
 async  def get_inventory_factory_categories_tool(
         category_id:Optional[int]=None,
         name : Optional[str]=None,
+        status: Optional[int]=None,
         db: Session = Depends(get_db),
         request_user: UserFullBack = Depends(get_current_user)
 ):
-    return paginate(get_inventory_factory_tools(db=db,category_id=category_id,name=name))
+    return paginate(get_inventory_factory_tools(db=db,category_id=category_id,name=name,status=status))
 
 
 

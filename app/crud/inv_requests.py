@@ -49,6 +49,7 @@ def filter_requests_all(
     if user is not None:
         query = query.filter(Users.full_name.ilike(f"%{user}%"))
     if product_name is not None:
+        query = query.join(Requests.expanditure).join(Expanditure.tool)
         query = query.filter(Tools.name.ilike(f"%{product_name}%"))
 
     # Order by request ID and execute the query
