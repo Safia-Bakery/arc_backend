@@ -95,13 +95,17 @@ def get_inventory_categories(db:Session, department,status):
 
 
 
-def get_inventory_factory_tools(db:Session,category_id,name):
+def get_inventory_factory_tools(db:Session,category_id,name,status):
     query = db.query(Tools).join(CategoriesToolsRelations)
     if category_id is not None:
         query = query.filter(CategoriesToolsRelations.category_id==category_id)
     if name is not None:
         query = query.filter(Tools.name.ilike(f"%{name}%"))
+    if status is not None:
+        query = query.filter(Tools.status==status)
+
     query = query.filter(CategoriesToolsRelations.tool_id == Tools.id)
+
 
 
     return query.all()
