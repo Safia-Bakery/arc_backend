@@ -822,7 +822,7 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
                         )
                     )
                     / timer,
-                    DECIMAL,
+                    Integer,
                 ),
             )
             .join(models.Expanditure).join(models.Tools).join(models.Category)
