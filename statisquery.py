@@ -8,7 +8,7 @@ from typing import Optional
 import bcrypt
 from sqlalchemy.exc import SQLAlchemyError
 import pytz
-from sqlalchemy import distinct, case, select
+from sqlalchemy import distinct, case, select, DECIMAL
 from datetime import datetime, date,timedelta
 from microservices import sendtotelegramchannel
 from sqlalchemy import or_, and_, Date, cast, func, Integer, Numeric,Interval,extract,literal_column
@@ -813,30 +813,31 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
     for parent_id in parent_ids:
 
         total = (
-        db.query(
-            func.cast(
-                func.avg(
-                    func.extract(
-                        "epoch",
-                        models.Requests.finished_at - models.Requests.started_at,
+            db.query(
+                func.cast(
+                    func.avg(
+                        func.extract(
+                            "epoch",
+                            models.Requests.finished_at - models.Requests.created_at,
+                        )
                     )
-                )
-                / timer,
-                Integer,
-            ),
+                    / timer,
+                    DECIMAL,
+                ),
+            )
+            .join(models.Expanditure).join(models.Tools).join(models.Category)
+            .filter(
+                models.Requests.status==3,
+                models.Expanditure.status==1,
+                # models.Tools.department== department,
+                models.Tools.parentid == parent_id.parentid,
+            )
+            .group_by(models.Tools.parentid)
         )
-        .join(models.Expanditure).join(models.Tools).join(models.Category)
-        .filter(
-            models.Requests.status==3,
-            models.Expanditure.status==1,
-            # models.Tools.department== department,
-            models.Tools.parentid == parent_id.parentid,
-        )
-        .group_by(models.Tools.parentid)
-        )
-        if started_at is not None and finished_at is not None:
-            total = total.filter(models.Requests.created_at.between(started_at,finished_at))
+        # if started_at is not None and finished_at is not None:
+        #     total = total.filter(models.Requests.created_at.between(started_at,finished_at))
         total = total.all()
+        print(total)
 
 
         total_tools = db.query(models.Expanditure).join(models.Tools).join(models.Requests).join(models.Category).filter(
@@ -852,7 +853,7 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
             models.Tools.factory_ftime!=None,
             #models.Expanditure.status==1,
             models.Category.department==department,
-            func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= models.Tools.factory_ftime * 3600,
+            func.extract('epoch', models.Requests.finished_at - models.Requests.created_at) <= models.Tools.factory_ftime * 3600,
             models.Tools.parentid == parent_id.parentid,
             #models.Requests.finished_at - models.Requests.started_at <= ftime_timedelta
         ).count()
@@ -867,7 +868,7 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
             #models.Expanditure.status==1,
             models.Tools.factory_ftime!=None,
             models.Tools.parentid == parent_id.parentid,
-            func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) > models.Tools.ftime * 3600,
+            func.extract('epoch', models.Requests.finished_at - models.Requests.created_at) > models.Tools.ftime * 3600,
         ).count()
 
         not_started = db.query(models.Expanditure
@@ -893,13 +894,13 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
         # not_started_percent = (not_started/total_tools)*100
 
         parent_id_name = db.query(models.ToolParents).filter(models.ToolParents.id == parent_id.parentid).first()
-        avg_finishing = 0
-        if total:
-            if total[0][0] is not None:
-                avg_finishing = total[0][0]
-
-        else:
-            avg_finishing= 0
+        avg_finishing = total[0][0]
+        # if total:
+        #     if total[0][0] is not None:
+        #         avg_finishing = total[0][0]
+        #
+        # else:
+        #     avg_finishing= 0
         data[parent_id_name.name] = {
             'total_tools': total_tools,
             "on_time_requests": finished_ontime,
