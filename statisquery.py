@@ -831,6 +831,7 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
             # models.Expanditure.status==1,
             models.Category.department== department,
             models.Tools.parentid == parent_id.parentid,
+            models.Tools.factory_ftime != None
         )
         .group_by(models.Tools.parentid)
         )
