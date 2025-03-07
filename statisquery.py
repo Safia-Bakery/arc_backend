@@ -829,7 +829,7 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
         .filter(
             models.Requests.status.in_([0,1,2,3,5,6,7]),
             # models.Expanditure.status==1,
-            # models.Tools.department== department,
+            models.Category.department== department,
             models.Tools.parentid == parent_id.parentid,
         )
         .group_by(models.Tools.parentid)
