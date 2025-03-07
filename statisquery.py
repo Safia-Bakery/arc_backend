@@ -875,7 +875,7 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
                                ).join(models.Requests).join(models.Category).filter(models.Tools.parentid==parent_id.parentid
                                ).filter(models.Tools.factory_ftime!=None,models.Category.department==department
                                ).filter(
-                models.Requests.created_at.between(started_at,finished_at)).filter(models.Requests.status.in_([0,1,2])).count()
+                models.Requests.created_at.between(started_at,finished_at)).filter(models.Requests.status.in_([0,1,2,5,7])).count()
         if not_finished_ontime == 0:
             not_finished_ontime_percent = 0
         else:
