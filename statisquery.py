@@ -805,7 +805,7 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
     parent_ids = db.query(models.Tools).join(models.Expanditure).join(models.Requests).join(models.Category).filter(models.Category.department==department)
     if started_at is not None and finished_at is not None:
         parent_ids = parent_ids.filter(models.Requests.created_at.between(started_at,finished_at))
-    parent_ids = parent_ids.distinct(models.Tools.parentid).filter(models.Requests.status.in_([0,1,2,3,5,6,7])).filter(models.Tools.factory_ftime!=None).all()
+    parent_ids = parent_ids.distinct(models.Tools.parentid).filter(models.Requests.status.in_([0,1,2,3,5,6,7])).filter(models.Tools.factory_ftime.isnot(None)).all()
     data = {}
 
     ftime_timedelta = timedelta(seconds=48*3600)
@@ -813,27 +813,27 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
     for parent_id in parent_ids:
 
         total = (
-        db.query(
-            func.cast(
-                func.avg(
-                    func.extract(
-                        "epoch",
-                        models.Requests.finished_at - models.Requests.started_at,
+            db.query(
+                func.cast(
+                    func.avg(
+                        func.extract(
+                            "epoch",
+                            models.Requests.finished_at - models.Requests.started_at,
+                        )
                     )
-                )
-                / timer,
-                Integer,
-            ),
-        )
-        .join(models.Expanditure).join(models.Tools).join(models.Category)
-        .filter(
-            models.Requests.status.in_([0,1,2,3,5,6,7]),
-            # models.Expanditure.status==1,
-            models.Category.department== department,
-            models.Tools.parentid == parent_id.parentid,
-            models.Tools.factory_ftime != None
-        )
-        .group_by(models.Tools.parentid)
+                    / timer,
+                    Integer,
+                ),
+            )
+            .join(models.Expanditure).join(models.Tools).join(models.Category)
+            .filter(
+                models.Requests.status.in_([0,1,2,3,5,6,7]),
+                # models.Expanditure.status==1,
+                models.Category.department== department,
+                models.Tools.parentid == parent_id.parentid,
+                models.Tools.factory_ftime.isnot(None)
+            )
+            .group_by(models.Tools.parentid)
         )
         if started_at is not None and finished_at is not None:
             total = total.filter(models.Requests.created_at.between(started_at,finished_at))
@@ -841,7 +841,7 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
 
 
         total_tools = db.query(models.Expanditure).join(models.Tools).join(models.Requests).join(models.Category).filter(
-            models.Tools.parentid==parent_id.parentid,models.Category.department==department).filter(models.Tools.factory_ftime !=None).filter(
+            models.Tools.parentid==parent_id.parentid,models.Category.department==department).filter(models.Tools.factory_ftime.isnot(None)).filter(
             models.Requests.status.in_([0,1,2,3,5,6,7])).filter( models.Requests.created_at.between(started_at,finished_at)).count()
 
 
@@ -850,12 +850,10 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
         ).join(models.Tools).join(models.Requests).join(models.Category).filter(
             models.Requests.created_at.between(started_at,finished_at)).filter(
             models.Requests.status.in_([3,6]),
-            models.Tools.factory_ftime!=None,
-            # models.Expanditure.status==1,
+            models.Tools.factory_ftime.isnot(None),
             models.Category.department==department,
             func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= models.Tools.factory_ftime * 3600,
             models.Tools.parentid == parent_id.parentid,
-            #models.Requests.finished_at - models.Requests.started_at <= ftime_timedelta
         ).count()
 
 
@@ -865,8 +863,7 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
             models.Requests.created_at.between(started_at,finished_at)).filter(
             models.Category.department==department,
             models.Requests.status.in_([6,3]),
-            # models.Expanditure.status==1,
-            models.Tools.factory_ftime!=None,
+            models.Tools.factory_ftime.isnot(None),
             models.Tools.parentid == parent_id.parentid,
             func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) > models.Tools.ftime * 3600,
         ).count()
@@ -874,7 +871,7 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
         not_started = db.query(models.Expanditure
                                ).join(models.Tools
                                ).join(models.Requests).join(models.Category).filter(models.Tools.parentid==parent_id.parentid
-                               ).filter(models.Tools.factory_ftime!=None,models.Category.department==department
+                               ).filter(models.Tools.factory_ftime.isnot(None),models.Category.department==department
                                ).filter(
                 models.Requests.created_at.between(started_at,finished_at)).filter(models.Requests.status.in_([0,1,2,5,7])).count()
         if not_finished_ontime == 0:
@@ -889,9 +886,6 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
             not_started_percent = 0
         else:
             not_started_percent = (not_started/total_tools)*100
-        # not_finishedon_time_percent = (not_finished_ontime/total_tools)*100
-        # on_time_requests_percent = (finished_ontime/total_tools)*100
-        # not_started_percent = (not_started/total_tools)*100
 
         parent_id_name = db.query(models.ToolParents).filter(models.ToolParents.id == parent_id.parentid).first()
         avg_finishing = 0
