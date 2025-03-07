@@ -828,7 +828,7 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
         .join(models.Expanditure).join(models.Tools).join(models.Category)
         .filter(
             models.Requests.status.in_([0,1,2,3,5,6,7]),
-            models.Expanditure.status==1,
+            # models.Expanditure.status==1,
             # models.Tools.department== department,
             models.Tools.parentid == parent_id.parentid,
         )
@@ -850,7 +850,7 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
             models.Requests.created_at.between(started_at,finished_at)).filter(
             models.Requests.status.in_([3,6]),
             models.Tools.factory_ftime!=None,
-            #models.Expanditure.status==1,
+            # models.Expanditure.status==1,
             models.Category.department==department,
             func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= models.Tools.factory_ftime * 3600,
             models.Tools.parentid == parent_id.parentid,
@@ -864,7 +864,7 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
             models.Requests.created_at.between(started_at,finished_at)).filter(
             models.Category.department==department,
             models.Requests.status.in_([6,3]),
-            #models.Expanditure.status==1,
+            # models.Expanditure.status==1,
             models.Tools.factory_ftime!=None,
             models.Tools.parentid == parent_id.parentid,
             func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) > models.Tools.ftime * 3600,
