@@ -818,7 +818,7 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
                     func.avg(
                         func.extract(
                             "epoch",
-                            models.Requests.finished_at - models.Requests.started_at,
+                            models.Requests.finished_at - models.Requests.created_at,
                         )
                     )
                     / timer,
@@ -845,6 +845,7 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
             models.Requests.status.in_([0,1,2,3,5,6,7])).filter( models.Requests.created_at.between(started_at,finished_at)).count()
 
 
+
         finished_ontime = db.query(
             models.Expanditure
         ).join(models.Tools).join(models.Requests).join(models.Category).filter(
@@ -852,7 +853,7 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
             models.Requests.status.in_([3,6]),
             models.Tools.factory_ftime.isnot(None),
             models.Category.department==department,
-            func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) <= models.Tools.factory_ftime * 3600,
+            func.extract('epoch', models.Requests.finished_at - models.Requests.created_at) <= models.Tools.factory_ftime * 3600,
             models.Tools.parentid == parent_id.parentid,
         ).count()
 
@@ -865,7 +866,7 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
             models.Requests.status.in_([6,3]),
             models.Tools.factory_ftime.isnot(None),
             models.Tools.parentid == parent_id.parentid,
-            func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) > models.Tools.ftime * 3600,
+            func.extract('epoch', models.Requests.finished_at - models.Requests.created_at) > models.Tools.ftime * 3600,
         ).count()
 
         not_started = db.query(models.Expanditure
@@ -915,7 +916,7 @@ def inventory_stats_factory2(db:Session, started_at, finished_at, department):
             func.count(models.Requests.id).label("total_requests"),
             coalesce(
                 func.round(
-                    func.avg(func.extract('epoch', models.Requests.finished_at - models.Requests.started_at) / 3600), 1
+                    func.avg(func.extract('epoch', models.Requests.finished_at - models.Requests.created_at) / 3600), 1
                 ),
                 0
             ).label("avg_processing_time")  # Вычисление разницы в часах
