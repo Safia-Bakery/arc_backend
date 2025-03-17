@@ -866,7 +866,7 @@ def inventory_stats_factory(db:Session,started_at,finished_at,department,timer=6
             models.Requests.status.in_([6,3]),
             models.Tools.factory_ftime.isnot(None),
             models.Tools.parentid == parent_id.parentid,
-            func.extract('epoch', models.Requests.finished_at - models.Requests.created_at) > models.Tools.ftime * 3600,
+            func.extract('epoch', models.Requests.finished_at - models.Requests.created_at) > models.Tools.factory_ftime * 3600,
         ).count()
 
         not_started = db.query(models.Expanditure
