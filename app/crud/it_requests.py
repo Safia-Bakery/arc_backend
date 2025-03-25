@@ -31,7 +31,8 @@ def filter_request_brigada(
         urgent,
         started_at,
         finished_at,
-        is_expired
+        is_expired,
+        ftime
 ):
     query = db.query(Requests).join(Category).filter(
         and_(
@@ -42,7 +43,8 @@ def filter_request_brigada(
             )
         )
     )
-
+    if ftime is not None:
+        query = query.filter(Category.ftime == ftime)
     if id is not None:
         query = query.filter(Requests.id == id)
     if fillial_id is not None:
@@ -100,7 +102,8 @@ def filter_requests_all(
         urgent,
         started_at,
         finished_at,
-        is_expired
+        is_expired,
+        ftime
 ):
     # categories = db.query(Category).with_entities(Category.id).filter(Category.department == 4).all()
     query = db.query(Requests).join(Category).filter(
@@ -112,7 +115,8 @@ def filter_requests_all(
             )
         )
     )
-
+    if ftime is not None:
+        query = query.filter(Category.ftime == ftime)
     if id is not None:
         query = query.filter(Requests.id == id)
     if fillial_id is not None:

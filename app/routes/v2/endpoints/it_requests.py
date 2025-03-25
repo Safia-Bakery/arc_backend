@@ -48,6 +48,7 @@ async def filter_requests(
         user: Optional[str] = None,
         brigada_id: Optional[int] = None,
         arrival_date: Optional[date] = None,
+        ftime: Optional[int] = None,
         rate: Optional[bool] = False,
         urgent: Optional[bool] = None,
         started_at: Optional[date] = None,
@@ -82,7 +83,8 @@ async def filter_requests(
             urgent=urgent,
             started_at=started_at,
             finished_at=finished_at,
-            is_expired=is_expired
+            is_expired=is_expired,
+            ftime=ftime
         )
         return paginate(requestdata)
 
@@ -100,7 +102,8 @@ async def filter_requests(
         urgent=urgent,
         started_at=started_at,
         finished_at=finished_at,
-        is_expired=is_expired
+        is_expired=is_expired,
+        ftime=ftime
     )
 
     return paginate(request_list)
