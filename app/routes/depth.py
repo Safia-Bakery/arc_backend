@@ -62,14 +62,16 @@ async def get_current_user(
         if token ==settings.backend_pass:
             return get_user_by_username(db=db, username='admin')
         payload = jwt.decode(token, settings.jwt_secret_key, algorithms=[settings.jwt_algorithm])
-        expire_date = payload.get("exp")
+        expire_date = payload.get("exp", None)
         sub = payload.get("sub")
-        if datetime.fromtimestamp(expire_date) < datetime.now():
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token expired",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+        if expire_date is not None:
+            if datetime.fromtimestamp(expire_date) < datetime.now():
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Token expired",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+
     except (jwt.JWTError, ValidationError):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
