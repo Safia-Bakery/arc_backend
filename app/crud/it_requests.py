@@ -51,6 +51,8 @@ def filter_request_brigada(
         query = query.filter(Requests.category_id.in_(category_id))
     if created_at is not None:
         query = query.filter(Requests.created_at == created_at)
+    if finished_at is not None:
+        query = query.filter(cast(Requests.finished_at, Date) == finished_at)
     if request_status is not None:
         request_status = [int(i) for i in re.findall(r"\d+", str(request_status))]
         query = query.filter(Requests.status.in_(request_status))
@@ -121,6 +123,8 @@ def filter_requests_all(
         query = query.filter(Requests.category_id.in_(category_id))
     if created_at is not None and finished_at is None:
         query = query.filter(cast(Requests.created_at, Date) == created_at)
+    if finished_at is not None:
+        query = query.filter(cast(Requests.finished_at, Date) == finished_at)
     if request_status is not None:
         request_status = [int(i) for i in re.findall(r"\d+", str(request_status))]
         query = query.filter(Requests.status.in_(request_status))
