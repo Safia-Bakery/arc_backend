@@ -520,6 +520,8 @@ async def create_message(
                                             user_id=request_user.id
                                             )
 
+    message = f"📑Заявка #{request_id}s\n\n{message}"
+
     if send_to_client:
         send_simple_text_message(
             bot_token=settings.bottoken,
