@@ -22,7 +22,7 @@ security = HTTPBasic()
 
 def send_simple_text_message(bot_token: str, chat_id: str, message_text: Optional[str] = None, file: Optional[str] = None):
     # If both file and text are present, send the file with caption
-    if file is None:
+    if file is not None:
         payload = {
             "chat_id": chat_id,
             "document": file,  # This can be a URL
