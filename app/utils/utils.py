@@ -23,20 +23,22 @@ security = HTTPBasic()
 def send_simple_text_message(bot_token: str, chat_id: str, message_text: Optional[str] = None, file: Optional[str] = None):
     # If both file and text are present, send the file with caption
     if file is not None:
-        payload = {
-            "chat_id": chat_id,
-            "document": file,  # This can be a URL
-        }
-        if message_text is not None:
-            payload["caption"] = message_text
-            payload["parse_mode"] = "HTML"
+        with open(file) as f:
 
-        response = requests.post(
-            f"https://api.telegram.org/bot{bot_token}/sendDocument",
-            data=payload
-        )
-        print(response.text)
-        return response if response.status_code == 200 else False
+            payload = {
+                "chat_id": chat_id,
+                "document": f,  # This can be a URL
+            }
+            if message_text is not None:
+                payload["caption"] = message_text
+                payload["parse_mode"] = "HTML"
+
+            response = requests.post(
+                f"https://api.telegram.org/bot{bot_token}/sendDocument",
+                data=payload
+            )
+            print(response.text)
+            return response if response.status_code == 200 else False
 
     # If only text is present, send as a simple message
     if message_text:
