@@ -35,6 +35,7 @@ def send_simple_text_message(bot_token: str, chat_id: str, message_text: Optiona
             f"https://api.telegram.org/bot{bot_token}/sendDocument",
             data=payload
         )
+        print(response.text)
         return response if response.status_code == 200 else False
 
     # If only text is present, send as a simple message
@@ -48,6 +49,7 @@ def send_simple_text_message(bot_token: str, chat_id: str, message_text: Optiona
             f"https://api.telegram.org/bot{bot_token}/sendMessage",
             json=payload
         )
+        print(response.text)
         return response if response.status_code == 200 else False
 
     return False  # Neither file nor message
