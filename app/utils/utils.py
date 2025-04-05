@@ -14,47 +14,57 @@ from apscheduler.jobstores.base import JobLookupError, ConflictingIdError
 from app.core.config import settings
 from app.crud import it_requests
 from app.db.session import SessionLocal
+import os
 
 
 BASE_URL = 'https://api.service.safiabakery.uz/'
 timezonetash = pytz.timezone("Asia/Tashkent")
 security = HTTPBasic()
-
 def send_simple_text_message(bot_token: str, chat_id: str, message_text: Optional[str] = None, file: Optional[str] = None):
-    # If both file and text are present, send the file with caption
     if file is not None:
-        with open(file) as f:
+        if not os.path.exists(file):
+            print("File not found:", file)
+            return False
+
+        with open(file, "rb") as f:
+            files = {
+                "document": (os.path.basename(file), f)
+            }
 
             payload = {
-                "chat_id": chat_id,
-                "document": f,  # This can be a URL
+                "chat_id": chat_id
             }
+
             if message_text is not None:
                 payload["caption"] = message_text
                 payload["parse_mode"] = "HTML"
 
             response = requests.post(
                 f"https://api.telegram.org/bot{bot_token}/sendDocument",
-                data=payload
+                data=payload,
+                files=files
             )
+
             print(response.text)
             return response if response.status_code == 200 else False
 
-    # If only text is present, send as a simple message
-    if message_text:
+    elif message_text is not None:
+        # Send only text
         payload = {
             "chat_id": chat_id,
             "text": message_text,
             "parse_mode": "HTML"
         }
+
         response = requests.post(
             f"https://api.telegram.org/bot{bot_token}/sendMessage",
             json=payload
         )
+
         print(response.text)
         return response if response.status_code == 200 else False
 
-    return False  # Neither file nor message
+    return False
 
 
 def send_inlinekeyboard_text(bot_token, chat_id, message_text):
