@@ -20,22 +20,37 @@ BASE_URL = 'https://api.service.safiabakery.uz/'
 timezonetash = pytz.timezone("Asia/Tashkent")
 security = HTTPBasic()
 
+def send_simple_text_message(bot_token: str, chat_id: str, message_text: Optional[str] = None, file: Optional[str] = None):
+    # If both file and text are present, send the file with caption
+    if file:
+        payload = {
+            "chat_id": chat_id,
+            "document": file,  # This can be a URL
+        }
+        if message_text:
+            payload["caption"] = message_text
+            payload["parse_mode"] = "HTML"
 
-def send_simple_text_message(bot_token, chat_id, message_text):
-    # Create the request payload
-    payload = {"chat_id": chat_id, "text": message_text, "parse_mode": "HTML"}
+        response = requests.post(
+            f"https://api.telegram.org/bot{bot_token}/sendDocument",
+            data=payload
+        )
+        return response if response.status_code == 200 else False
 
-    # Send the request to send the inline keyboard message
-    response = requests.post(
-        f"https://api.telegram.org/bot{bot_token}/sendMessage",
-        json=payload,
-    )
-    # Check the response status
-    if response.status_code == 200:
+    # If only text is present, send as a simple message
+    if message_text:
+        payload = {
+            "chat_id": chat_id,
+            "text": message_text,
+            "parse_mode": "HTML"
+        }
+        response = requests.post(
+            f"https://api.telegram.org/bot{bot_token}/sendMessage",
+            json=payload
+        )
+        return response if response.status_code == 200 else False
 
-        return response
-    else:
-        return False
+    return False  # Neither file nor message
 
 
 def send_inlinekeyboard_text(bot_token, chat_id, message_text):

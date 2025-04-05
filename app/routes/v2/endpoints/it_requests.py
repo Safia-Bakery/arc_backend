@@ -526,7 +526,8 @@ async def create_message(
         send_simple_text_message(
             bot_token=settings.bottoken,
             chat_id=db_query.requestc.user.telegram_id,
-            message_text=message
+            message_text=message,
+            file=file_path
         )
 
 
