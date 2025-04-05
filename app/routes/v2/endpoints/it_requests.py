@@ -499,7 +499,7 @@ async def create_message(
         status: Annotated[int, Form()] = None,
         photo: UploadFile = None,
         db: Session = Depends(get_db),
-        send_to_client:Optional[bool]=False,
+        send_to_client:Annotated[bool, Form()] = False,
         request_user: UserFullBack = Depends(get_current_user)):
     if photo:
         file_path = f"files/{generate_random_filename()}{photo.filename}"
