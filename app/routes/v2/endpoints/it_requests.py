@@ -492,7 +492,7 @@ async def create_request(
 
 
 
-@it_requests_router.post("/requests/it/message", response_model=MessageRequestCreate, tags=["Message"])
+@it_requests_router.post("/requests/it/message", tags=["Message"])
 async def create_message(
         request_id: Annotated[int, Form()],
         message: Annotated[str, Form()] = None,
@@ -532,4 +532,4 @@ async def create_message(
 
 
 
-    return db_query
+    return {"success": True}

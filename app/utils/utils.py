@@ -45,7 +45,6 @@ def send_simple_text_message(bot_token: str, chat_id: str, message_text: Optiona
                 files=files
             )
 
-            print(response.text)
             return response if response.status_code == 200 else False
 
     elif message_text is not None:
