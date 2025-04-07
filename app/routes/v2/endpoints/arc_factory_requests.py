@@ -1,7 +1,7 @@
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 
-from fastapi import APIRouter, UploadFile
+from fastapi import APIRouter, UploadFile, Query
 from fastapi import Depends, File
 from sqlalchemy.orm import Session
 from starlette import status
@@ -30,6 +30,7 @@ arc_factory_requests = APIRouter()
 
 @arc_factory_requests.get("/arc/factory/requests",response_model=Page[GetArcFactoryRequests])
 async def get_requests(
+        request_ids: Optional[str] = None,
         user_id:Optional[int]=None,
         fillial_id:Optional[UUID]=None,
         status:Optional[int]=None,
@@ -38,7 +39,6 @@ async def get_requests(
         user_name: Optional[str]=None,
         created_at:Optional[date]=None,
         brigada_id:Optional[int]=None,
-        request_ids: Optional[list[int]] = None,
         current_user: GetUserFullData = Depends(get_current_user),
         db:Session=Depends(get_db)):
     return paginate(get_arc_factory_requests(db=db,user_id=user_id,

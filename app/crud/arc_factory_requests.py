@@ -1,3 +1,5 @@
+import re
+
 from unicodedata import category
 
 from sqlalchemy.orm import Session
@@ -51,6 +53,7 @@ def get_arc_factory_requests(
         query = query.filter(Requests.category_id==category_id)
 
     if request_ids is not None:
+        request_ids = [int(i) for i in re.findall(r"\d+", str(request_ids))]
         query = query.filter(Requests.id.in_(request_ids))
 
     return query.order_by(Requests.created_at.desc()).all()
