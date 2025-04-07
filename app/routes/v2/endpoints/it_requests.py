@@ -20,7 +20,7 @@ from app.schemas.requests import GetOneRequest
 from app.schemas.users import UserFullBack
 from app.utils.utils import sendtotelegramchat, sendtotelegramtopic, delete_from_chat, edit_topic_message, \
     inlinewebapp, confirmation_request, generate_random_filename, send_notification, edit_topic_reply_markup, \
-    JobScheduler
+    JobScheduler, send_simple_text_message
 
 it_requests_router = APIRouter()
 
@@ -492,13 +492,14 @@ async def create_request(
 
 
 
-@it_requests_router.post("/requests/it/message", response_model=MessageRequestCreate, tags=["Message"])
+@it_requests_router.post("/requests/it/message", tags=["Message"])
 async def create_message(
         request_id: Annotated[int, Form()],
         message: Annotated[str, Form()] = None,
         status: Annotated[int, Form()] = None,
         photo: UploadFile = None,
         db: Session = Depends(get_db),
+        send_to_client:Annotated[bool, Form()] = False,
         request_user: UserFullBack = Depends(get_current_user)):
     if photo:
         file_path = f"files/{generate_random_filename()}{photo.filename}"
@@ -518,4 +519,17 @@ async def create_message(
                                             photo=file_path,
                                             user_id=request_user.id
                                             )
-    return db_query
+
+    message = f"📑Заявка #{request_id}s\n\n{message}"
+
+    if send_to_client:
+        send_simple_text_message(
+            bot_token=settings.bottoken,
+            chat_id=db_query.requestc.user.telegram_id,
+            message_text=message,
+            file=file_path
+        )
+
+
+
+    return {"success": True}
