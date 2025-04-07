@@ -38,6 +38,7 @@ async def get_requests(
         user_name: Optional[str]=None,
         created_at:Optional[date]=None,
         brigada_id:Optional[int]=None,
+        request_ids: Optional[list[int]] = None,
         current_user: GetUserFullData = Depends(get_current_user),
         db:Session=Depends(get_db)):
     return paginate(get_arc_factory_requests(db=db,user_id=user_id,
@@ -47,7 +48,8 @@ async def get_requests(
                                              brigada_id=brigada_id,
                                              category_id=category_id,
                                              user_name=user_name,
-                                             created_at=created_at
+                                             created_at=created_at,
+                                             request_ids=request_ids
                                              ))
 
 

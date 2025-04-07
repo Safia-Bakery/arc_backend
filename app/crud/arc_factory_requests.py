@@ -20,7 +20,18 @@ from crud import timezonetash
 timezonetash = pytz.timezone('Asia/Tashkent')
 
 
-def get_arc_factory_requests(db:Session,user_id,fillial_id,status,id,brigada_id,user_name,created_at,category_id):
+def get_arc_factory_requests(
+        db:Session,
+        user_id,
+        fillial_id,
+        status,
+        id,
+        brigada_id,
+        user_name,
+        created_at,
+        category_id,
+        request_ids: Optional[list[int]] = None,
+):
     query = db.query(Requests).join(Category).join(Users).filter(Category.department==1,Category.sphere_status==2)
     if user_id is not None:
         query = query.filter(Requests.user_id==user_id)
@@ -38,6 +49,9 @@ def get_arc_factory_requests(db:Session,user_id,fillial_id,status,id,brigada_id,
         query = query.filter(cast(Requests.created_at, Date) == created_at)
     if category_id is not None:
         query = query.filter(Requests.category_id==category_id)
+
+    if request_ids is not None:
+        query = query.filter(Requests.id.in_(request_ids))
 
     return query.order_by(Requests.created_at.desc()).all()
 

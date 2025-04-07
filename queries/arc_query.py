@@ -46,27 +46,30 @@ def create_data_dict(db:Session,category,started_at,finished_at,timer=60):
 
 
         #---------number of finished on time requests-----------
-        finished_on_time = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status==3).filter(
+        finished_on_time_requests = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status==3).filter(
             models.Requests.finished_at - models.Requests.started_at <= ftime_timedelta
         )
         if started_at is not None and finished_at is not None:
-            finished_on_time = finished_on_time.filter(models.Requests.created_at.between(started_at,finished_at))
-        finished_on_time = finished_on_time.count()
+            finished_on_time_requests = finished_on_time_requests.filter(models.Requests.created_at.between(started_at,finished_at))
+
+        finished_on_time = finished_on_time_requests.count()
 
 
         #---------number of not finished on time requests-----------
-        not_finished_on_time = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status==3).filter(
+        not_finished_on_time_requests = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status==3).filter(
             models.Requests.finished_at - models.Requests.started_at > ftime_timedelta)
         if started_at is not None and finished_at is not None:
-            not_finished_on_time = not_finished_on_time.filter(models.Requests.created_at.between(started_at,finished_at))
-        not_finished_on_time = not_finished_on_time.count()
+            not_finished_on_time_requests = not_finished_on_time_requests.filter(models.Requests.created_at.between(started_at,finished_at))
+
+        not_finished_on_time = not_finished_on_time_requests.count()
         
 
         #---------number of status zero requests-----------
-        status_zero = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status.in_([0,1,2]))
+        status_zero_requests = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status.in_([0,1,2]))
         if started_at is not None and finished_at is not None:
-            status_zero = status_zero.filter(models.Requests.created_at.between(started_at,finished_at))
-        status_zero = status_zero.count()
+            status_zero_requests = status_zero_requests.filter(models.Requests.created_at.between(started_at,finished_at))
+        status_zero = status_zero_requests.count()
+
         if finished_on_time+not_finished_on_time+status_zero == 0:
             return None
         #---------calculating percentages-----------
@@ -120,13 +123,16 @@ def create_data_dict(db:Session,category,started_at,finished_at,timer=60):
             total = 0
         
         dict_data = {
-            "total_requests":total_requests,
-            "finished_on_time":finished_on_time,
-            "not_finished_on_time":not_finished_on_time,
-            "status_zero":status_zero,
-            "percentage_finished_on_time":percentage_finished_on_time,
-            "percentage_not_finished_on_time":percentage_not_finished_on_time,
-            "percentage_status_zero":percentage_status_zero,
+            "total_requests": total_requests,
+            "finished_on_time": finished_on_time,
+            "percentage_finished_on_time": percentage_finished_on_time,
+            "finished_on_time_requests": [request.id for request in finished_on_time_requests],
+            "not_finished_on_time": not_finished_on_time,
+            "percentage_not_finished_on_time": percentage_not_finished_on_time,
+            "not_finished_on_time_requests": [request.id for request in not_finished_on_time_requests],
+            "status_zero": status_zero,
+            "percentage_status_zero": percentage_status_zero,
+            "status_zero_requests": [request.id for request in status_zero_requests],
             "avg_finishing":total,
             'category':category.name,
             'category_id':category.id
