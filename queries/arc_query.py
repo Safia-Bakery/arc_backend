@@ -47,7 +47,7 @@ def create_data_dict(db:Session,category,started_at,finished_at,timer=60):
 
         #---------number of finished on time requests-----------
         finished_on_time_requests = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status.in_([3,6])).filter(
-            ( models.Requests.finished_at - models.Requests.started_at) <= ftime_timedelta
+            ( models.Requests.finished_at - models.Requests.created_at) <= ftime_timedelta
         )
         if started_at is not None and finished_at is not None:
             finished_on_time_requests = finished_on_time_requests.filter(models.Requests.created_at.between(started_at,finished_at))
@@ -57,7 +57,7 @@ def create_data_dict(db:Session,category,started_at,finished_at,timer=60):
 
         #---------number of not finished on time requests-----------
         not_finished_on_time_requests = db.query(models.Requests).filter(models.Requests.category_id==category.id).filter(models.Requests.status.in_([3,6])).filter(
-            (models.Requests.finished_at - models.Requests.started_at) > ftime_timedelta)
+            (models.Requests.finished_at - models.Requests.created_at) > ftime_timedelta)
         if started_at is not None and finished_at is not None:
             not_finished_on_time_requests = not_finished_on_time_requests.filter(models.Requests.created_at.between(started_at,finished_at))
 
