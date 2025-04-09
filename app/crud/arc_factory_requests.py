@@ -66,6 +66,11 @@ def get_arc_factory_request(db:Session,request_id):
 def update_arc_factory_request(db:Session,request_id,request:UpdateArcFactoryRequests):
     query = db.query(Requests).filter(Requests.id==request_id).first()
     query.status = request.status
+    now = datetime.now(tz=timezonetash)
+    if request.status == 1:
+        query.started_at = now
+    elif request.status == 6:
+        query.finished_at = now
     query.brigada_id = request.brigada_id
     query.deny_reason = request.deny_reason
     query.category_id = request.category_id

@@ -106,7 +106,7 @@ def create_data_dict(db:Session,category,started_at,finished_at,timer=60):
         )
         .join(models.Requests)
         .filter(
-            models.Requests.status.in_([0,1,2,3]),
+            models.Requests.status.in_([0,1,2,3,6]),
             models.Category.id == category.id,
         )
         .group_by(models.Category.name)

@@ -67,11 +67,12 @@ async def update_request(
         request:UpdateArcFactoryRequests,
         db:Session = Depends(get_db),
         current_user: GetUserFullData = Depends(get_current_user)):
-    old_request = get_arc_factory_request(db=db,request_id=request_id)
 
+    old_request = get_arc_factory_request(db=db,request_id=request_id)
     updated_request = update_arc_factory_request(db=db, request_id=request_id, request=request)
+    create_log(db=db, request_id=updated_request.id, status=updated_request.status, user_id=current_user.id)
+
     if old_request.status != updated_request.status or old_request.brigada_id != updated_request.brigada_id:
-        create_log(db=db, request_id=request_id, status=updated_request.status, user_id=current_user.id)
         if updated_request.status==1:
             try:
                 sendtotelegramchannel(
