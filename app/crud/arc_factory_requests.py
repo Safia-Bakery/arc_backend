@@ -69,7 +69,7 @@ def update_arc_factory_request(db:Session,request_id,request:UpdateArcFactoryReq
     now = datetime.now(tz=timezonetash)
     if request.status == 1:
         query.started_at = now
-    elif request.status == 6:
+    elif request.status in [4, 6]:
         query.finished_at = now
     query.brigada_id = request.brigada_id
     query.deny_reason = request.deny_reason
